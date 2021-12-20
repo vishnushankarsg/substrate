@@ -531,7 +531,7 @@
 			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::StringError</span>(<span class="string">&quot;Cannot supply empty authority set!&quot;</span>.<span class="ident">into</span>()))
 		}
 
-		<span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">Config::get_or_compute</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">client</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">Config::get</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">client</span>)<span class="question-mark">?</span>;
 
 		<span class="prelude-val">Ok</span>(<span class="self">Self</span> { <span class="ident">config</span>, <span class="ident">client</span>, <span class="ident">keystore</span>, <span class="ident">epoch_changes</span>, <span class="ident">authorities</span> })
 	}
@@ -704,7 +704,7 @@
 		<span class="ident">C</span>: <span class="ident">AuxStore</span> <span class="op">+</span> <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">UsageProvider</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 		<span class="ident">C::Api</span>: <span class="ident">BabeApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 	{
-		<span class="kw">let</span> <span class="ident">slot_duration</span> <span class="op">=</span> <span class="ident">Config::get_or_compute</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">client</span>)<span class="question-mark">?</span>.<span class="ident">slot_duration</span>;
+		<span class="kw">let</span> <span class="ident">slot_duration</span> <span class="op">=</span> <span class="ident">Config::get</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">client</span>)<span class="question-mark">?</span>.<span class="ident">slot_duration</span>;
 		<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">info</span>();
 
 		<span class="comment">// looks like this isn&#39;t the first block, rehydrate the fake time.</span>

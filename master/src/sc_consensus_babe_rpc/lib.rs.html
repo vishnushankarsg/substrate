@@ -540,7 +540,7 @@
 		<span class="kw">let</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">TestClientBuilder::new</span>();
 		<span class="kw">let</span> (<span class="ident">client</span>, <span class="ident">longest_chain</span>) <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">build_with_longest_chain</span>();
 		<span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">client</span>);
-		<span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">Config::get_or_compute</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">client</span>).<span class="ident">expect</span>(<span class="string">&quot;config available&quot;</span>);
+		<span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">Config::get</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">client</span>).<span class="ident">expect</span>(<span class="string">&quot;config available&quot;</span>);
 		<span class="kw">let</span> (<span class="kw">_</span>, <span class="ident">link</span>) <span class="op">=</span> <span class="ident">block_import</span>(<span class="ident">config</span>.<span class="ident">clone</span>(), <span class="ident">client</span>.<span class="ident">clone</span>(), <span class="ident">client</span>.<span class="ident">clone</span>())
 			.<span class="ident">expect</span>(<span class="string">&quot;can initialize block-import&quot;</span>);
 

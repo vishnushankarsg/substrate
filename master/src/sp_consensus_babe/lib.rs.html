@@ -411,8 +411,6 @@
 <span id="411">411</span>
 <span id="412">412</span>
 <span id="413">413</span>
-<span id="414">414</span>
-<span id="415">415</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2021 Parity Technologies (UK) Ltd.</span>
@@ -657,8 +655,6 @@
 	<span class="kw">fn</span> <span class="ident">slot_duration</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">std::time::Duration</span> {
 		<span class="ident">std::time::Duration::from_millis</span>(<span class="self">self</span>.<span class="ident">slot_duration</span>)
 	}
-
-	<span class="kw">const</span> <span class="ident">SLOT_KEY</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">u8</span>] <span class="op">=</span> <span class="string">b&quot;babe_configuration&quot;</span>;
 }
 
 <span class="doccomment">/// Configuration data used by the BABE consensus engine.</span>
