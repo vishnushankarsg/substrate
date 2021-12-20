@@ -572,7 +572,7 @@
 <span class="kw">use</span> <span class="ident">beefy_primitives</span>::{
 	<span class="ident">crypto</span>::{<span class="ident">AuthorityId</span>, <span class="ident">Public</span>, <span class="ident">Signature</span>},
 	<span class="ident">known_payload_ids</span>, <span class="ident">BeefyApi</span>, <span class="ident">Commitment</span>, <span class="ident">ConsensusLog</span>, <span class="ident">MmrRootHash</span>, <span class="ident">Payload</span>, <span class="ident">SignedCommitment</span>,
-	<span class="ident">ValidatorSet</span>, <span class="ident">VersionedCommitment</span>, <span class="ident">VoteMessage</span>, <span class="ident">BEEFY_ENGINE_ID</span>, <span class="ident">GENESIS_AUTHORITY_SET_ID</span>,
+	<span class="ident">ValidatorSet</span>, <span class="ident">VersionedFinalityProof</span>, <span class="ident">VoteMessage</span>, <span class="ident">BEEFY_ENGINE_ID</span>, <span class="ident">GENESIS_AUTHORITY_SET_ID</span>,
 };
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
@@ -865,7 +865,7 @@
 						<span class="ident">BlockId::Number</span>(<span class="ident">round</span>.<span class="number">1</span>),
 						(
 							<span class="ident">BEEFY_ENGINE_ID</span>,
-							<span class="ident">VersionedCommitment::V1</span>(<span class="ident">signed_commitment</span>.<span class="ident">clone</span>()).<span class="ident">encode</span>(),
+							<span class="ident">VersionedFinalityProof::V1</span>(<span class="ident">signed_commitment</span>.<span class="ident">clone</span>()).<span class="ident">encode</span>(),
 						),
 					)
 					.<span class="ident">is_err</span>()

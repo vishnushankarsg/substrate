@@ -158,8 +158,6 @@
 <span id="158">158</span>
 <span id="159">159</span>
 <span id="160">160</span>
-<span id="161">161</span>
-<span id="162">162</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021 Parity Technologies (UK) Ltd.</span>
@@ -187,10 +185,7 @@
 
 <span class="kw">use</span> <span class="ident">sp_std::prelude</span>::<span class="kw-2">*</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::{
-	<span class="ident">commitment</span>::{<span class="ident">Commitment</span>, <span class="ident">SignedCommitment</span>},
-	<span class="ident">crypto::Signature</span>,
-};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::commitment</span>::{<span class="ident">Commitment</span>, <span class="ident">SignedCommitment</span>};
 
 <span class="doccomment">/// A light form of [SignedCommitment].</span>
 <span class="doccomment">///</span>
@@ -222,12 +217,12 @@
 	<span class="doccomment">/// and a merkle root of all signatures.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Returns the full list of signatures along with the witness.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_signed</span><span class="op">&lt;</span><span class="ident">TMerkelize</span><span class="op">&gt;</span>(
-		<span class="ident">signed</span>: <span class="ident">SignedCommitment</span><span class="op">&lt;</span><span class="ident">TBlockNumber</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_signed</span><span class="op">&lt;</span><span class="ident">TMerkelize</span>, <span class="ident">TSignature</span><span class="op">&gt;</span>(
+		<span class="ident">signed</span>: <span class="ident">SignedCommitment</span><span class="op">&lt;</span><span class="ident">TBlockNumber</span>, <span class="ident">TSignature</span><span class="op">&gt;</span>,
 		<span class="ident">merkelize</span>: <span class="ident">TMerkelize</span>,
-	) -&gt; (<span class="self">Self</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Signature</span><span class="op">&gt;</span><span class="op">&gt;</span>)
+	) -&gt; (<span class="self">Self</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TSignature</span><span class="op">&gt;</span><span class="op">&gt;</span>)
 	<span class="kw">where</span>
-		<span class="ident">TMerkelize</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;</span>[<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Signature</span><span class="op">&gt;</span>]) -&gt; <span class="ident">TMerkleRoot</span>,
+		<span class="ident">TMerkelize</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;</span>[<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TSignature</span><span class="op">&gt;</span>]) -&gt; <span class="ident">TMerkleRoot</span>,
 	{
 		<span class="kw">let</span> <span class="ident">SignedCommitment</span> { <span class="ident">commitment</span>, <span class="ident">signatures</span> } <span class="op">=</span> <span class="ident">signed</span>;
 		<span class="kw">let</span> <span class="ident">signed_by</span> <span class="op">=</span> <span class="ident">signatures</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">is_some</span>()).<span class="ident">collect</span>();
@@ -249,8 +244,9 @@
 	<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">crypto</span>, <span class="ident">known_payload_ids</span>, <span class="ident">Payload</span>, <span class="ident">KEY_TYPE</span>};
 
 	<span class="kw">type</span> <span class="ident">TestCommitment</span> <span class="op">=</span> <span class="ident">Commitment</span><span class="op">&lt;</span><span class="ident">u128</span><span class="op">&gt;</span>;
-	<span class="kw">type</span> <span class="ident">TestSignedCommitment</span> <span class="op">=</span> <span class="ident">SignedCommitment</span><span class="op">&lt;</span><span class="ident">u128</span><span class="op">&gt;</span>;
-	<span class="kw">type</span> <span class="ident">TestSignedCommitmentWitness</span> <span class="op">=</span> <span class="ident">SignedCommitmentWitness</span><span class="op">&lt;</span><span class="ident">u128</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Signature</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">TestSignedCommitment</span> <span class="op">=</span> <span class="ident">SignedCommitment</span><span class="op">&lt;</span><span class="ident">u128</span>, <span class="ident">crypto::Signature</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">TestSignedCommitmentWitness</span> <span class="op">=</span>
+		<span class="ident">SignedCommitmentWitness</span><span class="op">&lt;</span><span class="ident">u128</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">crypto::Signature</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 	<span class="comment">// The mock signatures are equivalent to the ones produced by the BEEFY keystore</span>
 	<span class="kw">fn</span> <span class="ident">mock_signatures</span>() -&gt; (<span class="ident">crypto::Signature</span>, <span class="ident">crypto::Signature</span>) {

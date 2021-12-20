@@ -137,6 +137,7 @@
 <span id="137">137</span>
 <span id="138">138</span>
 <span id="139">139</span>
+<span id="140">140</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021 Parity Technologies (UK) Ltd.</span>
@@ -175,7 +176,8 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">witness</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">commitment</span>::{
-	<span class="ident">known_payload_ids</span>, <span class="ident">BeefyPayloadId</span>, <span class="ident">Commitment</span>, <span class="ident">Payload</span>, <span class="ident">SignedCommitment</span>, <span class="ident">VersionedCommitment</span>,
+	<span class="ident">known_payload_ids</span>, <span class="ident">BeefyPayloadId</span>, <span class="ident">Commitment</span>, <span class="ident">Payload</span>, <span class="ident">SignedCommitment</span>,
+	<span class="ident">VersionedFinalityProof</span>,
 };
 
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Codec</span>, <span class="ident">Decode</span>, <span class="ident">Encode</span>};
