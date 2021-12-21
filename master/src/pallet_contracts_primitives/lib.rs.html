@@ -324,6 +324,14 @@
 <span id="324">324</span>
 <span id="325">325</span>
 <span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2021 Parity Technologies (UK) Ltd.</span>
@@ -477,11 +485,19 @@
 <span class="doccomment">/// The result of succesfully uploading a contract.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">RuntimeDebug</span>)]</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>))]</span>
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">serde</span>(<span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;camelCase&quot;</span>))]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(
+	<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>,
+	<span class="ident">serde</span>(
+		<span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;camelCase&quot;</span>,
+		<span class="ident">bound</span>(<span class="ident">serialize</span> <span class="op">=</span> <span class="string">&quot;CodeHash: Serialize, Balance: Copy + Into&lt;NumberOrHex&gt;&quot;</span>),
+		<span class="ident">bound</span>(<span class="ident">deserialize</span> <span class="op">=</span> <span class="string">&quot;CodeHash: Deserialize&lt;&#39;de&gt;, Balance: TryFrom&lt;NumberOrHex&gt;&quot;</span>)
+	)
+)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CodeUploadReturnValue</span><span class="op">&lt;</span><span class="ident">CodeHash</span>, <span class="ident">Balance</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// The key under which the new code is stored.</span>
 	<span class="kw">pub</span> <span class="ident">code_hash</span>: <span class="ident">CodeHash</span>,
 	<span class="doccomment">/// The deposit that was reserved at the caller. Is zero when the code already existed.</span>
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">serde</span>(<span class="ident">with</span> <span class="op">=</span> <span class="string">&quot;as_hex&quot;</span>))]</span>
 	<span class="kw">pub</span> <span class="ident">deposit</span>: <span class="ident">Balance</span>,
 }
 
