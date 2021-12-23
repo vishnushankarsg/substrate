@@ -871,6 +871,47 @@
 <span id="871">871</span>
 <span id="872">872</span>
 <span id="873">873</span>
+<span id="874">874</span>
+<span id="875">875</span>
+<span id="876">876</span>
+<span id="877">877</span>
+<span id="878">878</span>
+<span id="879">879</span>
+<span id="880">880</span>
+<span id="881">881</span>
+<span id="882">882</span>
+<span id="883">883</span>
+<span id="884">884</span>
+<span id="885">885</span>
+<span id="886">886</span>
+<span id="887">887</span>
+<span id="888">888</span>
+<span id="889">889</span>
+<span id="890">890</span>
+<span id="891">891</span>
+<span id="892">892</span>
+<span id="893">893</span>
+<span id="894">894</span>
+<span id="895">895</span>
+<span id="896">896</span>
+<span id="897">897</span>
+<span id="898">898</span>
+<span id="899">899</span>
+<span id="900">900</span>
+<span id="901">901</span>
+<span id="902">902</span>
+<span id="903">903</span>
+<span id="904">904</span>
+<span id="905">905</span>
+<span id="906">906</span>
+<span id="907">907</span>
+<span id="908">908</span>
+<span id="909">909</span>
+<span id="910">910</span>
+<span id="911">911</span>
+<span id="912">912</span>
+<span id="913">913</span>
+<span id="914">914</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2021 Parity Technologies (UK) Ltd.</span>
@@ -1009,6 +1050,55 @@
 <span class="doccomment">/// The current storage version.</span>
 <span class="kw">const</span> <span class="ident">STORAGE_VERSION</span>: <span class="ident">StorageVersion</span> <span class="op">=</span> <span class="ident">StorageVersion::new</span>(<span class="number">6</span>);
 
+<span class="doccomment">/// Provides the contract address generation method.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// See [`DefaultAddressGenerator`] for the default implementation.</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">AddressGenerator</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">frame_system::Config</span><span class="op">&gt;</span> {
+	<span class="doccomment">/// Generate the address of a contract based on the given instantiate parameters.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Note for implementors</span>
+	<span class="doccomment">/// 1. Make sure that there are no collisions, different inputs never lead to the same output.</span>
+	<span class="doccomment">/// 2. Make sure that the same inputs lead to the same output.</span>
+	<span class="doccomment">/// 3. Changing the implementation through a runtime upgrade without a proper storage migration</span>
+	<span class="doccomment">/// would lead to catastrophic misbehavior.</span>
+	<span class="kw">fn</span> <span class="ident">generate_address</span>(
+		<span class="ident">deploying_address</span>: <span class="kw-2">&amp;</span><span class="ident">T::AccountId</span>,
+		<span class="ident">code_hash</span>: <span class="kw-2">&amp;</span><span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+		<span class="ident">salt</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
+	) -&gt; <span class="ident">T::AccountId</span>;
+}
+
+<span class="doccomment">/// Default address generator.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// This is the default address generator used by contract instantiation. Its result</span>
+<span class="doccomment">/// is only dependend on its inputs. It can therefore be used to reliably predict the</span>
+<span class="doccomment">/// address of a contract. This is akin to the formular of eth&#39;s CREATE2 opcode. There</span>
+<span class="doccomment">/// is no CREATE equivalent because CREATE2 is strictly more powerful.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Formula: `hash(deploying_address ++ code_hash ++ salt)`</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">DefaultAddressGenerator</span>;
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">AddressGenerator</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DefaultAddressGenerator</span>
+<span class="kw">where</span>
+	<span class="ident">T</span>: <span class="ident">frame_system::Config</span>,
+	<span class="ident">T::AccountId</span>: <span class="ident">UncheckedFrom</span><span class="op">&lt;</span><span class="ident">T::Hash</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AsRef</span><span class="op">&lt;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span>,
+{
+	<span class="kw">fn</span> <span class="ident">generate_address</span>(
+		<span class="ident">deploying_address</span>: <span class="kw-2">&amp;</span><span class="ident">T::AccountId</span>,
+		<span class="ident">code_hash</span>: <span class="kw-2">&amp;</span><span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+		<span class="ident">salt</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
+	) -&gt; <span class="ident">T::AccountId</span> {
+		<span class="kw">let</span> <span class="ident">buf</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">deploying_address</span>
+			.<span class="ident">as_ref</span>()
+			.<span class="ident">iter</span>()
+			.<span class="ident">chain</span>(<span class="ident">code_hash</span>.<span class="ident">as_ref</span>())
+			.<span class="ident">chain</span>(<span class="ident">salt</span>)
+			.<span class="ident">cloned</span>()
+			.<span class="ident">collect</span>();
+		<span class="ident">UncheckedFrom::unchecked_from</span>(<span class="ident">T::Hashing::hash</span>(<span class="kw-2">&amp;</span><span class="ident">buf</span>))
+	}
+}
+
 <span class="attribute">#[<span class="ident">frame_support::pallet</span>]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">pallet</span> {
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
@@ -1100,6 +1190,9 @@
 		<span class="doccomment">/// Changing this value for an existing chain might need a storage migration.</span>
 		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
 		<span class="kw">type</span> <span class="ident">DepositPerItem</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+
+		<span class="doccomment">/// The address generator used to generate the addresses of contracts.</span>
+		<span class="kw">type</span> <span class="ident">AddressGenerator</span>: <span class="ident">AddressGenerator</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
 	}
 
 	<span class="attribute">#[<span class="ident">pallet::pallet</span>]</span>
@@ -1601,27 +1694,16 @@
 		<span class="prelude-val">Ok</span>(<span class="ident">maybe_value</span>)
 	}
 
-	<span class="doccomment">/// Determine the address of a contract,</span>
+	<span class="doccomment">/// Determine the address of a contract.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// This is the address generation function used by contract instantiation. Its result</span>
-	<span class="doccomment">/// is only dependend on its inputs. It can therefore be used to reliably predict the</span>
-	<span class="doccomment">/// address of a contract. This is akin to the formular of eth&#39;s CREATE2 opcode. There</span>
-	<span class="doccomment">/// is no CREATE equivalent because CREATE2 is strictly more powerful.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Formula: `hash(deploying_address ++ code_hash ++ salt)`</span>
+	<span class="doccomment">/// This is the address generation function used by contract instantiation. See</span>
+	<span class="doccomment">/// [`DefaultAddressGenerator`] for the default implementation.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">contract_address</span>(
 		<span class="ident">deploying_address</span>: <span class="kw-2">&amp;</span><span class="ident">T::AccountId</span>,
 		<span class="ident">code_hash</span>: <span class="kw-2">&amp;</span><span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 		<span class="ident">salt</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
 	) -&gt; <span class="ident">T::AccountId</span> {
-		<span class="kw">let</span> <span class="ident">buf</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">deploying_address</span>
-			.<span class="ident">as_ref</span>()
-			.<span class="ident">iter</span>()
-			.<span class="ident">chain</span>(<span class="ident">code_hash</span>.<span class="ident">as_ref</span>())
-			.<span class="ident">chain</span>(<span class="ident">salt</span>)
-			.<span class="ident">cloned</span>()
-			.<span class="ident">collect</span>();
-		<span class="ident">UncheckedFrom::unchecked_from</span>(<span class="ident">T::Hashing::hash</span>(<span class="kw-2">&amp;</span><span class="ident">buf</span>))
+		<span class="ident">T::AddressGenerator::generate_address</span>(<span class="ident">deploying_address</span>, <span class="ident">code_hash</span>, <span class="ident">salt</span>)
 	}
 
 	<span class="doccomment">/// Store code for benchmarks which does not check nor instrument the code.</span>

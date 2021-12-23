@@ -382,7 +382,7 @@
 	<span class="doccomment">/// This will be used as storage at genesis.</span>
 	<span class="kw">fn</span> <span class="ident">set_storage</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">storage</span>: <span class="ident">Storage</span>);
 	<span class="doccomment">/// Returns code substitutes that should be used for the on chain wasm.</span>
-	<span class="kw">fn</span> <span class="ident">code_substitutes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">std::collections::HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+	<span class="kw">fn</span> <span class="ident">code_substitutes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">std::collections::BTreeMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">impl</span> <span class="ident">std::fmt::Debug</span> <span class="kw">for</span> <span class="kw">dyn</span> <span class="ident">ChainSpec</span> {
