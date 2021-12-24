@@ -305,7 +305,7 @@
 		<span class="ident">builder</span>.<span class="ident">build</span>().<span class="kw">await</span><span class="question-mark">?</span>
 	};
 
-	<span class="kw">let</span> (<span class="ident">expected_spec_name</span>, <span class="ident">expected_spec_version</span>) <span class="op">=</span>
+	<span class="kw">let</span> (<span class="ident">expected_spec_name</span>, <span class="ident">expected_spec_version</span>, <span class="kw">_</span>) <span class="op">=</span>
 		<span class="ident">local_spec</span>::<span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">ExecDispatch</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">ext</span>, <span class="kw-2">&amp;</span><span class="ident">executor</span>);
 	<span class="ident">ensure_matching_spec</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(
 		<span class="ident">header_ws_uri</span>,

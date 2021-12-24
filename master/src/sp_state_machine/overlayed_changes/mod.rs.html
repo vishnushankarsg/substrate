@@ -979,6 +979,10 @@
 <span id="979">979</span>
 <span id="980">980</span>
 <span id="981">981</span>
+<span id="982">982</span>
+<span id="983">983</span>
+<span id="984">984</span>
+<span id="985">985</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2021 Parity Technologies (UK) Ltd.</span>
@@ -1008,7 +1012,7 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">offchain::OffchainOverlayedChanges</span>;
 <span class="kw">use</span> <span class="ident">sp_core</span>::{
 	<span class="ident">offchain::OffchainOverlayedChange</span>,
-	<span class="ident">storage</span>::{<span class="ident">well_known_keys::EXTRINSIC_INDEX</span>, <span class="ident">ChildInfo</span>},
+	<span class="ident">storage</span>::{<span class="ident">well_known_keys::EXTRINSIC_INDEX</span>, <span class="ident">ChildInfo</span>, <span class="ident">StateVersion</span>},
 };
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">sp_externalities</span>::{<span class="ident">Extension</span>, <span class="ident">Extensions</span>};
@@ -1483,11 +1487,12 @@
 		<span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
 		<span class="ident">parent_hash</span>: <span class="ident">H::Out</span>,
 		<span class="kw-2">mut</span> <span class="ident">cache</span>: <span class="ident">StorageTransactionCache</span><span class="op">&lt;</span><span class="ident">B::Transaction</span>, <span class="ident">H</span><span class="op">&gt;</span>,
+		<span class="ident">state_version</span>: <span class="ident">StateVersion</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">StorageChanges</span><span class="op">&lt;</span><span class="ident">B::Transaction</span>, <span class="ident">H</span><span class="op">&gt;</span>, <span class="ident">DefaultError</span><span class="op">&gt;</span>
 	<span class="kw">where</span>
 		<span class="ident">H::Out</span>: <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Encode</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="self">self</span>.<span class="ident">drain_storage_changes</span>(<span class="ident">backend</span>, <span class="ident">parent_hash</span>, <span class="kw-2">&amp;mut</span> <span class="ident">cache</span>)
+		<span class="self">self</span>.<span class="ident">drain_storage_changes</span>(<span class="ident">backend</span>, <span class="ident">parent_hash</span>, <span class="kw-2">&amp;mut</span> <span class="ident">cache</span>, <span class="ident">state_version</span>)
 	}
 
 	<span class="doccomment">/// Drain all changes into a [`StorageChanges`] instance. Leave empty overlay in place.</span>
@@ -1496,13 +1501,14 @@
 		<span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
 		<span class="ident">_parent_hash</span>: <span class="ident">H::Out</span>,
 		<span class="kw-2">mut</span> <span class="ident">cache</span>: <span class="kw-2">&amp;mut</span> <span class="ident">StorageTransactionCache</span><span class="op">&lt;</span><span class="ident">B::Transaction</span>, <span class="ident">H</span><span class="op">&gt;</span>,
+		<span class="ident">state_version</span>: <span class="ident">StateVersion</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">StorageChanges</span><span class="op">&lt;</span><span class="ident">B::Transaction</span>, <span class="ident">H</span><span class="op">&gt;</span>, <span class="ident">DefaultError</span><span class="op">&gt;</span>
 	<span class="kw">where</span>
 		<span class="ident">H::Out</span>: <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Encode</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
 		<span class="comment">// If the transaction does not exist, we generate it.</span>
 		<span class="kw">if</span> <span class="ident">cache</span>.<span class="ident">transaction</span>.<span class="ident">is_none</span>() {
-			<span class="self">self</span>.<span class="ident">storage_root</span>(<span class="ident">backend</span>, <span class="kw-2">&amp;mut</span> <span class="ident">cache</span>);
+			<span class="self">self</span>.<span class="ident">storage_root</span>(<span class="ident">backend</span>, <span class="kw-2">&amp;mut</span> <span class="ident">cache</span>, <span class="ident">state_version</span>);
 		}
 
 		<span class="kw">let</span> (<span class="ident">transaction</span>, <span class="ident">transaction_storage_root</span>) <span class="op">=</span> <span class="ident">cache</span>
@@ -1561,6 +1567,7 @@
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
 		<span class="ident">cache</span>: <span class="kw-2">&amp;mut</span> <span class="ident">StorageTransactionCache</span><span class="op">&lt;</span><span class="ident">B::Transaction</span>, <span class="ident">H</span><span class="op">&gt;</span>,
+		<span class="ident">state_version</span>: <span class="ident">StateVersion</span>,
 	) -&gt; <span class="ident">H::Out</span>
 	<span class="kw">where</span>
 		<span class="ident">H::Out</span>: <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Encode</span>,
@@ -1570,7 +1577,7 @@
 			(<span class="ident">info</span>, <span class="ident">changes</span>.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">k</span>, <span class="ident">v</span>)<span class="op">|</span> (<span class="kw-2">&amp;</span><span class="ident">k</span>[..], <span class="ident">v</span>.<span class="ident">value</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">v</span>[..]))))
 		});
 
-		<span class="kw">let</span> (<span class="ident">root</span>, <span class="ident">transaction</span>) <span class="op">=</span> <span class="ident">backend</span>.<span class="ident">full_storage_root</span>(<span class="ident">delta</span>, <span class="ident">child_delta</span>);
+		<span class="kw">let</span> (<span class="ident">root</span>, <span class="ident">transaction</span>) <span class="op">=</span> <span class="ident">backend</span>.<span class="ident">full_storage_root</span>(<span class="ident">delta</span>, <span class="ident">child_delta</span>, <span class="ident">state_version</span>);
 
 		<span class="ident">cache</span>.<span class="ident">transaction</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">transaction</span>);
 		<span class="ident">cache</span>.<span class="ident">transaction_storage_root</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">root</span>);
@@ -1811,6 +1818,7 @@
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">overlayed_storage_root_works</span>() {
+		<span class="kw">let</span> <span class="ident">state_version</span> <span class="op">=</span> <span class="ident">StateVersion::default</span>();
 		<span class="kw">let</span> <span class="ident">initial</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[
 			(<span class="string">b&quot;doe&quot;</span>.<span class="ident">to_vec</span>(), <span class="string">b&quot;reindeer&quot;</span>.<span class="ident">to_vec</span>()),
 			(<span class="string">b&quot;dog&quot;</span>.<span class="ident">to_vec</span>(), <span class="string">b&quot;puppyXXX&quot;</span>.<span class="ident">to_vec</span>()),
@@ -1819,7 +1827,7 @@
 		]
 		.<span class="ident">into_iter</span>()
 		.<span class="ident">collect</span>();
-		<span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">InMemoryBackend</span>::<span class="op">&lt;</span><span class="ident">Blake2Hasher</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="ident">initial</span>);
+		<span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">InMemoryBackend</span>::<span class="op">&lt;</span><span class="ident">Blake2Hasher</span><span class="op">&gt;</span><span class="ident">::from</span>((<span class="ident">initial</span>, <span class="ident">state_version</span>));
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">overlay</span> <span class="op">=</span> <span class="ident">OverlayedChanges::default</span>();
 
 		<span class="ident">overlay</span>.<span class="ident">start_transaction</span>();
@@ -1837,7 +1845,7 @@
 		<span class="kw">const</span> <span class="ident">ROOT</span>: [<span class="ident">u8</span>; <span class="number">32</span>] <span class="op">=</span>
 			<span class="macro">hex!</span>(<span class="string">&quot;39245109cef3758c2eed2ccba8d9b370a917850af3824bc8348d505df2c298fa&quot;</span>);
 
-		<span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span><span class="ident">ext</span>.<span class="ident">storage_root</span>()[..], <span class="kw-2">&amp;</span><span class="ident">ROOT</span>);
+		<span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span><span class="ident">ext</span>.<span class="ident">storage_root</span>(<span class="ident">state_version</span>)[..], <span class="kw-2">&amp;</span><span class="ident">ROOT</span>);
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>

@@ -1385,10 +1385,7 @@
 
 <span class="kw">use</span> <span class="ident">sp_application_crypto</span>::{<span class="ident">ecdsa</span>, <span class="ident">ed25519</span>, <span class="ident">sr25519</span>, <span class="ident">RuntimeAppPublic</span>};
 <span class="kw">use</span> <span class="ident">sp_core</span>::{<span class="ident">offchain::KeyTypeId</span>, <span class="ident">OpaqueMetadata</span>, <span class="ident">RuntimeDebug</span>};
-<span class="kw">use</span> <span class="ident">sp_trie</span>::{
-	<span class="ident">trie_types</span>::{<span class="ident">TrieDB</span>, <span class="ident">TrieDBMut</span>},
-	<span class="ident">PrefixedMemoryDB</span>, <span class="ident">StorageProof</span>,
-};
+<span class="kw">use</span> <span class="ident">sp_trie</span>::{<span class="ident">trie_types::TrieDB</span>, <span class="ident">PrefixedMemoryDB</span>, <span class="ident">StorageProof</span>};
 <span class="kw">use</span> <span class="ident">trie_db</span>::{<span class="ident">Trie</span>, <span class="ident">TrieMut</span>};
 
 <span class="kw">use</span> <span class="ident">cfg_if::cfg_if</span>;
@@ -1418,6 +1415,8 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">test</span>))]</span>
 <span class="kw">use</span> <span class="ident">sp_version::NativeVersion</span>;
 <span class="kw">use</span> <span class="ident">sp_version::RuntimeVersion</span>;
+<span class="comment">// bench on latest state.</span>
+<span class="kw">use</span> <span class="ident">sp_trie::trie_types::TrieDBMutV1</span> <span class="kw">as</span> <span class="ident">TrieDBMut</span>;
 
 <span class="comment">// Ensure Babe and Aura use the same crypto to simplify things a bit.</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_consensus_babe</span>::{<span class="ident">AllowedSlots</span>, <span class="ident">AuthorityId</span>, <span class="ident">Slot</span>};
@@ -1461,6 +1460,7 @@
 	<span class="ident">impl_version</span>: <span class="number">2</span>,
 	<span class="ident">apis</span>: <span class="ident">RUNTIME_API_VERSIONS</span>,
 	<span class="ident">transaction_version</span>: <span class="number">1</span>,
+	<span class="ident">state_version</span>: <span class="number">1</span>,
 };
 
 <span class="kw">fn</span> <span class="ident">version</span>() -&gt; <span class="ident">RuntimeVersion</span> {
@@ -2624,9 +2624,9 @@
 		<span class="prelude-val">None</span>,
 	);
 	<span class="macro">assert!</span>(<span class="ident">ext</span>.<span class="ident">storage</span>(<span class="string">b&quot;value3&quot;</span>).<span class="ident">is_some</span>());
-	<span class="macro">assert!</span>(<span class="ident">ext</span>.<span class="ident">storage_root</span>().<span class="ident">as_slice</span>() <span class="op">==</span> <span class="kw-2">&amp;</span><span class="ident">root</span>[..]);
+	<span class="macro">assert!</span>(<span class="ident">ext</span>.<span class="ident">storage_root</span>(<span class="ident">Default::default</span>()).<span class="ident">as_slice</span>() <span class="op">==</span> <span class="kw-2">&amp;</span><span class="ident">root</span>[..]);
 	<span class="ident">ext</span>.<span class="ident">place_storage</span>(<span class="macro">vec!</span>[<span class="number">0</span>], <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="number">1</span>]));
-	<span class="macro">assert!</span>(<span class="ident">ext</span>.<span class="ident">storage_root</span>().<span class="ident">as_slice</span>() <span class="op">!</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">root</span>[..]);
+	<span class="macro">assert!</span>(<span class="ident">ext</span>.<span class="ident">storage_root</span>(<span class="ident">Default::default</span>()).<span class="ident">as_slice</span>() <span class="op">!</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">root</span>[..]);
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
@@ -2690,7 +2690,7 @@
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">root</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::Hash::default</span>();
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mdb</span> <span class="op">=</span> <span class="ident">sp_trie::MemoryDB</span>::<span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Hashing</span><span class="op">&gt;</span><span class="ident">::default</span>();
 		{
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">trie</span> <span class="op">=</span> <span class="ident">sp_trie::trie_types::TrieDBMut::new</span>(<span class="kw-2">&amp;mut</span> <span class="ident">mdb</span>, <span class="kw-2">&amp;mut</span> <span class="ident">root</span>);
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">trie</span> <span class="op">=</span> <span class="ident">sp_trie::trie_types::TrieDBMutV1::new</span>(<span class="kw-2">&amp;mut</span> <span class="ident">mdb</span>, <span class="kw-2">&amp;mut</span> <span class="ident">root</span>);
 			<span class="ident">trie</span>.<span class="ident">insert</span>(<span class="string">b&quot;value3&quot;</span>, <span class="kw-2">&amp;</span>[<span class="number">142</span>]).<span class="ident">expect</span>(<span class="string">&quot;insert failed&quot;</span>);
 			<span class="ident">trie</span>.<span class="ident">insert</span>(<span class="string">b&quot;value4&quot;</span>, <span class="kw-2">&amp;</span>[<span class="number">124</span>]).<span class="ident">expect</span>(<span class="string">&quot;insert failed&quot;</span>);
 		};

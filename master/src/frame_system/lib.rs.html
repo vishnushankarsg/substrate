@@ -1678,6 +1678,13 @@
 <span id="1678">1678</span>
 <span id="1679">1679</span>
 <span id="1680">1680</span>
+<span id="1681">1681</span>
+<span id="1682">1682</span>
+<span id="1683">1683</span>
+<span id="1684">1684</span>
+<span id="1685">1685</span>
+<span id="1686">1686</span>
+<span id="1687">1687</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2021 Parity Technologies (UK) Ltd.</span>
@@ -1807,13 +1814,19 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">weights::WeightInfo</span>;
 
 <span class="doccomment">/// Compute the trie root of a list of extrinsics.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// The merkle proof is using the same trie as runtime state with</span>
+<span class="doccomment">/// `state_version` 0.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">extrinsics_root</span><span class="op">&lt;</span><span class="ident">H</span>: <span class="ident">Hash</span>, <span class="ident">E</span>: <span class="ident">codec::Encode</span><span class="op">&gt;</span>(<span class="ident">extrinsics</span>: <span class="kw-2">&amp;</span>[<span class="ident">E</span>]) -&gt; <span class="ident">H::Output</span> {
 	<span class="ident">extrinsics_data_root</span>::<span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span>(<span class="ident">extrinsics</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="ident">codec::Encode::encode</span>).<span class="ident">collect</span>())
 }
 
 <span class="doccomment">/// Compute the trie root of a list of extrinsics.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// The merkle proof is using the same trie as runtime state with</span>
+<span class="doccomment">/// `state_version` 0.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">extrinsics_data_root</span><span class="op">&lt;</span><span class="ident">H</span>: <span class="ident">Hash</span><span class="op">&gt;</span>(<span class="ident">xts</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="ident">H::Output</span> {
-	<span class="ident">H::ordered_trie_root</span>(<span class="ident">xts</span>)
+	<span class="ident">H::ordered_trie_root</span>(<span class="ident">xts</span>, <span class="ident">sp_core::storage::StateVersion::V0</span>)
 }
 
 <span class="doccomment">/// An object to track the currently used extrinsic weight in a block.</span>
@@ -3035,7 +3048,8 @@
 			<span class="op">&lt;</span><span class="ident">BlockHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::remove</span>(<span class="ident">to_remove</span>);
 		}
 
-		<span class="kw">let</span> <span class="ident">storage_root</span> <span class="op">=</span> <span class="ident">T::Hash::decode</span>(<span class="kw-2">&amp;mut</span> <span class="kw-2">&amp;</span><span class="ident">sp_io::storage::root</span>()[..])
+		<span class="kw">let</span> <span class="ident">version</span> <span class="op">=</span> <span class="ident">T::Version::get</span>().<span class="ident">state_version</span>();
+		<span class="kw">let</span> <span class="ident">storage_root</span> <span class="op">=</span> <span class="ident">T::Hash::decode</span>(<span class="kw-2">&amp;mut</span> <span class="kw-2">&amp;</span><span class="ident">sp_io::storage::root</span>(<span class="ident">version</span>)[..])
 			.<span class="ident">expect</span>(<span class="string">&quot;Node is configured to use the same hash; qed&quot;</span>);
 
 		<span class="op">&lt;</span><span class="ident">T::Header</span> <span class="kw">as</span> <span class="ident">traits::Header</span><span class="op">&gt;</span><span class="ident">::new</span>(

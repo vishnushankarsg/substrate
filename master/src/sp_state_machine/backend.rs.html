@@ -341,6 +341,14 @@
 <span id="341">341</span>
 <span id="342">342</span>
 <span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2021 Parity Technologies (UK) Ltd.</span>
@@ -366,7 +374,7 @@
 };
 <span class="kw">use</span> <span class="ident">codec::Encode</span>;
 <span class="kw">use</span> <span class="ident">hash_db::Hasher</span>;
-<span class="kw">use</span> <span class="ident">sp_core::storage</span>::{<span class="ident">ChildInfo</span>, <span class="ident">TrackedStorageKey</span>};
+<span class="kw">use</span> <span class="ident">sp_core::storage</span>::{<span class="ident">ChildInfo</span>, <span class="ident">StateVersion</span>, <span class="ident">TrackedStorageKey</span>};
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">sp_core::traits::RuntimeCode</span>;
 <span class="kw">use</span> <span class="ident">sp_std::vec::Vec</span>;
@@ -483,6 +491,7 @@
 	<span class="kw">fn</span> <span class="ident">storage_root</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">delta</span>: <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>], <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>]<span class="op">&gt;</span>)<span class="op">&gt;</span>,
+		<span class="ident">state_version</span>: <span class="ident">StateVersion</span>,
 	) -&gt; (<span class="ident">H::Out</span>, <span class="ident"><span class="self">Self</span>::Transaction</span>)
 	<span class="kw">where</span>
 		<span class="ident">H::Out</span>: <span class="ident">Ord</span>;
@@ -494,6 +503,7 @@
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">child_info</span>: <span class="kw-2">&amp;</span><span class="ident">ChildInfo</span>,
 		<span class="ident">delta</span>: <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>], <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>]<span class="op">&gt;</span>)<span class="op">&gt;</span>,
+		<span class="ident">state_version</span>: <span class="ident">StateVersion</span>,
 	) -&gt; (<span class="ident">H::Out</span>, <span class="ident">bool</span>, <span class="ident"><span class="self">Self</span>::Transaction</span>)
 	<span class="kw">where</span>
 		<span class="ident">H::Out</span>: <span class="ident">Ord</span>;
@@ -519,7 +529,6 @@
 	<span class="kw">fn</span> <span class="ident">as_trie_backend</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">TrieBackend</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::TrieBackendStorage</span>, <span class="ident">H</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="prelude-val">None</span>
 	}
-
 	<span class="doccomment">/// Calculate the storage root, with given delta over what is already stored</span>
 	<span class="doccomment">/// in the backend, and produce a &quot;transaction&quot; that can be used to commit.</span>
 	<span class="doccomment">/// Does include child storage updates.</span>
@@ -529,6 +538,7 @@
 		<span class="ident">child_deltas</span>: <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span>
 			<span class="ident">Item</span> <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ChildInfo</span>, <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>], <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>]<span class="op">&gt;</span>)<span class="op">&gt;</span>),
 		<span class="op">&gt;</span>,
+		<span class="ident">state_version</span>: <span class="ident">StateVersion</span>,
 	) -&gt; (<span class="ident">H::Out</span>, <span class="ident"><span class="self">Self</span>::Transaction</span>)
 	<span class="kw">where</span>
 		<span class="ident">H::Out</span>: <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Encode</span>,
@@ -537,7 +547,8 @@
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">child_roots</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Default::default</span>();
 		<span class="comment">// child first</span>
 		<span class="kw">for</span> (<span class="ident">child_info</span>, <span class="ident">child_delta</span>) <span class="kw">in</span> <span class="ident">child_deltas</span> {
-			<span class="kw">let</span> (<span class="ident">child_root</span>, <span class="ident">empty</span>, <span class="ident">child_txs</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">child_storage_root</span>(<span class="kw-2">&amp;</span><span class="ident">child_info</span>, <span class="ident">child_delta</span>);
+			<span class="kw">let</span> (<span class="ident">child_root</span>, <span class="ident">empty</span>, <span class="ident">child_txs</span>) <span class="op">=</span>
+				<span class="self">self</span>.<span class="ident">child_storage_root</span>(<span class="kw-2">&amp;</span><span class="ident">child_info</span>, <span class="ident">child_delta</span>, <span class="ident">state_version</span>);
 			<span class="kw">let</span> <span class="ident">prefixed_storage_key</span> <span class="op">=</span> <span class="ident">child_info</span>.<span class="ident">prefixed_storage_key</span>();
 			<span class="ident">txs</span>.<span class="ident">consolidate</span>(<span class="ident">child_txs</span>);
 			<span class="kw">if</span> <span class="ident">empty</span> {
@@ -548,8 +559,9 @@
 		}
 		<span class="kw">let</span> (<span class="ident">root</span>, <span class="ident">parent_txs</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">storage_root</span>(
 			<span class="ident">delta</span>
-				.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">k</span>, <span class="ident">v</span>)<span class="op">|</span> (<span class="ident">k</span>, <span class="ident">v</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">v</span>[..])))
+				.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">k</span>, <span class="ident">v</span>)<span class="op">|</span> (<span class="kw-2">&amp;</span><span class="ident">k</span>[..], <span class="ident">v</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">v</span>[..])))
 				.<span class="ident">chain</span>(<span class="ident">child_roots</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">k</span>, <span class="ident">v</span>)<span class="op">|</span> (<span class="kw-2">&amp;</span><span class="ident">k</span>[..], <span class="ident">v</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">v</span>[..])))),
+			<span class="ident">state_version</span>,
 		);
 		<span class="ident">txs</span>.<span class="ident">consolidate</span>(<span class="ident">parent_txs</span>);
 		(<span class="ident">root</span>, <span class="ident">txs</span>)
@@ -629,7 +641,11 @@
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">H</span>: <span class="ident">Hasher</span>, <span class="ident">KF</span>: <span class="ident">sp_trie::KeyFunction</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">Consolidate</span> <span class="kw">for</span> <span class="ident">sp_trie::GenericMemoryDB</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">KF</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">KF</span><span class="op">&gt;</span> <span class="ident">Consolidate</span> <span class="kw">for</span> <span class="ident">sp_trie::GenericMemoryDB</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">KF</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+	<span class="ident">H</span>: <span class="ident">Hasher</span>,
+	<span class="ident">KF</span>: <span class="ident">sp_trie::KeyFunction</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span>,
+{
 	<span class="kw">fn</span> <span class="ident">consolidate</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="self">Self</span>) {
 		<span class="ident">sp_trie::GenericMemoryDB::consolidate</span>(<span class="self">self</span>, <span class="ident">other</span>)
 	}

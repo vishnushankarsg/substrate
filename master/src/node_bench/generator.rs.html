@@ -64,7 +64,6 @@
 <span id="64">64</span>
 <span id="65">65</span>
 <span id="66">66</span>
-<span id="67">67</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2021 Parity Technologies (UK) Ltd.</span>
@@ -87,7 +86,7 @@
 
 <span class="kw">use</span> <span class="ident">kvdb::KeyValueDB</span>;
 <span class="kw">use</span> <span class="ident">node_primitives::Hash</span>;
-<span class="kw">use</span> <span class="ident">sp_trie</span>::{<span class="ident">trie_types::TrieDBMut</span>, <span class="ident">TrieMut</span>};
+<span class="kw">use</span> <span class="ident">sp_trie</span>::{<span class="ident">trie_types::TrieDBMutV1</span>, <span class="ident">TrieMut</span>};
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::simple_trie::SimpleTrie</span>;
 
@@ -110,8 +109,7 @@
 		);
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">trie</span> <span class="op">=</span> <span class="ident">SimpleTrie</span> { <span class="ident">db</span>, <span class="ident">overlay</span>: <span class="kw-2">&amp;mut</span> <span class="ident">overlay</span> };
 		{
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">trie_db</span> <span class="op">=</span> <span class="ident">TrieDBMut::new</span>(<span class="kw-2">&amp;mut</span> <span class="ident">trie</span>, <span class="kw-2">&amp;mut</span> <span class="ident">root</span>);
-
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">trie_db</span> <span class="op">=</span> <span class="ident">TrieDBMutV1</span>::<span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::simple_trie::Hasher</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="kw-2">&amp;mut</span> <span class="ident">trie</span>, <span class="kw-2">&amp;mut</span> <span class="ident">root</span>);
 			<span class="kw">for</span> (<span class="ident">key</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">key_values</span> {
 				<span class="ident">trie_db</span>.<span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>, <span class="kw-2">&amp;</span><span class="ident">value</span>).<span class="ident">expect</span>(<span class="string">&quot;trie insertion failed&quot;</span>);
 			}

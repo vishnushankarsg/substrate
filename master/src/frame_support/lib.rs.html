@@ -2500,7 +2500,7 @@
 <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_io</span>::{<span class="self">self</span>, <span class="ident">storage::root</span> <span class="kw">as</span> <span class="ident">storage_root</span>};
 <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_runtime::RuntimeDebug</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_runtime</span>::{<span class="ident">RuntimeDebug</span>, <span class="ident">StateVersion</span>};
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_state_machine::BasicExternalities</span>;
@@ -3205,9 +3205,9 @@
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">expr</span>,
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">y</span>:<span class="ident">expr</span> $(,)<span class="question-mark">?</span>
 	) =&gt; {
-		<span class="kw">let</span> <span class="ident">h</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::storage_root</span>();
+		<span class="kw">let</span> <span class="ident">h</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::storage_root</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::StateVersion::V1</span>);
 		<span class="macro-nonterminal">$</span><span class="macro">crate::assert_err!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">y</span>);
-		<span class="macro">assert_eq!</span>(<span class="ident">h</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::storage_root</span>());
+		<span class="macro">assert_eq!</span>(<span class="ident">h</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::storage_root</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::StateVersion::V1</span>));
 	};
 }
 
@@ -3220,9 +3220,9 @@
 	(
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">expr</span>
 	) =&gt; {
-		<span class="kw">let</span> <span class="ident">h</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::storage_root</span>();
+		<span class="kw">let</span> <span class="ident">h</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::storage_root</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::StateVersion::V1</span>);
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>;
-		<span class="macro">assert_eq!</span>(<span class="ident">h</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::storage_root</span>());
+		<span class="macro">assert_eq!</span>(<span class="ident">h</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::storage_root</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::StateVersion::V1</span>));
 	};
 }
 

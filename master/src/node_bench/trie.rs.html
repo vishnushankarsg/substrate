@@ -394,7 +394,7 @@
 <span class="kw">use</span> <span class="ident">lazy_static::lazy_static</span>;
 <span class="kw">use</span> <span class="ident">rand::Rng</span>;
 <span class="kw">use</span> <span class="ident">sp_state_machine::Backend</span> <span class="kw">as</span> <span class="kw">_</span>;
-<span class="kw">use</span> <span class="ident">sp_trie</span>::{<span class="ident">trie_types::TrieDBMut</span>, <span class="ident">TrieMut</span> <span class="kw">as</span> <span class="kw">_</span>};
+<span class="kw">use</span> <span class="ident">sp_trie</span>::{<span class="ident">trie_types::TrieDBMutV1</span>, <span class="ident">TrieMut</span> <span class="kw">as</span> <span class="kw">_</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">borrow::Cow</span>, <span class="ident">collections::HashMap</span>, <span class="ident">sync::Arc</span>};
 
 <span class="kw">use</span> <span class="ident">node_primitives::Hash</span>;
@@ -657,8 +657,8 @@
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">overlay</span> <span class="op">=</span> <span class="ident">HashMap::new</span>();
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">trie</span> <span class="op">=</span> <span class="ident">SimpleTrie</span> { <span class="ident">db</span>: <span class="ident">kvdb</span>.<span class="ident">clone</span>(), <span class="ident">overlay</span>: <span class="kw-2">&amp;mut</span> <span class="ident">overlay</span> };
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">trie_db_mut</span> <span class="op">=</span>
-			<span class="ident">TrieDBMut::from_existing</span>(<span class="kw-2">&amp;mut</span> <span class="ident">trie</span>, <span class="kw-2">&amp;mut</span> <span class="ident">new_root</span>).<span class="ident">expect</span>(<span class="string">&quot;Failed to create TrieDBMut&quot;</span>);
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">trie_db_mut</span> <span class="op">=</span> <span class="ident">TrieDBMutV1::from_existing</span>(<span class="kw-2">&amp;mut</span> <span class="ident">trie</span>, <span class="kw-2">&amp;mut</span> <span class="ident">new_root</span>)
+			.<span class="ident">expect</span>(<span class="string">&quot;Failed to create TrieDBMut&quot;</span>);
 
 		<span class="kw">for</span> (<span class="ident">warmup_key</span>, <span class="ident">warmup_value</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">warmup_keys</span>.<span class="ident">iter</span>() {
 			<span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">trie_db_mut</span>

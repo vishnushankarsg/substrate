@@ -706,13 +706,13 @@
 		<span class="ident">sc_consensus::LongestChain</span><span class="op">&lt;</span><span class="ident">Backend</span>, <span class="ident">Block</span><span class="op">&gt;</span>,
 	)
 	<span class="kw">where</span>
-		<span class="ident">ExecutorDispatch</span>: <span class="ident">sc_client_api::CallExecutor</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="ident">ExecutorDispatch</span>:
+			<span class="ident">sc_client_api::CallExecutor</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">sc_executor::RuntimeVersionOf</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 		<span class="ident">Backend</span>: <span class="ident">sc_client_api::backend::Backend</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
 		<span class="op">&lt;</span><span class="ident">Backend</span> <span class="kw">as</span> <span class="ident">sc_client_api::backend::Backend</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::OffchainStorage</span>: <span class="lifetime">&#39;static</span>,
 	{
 		<span class="kw">let</span> <span class="ident">storage</span> <span class="op">=</span> {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">storage</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">genesis_init</span>.<span class="ident">genesis_storage</span>();
-
 			<span class="comment">// Add some child storage keys.</span>
 			<span class="kw">for</span> (<span class="ident">key</span>, <span class="ident">child_content</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">child_storage_extension</span> {
 				<span class="ident">storage</span>.<span class="ident">children_default</span>.<span class="ident">insert</span>(

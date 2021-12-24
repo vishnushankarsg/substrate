@@ -1467,6 +1467,21 @@
 <span id="1467">1467</span>
 <span id="1468">1468</span>
 <span id="1469">1469</span>
+<span id="1470">1470</span>
+<span id="1471">1471</span>
+<span id="1472">1472</span>
+<span id="1473">1473</span>
+<span id="1474">1474</span>
+<span id="1475">1475</span>
+<span id="1476">1476</span>
+<span id="1477">1477</span>
+<span id="1478">1478</span>
+<span id="1479">1479</span>
+<span id="1480">1480</span>
+<span id="1481">1481</span>
+<span id="1482">1482</span>
+<span id="1483">1483</span>
+<span id="1484">1484</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2021 Parity Technologies (UK) Ltd.</span>
@@ -2140,7 +2155,7 @@
 
 			<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="number">0</span>)]</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">calculate_storage_root</span>(<span class="ident">_origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) -&gt; <span class="ident">DispatchResult</span> {
-				<span class="kw">let</span> <span class="ident">root</span> <span class="op">=</span> <span class="ident">sp_io::storage::root</span>();
+				<span class="kw">let</span> <span class="ident">root</span> <span class="op">=</span> <span class="ident">sp_io::storage::root</span>(<span class="ident">sp_runtime::StateVersion::V1</span>);
 				<span class="ident">sp_io::storage::set</span>(<span class="string">&quot;storage_root&quot;</span>.<span class="ident">as_bytes</span>(), <span class="kw-2">&amp;</span><span class="ident">root</span>);
 				<span class="prelude-val">Ok</span>(())
 			}
@@ -2366,17 +2381,32 @@
 		<span class="ident">t</span>.<span class="ident">into</span>()
 	}
 
+	<span class="kw">fn</span> <span class="ident">new_test_ext_v0</span>(<span class="ident">balance_factor</span>: <span class="ident">Balance</span>) -&gt; <span class="ident">sp_io::TestExternalities</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">frame_system::GenesisConfig::default</span>().<span class="ident">build_storage</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>().<span class="ident">unwrap</span>();
+		<span class="ident">pallet_balances::GenesisConfig</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span> { <span class="ident">balances</span>: <span class="macro">vec!</span>[(<span class="number">1</span>, <span class="number">111</span> <span class="op">*</span> <span class="ident">balance_factor</span>)] }
+			.<span class="ident">assimilate_storage</span>(<span class="kw-2">&amp;mut</span> <span class="ident">t</span>)
+			.<span class="ident">unwrap</span>();
+		(<span class="ident">t</span>, <span class="ident">sp_runtime::StateVersion::V0</span>).<span class="ident">into</span>()
+	}
+
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">block_import_works</span>() {
-		<span class="ident">new_test_ext</span>(<span class="number">1</span>).<span class="ident">execute_with</span>(<span class="op">|</span><span class="op">|</span> {
+		<span class="ident">block_import_works_inner</span>(
+			<span class="ident">new_test_ext_v0</span>(<span class="number">1</span>),
+			<span class="macro">hex!</span>(<span class="string">&quot;1039e1a4bd0cf5deefe65f313577e70169c41c7773d6acf31ca8d671397559f5&quot;</span>).<span class="ident">into</span>(),
+		);
+		<span class="ident">block_import_works_inner</span>(
+			<span class="ident">new_test_ext</span>(<span class="number">1</span>),
+			<span class="macro">hex!</span>(<span class="string">&quot;75e7d8f360d375bbe91bcf8019c01ab6362448b4a89e3b329717eb9d910340e5&quot;</span>).<span class="ident">into</span>(),
+		);
+	}
+	<span class="kw">fn</span> <span class="ident">block_import_works_inner</span>(<span class="kw-2">mut</span> <span class="ident">ext</span>: <span class="ident">sp_io::TestExternalities</span>, <span class="ident">state_root</span>: <span class="ident">H256</span>) {
+		<span class="ident">ext</span>.<span class="ident">execute_with</span>(<span class="op">|</span><span class="op">|</span> {
 			<span class="ident">Executive::execute_block</span>(<span class="ident">Block</span> {
 				<span class="ident">header</span>: <span class="ident">Header</span> {
 					<span class="ident">parent_hash</span>: [<span class="number">69u8</span>; <span class="number">32</span>].<span class="ident">into</span>(),
 					<span class="ident">number</span>: <span class="number">1</span>,
-					<span class="ident">state_root</span>: <span class="macro">hex!</span>(
-						<span class="string">&quot;1039e1a4bd0cf5deefe65f313577e70169c41c7773d6acf31ca8d671397559f5&quot;</span>
-					)
-					.<span class="ident">into</span>(),
+					<span class="ident">state_root</span>,
 					<span class="ident">extrinsics_root</span>: <span class="macro">hex!</span>(
 						<span class="string">&quot;03170a2e7597b7b7e3d84c05391d139a62b157e78786d8c082f29dcf4c111314&quot;</span>
 					)
@@ -2417,7 +2447,7 @@
 					<span class="ident">parent_hash</span>: [<span class="number">69u8</span>; <span class="number">32</span>].<span class="ident">into</span>(),
 					<span class="ident">number</span>: <span class="number">1</span>,
 					<span class="ident">state_root</span>: <span class="macro">hex!</span>(
-						<span class="string">&quot;49cd58a254ccf6abc4a023d9a22dcfc421e385527a250faec69f8ad0d8ed3e48&quot;</span>
+						<span class="string">&quot;75e7d8f360d375bbe91bcf8019c01ab6362448b4a89e3b329717eb9d910340e5&quot;</span>
 					)
 					.<span class="ident">into</span>(),
 					<span class="ident">extrinsics_root</span>: [<span class="number">0u8</span>; <span class="number">32</span>].<span class="ident">into</span>(),

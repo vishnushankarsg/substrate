@@ -517,6 +517,7 @@
 <span id="517">517</span>
 <span id="518">518</span>
 <span id="519">519</span>
+<span id="520">520</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>), <span class="ident">no_std</span>)]</span>
 
 <span class="comment">// Make the WASM binary available.</span>
@@ -699,6 +700,7 @@
 			   <span class="string">b&quot;one&quot;</span>[..].<span class="ident">into</span>(),
 			   <span class="string">b&quot;two&quot;</span>[..].<span class="ident">into</span>(),
 		   ],
+				<span class="ident">sp_core::storage::StateVersion::V1</span>,
 	   ).<span class="ident">as_ref</span>().<span class="ident">to_vec</span>()
    }
 

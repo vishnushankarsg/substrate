@@ -1803,6 +1803,7 @@
 <span id="1803">1803</span>
 <span id="1804">1804</span>
 <span id="1805">1805</span>
+<span id="1806">1806</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2021 Parity Technologies (UK) Ltd.</span>
@@ -1847,8 +1848,9 @@
 <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_runtime::traits::Zero</span>;
 <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="self">self</span>, <span class="ident">boxed::Box</span>, <span class="ident">prelude::Vec</span>, <span class="ident">str</span>, <span class="ident">vec</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_runtime::StateVersion</span>;
 <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="self">self</span>, <span class="ident">boxed::Box</span>, <span class="ident">prelude::Vec</span>, <span class="ident">str</span>, <span class="ident">vec</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_storage::TrackedStorageKey</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">utils</span>::<span class="kw-2">*</span>;
 
@@ -2884,7 +2886,7 @@
 
 					<span class="comment">// Time the storage root recalculation.</span>
 					<span class="kw">let</span> <span class="ident">start_storage_root</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::benchmarking::current_time</span>();
-					<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::storage_root</span>();
+					<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::storage_root</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::StateVersion::V1</span>);
 					<span class="kw">let</span> <span class="ident">finish_storage_root</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::benchmarking::current_time</span>();
 					<span class="kw">let</span> <span class="ident">elapsed_storage_root</span> <span class="op">=</span> <span class="ident">finish_storage_root</span> <span class="op">-</span> <span class="ident">start_storage_root</span>;
 

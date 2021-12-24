@@ -3168,6 +3168,8 @@
 <span id="3168">3168</span>
 <span id="3169">3169</span>
 <span id="3170">3170</span>
+<span id="3171">3171</span>
+<span id="3172">3172</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2021 Parity Technologies (UK) Ltd.</span>
@@ -5709,8 +5711,10 @@
 		}
 		<span class="kw">if</span> <span class="kw">let</span> (<span class="prelude-val">Some</span>(<span class="ident">header</span>), <span class="prelude-val">Some</span>(<span class="ident">body</span>)) <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="ident">b</span>.<span class="ident">header</span>, <span class="kw-2">&amp;</span><span class="ident">b</span>.<span class="ident">body</span>) {
 			<span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">header</span>.<span class="ident">extrinsics_root</span>();
-			<span class="kw">let</span> <span class="ident">got</span> <span class="op">=</span>
-				<span class="ident">HashFor</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::ordered_trie_root</span>(<span class="ident">body</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="ident">Encode::encode</span>).<span class="ident">collect</span>());
+			<span class="kw">let</span> <span class="ident">got</span> <span class="op">=</span> <span class="ident">HashFor</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::ordered_trie_root</span>(
+				<span class="ident">body</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="ident">Encode::encode</span>).<span class="ident">collect</span>(),
+				<span class="ident">sp_runtime::StateVersion::V0</span>,
+			);
 			<span class="kw">if</span> <span class="ident">expected</span> <span class="op">!</span><span class="op">=</span> <span class="ident">got</span> {
 				<span class="macro">debug!</span>(
 					<span class="ident">target</span>:<span class="string">&quot;sync&quot;</span>,

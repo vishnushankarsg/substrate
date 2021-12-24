@@ -389,7 +389,7 @@
 	<span class="kw">use</span> <span class="ident">sp_trie::TrieMut</span>;
 
 	<span class="kw">type</span> <span class="ident">Hasher</span> <span class="op">=</span> <span class="ident">sp_core::Blake2Hasher</span>;
-	<span class="kw">type</span> <span class="ident">TrieLayout</span> <span class="op">=</span> <span class="ident">sp_trie::Layout</span><span class="op">&lt;</span><span class="ident">Hasher</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">TrieLayout</span> <span class="op">=</span> <span class="ident">sp_trie::LayoutV1</span><span class="op">&lt;</span><span class="ident">Hasher</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Create a new inherent data provider instance for a given parent block hash.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_data_provider</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">C</span><span class="op">&gt;</span>(

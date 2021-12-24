@@ -195,6 +195,10 @@
 <span id="195">195</span>
 <span id="196">196</span>
 <span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2021 Parity Technologies (UK) Ltd.</span>
@@ -216,7 +220,7 @@
 <span class="doccomment">//! Async externalities.</span>
 
 <span class="kw">use</span> <span class="ident">sp_core</span>::{
-	<span class="ident">storage</span>::{<span class="ident">ChildInfo</span>, <span class="ident">TrackedStorageKey</span>},
+	<span class="ident">storage</span>::{<span class="ident">ChildInfo</span>, <span class="ident">StateVersion</span>, <span class="ident">TrackedStorageKey</span>},
 	<span class="ident">traits</span>::{<span class="ident">Externalities</span>, <span class="ident">RuntimeSpawn</span>, <span class="ident">RuntimeSpawnExt</span>, <span class="ident">SpawnNamed</span>, <span class="ident">TaskExecutorExt</span>},
 };
 <span class="kw">use</span> <span class="ident">sp_externalities</span>::{<span class="ident">Extensions</span>, <span class="ident">ExternalitiesExt</span> <span class="kw">as</span> <span class="kw">_</span>};
@@ -323,11 +327,15 @@
 		<span class="macro">panic!</span>(<span class="string">&quot;`storage_append`: should not be used in async externalities!&quot;</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">storage_root</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">storage_root</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">_state_version</span>: <span class="ident">StateVersion</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {
 		<span class="macro">panic!</span>(<span class="string">&quot;`storage_root`: should not be used in async externalities!&quot;</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">child_storage_root</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">_child_info</span>: <span class="kw-2">&amp;</span><span class="ident">ChildInfo</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">child_storage_root</span>(
+		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
+		<span class="ident">_child_info</span>: <span class="kw-2">&amp;</span><span class="ident">ChildInfo</span>,
+		<span class="ident">_state_version</span>: <span class="ident">StateVersion</span>,
+	) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {
 		<span class="macro">panic!</span>(<span class="string">&quot;`child_storage_root`: should not be used in async externalities!&quot;</span>)
 	}
 

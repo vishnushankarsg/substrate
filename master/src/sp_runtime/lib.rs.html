@@ -1068,6 +1068,7 @@
 <span id="1068">1068</span>
 <span id="1069">1069</span>
 <span id="1070">1070</span>
+<span id="1071">1071</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2021 Parity Technologies (UK) Ltd.</span>
@@ -1110,6 +1111,7 @@
 <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_application_crypto</span> <span class="kw">as</span> <span class="ident">app_crypto</span>;
 
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_core::storage::StateVersion</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_core::storage</span>::{<span class="ident">Storage</span>, <span class="ident">StorageChild</span>};
 

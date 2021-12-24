@@ -541,6 +541,32 @@
 <span id="541">541</span>
 <span id="542">542</span>
 <span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2021 Parity Technologies (UK) Ltd.</span>
@@ -877,22 +903,11 @@
 }
 
 <span class="kw">fn</span> <span class="ident">decode_version</span>(<span class="kw-2">mut</span> <span class="ident">version</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RuntimeVersion</span>, <span class="ident">WasmError</span><span class="op">&gt;</span> {
-	<span class="kw">let</span> <span class="ident">v</span>: <span class="ident">RuntimeVersion</span> <span class="op">=</span> <span class="ident">sp_api::OldRuntimeVersion::decode</span>(<span class="kw-2">&amp;mut</span> <span class="kw-2">&amp;</span><span class="ident">version</span>[..])
-		.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
-			<span class="ident">WasmError::Instantiation</span>(
-				<span class="string">&quot;failed to decode \&quot;Core_version\&quot; result using old runtime version&quot;</span>.<span class="ident">into</span>(),
-			)
-		})<span class="question-mark">?</span>
-		.<span class="ident">into</span>();
-
-	<span class="kw">let</span> <span class="ident">core_api_id</span> <span class="op">=</span> <span class="macro">sp_core_hashing_proc_macro::blake2b_64!</span>(<span class="string">b&quot;Core&quot;</span>);
-	<span class="kw">if</span> <span class="ident">v</span>.<span class="ident">has_api_with</span>(<span class="kw-2">&amp;</span><span class="ident">core_api_id</span>, <span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">3</span>) {
-		<span class="ident">sp_api::RuntimeVersion::decode</span>(<span class="kw-2">&amp;mut</span> <span class="ident">version</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
-			<span class="ident">WasmError::Instantiation</span>(<span class="string">&quot;failed to decode \&quot;Core_version\&quot; result&quot;</span>.<span class="ident">into</span>())
-		})
-	} <span class="kw">else</span> {
-		<span class="prelude-val">Ok</span>(<span class="ident">v</span>)
-	}
+	<span class="ident">Decode::decode</span>(<span class="kw-2">&amp;mut</span> <span class="ident">version</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
+		<span class="ident">WasmError::Instantiation</span>(
+			<span class="string">&quot;failed to decode \&quot;Core_version\&quot; result using old runtime version&quot;</span>.<span class="ident">into</span>(),
+		)
+	})
 }
 
 <span class="kw">fn</span> <span class="ident">decode_runtime_apis</span>(<span class="ident">apis</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>([<span class="ident">u8</span>; <span class="number">8</span>], <span class="ident">u32</span>)<span class="op">&gt;</span>, <span class="ident">WasmError</span><span class="op">&gt;</span> {
@@ -916,17 +931,25 @@
 <span class="doccomment">/// sections, `Err` will be returned.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_embedded_version</span>(<span class="ident">blob</span>: <span class="kw-2">&amp;</span><span class="ident">RuntimeBlob</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RuntimeVersion</span><span class="op">&gt;</span>, <span class="ident">WasmError</span><span class="op">&gt;</span> {
 	<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">version_section</span>) <span class="op">=</span> <span class="ident">blob</span>.<span class="ident">custom_section_contents</span>(<span class="string">&quot;runtime_version&quot;</span>) {
-		<span class="comment">// We do not use `decode_version` here because the runtime_version section is not supposed</span>
-		<span class="comment">// to ever contain a legacy version. Apart from that `decode_version` relies on presence</span>
-		<span class="comment">// of a special API in the `apis` field to treat the input as a non-legacy version. However</span>
-		<span class="comment">// the structure found in the `runtime_version` always contain an empty `apis` field.</span>
-		<span class="comment">// Therefore the version read will be mistakenly treated as an legacy one.</span>
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">decoded_version</span> <span class="op">=</span> <span class="ident">sp_api::RuntimeVersion::decode</span>(<span class="kw-2">&amp;mut</span> <span class="ident">version_section</span>)
-			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">WasmError::Instantiation</span>(<span class="string">&quot;failed to decode version section&quot;</span>.<span class="ident">into</span>()))<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">apis</span> <span class="op">=</span> <span class="ident">blob</span>
+			.<span class="ident">custom_section_contents</span>(<span class="string">&quot;runtime_apis&quot;</span>)
+			.<span class="ident">map</span>(<span class="ident">decode_runtime_apis</span>)
+			.<span class="ident">transpose</span>()<span class="question-mark">?</span>
+			.<span class="ident">map</span>(<span class="ident">Into::into</span>);
 
-		<span class="comment">// Don&#39;t stop on this and check if there is a special section that encodes all runtime APIs.</span>
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">apis_section</span>) <span class="op">=</span> <span class="ident">blob</span>.<span class="ident">custom_section_contents</span>(<span class="string">&quot;runtime_apis&quot;</span>) {
-			<span class="ident">decoded_version</span>.<span class="ident">apis</span> <span class="op">=</span> <span class="ident">decode_runtime_apis</span>(<span class="ident">apis_section</span>)<span class="question-mark">?</span>.<span class="ident">into</span>();
+		<span class="kw">let</span> <span class="ident">core_version</span> <span class="op">=</span> <span class="ident">apis</span>.<span class="ident">as_ref</span>().<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">apis</span><span class="op">|</span> <span class="ident">sp_version::core_version_from_apis</span>(<span class="ident">apis</span>));
+		<span class="comment">// We do not use `RuntimeVersion::decode` here because that `decode_version` relies on</span>
+		<span class="comment">// presence of a special API in the `apis` field to treat the input as a non-legacy version.</span>
+		<span class="comment">// However the structure found in the `runtime_version` always contain an empty `apis`</span>
+		<span class="comment">// field. Therefore the version read will be mistakenly treated as an legacy one.</span>
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">decoded_version</span> <span class="op">=</span> <span class="ident">sp_version::RuntimeVersion::decode_with_version_hint</span>(
+			<span class="kw-2">&amp;mut</span> <span class="ident">version_section</span>,
+			<span class="ident">core_version</span>,
+		)
+		.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">WasmError::Instantiation</span>(<span class="string">&quot;failed to decode version section&quot;</span>.<span class="ident">into</span>()))<span class="question-mark">?</span>;
+
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">apis</span>) <span class="op">=</span> <span class="ident">apis</span> {
+			<span class="ident">decoded_version</span>.<span class="ident">apis</span> <span class="op">=</span> <span class="ident">apis</span>;
 		}
 
 		<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">decoded_version</span>))
@@ -998,8 +1021,19 @@
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 	<span class="kw">use</span> <span class="ident">codec::Encode</span>;
 	<span class="kw">use</span> <span class="ident">sp_api</span>::{<span class="ident">Core</span>, <span class="ident">RuntimeApiInfo</span>};
+	<span class="kw">use</span> <span class="ident">sp_runtime::RuntimeString</span>;
 	<span class="kw">use</span> <span class="ident">sp_wasm_interface::HostFunctions</span>;
 	<span class="kw">use</span> <span class="ident">substrate_test_runtime::Block</span>;
+
+	<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Encode</span>)]</span>
+	<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OldRuntimeVersion</span> {
+		<span class="kw">pub</span> <span class="ident">spec_name</span>: <span class="ident">RuntimeString</span>,
+		<span class="kw">pub</span> <span class="ident">impl_name</span>: <span class="ident">RuntimeString</span>,
+		<span class="kw">pub</span> <span class="ident">authoring_version</span>: <span class="ident">u32</span>,
+		<span class="kw">pub</span> <span class="ident">spec_version</span>: <span class="ident">u32</span>,
+		<span class="kw">pub</span> <span class="ident">impl_version</span>: <span class="ident">u32</span>,
+		<span class="kw">pub</span> <span class="ident">apis</span>: <span class="ident">sp_version::ApisVec</span>,
+	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">host_functions_are_equal</span>() {
@@ -1011,7 +1045,7 @@
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">old_runtime_version_decodes</span>() {
-		<span class="kw">let</span> <span class="ident">old_runtime_version</span> <span class="op">=</span> <span class="ident">sp_api::OldRuntimeVersion</span> {
+		<span class="kw">let</span> <span class="ident">old_runtime_version</span> <span class="op">=</span> <span class="ident">OldRuntimeVersion</span> {
 			<span class="ident">spec_name</span>: <span class="string">&quot;test&quot;</span>.<span class="ident">into</span>(),
 			<span class="ident">impl_name</span>: <span class="string">&quot;test&quot;</span>.<span class="ident">into</span>(),
 			<span class="ident">authoring_version</span>: <span class="number">1</span>,
@@ -1022,11 +1056,12 @@
 
 		<span class="kw">let</span> <span class="ident">version</span> <span class="op">=</span> <span class="ident">decode_version</span>(<span class="kw-2">&amp;</span><span class="ident">old_runtime_version</span>.<span class="ident">encode</span>()).<span class="ident">unwrap</span>();
 		<span class="macro">assert_eq!</span>(<span class="number">1</span>, <span class="ident">version</span>.<span class="ident">transaction_version</span>);
+		<span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">version</span>.<span class="ident">state_version</span>);
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">old_runtime_version_decodes_fails_with_version_3</span>() {
-		<span class="kw">let</span> <span class="ident">old_runtime_version</span> <span class="op">=</span> <span class="ident">sp_api::OldRuntimeVersion</span> {
+		<span class="kw">let</span> <span class="ident">old_runtime_version</span> <span class="op">=</span> <span class="ident">OldRuntimeVersion</span> {
 			<span class="ident">spec_name</span>: <span class="string">&quot;test&quot;</span>.<span class="ident">into</span>(),
 			<span class="ident">impl_name</span>: <span class="string">&quot;test&quot;</span>.<span class="ident">into</span>(),
 			<span class="ident">authoring_version</span>: <span class="number">1</span>,
@@ -1048,10 +1083,27 @@
 			<span class="ident">impl_version</span>: <span class="number">1</span>,
 			<span class="ident">apis</span>: <span class="macro">sp_api::create_apis_vec!</span>([(<span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Core</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::ID</span>, <span class="number">3</span>)]),
 			<span class="ident">transaction_version</span>: <span class="number">3</span>,
+			<span class="ident">state_version</span>: <span class="number">4</span>,
 		};
 
 		<span class="kw">let</span> <span class="ident">version</span> <span class="op">=</span> <span class="ident">decode_version</span>(<span class="kw-2">&amp;</span><span class="ident">old_runtime_version</span>.<span class="ident">encode</span>()).<span class="ident">unwrap</span>();
 		<span class="macro">assert_eq!</span>(<span class="number">3</span>, <span class="ident">version</span>.<span class="ident">transaction_version</span>);
+		<span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">version</span>.<span class="ident">state_version</span>);
+
+		<span class="kw">let</span> <span class="ident">old_runtime_version</span> <span class="op">=</span> <span class="ident">sp_api::RuntimeVersion</span> {
+			<span class="ident">spec_name</span>: <span class="string">&quot;test&quot;</span>.<span class="ident">into</span>(),
+			<span class="ident">impl_name</span>: <span class="string">&quot;test&quot;</span>.<span class="ident">into</span>(),
+			<span class="ident">authoring_version</span>: <span class="number">1</span>,
+			<span class="ident">spec_version</span>: <span class="number">1</span>,
+			<span class="ident">impl_version</span>: <span class="number">1</span>,
+			<span class="ident">apis</span>: <span class="macro">sp_api::create_apis_vec!</span>([(<span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Core</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::ID</span>, <span class="number">4</span>)]),
+			<span class="ident">transaction_version</span>: <span class="number">3</span>,
+			<span class="ident">state_version</span>: <span class="number">4</span>,
+		};
+
+		<span class="kw">let</span> <span class="ident">version</span> <span class="op">=</span> <span class="ident">decode_version</span>(<span class="kw-2">&amp;</span><span class="ident">old_runtime_version</span>.<span class="ident">encode</span>()).<span class="ident">unwrap</span>();
+		<span class="macro">assert_eq!</span>(<span class="number">3</span>, <span class="ident">version</span>.<span class="ident">transaction_version</span>);
+		<span class="macro">assert_eq!</span>(<span class="number">4</span>, <span class="ident">version</span>.<span class="ident">state_version</span>);
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
@@ -1061,15 +1113,15 @@
 			<span class="ident">sp_maybe_compressed_blob::CODE_BLOB_BOMB_LIMIT</span>,
 		)
 		.<span class="ident">expect</span>(<span class="string">&quot;Decompressing works&quot;</span>);
-
 		<span class="kw">let</span> <span class="ident">runtime_version</span> <span class="op">=</span> <span class="ident">RuntimeVersion</span> {
 			<span class="ident">spec_name</span>: <span class="string">&quot;test_replace&quot;</span>.<span class="ident">into</span>(),
 			<span class="ident">impl_name</span>: <span class="string">&quot;test_replace&quot;</span>.<span class="ident">into</span>(),
 			<span class="ident">authoring_version</span>: <span class="number">100</span>,
 			<span class="ident">spec_version</span>: <span class="number">100</span>,
 			<span class="ident">impl_version</span>: <span class="number">100</span>,
-			<span class="ident">apis</span>: <span class="macro">sp_api::create_apis_vec!</span>([(<span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Core</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::ID</span>, <span class="number">3</span>)]),
+			<span class="ident">apis</span>: <span class="macro">sp_api::create_apis_vec!</span>([(<span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Core</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::ID</span>, <span class="number">4</span>)]),
 			<span class="ident">transaction_version</span>: <span class="number">100</span>,
+			<span class="ident">state_version</span>: <span class="number">1</span>,
 		};
 
 		<span class="kw">let</span> <span class="ident">embedded</span> <span class="op">=</span> <span class="ident">sp_version::embed::embed_runtime_version</span>(<span class="kw-2">&amp;</span><span class="ident">wasm</span>, <span class="ident">runtime_version</span>.<span class="ident">clone</span>())

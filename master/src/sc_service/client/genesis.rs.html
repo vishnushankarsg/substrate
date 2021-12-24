@@ -36,6 +36,8 @@
 <span id="36">36</span>
 <span id="37">37</span>
 <span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2021 Parity Technologies (UK) Ltd.</span>
@@ -60,8 +62,10 @@
 
 <span class="doccomment">/// Create a genesis block, given the initial storage.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">construct_genesis_block</span><span class="op">&lt;</span><span class="ident">Block</span>: <span class="ident">BlockT</span><span class="op">&gt;</span>(<span class="ident">state_root</span>: <span class="ident">Block::Hash</span>) -&gt; <span class="ident">Block</span> {
-	<span class="kw">let</span> <span class="ident">extrinsics_root</span> <span class="op">=</span>
-		<span class="op">&lt;</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Header</span> <span class="kw">as</span> <span class="ident">HeaderT</span><span class="op">&gt;</span><span class="ident">::Hashing</span> <span class="kw">as</span> <span class="ident">HashT</span><span class="op">&gt;</span><span class="ident">::trie_root</span>(<span class="ident">Vec::new</span>());
+	<span class="kw">let</span> <span class="ident">extrinsics_root</span> <span class="op">=</span> <span class="op">&lt;</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Header</span> <span class="kw">as</span> <span class="ident">HeaderT</span><span class="op">&gt;</span><span class="ident">::Hashing</span> <span class="kw">as</span> <span class="ident">HashT</span><span class="op">&gt;</span><span class="ident">::trie_root</span>(
+		<span class="ident">Vec::new</span>(),
+		<span class="ident">sp_runtime::StateVersion::V0</span>,
+	);
 
 	<span class="ident">Block::new</span>(
 		<span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Header</span> <span class="kw">as</span> <span class="ident">HeaderT</span><span class="op">&gt;</span><span class="ident">::new</span>(
