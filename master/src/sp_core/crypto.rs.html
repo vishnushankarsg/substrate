@@ -1389,6 +1389,32 @@
 <span id="1389">1389</span>
 <span id="1390">1390</span>
 <span id="1391">1391</span>
+<span id="1392">1392</span>
+<span id="1393">1393</span>
+<span id="1394">1394</span>
+<span id="1395">1395</span>
+<span id="1396">1396</span>
+<span id="1397">1397</span>
+<span id="1398">1398</span>
+<span id="1399">1399</span>
+<span id="1400">1400</span>
+<span id="1401">1401</span>
+<span id="1402">1402</span>
+<span id="1403">1403</span>
+<span id="1404">1404</span>
+<span id="1405">1405</span>
+<span id="1406">1406</span>
+<span id="1407">1407</span>
+<span id="1408">1408</span>
+<span id="1409">1409</span>
+<span id="1410">1410</span>
+<span id="1411">1411</span>
+<span id="1412">1412</span>
+<span id="1413">1413</span>
+<span id="1414">1414</span>
+<span id="1415">1415</span>
+<span id="1416">1416</span>
+<span id="1417">1417</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2021 Parity Technologies (UK) Ltd.</span>
@@ -1589,23 +1615,43 @@
 }
 
 <span class="doccomment">/// An error type for SS58 decoding.</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">derive</span>(<span class="ident">thiserror::Error</span>))]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>), <span class="ident">derive</span>(<span class="ident">Debug</span>))]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;full_crypto&quot;</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">PublicError</span> {
-	<span class="doccomment">/// Bad alphabet.</span>
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">error</span>(<span class="string">&quot;Base 58 requirement is violated&quot;</span>))]</span>
 	<span class="ident">BadBase58</span>,
-	<span class="doccomment">/// Bad length.</span>
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">error</span>(<span class="string">&quot;Length is bad&quot;</span>))]</span>
 	<span class="ident">BadLength</span>,
-	<span class="doccomment">/// Unknown identifier for the encoding.</span>
-	<span class="ident">UnknownVersion</span>,
-	<span class="doccomment">/// Invalid checksum.</span>
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(
+		<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>,
+		<span class="ident">error</span>(
+			<span class="string">&quot;Unknown SS58 address format `{}`. ` \
+		`To support this address format, you need to call `set_default_ss58_version` at node start up.&quot;</span>,
+			<span class="ident">_0</span>
+		)
+	)]</span>
+	<span class="ident">UnknownSs58AddressFormat</span>(<span class="ident">Ss58AddressFormat</span>),
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">error</span>(<span class="string">&quot;Invalid checksum&quot;</span>))]</span>
 	<span class="ident">InvalidChecksum</span>,
-	<span class="doccomment">/// Invalid format.</span>
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">error</span>(<span class="string">&quot;Invalid SS58 prefix byte.&quot;</span>))]</span>
+	<span class="ident">InvalidPrefix</span>,
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">error</span>(<span class="string">&quot;Invalid SS58 format.&quot;</span>))]</span>
 	<span class="ident">InvalidFormat</span>,
-	<span class="doccomment">/// Invalid derivation path.</span>
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">error</span>(<span class="string">&quot;Invalid derivation path.&quot;</span>))]</span>
 	<span class="ident">InvalidPath</span>,
-	<span class="doccomment">/// Disallowed SS58 Address Format for this datatype.</span>
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">error</span>(<span class="string">&quot;Disallowed SS58 Address Format for this datatype.&quot;</span>))]</span>
 	<span class="ident">FormatNotAllowed</span>,
+}
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
+<span class="kw">impl</span> <span class="ident">sp_std::fmt::Debug</span> <span class="kw">for</span> <span class="ident">PublicError</span> {
+	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">sp_std::fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">sp_std::fmt::Result</span> {
+		<span class="comment">// Just use the `Display` implementation</span>
+		<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>)
+	}
 }
 
 <span class="doccomment">/// Key that can be encoded to/from SS58.</span>
@@ -1626,7 +1672,7 @@
 		<span class="ident"><span class="self">Self</span>::from_ss58check_with_version</span>(<span class="ident">s</span>).<span class="ident">and_then</span>(<span class="op">|</span>(<span class="ident">r</span>, <span class="ident">v</span>)<span class="op">|</span> <span class="kw">match</span> <span class="ident">v</span> {
 			<span class="ident">v</span> <span class="kw">if</span> <span class="op">!</span><span class="ident">v</span>.<span class="ident">is_custom</span>() =&gt; <span class="prelude-val">Ok</span>(<span class="ident">r</span>),
 			<span class="ident">v</span> <span class="kw">if</span> <span class="ident">v</span> <span class="op">==</span> <span class="ident">default_ss58_version</span>() =&gt; <span class="prelude-val">Ok</span>(<span class="ident">r</span>),
-			<span class="kw">_</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">PublicError::UnknownVersion</span>),
+			<span class="ident">v</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">PublicError::UnknownSs58AddressFormat</span>(<span class="ident">v</span>)),
 		})
 	}
 
@@ -1652,7 +1698,7 @@
 				<span class="kw">let</span> <span class="ident">upper</span> <span class="op">=</span> <span class="ident">data</span>[<span class="number">1</span>] <span class="op">&amp;</span> <span class="number">0b00111111</span>;
 				(<span class="number">2</span>, (<span class="ident">lower</span> <span class="kw">as</span> <span class="ident">u16</span>) <span class="op">|</span> ((<span class="ident">upper</span> <span class="kw">as</span> <span class="ident">u16</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">8</span>))
 			},
-			<span class="kw">_</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">PublicError::UnknownVersion</span>),
+			<span class="kw">_</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">PublicError::InvalidPrefix</span>),
 		};
 		<span class="kw">if</span> <span class="ident">data</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">prefix_len</span> <span class="op">+</span> <span class="ident">body_len</span> <span class="op">+</span> <span class="ident">CHECKSUM_LEN</span> {
 			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">PublicError::BadLength</span>)
@@ -1681,7 +1727,7 @@
 		<span class="ident"><span class="self">Self</span>::from_string_with_version</span>(<span class="ident">s</span>).<span class="ident">and_then</span>(<span class="op">|</span>(<span class="ident">r</span>, <span class="ident">v</span>)<span class="op">|</span> <span class="kw">match</span> <span class="ident">v</span> {
 			<span class="ident">v</span> <span class="kw">if</span> <span class="op">!</span><span class="ident">v</span>.<span class="ident">is_custom</span>() =&gt; <span class="prelude-val">Ok</span>(<span class="ident">r</span>),
 			<span class="ident">v</span> <span class="kw">if</span> <span class="ident">v</span> <span class="op">==</span> <span class="ident">default_ss58_version</span>() =&gt; <span class="prelude-val">Ok</span>(<span class="ident">r</span>),
-			<span class="kw">_</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">PublicError::UnknownVersion</span>),
+			<span class="ident">v</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">PublicError::UnknownSs58AddressFormat</span>(<span class="ident">v</span>)),
 		})
 	}
 
@@ -1750,7 +1796,7 @@
 	<span class="ident">from_known_address_format</span>(<span class="ident">Ss58AddressFormatRegistry::SubstrateAccount</span>),
 );
 
-<span class="doccomment">/// Returns default ss58 format used by the current active process.</span>
+<span class="doccomment">/// Returns default SS58 format used by the current active process.</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">default_ss58_version</span>() -&gt; <span class="ident">Ss58AddressFormat</span> {
 	<span class="ident">DEFAULT_VERSION</span>.<span class="ident">load</span>(<span class="ident">std::sync::atomic::Ordering::Relaxed</span>).<span class="ident">into</span>()
@@ -1762,9 +1808,15 @@
 	<span class="ident">network</span>.<span class="ident">unwrap_or_else</span>(<span class="ident">default_ss58_version</span>)
 }
 
-<span class="doccomment">/// Set the default &quot;version&quot; (actually, this is a bit of a misnomer and the version byte is</span>
-<span class="doccomment">/// typically used not just to encode format/version but also network identity) that is used for</span>
-<span class="doccomment">/// encoding and decoding SS58 addresses.</span>
+<span class="doccomment">/// Set the default SS58 &quot;version&quot;.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// This SS58 version/format will be used when encoding/decoding SS58 addresses.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// If you want to support a custom SS58 prefix (that isn&#39;t yet registered in the `ss58-registry`),</span>
+<span class="doccomment">/// you are required to call this function with your desired prefix [`Ss58AddressFormat::custom`].</span>
+<span class="doccomment">/// This will enable the node to decode ss58 addresses with this prefix.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// This SS58 version/format is also only used by the node and not by the runtime.</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_default_ss58_version</span>(<span class="ident">new_default</span>: <span class="ident">Ss58AddressFormat</span>) {
 	<span class="ident">DEFAULT_VERSION</span>.<span class="ident">store</span>(<span class="ident">new_default</span>.<span class="ident">into</span>(), <span class="ident">std::sync::atomic::Ordering::Relaxed</span>);
