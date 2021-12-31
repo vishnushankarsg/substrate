@@ -180,13 +180,13 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">DestroyWitness</span> {
 	<span class="doccomment">/// The total number of outstanding instances of this asset class.</span>
 	<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">compact</span>)]</span>
-	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="ident">instances</span>: <span class="ident">u32</span>,
+	<span class="kw">pub</span> <span class="ident">instances</span>: <span class="ident">u32</span>,
 	<span class="doccomment">/// The total number of outstanding instance metadata of this asset class.</span>
 	<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">compact</span>)]</span>
-	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="ident">instance_metadatas</span>: <span class="ident">u32</span>,
+	<span class="kw">pub</span> <span class="ident">instance_metadatas</span>: <span class="ident">u32</span>,
 	<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">compact</span>)]</span>
 	<span class="doccomment">/// The total number of attributes for this asset class.</span>
-	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="ident">attributes</span>: <span class="ident">u32</span>,
+	<span class="kw">pub</span> <span class="ident">attributes</span>: <span class="ident">u32</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">DepositBalance</span><span class="op">&gt;</span> <span class="ident">ClassDetails</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">DepositBalance</span><span class="op">&gt;</span> {
