@@ -1254,7 +1254,7 @@
 	<span class="ident">L</span>: <span class="ident">TrieConfiguration</span>,
 	<span class="ident">DB</span>: <span class="ident">hash_db::HashDBRef</span><span class="op">&lt;</span><span class="ident">L::Hash</span>, <span class="ident">trie_db::DBValue</span><span class="op">&gt;</span>,
 {
-	<span class="prelude-val">Ok</span>(<span class="ident">TrieDB</span>::<span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">db</span>, <span class="ident">root</span>)<span class="question-mark">?</span>.<span class="ident">get</span>(<span class="ident">key</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="ident">val</span>.<span class="ident">to_vec</span>()))<span class="question-mark">?</span>)
+	<span class="ident">TrieDB</span>::<span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">db</span>, <span class="ident">root</span>)<span class="question-mark">?</span>.<span class="ident">get</span>(<span class="ident">key</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="ident">val</span>.<span class="ident">to_vec</span>()))
 }
 
 <span class="doccomment">/// Read a value from the trie with given Query.</span>
@@ -1269,9 +1269,9 @@
 	<span class="ident">Q</span>: <span class="ident">Query</span><span class="op">&lt;</span><span class="ident">L::Hash</span>, <span class="ident">Item</span> <span class="op">=</span> <span class="ident">DBValue</span><span class="op">&gt;</span>,
 	<span class="ident">DB</span>: <span class="ident">hash_db::HashDBRef</span><span class="op">&lt;</span><span class="ident">L::Hash</span>, <span class="ident">trie_db::DBValue</span><span class="op">&gt;</span>,
 {
-	<span class="prelude-val">Ok</span>(<span class="ident">TrieDB</span>::<span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">db</span>, <span class="ident">root</span>)<span class="question-mark">?</span>
+	<span class="ident">TrieDB</span>::<span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">db</span>, <span class="ident">root</span>)<span class="question-mark">?</span>
 		.<span class="ident">get_with</span>(<span class="ident">key</span>, <span class="ident">query</span>)
-		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="ident">val</span>.<span class="ident">to_vec</span>()))<span class="question-mark">?</span>)
+		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="ident">val</span>.<span class="ident">to_vec</span>()))
 }
 
 <span class="doccomment">/// Determine the empty trie root.</span>

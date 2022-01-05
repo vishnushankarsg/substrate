@@ -4011,7 +4011,7 @@
 
 	<span class="doccomment">/// Check if `who` is currently an active runner-up.</span>
 	<span class="kw">fn</span> <span class="ident">is_runner_up</span>(<span class="ident">who</span>: <span class="kw-2">&amp;</span><span class="ident">T::AccountId</span>) -&gt; <span class="ident">bool</span> {
-		<span class="ident"><span class="self">Self</span>::runners_up</span>().<span class="ident">iter</span>().<span class="ident">position</span>(<span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">r</span>.<span class="ident">who</span> <span class="op">==</span> <span class="ident">who</span>).<span class="ident">is_some</span>()
+		<span class="ident"><span class="self">Self</span>::runners_up</span>().<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">r</span>.<span class="ident">who</span> <span class="op">==</span> <span class="ident">who</span>)
 	}
 
 	<span class="doccomment">/// Get the members&#39; account ids.</span>

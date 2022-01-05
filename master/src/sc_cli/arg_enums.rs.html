@@ -330,7 +330,7 @@
 			}
 			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;wasmtime&quot;</span>))]</span>
 			{
-				<span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;`Compiled` variant requires the `wasmtime` feature to be enabled&quot;</span>))
+				<span class="prelude-val">Err</span>(<span class="string">&quot;`Compiled` variant requires the `wasmtime` feature to be enabled&quot;</span>.<span class="ident">into</span>())
 			}
 		} <span class="kw">else</span> {
 			<span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;Unknown variant `{}`, known variants: {:?}&quot;</span>, <span class="ident">s</span>, <span class="ident"><span class="self">Self</span>::variants</span>()))

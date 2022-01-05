@@ -176,7 +176,7 @@
 		);
 		<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">executor</span>
 			.<span class="ident">uncached_call</span>(
-				<span class="ident">RuntimeBlob::uncompress_if_needed</span>(<span class="kw-2">&amp;</span><span class="ident">wasm_binary_unwrap</span>()[..]).<span class="ident">unwrap</span>(),
+				<span class="ident">RuntimeBlob::uncompress_if_needed</span>(<span class="ident">wasm_binary_unwrap</span>()).<span class="ident">unwrap</span>(),
 				<span class="kw-2">&amp;mut</span> <span class="ident">ext</span>,
 				<span class="bool-val">true</span>,
 				<span class="string">&quot;test_empty_return&quot;</span>,

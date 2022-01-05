@@ -4399,7 +4399,7 @@
 					<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::traits::GetStorageVersion</span><span class="op">&gt;</span><span class="ident">::current_storage_version</span>(),
 				);
 
-				(<span class="op">|</span><span class="op">|</span> { $( <span class="macro-nonterminal">$</span><span class="kw">impl</span> )<span class="op">*</span> })()
+				{ $( <span class="macro-nonterminal">$</span><span class="kw">impl</span> )<span class="op">*</span> }
 			}
 
 			<span class="attribute">#[<span class="macro-nonterminal">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;try-runtime&quot;</span>)]</span>

@@ -157,6 +157,33 @@
 <span id="157">157</span>
 <span id="158">158</span>
 <span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -198,15 +225,40 @@
 <span class="kw">mod</span> <span class="ident">worker</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">notification</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">beefy_protocol_name::standard_name</span> <span class="kw">as</span> <span class="ident">protocol_standard_name</span>;
 
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BEEFY_PROTOCOL_NAME</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;/paritytech/beefy/1&quot;</span>;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">beefy_protocol_name</span> {
+	<span class="kw">use</span> <span class="ident">sc_chain_spec::ChainSpec</span>;
+
+	<span class="kw">const</span> <span class="ident">NAME</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;/beefy/1&quot;</span>;
+	<span class="doccomment">/// Old names for the notifications protocol, used for backward compatibility.</span>
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const</span> <span class="ident">LEGACY_NAMES</span>: [<span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>; <span class="number">1</span>] <span class="op">=</span> [<span class="string">&quot;/paritytech/beefy/1&quot;</span>];
+
+	<span class="doccomment">/// Name of the notifications protocol used by BEEFY.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Must be registered towards the networking in order for BEEFY to properly function.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">standard_name</span><span class="op">&lt;</span><span class="ident">Hash</span>: <span class="ident">std::fmt::Display</span><span class="op">&gt;</span>(
+		<span class="ident">genesis_hash</span>: <span class="kw-2">&amp;</span><span class="ident">Hash</span>,
+		<span class="ident">chain_spec</span>: <span class="kw-2">&amp;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ChainSpec</span><span class="op">&gt;</span>,
+	) -&gt; <span class="ident">std::borrow::Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">chain_prefix</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">chain_spec</span>.<span class="ident">fork_id</span>() {
+			<span class="prelude-val">Some</span>(<span class="ident">fork_id</span>) =&gt; <span class="macro">format!</span>(<span class="string">&quot;/{}/{}&quot;</span>, <span class="ident">genesis_hash</span>, <span class="ident">fork_id</span>),
+			<span class="prelude-val">None</span> =&gt; <span class="macro">format!</span>(<span class="string">&quot;/{}&quot;</span>, <span class="ident">genesis_hash</span>),
+		};
+		<span class="macro">format!</span>(<span class="string">&quot;{}{}&quot;</span>, <span class="ident">chain_prefix</span>, <span class="ident">NAME</span>).<span class="ident">into</span>()
+	}
+}
 
 <span class="doccomment">/// Returns the configuration value to put in</span>
 <span class="doccomment">/// [`sc_network::config::NetworkConfiguration::extra_sets`].</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">beefy_peers_set_config</span>() -&gt; <span class="ident">sc_network::config::NonDefaultSetConfig</span> {
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cfg</span> <span class="op">=</span>
-		<span class="ident">sc_network::config::NonDefaultSetConfig::new</span>(<span class="ident">BEEFY_PROTOCOL_NAME</span>.<span class="ident">into</span>(), <span class="number">1024</span> <span class="op">*</span> <span class="number">1024</span>);
+<span class="doccomment">/// For standard protocol name see [`beefy_protocol_name::standard_name`].</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">beefy_peers_set_config</span>(
+	<span class="ident">protocol_name</span>: <span class="ident">std::borrow::Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>,
+) -&gt; <span class="ident">sc_network::config::NonDefaultSetConfig</span> {
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cfg</span> <span class="op">=</span> <span class="ident">sc_network::config::NonDefaultSetConfig::new</span>(<span class="ident">protocol_name</span>, <span class="number">1024</span> <span class="op">*</span> <span class="number">1024</span>);
+
 	<span class="ident">cfg</span>.<span class="ident">allow_non_reserved</span>(<span class="number">25</span>, <span class="number">25</span>);
+	<span class="ident">cfg</span>.<span class="ident">add_fallback_names</span>(<span class="ident">beefy_protocol_name::LEGACY_NAMES</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">n</span><span class="op">|</span> <span class="ident">n</span>.<span class="ident">into</span>()).<span class="ident">collect</span>());
 	<span class="ident">cfg</span>
 }
 
@@ -260,6 +312,8 @@
 	<span class="kw">pub</span> <span class="ident">min_block_delta</span>: <span class="ident">u32</span>,
 	<span class="doccomment">/// Prometheus metric registry</span>
 	<span class="kw">pub</span> <span class="ident">prometheus_registry</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Registry</span><span class="op">&gt;</span>,
+	<span class="doccomment">/// Chain specific GRANDPA protocol name. See [`beefy_protocol_name::standard_name`].</span>
+	<span class="kw">pub</span> <span class="ident">protocol_name</span>: <span class="ident">std::borrow::Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>,
 }
 
 <span class="doccomment">/// Start the BEEFY gadget.</span>
@@ -281,11 +335,11 @@
 		<span class="ident">signed_commitment_sender</span>,
 		<span class="ident">min_block_delta</span>,
 		<span class="ident">prometheus_registry</span>,
+		<span class="ident">protocol_name</span>,
 	} <span class="op">=</span> <span class="ident">beefy_params</span>;
 
 	<span class="kw">let</span> <span class="ident">gossip_validator</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">gossip::GossipValidator::new</span>());
-	<span class="kw">let</span> <span class="ident">gossip_engine</span> <span class="op">=</span>
-		<span class="ident">GossipEngine::new</span>(<span class="ident">network</span>, <span class="ident">BEEFY_PROTOCOL_NAME</span>, <span class="ident">gossip_validator</span>.<span class="ident">clone</span>(), <span class="prelude-val">None</span>);
+	<span class="kw">let</span> <span class="ident">gossip_engine</span> <span class="op">=</span> <span class="ident">GossipEngine::new</span>(<span class="ident">network</span>, <span class="ident">protocol_name</span>, <span class="ident">gossip_validator</span>.<span class="ident">clone</span>(), <span class="prelude-val">None</span>);
 
 	<span class="kw">let</span> <span class="ident">metrics</span> <span class="op">=</span>
 		<span class="ident">prometheus_registry</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="ident">metrics::Metrics::register</span>).<span class="ident">and_then</span>(

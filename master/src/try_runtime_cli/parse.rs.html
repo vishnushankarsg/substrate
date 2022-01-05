@@ -39,6 +39,9 @@
 <span id="39">39</span>
 <span id="40">40</span>
 <span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -59,8 +62,11 @@
 <span class="doccomment">//! Utils for parsing user input</span>
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">hash</span>(<span class="ident">block_hash</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">String</span><span class="op">&gt;</span> {
-	<span class="kw">let</span> (<span class="ident">block_hash</span>, <span class="ident">offset</span>) <span class="op">=</span>
-		<span class="kw">if</span> <span class="ident">block_hash</span>.<span class="ident">starts_with</span>(<span class="string">&quot;0x&quot;</span>) { (<span class="kw-2">&amp;</span><span class="ident">block_hash</span>[<span class="number">2</span>..], <span class="number">2</span>) } <span class="kw">else</span> { (<span class="ident">block_hash</span>, <span class="number">0</span>) };
+	<span class="kw">let</span> (<span class="ident">block_hash</span>, <span class="ident">offset</span>) <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">block_hash</span>) <span class="op">=</span> <span class="ident">block_hash</span>.<span class="ident">strip_prefix</span>(<span class="string">&quot;0x&quot;</span>) {
+		(<span class="ident">block_hash</span>, <span class="number">2</span>)
+	} <span class="kw">else</span> {
+		(<span class="ident">block_hash</span>, <span class="number">0</span>)
+	};
 
 	<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">pos</span>) <span class="op">=</span> <span class="ident">block_hash</span>.<span class="ident">chars</span>().<span class="ident">position</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="op">!</span><span class="ident">c</span>.<span class="ident">is_ascii_hexdigit</span>()) {
 		<span class="prelude-val">Err</span>(<span class="macro">format!</span>(

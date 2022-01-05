@@ -612,7 +612,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This implementation will wipe the proof recorded in between calls. Consecutive calls will</span>
 	<span class="doccomment">/// get their own proof from scratch.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">execute_and_prove</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">R</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">execute</span>: <span class="kw">impl</span> <span class="ident">FnOnce</span>() -&gt; <span class="ident">R</span>) -&gt; (<span class="ident">R</span>, <span class="ident">StorageProof</span>) {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">execute_and_prove</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">execute</span>: <span class="kw">impl</span> <span class="ident">FnOnce</span>() -&gt; <span class="ident">R</span>) -&gt; (<span class="ident">R</span>, <span class="ident">StorageProof</span>) {
 		<span class="kw">let</span> <span class="ident">proving_backend</span> <span class="op">=</span> <span class="ident">InMemoryProvingBackend::new</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">backend</span>);
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">proving_ext</span> <span class="op">=</span> <span class="ident">Ext::new</span>(
 			<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">overlay</span>,

@@ -2559,9 +2559,6 @@
 <span id="2559">2559</span>
 <span id="2560">2560</span>
 <span id="2561">2561</span>
-<span id="2562">2562</span>
-<span id="2563">2563</span>
-<span id="2564">2564</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -3179,8 +3176,7 @@
 		<span class="comment">// `LUCKY_PEERS / 2` is filled we start allocating to the second stage set.</span>
 		<span class="kw">let</span> <span class="ident">half_lucky</span> <span class="op">=</span> <span class="ident">LUCKY_PEERS</span> <span class="op">/</span> <span class="number">2</span>;
 		<span class="kw">let</span> <span class="ident">one_and_a_half_lucky</span> <span class="op">=</span> <span class="ident">LUCKY_PEERS</span> <span class="op">+</span> <span class="ident">half_lucky</span>;
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">n_authorities_added</span> <span class="op">=</span> <span class="number">0</span>;
-		<span class="kw">for</span> <span class="ident">peer_id</span> <span class="kw">in</span> <span class="ident">shuffled_authorities</span> {
+		<span class="kw">for</span> (<span class="ident">n_authorities_added</span>, <span class="ident">peer_id</span>) <span class="kw">in</span> <span class="ident">shuffled_authorities</span>.<span class="ident">enumerate</span>() {
 			<span class="kw">if</span> <span class="ident">n_authorities_added</span> <span class="op">&lt;</span> <span class="ident">half_lucky</span> {
 				<span class="ident">first_stage_peers</span>.<span class="ident">insert</span>(<span class="kw-2">*</span><span class="ident">peer_id</span>);
 			} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">n_authorities_added</span> <span class="op">&lt;</span> <span class="ident">one_and_a_half_lucky</span> {
@@ -3188,8 +3184,6 @@
 			} <span class="kw">else</span> {
 				<span class="kw">break</span>
 			}
-
-			<span class="ident">n_authorities_added</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
 		}
 
 		<span class="comment">// fill up first and second sets with remaining peers (either full or authorities)</span>
@@ -4231,6 +4225,7 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
 	<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">environment::SharedVoterSetState</span>, <span class="kw-2">*</span>};
+	<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::communication</span>;
 	<span class="kw">use</span> <span class="ident">sc_network::config::Role</span>;
 	<span class="kw">use</span> <span class="ident">sc_network_gossip::Validator</span> <span class="kw">as</span> <span class="ident">GossipValidatorT</span>;
 	<span class="kw">use</span> <span class="ident">sc_network_test::Block</span>;
@@ -4246,6 +4241,7 @@
 			<span class="ident">local_role</span>: <span class="ident">Role::Authority</span>,
 			<span class="ident">observer_enabled</span>: <span class="bool-val">true</span>,
 			<span class="ident">telemetry</span>: <span class="prelude-val">None</span>,
+			<span class="ident">protocol_name</span>: <span class="ident">communication::grandpa_protocol_name::NAME</span>.<span class="ident">into</span>(),
 		}
 	}
 
@@ -4407,13 +4403,13 @@
 
 			<span class="comment">// messages from old rounds are expired.</span>
 			<span class="kw">for</span> <span class="ident">round_num</span> <span class="kw">in</span> <span class="number">1u64</span>..<span class="ident">last_kept_round</span> {
-				<span class="kw">let</span> <span class="ident">topic</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::communication::round_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="ident">round_num</span>, <span class="number">1</span>);
+				<span class="kw">let</span> <span class="ident">topic</span> <span class="op">=</span> <span class="ident">communication::round_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="ident">round_num</span>, <span class="number">1</span>);
 				<span class="macro">assert!</span>(<span class="ident">is_expired</span>(<span class="ident">topic</span>, <span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]));
 			}
 
 			<span class="comment">// messages from not-too-old rounds are not expired.</span>
 			<span class="kw">for</span> <span class="ident">round_num</span> <span class="kw">in</span> <span class="ident">last_kept_round</span>..<span class="number">10</span> {
-				<span class="kw">let</span> <span class="ident">topic</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::communication::round_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="ident">round_num</span>, <span class="number">1</span>);
+				<span class="kw">let</span> <span class="ident">topic</span> <span class="op">=</span> <span class="ident">communication::round_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="ident">round_num</span>, <span class="number">1</span>);
 				<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">is_expired</span>(<span class="ident">topic</span>, <span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]));
 			}
 		}
@@ -4829,7 +4825,7 @@
 		<span class="comment">// we accept messages from rounds 9, 10 and 11</span>
 		<span class="comment">// therefore neither of those should be considered expired</span>
 		<span class="kw">for</span> <span class="ident">round</span> <span class="kw">in</span> <span class="kw-2">&amp;</span>[<span class="number">9</span>, <span class="number">10</span>, <span class="number">11</span>] {
-			<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">is_expired</span>(<span class="ident"><span class="kw">crate</span>::communication::round_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="kw-2">*</span><span class="ident">round</span>, <span class="number">1</span>), <span class="kw-2">&amp;</span>[]))
+			<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">is_expired</span>(<span class="ident">communication::round_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="kw-2">*</span><span class="ident">round</span>, <span class="number">1</span>), <span class="kw-2">&amp;</span>[]))
 		}
 	}
 
@@ -4877,7 +4873,7 @@
 					<span class="kw">if</span> <span class="ident">message_allowed</span>(
 						<span class="ident">peer</span>,
 						<span class="ident">MessageIntent::Broadcast</span>,
-						<span class="kw-2">&amp;</span><span class="ident"><span class="kw">crate</span>::communication::round_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="number">1</span>, <span class="number">0</span>),
+						<span class="kw-2">&amp;</span><span class="ident">communication::round_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="number">1</span>, <span class="number">0</span>),
 						<span class="kw-2">&amp;</span>[],
 					) {
 						<span class="ident">allowed</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
@@ -4941,7 +4937,7 @@
 		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">val</span>.<span class="ident">message_allowed</span>()(
 			<span class="kw-2">&amp;</span><span class="ident">light_peer</span>,
 			<span class="ident">MessageIntent::Broadcast</span>,
-			<span class="kw-2">&amp;</span><span class="ident"><span class="kw">crate</span>::communication::round_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="number">1</span>, <span class="number">0</span>),
+			<span class="kw-2">&amp;</span><span class="ident">communication::round_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="number">1</span>, <span class="number">0</span>),
 			<span class="kw-2">&amp;</span>[],
 		));
 
@@ -4955,7 +4951,7 @@
 		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">val</span>.<span class="ident">message_allowed</span>()(
 			<span class="kw-2">&amp;</span><span class="ident">light_peer</span>,
 			<span class="ident">MessageIntent::Broadcast</span>,
-			<span class="kw-2">&amp;</span><span class="ident"><span class="kw">crate</span>::communication::round_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="number">1</span>, <span class="number">0</span>),
+			<span class="kw-2">&amp;</span><span class="ident">communication::round_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="number">1</span>, <span class="number">0</span>),
 			<span class="kw-2">&amp;</span>[],
 		));
 
@@ -4979,8 +4975,8 @@
 				<span class="ident">auth_data</span>: <span class="ident">Vec::new</span>(),
 			};
 
-			<span class="ident"><span class="kw">crate</span>::communication::gossip::GossipMessage</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::Commit</span>(
-				<span class="ident"><span class="kw">crate</span>::communication::gossip::FullCommitMessage</span> {
+			<span class="ident">communication::gossip::GossipMessage</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::Commit</span>(
+				<span class="ident">communication::gossip::FullCommitMessage</span> {
 					<span class="ident">round</span>: <span class="ident">Round</span>(<span class="number">2</span>),
 					<span class="ident">set_id</span>: <span class="ident">SetId</span>(<span class="number">0</span>),
 					<span class="ident">message</span>: <span class="ident">commit</span>,
@@ -4993,7 +4989,7 @@
 		<span class="macro">assert!</span>(<span class="ident">val</span>.<span class="ident">message_allowed</span>()(
 			<span class="kw-2">&amp;</span><span class="ident">light_peer</span>,
 			<span class="ident">MessageIntent::Broadcast</span>,
-			<span class="kw-2">&amp;</span><span class="ident"><span class="kw">crate</span>::communication::global_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="number">0</span>),
+			<span class="kw-2">&amp;</span><span class="ident">communication::global_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="number">0</span>),
 			<span class="kw-2">&amp;</span><span class="ident">commit</span>,
 		));
 	}
@@ -5033,8 +5029,8 @@
 				<span class="ident">auth_data</span>: <span class="ident">Vec::new</span>(),
 			};
 
-			<span class="ident"><span class="kw">crate</span>::communication::gossip::GossipMessage</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::Commit</span>(
-				<span class="ident"><span class="kw">crate</span>::communication::gossip::FullCommitMessage</span> {
+			<span class="ident">communication::gossip::GossipMessage</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::Commit</span>(
+				<span class="ident">communication::gossip::FullCommitMessage</span> {
 					<span class="ident">round</span>: <span class="ident">Round</span>(<span class="number">1</span>),
 					<span class="ident">set_id</span>: <span class="ident">SetId</span>(<span class="number">1</span>),
 					<span class="ident">message</span>: <span class="ident">commit</span>,
@@ -5052,7 +5048,7 @@
 		<span class="macro">assert!</span>(<span class="ident">message_allowed</span>(
 			<span class="kw-2">&amp;</span><span class="ident">peer1</span>,
 			<span class="ident">MessageIntent::Broadcast</span>,
-			<span class="kw-2">&amp;</span><span class="ident"><span class="kw">crate</span>::communication::global_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="number">1</span>),
+			<span class="kw-2">&amp;</span><span class="ident">communication::global_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="number">1</span>),
 			<span class="kw-2">&amp;</span><span class="ident">commit</span>,
 		));
 
@@ -5061,7 +5057,7 @@
 		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">message_allowed</span>(
 			<span class="kw-2">&amp;</span><span class="ident">peer2</span>,
 			<span class="ident">MessageIntent::Broadcast</span>,
-			<span class="kw-2">&amp;</span><span class="ident"><span class="kw">crate</span>::communication::global_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="number">1</span>),
+			<span class="kw-2">&amp;</span><span class="ident">communication::global_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="number">1</span>),
 			<span class="kw-2">&amp;</span><span class="ident">commit</span>,
 		));
 	}
@@ -5078,8 +5074,8 @@
 				<span class="ident">auth_data</span>: <span class="ident">Vec::new</span>(),
 			};
 
-			<span class="ident"><span class="kw">crate</span>::communication::gossip::GossipMessage</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::Commit</span>(
-				<span class="ident"><span class="kw">crate</span>::communication::gossip::FullCommitMessage</span> {
+			<span class="ident">communication::gossip::GossipMessage</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::Commit</span>(
+				<span class="ident">communication::gossip::FullCommitMessage</span> {
 					<span class="ident">round</span>: <span class="ident">Round</span>(<span class="ident">round</span>),
 					<span class="ident">set_id</span>: <span class="ident">SetId</span>(<span class="ident">set_id</span>),
 					<span class="ident">message</span>: <span class="ident">commit</span>,
@@ -5099,15 +5095,13 @@
 
 		<span class="comment">// a commit message for round 1 that finalizes the same height as we</span>
 		<span class="comment">// have observed previously should not be expired</span>
-		<span class="macro">assert!</span>(
-			<span class="op">!</span><span class="ident">message_expired</span>(<span class="ident"><span class="kw">crate</span>::communication::global_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="number">1</span>), <span class="kw-2">&amp;</span><span class="ident">commit</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>),)
-		);
+		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">message_expired</span>(<span class="ident">communication::global_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="number">1</span>), <span class="kw-2">&amp;</span><span class="ident">commit</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>),));
 
 		<span class="comment">// it should be expired if it is for a lower block</span>
-		<span class="macro">assert!</span>(<span class="ident">message_expired</span>(<span class="ident"><span class="kw">crate</span>::communication::global_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="number">1</span>), <span class="kw-2">&amp;</span><span class="ident">commit</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>)));
+		<span class="macro">assert!</span>(<span class="ident">message_expired</span>(<span class="ident">communication::global_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="number">1</span>), <span class="kw-2">&amp;</span><span class="ident">commit</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>)));
 
 		<span class="comment">// or the same block height but from the previous round</span>
-		<span class="macro">assert!</span>(<span class="ident">message_expired</span>(<span class="ident"><span class="kw">crate</span>::communication::global_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="number">1</span>), <span class="kw-2">&amp;</span><span class="ident">commit</span>(<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>)));
+		<span class="macro">assert!</span>(<span class="ident">message_expired</span>(<span class="ident">communication::global_topic</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="number">1</span>), <span class="kw-2">&amp;</span><span class="ident">commit</span>(<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>)));
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>

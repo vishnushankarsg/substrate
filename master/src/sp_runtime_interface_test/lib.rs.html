@@ -231,9 +231,6 @@
 <span id="231">231</span>
 <span id="232">232</span>
 <span id="233">233</span>
-<span id="234">234</span>
-<span id="235">235</span>
-<span id="236">236</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -298,17 +295,17 @@
 
 <span class="attribute">#[<span class="ident">test</span>]</span>
 <span class="kw">fn</span> <span class="ident">test_return_data</span>() {
-	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">wasm_binary_unwrap</span>()[..], <span class="string">&quot;test_return_data&quot;</span>);
+	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(<span class="ident">wasm_binary_unwrap</span>(), <span class="string">&quot;test_return_data&quot;</span>);
 }
 
 <span class="attribute">#[<span class="ident">test</span>]</span>
 <span class="kw">fn</span> <span class="ident">test_return_option_data</span>() {
-	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">wasm_binary_unwrap</span>()[..], <span class="string">&quot;test_return_option_data&quot;</span>);
+	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(<span class="ident">wasm_binary_unwrap</span>(), <span class="string">&quot;test_return_option_data&quot;</span>);
 }
 
 <span class="attribute">#[<span class="ident">test</span>]</span>
 <span class="kw">fn</span> <span class="ident">test_set_storage</span>() {
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ext</span> <span class="op">=</span> <span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">wasm_binary_unwrap</span>()[..], <span class="string">&quot;test_set_storage&quot;</span>);
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ext</span> <span class="op">=</span> <span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(<span class="ident">wasm_binary_unwrap</span>(), <span class="string">&quot;test_set_storage&quot;</span>);
 
 	<span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="string">&quot;world&quot;</span>;
 	<span class="macro">assert_eq!</span>(<span class="ident">expected</span>.<span class="ident">as_bytes</span>(), <span class="kw-2">&amp;</span><span class="ident">ext</span>.<span class="ident">ext</span>().<span class="ident">storage</span>(<span class="string">&quot;hello&quot;</span>.<span class="ident">as_bytes</span>()).<span class="ident">unwrap</span>()[..]);
@@ -317,30 +314,30 @@
 <span class="attribute">#[<span class="ident">test</span>]</span>
 <span class="kw">fn</span> <span class="ident">test_return_value_into_mutable_reference</span>() {
 	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(
-		<span class="kw-2">&amp;</span><span class="ident">wasm_binary_unwrap</span>()[..],
+		<span class="ident">wasm_binary_unwrap</span>(),
 		<span class="string">&quot;test_return_value_into_mutable_reference&quot;</span>,
 	);
 }
 
 <span class="attribute">#[<span class="ident">test</span>]</span>
 <span class="kw">fn</span> <span class="ident">test_get_and_return_array</span>() {
-	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">wasm_binary_unwrap</span>()[..], <span class="string">&quot;test_get_and_return_array&quot;</span>);
+	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(<span class="ident">wasm_binary_unwrap</span>(), <span class="string">&quot;test_get_and_return_array&quot;</span>);
 }
 
 <span class="attribute">#[<span class="ident">test</span>]</span>
 <span class="kw">fn</span> <span class="ident">test_array_as_mutable_reference</span>() {
-	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">wasm_binary_unwrap</span>()[..], <span class="string">&quot;test_array_as_mutable_reference&quot;</span>);
+	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(<span class="ident">wasm_binary_unwrap</span>(), <span class="string">&quot;test_array_as_mutable_reference&quot;</span>);
 }
 
 <span class="attribute">#[<span class="ident">test</span>]</span>
 <span class="kw">fn</span> <span class="ident">test_return_input_public_key</span>() {
-	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">wasm_binary_unwrap</span>()[..], <span class="string">&quot;test_return_input_public_key&quot;</span>);
+	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(<span class="ident">wasm_binary_unwrap</span>(), <span class="string">&quot;test_return_input_public_key&quot;</span>);
 }
 
 <span class="attribute">#[<span class="ident">test</span>]</span>
 <span class="kw">fn</span> <span class="ident">host_function_not_found</span>() {
-	<span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">call_wasm_method_with_result</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">wasm_binary_unwrap</span>()[..], <span class="string">&quot;test_return_data&quot;</span>)
-		.<span class="ident">unwrap_err</span>();
+	<span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span>
+		<span class="ident">call_wasm_method_with_result</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>(<span class="ident">wasm_binary_unwrap</span>(), <span class="string">&quot;test_return_data&quot;</span>).<span class="ident">unwrap_err</span>();
 
 	<span class="macro">assert!</span>(<span class="ident">err</span>.<span class="ident">contains</span>(<span class="string">&quot;Instantiation: Export &quot;</span>));
 	<span class="macro">assert!</span>(<span class="ident">err</span>.<span class="ident">contains</span>(<span class="string">&quot; not found&quot;</span>));
@@ -350,7 +347,7 @@
 <span class="attribute">#[<span class="ident">should_panic</span>(<span class="ident">expected</span> <span class="op">=</span> <span class="string">&quot;Invalid utf8 data provided&quot;</span>)]</span>
 <span class="kw">fn</span> <span class="ident">test_invalid_utf8_data_should_return_an_error</span>() {
 	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(
-		<span class="kw-2">&amp;</span><span class="ident">wasm_binary_unwrap</span>()[..],
+		<span class="ident">wasm_binary_unwrap</span>(),
 		<span class="string">&quot;test_invalid_utf8_data_should_return_an_error&quot;</span>,
 	);
 }
@@ -358,7 +355,7 @@
 <span class="attribute">#[<span class="ident">test</span>]</span>
 <span class="kw">fn</span> <span class="ident">test_overwrite_native_function_implementation</span>() {
 	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(
-		<span class="kw-2">&amp;</span><span class="ident">wasm_binary_unwrap</span>()[..],
+		<span class="ident">wasm_binary_unwrap</span>(),
 		<span class="string">&quot;test_overwrite_native_function_implementation&quot;</span>,
 	);
 }
@@ -366,7 +363,7 @@
 <span class="attribute">#[<span class="ident">test</span>]</span>
 <span class="kw">fn</span> <span class="ident">test_u128_i128_as_parameter_and_return_value</span>() {
 	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(
-		<span class="kw-2">&amp;</span><span class="ident">wasm_binary_unwrap</span>()[..],
+		<span class="ident">wasm_binary_unwrap</span>(),
 		<span class="string">&quot;test_u128_i128_as_parameter_and_return_value&quot;</span>,
 	);
 }
@@ -374,7 +371,7 @@
 <span class="attribute">#[<span class="ident">test</span>]</span>
 <span class="kw">fn</span> <span class="ident">test_vec_return_value_memory_is_freed</span>() {
 	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(
-		<span class="kw-2">&amp;</span><span class="ident">wasm_binary_unwrap</span>()[..],
+		<span class="ident">wasm_binary_unwrap</span>(),
 		<span class="string">&quot;test_vec_return_value_memory_is_freed&quot;</span>,
 	);
 }
@@ -382,7 +379,7 @@
 <span class="attribute">#[<span class="ident">test</span>]</span>
 <span class="kw">fn</span> <span class="ident">test_encoded_return_value_memory_is_freed</span>() {
 	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(
-		<span class="kw-2">&amp;</span><span class="ident">wasm_binary_unwrap</span>()[..],
+		<span class="ident">wasm_binary_unwrap</span>(),
 		<span class="string">&quot;test_encoded_return_value_memory_is_freed&quot;</span>,
 	);
 }
@@ -390,7 +387,7 @@
 <span class="attribute">#[<span class="ident">test</span>]</span>
 <span class="kw">fn</span> <span class="ident">test_array_return_value_memory_is_freed</span>() {
 	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(
-		<span class="kw-2">&amp;</span><span class="ident">wasm_binary_unwrap</span>()[..],
+		<span class="ident">wasm_binary_unwrap</span>(),
 		<span class="string">&quot;test_array_return_value_memory_is_freed&quot;</span>,
 	);
 }
@@ -398,14 +395,11 @@
 <span class="attribute">#[<span class="ident">test</span>]</span>
 <span class="kw">fn</span> <span class="ident">test_versionining_with_new_host_works</span>() {
 	<span class="comment">// We call to the new wasm binary with new host function.</span>
-	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">wasm_binary_unwrap</span>()[..], <span class="string">&quot;test_versionning_works&quot;</span>);
+	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(<span class="ident">wasm_binary_unwrap</span>(), <span class="string">&quot;test_versionning_works&quot;</span>);
 
 	<span class="comment">// we call to the old wasm binary with a new host functions</span>
 	<span class="comment">// old versions of host functions should be called and test should be ok!</span>
-	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(
-		<span class="kw-2">&amp;</span><span class="ident">wasm_binary_deprecated_unwrap</span>()[..],
-		<span class="string">&quot;test_versionning_works&quot;</span>,
-	);
+	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(<span class="ident">wasm_binary_deprecated_unwrap</span>(), <span class="string">&quot;test_versionning_works&quot;</span>);
 }
 
 <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -460,7 +454,7 @@
 	<span class="kw">let</span> <span class="ident">_guard</span> <span class="op">=</span> <span class="ident">tracing::subscriber::set_default</span>(<span class="ident">subscriber</span>.<span class="ident">clone</span>());
 
 	<span class="comment">// Call some method to generate a trace</span>
-	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">wasm_binary_unwrap</span>()[..], <span class="string">&quot;test_return_data&quot;</span>);
+	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(<span class="ident">wasm_binary_unwrap</span>(), <span class="string">&quot;test_return_data&quot;</span>);
 
 	<span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="ident">subscriber</span>.<span class="number">0</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
 	<span class="macro">assert!</span>(<span class="ident">inner</span>.<span class="ident">spans</span>.<span class="ident">contains</span>(<span class="string">&quot;return_input_version_1&quot;</span>));
@@ -468,7 +462,7 @@
 
 <span class="attribute">#[<span class="ident">test</span>]</span>
 <span class="kw">fn</span> <span class="ident">test_return_input_as_tuple</span>() {
-	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">wasm_binary_unwrap</span>()[..], <span class="string">&quot;test_return_input_as_tuple&quot;</span>);
+	<span class="ident">call_wasm_method</span>::<span class="op">&lt;</span><span class="ident">HostFunctions</span><span class="op">&gt;</span>(<span class="ident">wasm_binary_unwrap</span>(), <span class="string">&quot;test_return_input_as_tuple&quot;</span>);
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="sp_runtime_interface_test" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>

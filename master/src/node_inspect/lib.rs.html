@@ -579,7 +579,7 @@
 
 		<span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">it</span>
 			.<span class="ident">next</span>()
-			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;Extrinsic index missing: example \&quot;5:0\&quot;&quot;</span>))<span class="question-mark">?</span>
+			.<span class="ident">ok_or</span>(<span class="string">&quot;Extrinsic index missing: example \&quot;5:0\&quot;&quot;</span>)<span class="question-mark">?</span>
 			.<span class="ident">parse</span>()
 			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;Invalid index format: {}&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span>;
 

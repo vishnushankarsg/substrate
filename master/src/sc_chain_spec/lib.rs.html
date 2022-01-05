@@ -194,6 +194,8 @@
 <span id="194">194</span>
 <span id="195">195</span>
 <span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -361,6 +363,8 @@
 	<span class="kw">fn</span> <span class="ident">telemetry_endpoints</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TelemetryEndpoints</span><span class="op">&gt;</span>;
 	<span class="doccomment">/// Network protocol id.</span>
 	<span class="kw">fn</span> <span class="ident">protocol_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>;
+	<span class="doccomment">/// Optional network fork identifier. `None` by default.</span>
+	<span class="kw">fn</span> <span class="ident">fork_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>;
 	<span class="doccomment">/// Additional loosly-typed properties of the chain.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Returns an empty JSON object if &#39;properties&#39; not defined in config</span>

@@ -775,6 +775,14 @@
 <span id="775">775</span>
 <span id="776">776</span>
 <span id="777">777</span>
+<span id="778">778</span>
+<span id="779">779</span>
+<span id="780">780</span>
+<span id="781">781</span>
+<span id="782">782</span>
+<span id="783">783</span>
+<span id="784">784</span>
+<span id="785">785</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -1103,8 +1111,15 @@
 
 	<span class="kw">let</span> <span class="ident">shared_voter_state</span> <span class="op">=</span> <span class="ident">rpc_setup</span>;
 	<span class="kw">let</span> <span class="ident">auth_disc_publish_non_global_ips</span> <span class="op">=</span> <span class="ident">config</span>.<span class="ident">network</span>.<span class="ident">allow_non_globals_in_dht</span>;
+	<span class="kw">let</span> <span class="ident">grandpa_protocol_name</span> <span class="op">=</span> <span class="ident">grandpa::protocol_standard_name</span>(
+		<span class="kw-2">&amp;</span><span class="ident">client</span>.<span class="ident">block_hash</span>(<span class="number">0</span>).<span class="ident">ok</span>().<span class="ident">flatten</span>().<span class="ident">expect</span>(<span class="string">&quot;Genesis block exists; qed&quot;</span>),
+		<span class="kw-2">&amp;</span><span class="ident">config</span>.<span class="ident">chain_spec</span>,
+	);
 
-	<span class="ident">config</span>.<span class="ident">network</span>.<span class="ident">extra_sets</span>.<span class="ident">push</span>(<span class="ident">grandpa::grandpa_peers_set_config</span>());
+	<span class="ident">config</span>
+		.<span class="ident">network</span>
+		.<span class="ident">extra_sets</span>
+		.<span class="ident">push</span>(<span class="ident">grandpa::grandpa_peers_set_config</span>(<span class="ident">grandpa_protocol_name</span>.<span class="ident">clone</span>()));
 	<span class="kw">let</span> <span class="ident">warp_sync</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">grandpa::warp_proof::NetworkProvider::new</span>(
 		<span class="ident">backend</span>.<span class="ident">clone</span>(),
 		<span class="ident">import_setup</span>.<span class="number">1</span>.<span class="ident">shared_authority_set</span>().<span class="ident">clone</span>(),
@@ -1265,6 +1280,7 @@
 		<span class="ident">keystore</span>,
 		<span class="ident">local_role</span>: <span class="ident">role</span>,
 		<span class="ident">telemetry</span>: <span class="ident">telemetry</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">handle</span>()),
+		<span class="ident">protocol_name</span>: <span class="ident">grandpa_protocol_name</span>,
 	};
 
 	<span class="kw">if</span> <span class="ident">enable_grandpa</span> {

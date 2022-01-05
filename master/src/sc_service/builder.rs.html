@@ -1308,7 +1308,7 @@
 		<span class="ident">spawn_handle</span>,
 		<span class="ident">config</span>.<span class="ident">clone</span>(),
 	)<span class="question-mark">?</span>;
-	<span class="prelude-val">Ok</span>(<span class="ident"><span class="kw">crate</span>::client::Client::new</span>(
+	<span class="ident"><span class="kw">crate</span>::client::Client::new</span>(
 		<span class="ident">backend</span>,
 		<span class="ident">executor</span>,
 		<span class="ident">genesis_storage</span>,
@@ -1318,7 +1318,7 @@
 		<span class="ident">prometheus_registry</span>,
 		<span class="ident">telemetry</span>,
 		<span class="ident">config</span>,
-	)<span class="question-mark">?</span>)
+	)
 }
 
 <span class="doccomment">/// Parameters to pass into `build`.</span>

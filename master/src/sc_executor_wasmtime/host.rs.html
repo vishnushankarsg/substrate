@@ -557,7 +557,7 @@
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">instance_id</span>: <span class="ident">u32</span>,
 		<span class="ident">export_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-		<span class="ident">args</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
+		<span class="kw-2">mut</span> <span class="ident">args</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
 		<span class="ident">return_val</span>: <span class="ident">Pointer</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
 		<span class="ident">return_val_len</span>: <span class="ident">u32</span>,
 		<span class="ident">state</span>: <span class="ident">u32</span>,
@@ -565,7 +565,7 @@
 		<span class="macro">trace!</span>(<span class="ident">target</span>: <span class="string">&quot;sp-sandbox&quot;</span>, <span class="string">&quot;invoke, instance_idx={}&quot;</span>, <span class="ident">instance_id</span>);
 
 		<span class="comment">// Deserialize arguments and convert them into wasmi types.</span>
-		<span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="op">&lt;</span><span class="ident">sp_wasm_interface::Value</span><span class="op">&gt;</span><span class="ident">::decode</span>(<span class="kw-2">&amp;mut</span> <span class="kw-2">&amp;</span><span class="ident">args</span>[..])
+		<span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="op">&lt;</span><span class="ident">sp_wasm_interface::Value</span><span class="op">&gt;</span><span class="ident">::decode</span>(<span class="kw-2">&amp;mut</span> <span class="ident">args</span>)
 			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;Can&#39;t decode serialized arguments for the invocation&quot;</span>)<span class="question-mark">?</span>
 			.<span class="ident">into_iter</span>()
 			.<span class="ident">map</span>(<span class="ident">Into::into</span>)

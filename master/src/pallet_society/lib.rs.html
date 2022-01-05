@@ -3118,7 +3118,7 @@
 }
 
 <span class="doccomment">/// Pick a new PRN, in the range [0, `max`] (inclusive).</span>
-<span class="kw">fn</span> <span class="ident">pick_usize</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">R</span>: <span class="ident">RngCore</span><span class="op">&gt;</span>(<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="ident">R</span>, <span class="ident">max</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
+<span class="kw">fn</span> <span class="ident">pick_usize</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">RngCore</span><span class="op">&gt;</span>(<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="ident">R</span>, <span class="ident">max</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
 	(<span class="ident">rng</span>.<span class="ident">next_u32</span>() <span class="op">%</span> (<span class="ident">max</span> <span class="kw">as</span> <span class="ident">u32</span> <span class="op">+</span> <span class="number">1</span>)) <span class="kw">as</span> <span class="ident">usize</span>
 }
 
@@ -3144,9 +3144,9 @@
 					<span class="comment">// Skip ahead to the suggested position</span>
 					.<span class="ident">skip</span>(<span class="ident">pos</span>)
 					<span class="comment">// Keep skipping ahead until the position changes</span>
-					.<span class="ident">skip_while</span>(<span class="op">|</span>(<span class="kw">_</span>, <span class="ident">x</span>)<span class="op">|</span> <span class="ident">x</span>.<span class="ident">value</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">bids</span>[<span class="ident">pos</span>].<span class="ident">value</span>)
 					<span class="comment">// Get the element when things changed</span>
-					.<span class="ident">next</span>();
+					.<span class="ident">find</span>(<span class="op">|</span>(<span class="kw">_</span>, <span class="ident">x</span>)<span class="op">|</span> <span class="ident">x</span>.<span class="ident">value</span> <span class="op">&gt;</span> <span class="ident">bids</span>[<span class="ident">pos</span>].<span class="ident">value</span>);
+
 				<span class="comment">// If the element is not at the end of the list, insert the new element</span>
 				<span class="comment">// in the spot.</span>
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">p</span>, <span class="kw">_</span>)) <span class="op">=</span> <span class="ident">different_bid</span> {
@@ -3179,7 +3179,7 @@
 	<span class="doccomment">/// Check a user is a bid.</span>
 	<span class="kw">fn</span> <span class="ident">is_bid</span>(<span class="ident">bids</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Bid</span><span class="op">&lt;</span><span class="ident">T::AccountId</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">who</span>: <span class="kw-2">&amp;</span><span class="ident">T::AccountId</span>) -&gt; <span class="ident">bool</span> {
 		<span class="comment">// Bids are ordered by `value`, so we cannot binary search for a user.</span>
-		<span class="ident">bids</span>.<span class="ident">iter</span>().<span class="ident">find</span>(<span class="op">|</span><span class="ident">bid</span><span class="op">|</span> <span class="ident">bid</span>.<span class="ident">who</span> <span class="op">==</span> <span class="kw-2">*</span><span class="ident">who</span>).<span class="ident">is_some</span>()
+		<span class="ident">bids</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">bid</span><span class="op">|</span> <span class="ident">bid</span>.<span class="ident">who</span> <span class="op">==</span> <span class="kw-2">*</span><span class="ident">who</span>)
 	}
 
 	<span class="doccomment">/// Check a user is a candidate.</span>

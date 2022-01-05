@@ -1050,6 +1050,25 @@
 <span id="1050">1050</span>
 <span id="1051">1051</span>
 <span id="1052">1052</span>
+<span id="1053">1053</span>
+<span id="1054">1054</span>
+<span id="1055">1055</span>
+<span id="1056">1056</span>
+<span id="1057">1057</span>
+<span id="1058">1058</span>
+<span id="1059">1059</span>
+<span id="1060">1060</span>
+<span id="1061">1061</span>
+<span id="1062">1062</span>
+<span id="1063">1063</span>
+<span id="1064">1064</span>
+<span id="1065">1065</span>
+<span id="1066">1066</span>
+<span id="1067">1067</span>
+<span id="1068">1068</span>
+<span id="1069">1069</span>
+<span id="1070">1070</span>
+<span id="1071">1071</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1119,9 +1138,27 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">tests</span>;
 
-<span class="doccomment">/// Name of the notifications protocol used by Grandpa. Must be registered towards the networking</span>
-<span class="doccomment">/// in order for Grandpa to properly function.</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">GRANDPA_PROTOCOL_NAME</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;/paritytech/grandpa/1&quot;</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">grandpa_protocol_name</span> {
+	<span class="kw">use</span> <span class="ident">sc_chain_spec::ChainSpec</span>;
+
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const</span> <span class="ident">NAME</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;/grandpa/1&quot;</span>;
+	<span class="doccomment">/// Old names for the notifications protocol, used for backward compatibility.</span>
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const</span> <span class="ident">LEGACY_NAMES</span>: [<span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>; <span class="number">1</span>] <span class="op">=</span> [<span class="string">&quot;/paritytech/grandpa/1&quot;</span>];
+
+	<span class="doccomment">/// Name of the notifications protocol used by GRANDPA.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Must be registered towards the networking in order for GRANDPA to properly function.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">standard_name</span><span class="op">&lt;</span><span class="ident">Hash</span>: <span class="ident">std::fmt::Display</span><span class="op">&gt;</span>(
+		<span class="ident">genesis_hash</span>: <span class="kw-2">&amp;</span><span class="ident">Hash</span>,
+		<span class="ident">chain_spec</span>: <span class="kw-2">&amp;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ChainSpec</span><span class="op">&gt;</span>,
+	) -&gt; <span class="ident">std::borrow::Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">chain_prefix</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">chain_spec</span>.<span class="ident">fork_id</span>() {
+			<span class="prelude-val">Some</span>(<span class="ident">fork_id</span>) =&gt; <span class="macro">format!</span>(<span class="string">&quot;/{}/{}&quot;</span>, <span class="ident">genesis_hash</span>, <span class="ident">fork_id</span>),
+			<span class="prelude-val">None</span> =&gt; <span class="macro">format!</span>(<span class="string">&quot;/{}&quot;</span>, <span class="ident">genesis_hash</span>),
+		};
+		<span class="macro">format!</span>(<span class="string">&quot;{}{}&quot;</span>, <span class="ident">chain_prefix</span>, <span class="ident">NAME</span>).<span class="ident">into</span>()
+	}
+}
 
 <span class="comment">// cost scalars for reporting peers.</span>
 <span class="kw">mod</span> <span class="ident">cost</span> {
@@ -1272,13 +1309,14 @@
 		<span class="ident">prometheus_registry</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Registry</span><span class="op">&gt;</span>,
 		<span class="ident">telemetry</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TelemetryHandle</span><span class="op">&gt;</span>,
 	) -&gt; <span class="self">Self</span> {
+		<span class="kw">let</span> <span class="ident">protocol</span> <span class="op">=</span> <span class="ident">config</span>.<span class="ident">protocol_name</span>.<span class="ident">clone</span>();
 		<span class="kw">let</span> (<span class="ident">validator</span>, <span class="ident">report_stream</span>) <span class="op">=</span>
 			<span class="ident">GossipValidator::new</span>(<span class="ident">config</span>, <span class="ident">set_state</span>.<span class="ident">clone</span>(), <span class="ident">prometheus_registry</span>, <span class="ident">telemetry</span>.<span class="ident">clone</span>());
 
 		<span class="kw">let</span> <span class="ident">validator</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">validator</span>);
 		<span class="kw">let</span> <span class="ident">gossip_engine</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">Mutex::new</span>(<span class="ident">GossipEngine::new</span>(
 			<span class="ident">service</span>.<span class="ident">clone</span>(),
-			<span class="ident">GRANDPA_PROTOCOL_NAME</span>,
+			<span class="ident">protocol</span>,
 			<span class="ident">validator</span>.<span class="ident">clone</span>(),
 			<span class="ident">prometheus_registry</span>,
 		)));
