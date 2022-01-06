@@ -1308,7 +1308,6 @@
 <span id="1308">1308</span>
 <span id="1309">1309</span>
 <span id="1310">1310</span>
-<span id="1311">1311</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -2556,13 +2555,12 @@
 		<span class="comment">// this will clearly results in an inconsistent state, but it should not matter for a</span>
 		<span class="comment">// benchmark.</span>
 		<span class="kw">let</span> <span class="ident">active</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">weight</span>.<span class="ident">try_into</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ()).<span class="ident">unwrap</span>();
-		<span class="kw">let</span> <span class="ident">ledger</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident"><span class="self">Self</span>::ledger</span>(<span class="ident">who</span>) {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ledger</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident"><span class="self">Self</span>::ledger</span>(<span class="ident">who</span>) {
 			<span class="prelude-val">None</span> =&gt; <span class="ident">StakingLedger::default_from</span>(<span class="ident">who</span>.<span class="ident">clone</span>()),
-			<span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">l</span>) =&gt; {
-				<span class="ident">l</span>.<span class="ident">active</span> <span class="op">=</span> <span class="ident">active</span>;
-				<span class="ident">l</span>
-			},
+			<span class="prelude-val">Some</span>(<span class="ident">l</span>) =&gt; <span class="ident">l</span>,
 		};
+		<span class="ident">ledger</span>.<span class="ident">active</span> <span class="op">=</span> <span class="ident">active</span>;
+
 		<span class="op">&lt;</span><span class="ident">Ledger</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">who</span>, <span class="ident">ledger</span>);
 		<span class="op">&lt;</span><span class="ident">Bonded</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">who</span>, <span class="ident">who</span>);
 
