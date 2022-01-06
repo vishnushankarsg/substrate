@@ -982,7 +982,7 @@
 
 		<span class="comment">// Notify with a header and justification</span>
 		<span class="kw">let</span> <span class="ident">justification</span> <span class="op">=</span> <span class="ident">create_justification</span>();
-		<span class="ident">justification_sender</span>.<span class="ident">notify</span>(<span class="op">|</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="ident">justification</span>.<span class="ident">clone</span>())).<span class="ident">unwrap</span>();
+		<span class="ident">justification_sender</span>.<span class="ident">notify</span>(<span class="op">|</span><span class="op">|</span> <span class="prelude-val">Ok</span>::<span class="op">&lt;</span><span class="kw">_</span>, ()<span class="op">&gt;</span>(<span class="ident">justification</span>.<span class="ident">clone</span>())).<span class="ident">unwrap</span>();
 
 		<span class="comment">// Inspect what we received</span>
 		<span class="kw">let</span> <span class="ident">recv</span> <span class="op">=</span> <span class="ident">futures::executor::block_on</span>(<span class="ident">receiver</span>.<span class="ident">take</span>(<span class="number">1</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>());

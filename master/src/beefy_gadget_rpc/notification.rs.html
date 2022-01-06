@@ -64,16 +64,16 @@
 <span class="doccomment">/// The given bytes should be the SCALE-encoded representation of a</span>
 <span class="doccomment">/// `beefy_primitives::SignedCommitment`.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SignedCommitment</span>(<span class="ident">sp_core::Bytes</span>);
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">EncodedSignedCommitment</span>(<span class="ident">sp_core::Bytes</span>);
 
-<span class="kw">impl</span> <span class="ident">SignedCommitment</span> {
+<span class="kw">impl</span> <span class="ident">EncodedSignedCommitment</span> {
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(
-		<span class="ident">signed_commitment</span>: <span class="ident">beefy_gadget::notification::SignedCommitment</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
+		<span class="ident">signed_commitment</span>: <span class="ident">beefy_gadget::notification::BeefySignedCommitment</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
 	) -&gt; <span class="self">Self</span>
 	<span class="kw">where</span>
 		<span class="ident">Block</span>: <span class="ident">BlockT</span>,
 	{
-		<span class="ident">SignedCommitment</span>(<span class="ident">signed_commitment</span>.<span class="ident">encode</span>().<span class="ident">into</span>())
+		<span class="ident">EncodedSignedCommitment</span>(<span class="ident">signed_commitment</span>.<span class="ident">encode</span>().<span class="ident">into</span>())
 	}
 }
 </code></pre></div>

@@ -184,6 +184,12 @@
 <span id="184">184</span>
 <span id="185">185</span>
 <span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -216,6 +222,8 @@
 <span class="kw">use</span> <span class="ident">sp_runtime::traits::Block</span>;
 
 <span class="kw">use</span> <span class="ident">beefy_primitives::BeefyApi</span>;
+
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::notification</span>::{<span class="ident">BeefyBestBlockSender</span>, <span class="ident">BeefySignedCommitmentSender</span>};
 
 <span class="kw">mod</span> <span class="ident">error</span>;
 <span class="kw">mod</span> <span class="ident">gossip</span>;
@@ -307,7 +315,9 @@
 	<span class="doccomment">/// Gossip network</span>
 	<span class="kw">pub</span> <span class="ident">network</span>: <span class="ident">N</span>,
 	<span class="doccomment">/// BEEFY signed commitment sender</span>
-	<span class="kw">pub</span> <span class="ident">signed_commitment_sender</span>: <span class="ident">notification::BeefySignedCommitmentSender</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">signed_commitment_sender</span>: <span class="ident">BeefySignedCommitmentSender</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+	<span class="doccomment">/// BEEFY best block sender</span>
+	<span class="kw">pub</span> <span class="ident">beefy_best_block_sender</span>: <span class="ident">BeefyBestBlockSender</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Minimal delta between blocks, BEEFY should vote for</span>
 	<span class="kw">pub</span> <span class="ident">min_block_delta</span>: <span class="ident">u32</span>,
 	<span class="doccomment">/// Prometheus metric registry</span>
@@ -333,6 +343,7 @@
 		<span class="ident">key_store</span>,
 		<span class="ident">network</span>,
 		<span class="ident">signed_commitment_sender</span>,
+		<span class="ident">beefy_best_block_sender</span>,
 		<span class="ident">min_block_delta</span>,
 		<span class="ident">prometheus_registry</span>,
 		<span class="ident">protocol_name</span>,
@@ -360,6 +371,7 @@
 		<span class="ident">backend</span>,
 		<span class="ident">key_store</span>: <span class="ident">key_store</span>.<span class="ident">into</span>(),
 		<span class="ident">signed_commitment_sender</span>,
+		<span class="ident">beefy_best_block_sender</span>,
 		<span class="ident">gossip_engine</span>,
 		<span class="ident">gossip_validator</span>,
 		<span class="ident">min_block_delta</span>,
