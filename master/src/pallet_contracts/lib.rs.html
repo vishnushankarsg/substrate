@@ -912,6 +912,26 @@
 <span id="912">912</span>
 <span id="913">913</span>
 <span id="914">914</span>
+<span id="915">915</span>
+<span id="916">916</span>
+<span id="917">917</span>
+<span id="918">918</span>
+<span id="919">919</span>
+<span id="920">920</span>
+<span id="921">921</span>
+<span id="922">922</span>
+<span id="923">923</span>
+<span id="924">924</span>
+<span id="925">925</span>
+<span id="926">926</span>
+<span id="927">927</span>
+<span id="928">928</span>
+<span id="929">929</span>
+<span id="930">930</span>
+<span id="931">931</span>
+<span id="932">932</span>
+<span id="933">933</span>
+<span id="934">934</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -1168,11 +1188,30 @@
 		<span class="doccomment">/// In other words only the origin called &quot;root contract&quot; is allowed to execute then.</span>
 		<span class="kw">type</span> <span class="ident">CallStack</span>: <span class="ident">smallvec::Array</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">Frame</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
-		<span class="doccomment">/// The maximum number of tries that can be queued for deletion.</span>
+		<span class="doccomment">/// The maximum number of contracts that can be pending for deletion.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// When a contract is deleted by calling `seal_terminate` it becomes inaccessible</span>
+		<span class="doccomment">/// immediately, but the deletion of the storage items it has accumulated is performed</span>
+		<span class="doccomment">/// later. The contract is put into the deletion queue. This defines how many</span>
+		<span class="doccomment">/// contracts can be queued up at the same time. If that limit is reached `seal_terminate`</span>
+		<span class="doccomment">/// will fail. The action must be retried in a later block in that case.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// The reasons for limiting the queue depth are:</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// 1. The queue is in storage in order to be persistent between blocks. We want to limit</span>
+		<span class="doccomment">/// 	the amount of storage that can be consumed.</span>
+		<span class="doccomment">/// 2. The queue is stored in a vector and needs to be decoded as a whole when reading</span>
+		<span class="doccomment">///		it at the end of each block. Longer queues take more weight to decode and hence</span>
+		<span class="doccomment">///		limit the amount of items that can be deleted per block.</span>
 		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
 		<span class="kw">type</span> <span class="ident">DeletionQueueDepth</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>;
 
 		<span class="doccomment">/// The maximum amount of weight that can be consumed per block for lazy trie removal.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// The amount of weight that is dedicated per block to work on the deletion queue. Larger</span>
+		<span class="doccomment">/// values allow more trie keys to be deleted in each block but reduce the amount of</span>
+		<span class="doccomment">/// weight that is left for transactions. See [`Self::DeletionQueueDepth`] for more</span>
+		<span class="doccomment">/// information about the deletion queue.</span>
 		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
 		<span class="kw">type</span> <span class="ident">DeletionWeightLimit</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">Weight</span><span class="op">&gt;</span>;
 
@@ -1185,6 +1224,7 @@
 		<span class="kw">type</span> <span class="ident">DepositPerByte</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 		<span class="doccomment">/// The amount of balance a caller has to pay for each storage item.</span>
+		<span class="doccomment">///</span>
 		<span class="doccomment">/// # Note</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Changing this value for an existing chain might need a storage migration.</span>

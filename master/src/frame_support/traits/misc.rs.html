@@ -688,6 +688,16 @@
 <span id="688">688</span>
 <span id="689">689</span>
 <span id="690">690</span>
+<span id="691">691</span>
+<span id="692">692</span>
+<span id="693">693</span>
+<span id="694">694</span>
+<span id="695">695</span>
+<span id="696">696</span>
+<span id="697">697</span>
+<span id="698">698</span>
+<span id="699">699</span>
+<span id="700">700</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -712,6 +722,16 @@
 <span class="kw">use</span> <span class="ident">scale_info</span>::{<span class="ident">build::Fields</span>, <span class="ident">meta_type</span>, <span class="ident">Path</span>, <span class="ident">Type</span>, <span class="ident">TypeInfo</span>, <span class="ident">TypeParameter</span>};
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{<span class="ident">traits::Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>, <span class="ident">DispatchError</span>};
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">cmp::Ordering</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>};
+
+<span class="doccomment">/// Try and collect into a collection `C`.</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">TryCollect</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span> {
+	<span class="kw">type</span> <span class="ident">Error</span>;
+	<span class="doccomment">/// Consume self and try to collect the results into `C`.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// This is useful in preventing the undesirable `.collect().try_into()` call chain on</span>
+	<span class="doccomment">/// collections that need to be converted into a bounded type (e.g. `BoundedVec`).</span>
+	<span class="kw">fn</span> <span class="ident">try_collect</span>(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span>;
+}
 
 <span class="doccomment">/// Anything that can have a `::len()` method.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Len</span> {
