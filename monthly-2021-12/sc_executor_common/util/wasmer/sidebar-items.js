@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["MemoryWrapper","In order to enforce memory access protocol to the backend memory we wrap it with `RefCell` and encapsulate all memory operations."]]});

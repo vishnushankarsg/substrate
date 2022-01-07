@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["SubstrateWeight","Weights for pallet_example_basic using the Substrate node and recommended hardware."]],"trait":[["WeightInfo","Weight functions needed for pallet_example_basic."]]});
