@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Singlepass",""],["SinglepassCompiler","A compiler that compiles a WebAssembly module with Singlepass. It does the compilation in one pass"]]});
