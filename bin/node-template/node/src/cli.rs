@@ -1,4 +1,26 @@
-use sc_cli::RunCmd;
+use clap::ArgEnum;
+
+use sc_cli::CliConfiguration;
+
+#[derive(ArgEnum, Copy, Debug, Clone, PartialEq)]
+pub enum NodeProcessingRole {
+    Aggregator,
+	LogicProvider
+}
+
+impl std::str::FromStr for NodeProcessingRole {
+	type Err = String;
+	fn from_str(s: &str) -> Result<Self, String> {
+		if s.eq_ignore_ascii_case("aggregator") {
+			Ok(Self::Aggregator)
+		} else if s.eq_ignore_ascii_case("logicprovider") {
+			Ok(Self::LogicProvider)
+		} else {
+			Err(format!("Unknown string variant given for node-processing-role cli flag"))
+		}
+	}
+}
+
 
 #[derive(Debug, clap::Parser)]
 pub struct Cli {
@@ -7,6 +29,26 @@ pub struct Cli {
 
 	#[clap(flatten)]
 	pub run: RunCmd,
+}
+
+#[derive(Debug, clap::Parser)]
+pub struct RunCmd {
+	#[clap(flatten)]
+	pub base: sc_cli::RunCmd,
+
+	/// Run node as aggregator or logic provider.
+	#[clap(long)]
+	pub processing_role: NodeProcessingRole,
+}
+
+impl CliConfiguration for RunCmd {
+	fn shared_params(&self) -> &sc_cli::SharedParams {
+		&self.base.shared_params
+	}
+
+	fn database_params(&self) -> Option<&sc_cli::DatabaseParams> {
+		Some(&self.base.database_params().unwrap())
+	}
 }
 
 #[derive(Debug, clap::Subcommand)]

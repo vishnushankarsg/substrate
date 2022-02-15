@@ -13,6 +13,8 @@ use sp_consensus_aura::sr25519::AuthorityPair as AuraPair;
 use std::{sync::Arc, time::Duration};
 use sp_runtime::generic;
 
+use crate::cli::NodeProcessingRole;
+
 // Our native executor instance.
 pub struct ExecutorDispatch;
 
@@ -159,7 +161,7 @@ fn remote_keystore(_url: &String) -> Result<Arc<LocalKeystore>, &'static str> {
 }
 
 /// Builds a new service for a full client.
-pub fn new_full(mut config: Configuration) -> Result<TaskManager, ServiceError> {
+pub fn new_full(mut config: Configuration, processing_role: NodeProcessingRole) -> Result<TaskManager, ServiceError> {
 	let sc_service::PartialComponents {
 		client,
 		backend,
@@ -345,11 +347,25 @@ pub fn new_full(mut config: Configuration) -> Result<TaskManager, ServiceError> 
 
 	log::info!("creating tx submission task");
 	let task = run_oracle_unsigned_tx_submission(client.clone());
-	task_manager.spawn_handle().spawn_blocking(
-		"tx_submission",
-		None,
-		task,
-	);
+
+	// Check for flag passed in cli start
+	if processing_role == NodeProcessingRole::Aggregator {
+		log::info!("now running task as an aggregator node");
+		// Todo: run Aggregator task...
+		task_manager.spawn_handle().spawn_blocking(
+			"tx_submission",
+			None,
+			task,
+		);
+	} else {
+		log::info!("Running task as a Logic Provider node");
+		// Todo: run Logic Provider task...
+		task_manager.spawn_handle().spawn_blocking(
+			"tx_submission",
+			None,
+			task,
+		);
+	}
 
 	network_starter.start_network();
 	Ok(task_manager)
