@@ -31,8 +31,10 @@ pub use frame_support::{
 		constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND},
 		IdentityFee, Weight,
 	},
-	StorageValue,
+	StorageValue, BoundedVec
 };
+
+
 pub use pallet_balances::Call as BalancesCall;
 pub use pallet_timestamp::Call as TimestampCall;
 pub use pallet_template::Call as TemplateCall;
@@ -477,8 +479,21 @@ impl_runtime_apis! {
 	}
 
 	impl construct_extrinsic::ConstructExtrinsicApi<Block> for Runtime {
-		fn submit_unsigned_do_something(something: u32) -> Result<(), ()> {
-			TemplateModule::submit_unsigned_do_something(something)
+		// fn submit_unsigned_do_something(something: u32) -> Result<(), ()> {
+		// 	TemplateModule::submit_unsigned_do_something(something)
+		// }
+
+		/// Function to serve as a runtime api-available process for the Logic Providers
+		/// to submit a hash of their processing result to the runtime
+		fn submit_processing_result_hash(hash: Hash) -> Result<(), ()> {
+			TemplateModule::submit_processing_result_hash(hash)
+		}
+
+		/// The inverse of the above function, but should be used by the Aggregator nodes
+		/// for their work in verifying the hashes
+		fn get_processing_result_hash() -> Option<Hash> {
+			// Get the result of the Logic Provider's processing of the OE from the pallet's storage item
+			TemplateModule::get_something()
 		}
 	}
 

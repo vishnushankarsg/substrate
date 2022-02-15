@@ -14,10 +14,14 @@ mod tests;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
+use frame_support::{BoundedVec, inherent::Vec, traits::ConstU32};
+use sp_core::H256;
+
 #[frame_support::pallet]
 pub mod pallet {
-	use frame_support::pallet_prelude::*;
+	use frame_support::{pallet_prelude::*, ensure, inherent::Vec, BoundedVec};
 	use frame_system::pallet_prelude::*;
+	use super::H256;
 
 	/// Configure the pallet by specifying the parameters and types on which it depends.
 	#[pallet::config]
@@ -33,10 +37,10 @@ pub mod pallet {
 	// The pallet's runtime storage items.
 	// https://docs.substrate.io/v3/runtime/storage
 	#[pallet::storage]
-	#[pallet::getter(fn something)]
+	#[pallet::getter(fn get_something)]
 	// Learn more about declaring storage items:
 	// https://docs.substrate.io/v3/runtime/storage#declaring-storage-items
-	pub type Something<T> = StorageValue<_, u32>;
+	pub type Something<T> = StorageValue<_, H256>;
 
 	// Pallets use events to inform users when important changes are made.
 	// https://docs.substrate.io/v3/runtime/events-and-errors
@@ -46,7 +50,7 @@ pub mod pallet {
 		/// Event documentation should end with an array that provides descriptive names for event
 		/// parameters. [something, who]
 		SomethingStored(u32, T::AccountId),
-		SomethingStoredUnsigned(u32),
+		SomethingStoredUnsigned(H256),
 	}
 
 	// Errors inform users that something went wrong.
@@ -55,7 +59,7 @@ pub mod pallet {
 		/// Error names should be descriptive.
 		NoneValue,
 		/// Errors should have helpful documentation associated with them.
-		StorageOverflow,
+		StorageOverflow
 	}
 
 	// Dispatchable functions allows users to interact with the pallet and invoke state changes.
@@ -66,56 +70,16 @@ pub mod pallet {
 		/// An example dispatchable that takes a singles value as a parameter, writes the value to
 		/// storage and emits an event. This function must be dispatched by a signed extrinsic.
 		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-		pub fn do_something(origin: OriginFor<T>, something: u32) -> DispatchResult {
-			// Check that the extrinsic was signed and get the signer.
-			// This function will return an error if the extrinsic is not signed.
-			// https://docs.substrate.io/v3/runtime/origins
-			let who = ensure_signed(origin)?;
-
-			// Update storage.
-			<Something<T>>::put(something);
-
-			// Emit an event.
-			Self::deposit_event(Event::SomethingStored(something, who));
-			// Return a successful DispatchResultWithPostInfo
-			Ok(())
-		}
-
-		/// An example dispatchable that takes a singles value as a parameter, writes the value to
-		/// storage and emits an event. This function must be dispatched by a signed extrinsic.
-		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-		pub fn do_something_unsigned(origin: OriginFor<T>, something: u32) -> DispatchResult {
-			// Check that the extrinsic was signed and get the signer.
-			// This function will return an error if the extrinsic is not signed.
-			// https://docs.substrate.io/v3/runtime/origins
+		pub fn do_something_unsigned(origin: OriginFor<T>, something: H256) -> DispatchResult {
 			ensure_none(origin)?;
 
 			// Update storage.
-			<Something<T>>::put(something);
+			<Something<T>>::put(something.clone());
 
 			// Emit an event.
 			Self::deposit_event(Event::SomethingStoredUnsigned(something));
 			// Return a successful DispatchResultWithPostInfo
 			Ok(())
-		}
-
-		/// An example dispatchable that may throw a custom error.
-		#[pallet::weight(10_000 + T::DbWeight::get().reads_writes(1,1))]
-		pub fn cause_error(origin: OriginFor<T>) -> DispatchResult {
-			let _who = ensure_signed(origin)?;
-
-			// Read a value from storage.
-			match <Something<T>>::get() {
-				// Return an error if the value has not been set.
-				None => Err(Error::<T>::NoneValue)?,
-				Some(old) => {
-					// Increment the value read from storage; will error in the event of overflow.
-					let new = old.checked_add(1).ok_or(Error::<T>::StorageOverflow)?;
-					// Update the value in storage with the incremented result.
-					<Something<T>>::put(new);
-					Ok(())
-				},
-			}
 		}
 	}
 
@@ -143,7 +107,7 @@ pub mod pallet {
 					// producer), since for instance in some schemes others may copy your solution and
 					// claim a reward.
 					.propagate(true)
-					.and_provides(*something)
+					.and_provides(&something)
 					.build()
 			} else {
 				InvalidTransaction::Call.into()
@@ -157,25 +121,9 @@ where
 	// We use `offchain::SendTransactionTypes` for unsigned extrinsic creation and submission.
 	T: Config + frame_system::offchain::SendTransactionTypes<Call<T>>,
 {
-	pub fn submit_unsigned_do_something(something: u32) -> Result<(), ()> {
-		use frame_system::offchain::SubmitTransaction;
 
-		let call = Call::do_something_unsigned { something };
-
-		match SubmitTransaction::<T, Call<T>>::submit_unsigned_transaction(call.into()) {
-			Ok(()) => log::info!(
-				target: "runtime::template",
-				"Submitted something {}.",
-				something
-			),
-			Err(e) => log::error!(
-				target: "runtime::template",
-				"Error submitting something ({}): {:?}",
-				something,
-				e,
-			),
-		}
-
+	pub fn submit_processing_result_hash(hash: H256) -> Result<(), ()> {
+		let call = Call::<T>::64 { something: hash };
 		Ok(())
 	}
 }

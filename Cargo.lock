@@ -1068,8 +1068,11 @@ checksum = "245097e9a4535ee1e3e3931fcfcd55a796a44c643e8596ff6566d68f09b87bbc"
 name = "construct-extrinsic"
 version = "0.1.0"
 dependencies = [
+ "frame-support",
  "sp-api",
+ "sp-core",
  "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]

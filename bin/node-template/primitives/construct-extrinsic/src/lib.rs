@@ -17,10 +17,20 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
+use sp_core::H256;
+
+pub use frame_support::{
+	traits::ConstU32, BoundedVec
+};
+
 sp_api::decl_runtime_apis! {
 	pub trait ConstructExtrinsicApi {
-		fn submit_unsigned_do_something(
-			something: u32
+		/// For submission of the processing result of the OE by the EWF Logic Provider library
+		fn submit_processing_result_hash(
+			hash: H256
 		) -> Result<(), ()>;
+
+		// For getting the resulting hash. This shold be called by the aggregator node
+		fn get_processing_result_hash() -> Option<H256>;
 	}
 }

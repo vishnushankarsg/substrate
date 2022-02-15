@@ -375,6 +375,7 @@ use sp_api::BlockId;
 use sp_runtime::traits::One;
 use sp_keyring::Sr25519Keyring;
 use construct_extrinsic::ConstructExtrinsicApi;
+use sp_core::H256;
 
 async fn run_oracle_unsigned_tx_submission<B, C>(
 	client: Arc<C>,
@@ -399,10 +400,13 @@ where
 			let sender = Sr25519Keyring::Alice.pair();
 			async move {
 				let something = fetch_price().await;
+
+				let test = RuntimeHash::from_low_u64_be(something.into());
+
 				let best_hash = client.info().best_hash;
 
 				let r = client.runtime_api()
-					.submit_unsigned_do_something(&generic::BlockId::Hash(best_hash), something)
+					.submit_processing_result_hash(&generic::BlockId::Hash(best_hash), test)
 					.expect("tx submission shouldn't fail");
 
 				log::info!("[{:?}] submitted unsigned tx. result: {:?}", elapsed, r);
@@ -436,8 +440,8 @@ where
 			let sender = Sr25519Keyring::Alice.pair();
 			async move {
 				let price = fetch_price().await;
-				let something = price;
-				let call = node_template_runtime::TemplateCall::do_something {
+				let something = H256::from_low_u64_be(price.into());
+				let call = node_template_runtime::TemplateCall::do_something_unsigned {
 					something
 				};
 				log::info!("[{:?}] creating extrinsic", elapsed);
