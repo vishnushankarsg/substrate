@@ -86,7 +86,6 @@
 <span id="86">86</span>
 <span id="87">87</span>
 <span id="88">88</span>
-<span id="89">89</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -110,30 +109,30 @@
 	<span class="ident">NetworkSchemeFlag</span>, <span class="ident">OutputTypeFlag</span>,
 };
 <span class="kw">use</span> <span class="ident">bip39</span>::{<span class="ident">Language</span>, <span class="ident">Mnemonic</span>, <span class="ident">MnemonicType</span>};
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
+<span class="kw">use</span> <span class="ident">clap::Parser</span>;
 
 <span class="doccomment">/// The `generate` command</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>, <span class="ident">Clone</span>)]</span>
-<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;generate&quot;</span>, <span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Generate a random account&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Parser</span>)]</span>
+<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;generate&quot;</span>, <span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Generate a random account&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GenerateCmd</span> {
 	<span class="doccomment">/// The number of words in the phrase to generate. One of 12 (default), 15, 18, 21 and 24.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">short</span> <span class="op">=</span> <span class="string">&quot;w&quot;</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;WORDS&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">short</span> <span class="op">=</span> <span class="string">&#39;w&#39;</span>, <span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;WORDS&quot;</span>)]</span>
 	<span class="ident">words</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
 
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">keystore_params</span>: <span class="ident">KeystoreParams</span>,
 
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">network_scheme</span>: <span class="ident">NetworkSchemeFlag</span>,
 
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">output_scheme</span>: <span class="ident">OutputTypeFlag</span>,
 
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">crypto_scheme</span>: <span class="ident">CryptoSchemeFlag</span>,
 }
 
@@ -167,12 +166,11 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
-	<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::GenerateCmd</span>;
-	<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
+	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">generate</span>() {
-		<span class="kw">let</span> <span class="ident">generate</span> <span class="op">=</span> <span class="ident">GenerateCmd::from_iter</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;generate&quot;</span>, <span class="string">&quot;--password&quot;</span>, <span class="string">&quot;12345&quot;</span>]);
+		<span class="kw">let</span> <span class="ident">generate</span> <span class="op">=</span> <span class="ident">GenerateCmd::parse_from</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;generate&quot;</span>, <span class="string">&quot;--password&quot;</span>, <span class="string">&quot;12345&quot;</span>]);
 		<span class="macro">assert!</span>(<span class="ident">generate</span>.<span class="ident">run</span>().<span class="ident">is_ok</span>())
 	}
 }

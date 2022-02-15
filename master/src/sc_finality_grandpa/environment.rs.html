@@ -2032,7 +2032,7 @@
 	<span class="kw">let</span> <span class="ident">tree_route</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">tree_route_res</span> {
 		<span class="prelude-val">Ok</span>(<span class="ident">tree_route</span>) =&gt; <span class="ident">tree_route</span>,
 		<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
-			<span class="macro">debug!</span>(<span class="ident">target</span>: <span class="string">&quot;afg&quot;</span>, <span class="string">&quot;Encountered error computing ancestry between block {:?} and base {:?}: {:?}&quot;</span>,
+			<span class="macro">debug!</span>(<span class="ident">target</span>: <span class="string">&quot;afg&quot;</span>, <span class="string">&quot;Encountered error computing ancestry between block {:?} and base {:?}: {}&quot;</span>,
 				   <span class="ident">block</span>, <span class="ident">base</span>, <span class="ident">e</span>);
 
 			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">GrandpaError::NotDescendent</span>)
@@ -2521,7 +2521,7 @@
 	) {
 		<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="string">&quot;afg&quot;</span>, <span class="string">&quot;Detected prevote equivocation in the finality worker: {:?}&quot;</span>, <span class="ident">equivocation</span>);
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">report_equivocation</span>(<span class="ident">equivocation</span>.<span class="ident">into</span>()) {
-			<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="string">&quot;afg&quot;</span>, <span class="string">&quot;Error reporting prevote equivocation: {:?}&quot;</span>, <span class="ident">err</span>);
+			<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="string">&quot;afg&quot;</span>, <span class="string">&quot;Error reporting prevote equivocation: {}&quot;</span>, <span class="ident">err</span>);
 		}
 	}
 
@@ -2532,7 +2532,7 @@
 	) {
 		<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="string">&quot;afg&quot;</span>, <span class="string">&quot;Detected precommit equivocation in the finality worker: {:?}&quot;</span>, <span class="ident">equivocation</span>);
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">report_equivocation</span>(<span class="ident">equivocation</span>.<span class="ident">into</span>()) {
-			<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="string">&quot;afg&quot;</span>, <span class="string">&quot;Error reporting precommit equivocation: {:?}&quot;</span>, <span class="ident">err</span>);
+			<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="string">&quot;afg&quot;</span>, <span class="string">&quot;Error reporting precommit equivocation: {}&quot;</span>, <span class="ident">err</span>);
 		}
 	}
 }
@@ -2647,7 +2647,7 @@
 				.<span class="ident">or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="prelude-val">Some</span>((<span class="ident">target_header</span>.<span class="ident">hash</span>(), <span class="kw-2">*</span><span class="ident">target_header</span>.<span class="ident">number</span>())))
 		},
 		<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
-			<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="string">&quot;afg&quot;</span>, <span class="string">&quot;Encountered error finding best chain containing {:?}: {:?}&quot;</span>, <span class="ident">block</span>, <span class="ident">e</span>);
+			<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="string">&quot;afg&quot;</span>, <span class="string">&quot;Encountered error finding best chain containing {:?}: {}&quot;</span>, <span class="ident">block</span>, <span class="ident">e</span>);
 			<span class="prelude-val">None</span>
 		},
 	};
@@ -2716,7 +2716,7 @@
 		) {
 			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">sender</span>) <span class="op">=</span> <span class="ident">justification_sender</span> {
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">sender</span>.<span class="ident">notify</span>(<span class="ident">justification</span>) {
-					<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="string">&quot;afg&quot;</span>, <span class="string">&quot;Error creating justification for subscriber: {:?}&quot;</span>, <span class="ident">err</span>);
+					<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="string">&quot;afg&quot;</span>, <span class="string">&quot;Error creating justification for subscriber: {}&quot;</span>, <span class="ident">err</span>);
 				}
 			}
 		}
@@ -2767,7 +2767,7 @@
 		<span class="ident">client</span>
 			.<span class="ident">apply_finality</span>(<span class="ident">import_op</span>, <span class="ident">BlockId::Hash</span>(<span class="ident">hash</span>), <span class="ident">persisted_justification</span>, <span class="bool-val">true</span>)
 			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
-				<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="string">&quot;afg&quot;</span>, <span class="string">&quot;Error applying finality to block {:?}: {:?}&quot;</span>, (<span class="ident">hash</span>, <span class="ident">number</span>), <span class="ident">e</span>);
+				<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="string">&quot;afg&quot;</span>, <span class="string">&quot;Error applying finality to block {:?}: {}&quot;</span>, (<span class="ident">hash</span>, <span class="ident">number</span>), <span class="ident">e</span>);
 				<span class="ident">e</span>
 			})<span class="question-mark">?</span>;
 

@@ -1072,6 +1072,12 @@
 <span id="1072">1072</span>
 <span id="1073">1073</span>
 <span id="1074">1074</span>
+<span id="1075">1075</span>
+<span id="1076">1076</span>
+<span id="1077">1077</span>
+<span id="1078">1078</span>
+<span id="1079">1079</span>
+<span id="1080">1080</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -1121,7 +1127,7 @@
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">marker::PhantomData</span>, <span class="ident">pin::Pin</span>, <span class="ident">sync::Arc</span>, <span class="ident">time</span>};
 
 <span class="kw">use</span> <span class="ident">prometheus_endpoint::Registry</span> <span class="kw">as</span> <span class="ident">PrometheusRegistry</span>;
-<span class="kw">use</span> <span class="ident">sc_proposer_metrics::MetricsLink</span> <span class="kw">as</span> <span class="ident">PrometheusMetrics</span>;
+<span class="kw">use</span> <span class="ident">sc_proposer_metrics</span>::{<span class="ident">EndProposingReason</span>, <span class="ident">MetricsLink</span> <span class="kw">as</span> <span class="ident">PrometheusMetrics</span>};
 
 <span class="doccomment">/// Default block size limit in bytes used by [`Proposer`].</span>
 <span class="doccomment">///</span>
@@ -1486,16 +1492,21 @@
 		<span class="macro">debug!</span>(<span class="string">&quot;Attempting to push transactions from the pool.&quot;</span>);
 		<span class="macro">debug!</span>(<span class="string">&quot;Pool status: {:?}&quot;</span>, <span class="self">self</span>.<span class="ident">transaction_pool</span>.<span class="ident">status</span>());
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">transaction_pushed</span> <span class="op">=</span> <span class="bool-val">false</span>;
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hit_block_size_limit</span> <span class="op">=</span> <span class="bool-val">false</span>;
 
-		<span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">pending_tx</span>) <span class="op">=</span> <span class="ident">pending_iterator</span>.<span class="ident">next</span>() {
+		<span class="kw">let</span> <span class="ident">end_reason</span> <span class="op">=</span> <span class="kw">loop</span> {
+			<span class="kw">let</span> <span class="ident">pending_tx</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">pending_tx</span>) <span class="op">=</span> <span class="ident">pending_iterator</span>.<span class="ident">next</span>() {
+				<span class="ident">pending_tx</span>
+			} <span class="kw">else</span> {
+				<span class="kw">break</span> <span class="ident">EndProposingReason::NoMoreTransactions</span>
+			};
+
 			<span class="kw">let</span> <span class="ident">now</span> <span class="op">=</span> (<span class="self">self</span>.<span class="ident">now</span>)();
 			<span class="kw">if</span> <span class="ident">now</span> <span class="op">&gt;</span> <span class="ident">deadline</span> {
 				<span class="macro">debug!</span>(
 					<span class="string">&quot;Consensus deadline reached when pushing block transactions, \
 					proceeding with proposing.&quot;</span>
 				);
-				<span class="kw">break</span>
+				<span class="kw">break</span> <span class="ident">EndProposingReason::HitDeadline</span>
 			}
 
 			<span class="kw">let</span> <span class="ident">pending_tx_data</span> <span class="op">=</span> <span class="ident">pending_tx</span>.<span class="ident">data</span>().<span class="ident">clone</span>();
@@ -1522,8 +1533,7 @@
 					<span class="kw">continue</span>
 				} <span class="kw">else</span> {
 					<span class="macro">debug!</span>(<span class="string">&quot;Reached block size limit, proceeding with proposing.&quot;</span>);
-					<span class="ident">hit_block_size_limit</span> <span class="op">=</span> <span class="bool-val">true</span>;
-					<span class="kw">break</span>
+					<span class="kw">break</span> <span class="ident">EndProposingReason::HitBlockSizeLimit</span>
 				}
 			}
 
@@ -1547,8 +1557,8 @@
 							 so we will try a bit more before quitting.&quot;</span>
 						);
 					} <span class="kw">else</span> {
-						<span class="macro">debug!</span>(<span class="string">&quot;Block is full, proceed with proposing.&quot;</span>);
-						<span class="kw">break</span>
+						<span class="macro">debug!</span>(<span class="string">&quot;Reached block weight limit, proceeding with proposing.&quot;</span>);
+						<span class="kw">break</span> <span class="ident">EndProposingReason::HitBlockWeightLimit</span>
 					}
 				},
 				<span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="kw">if</span> <span class="ident">skipped</span> <span class="op">&gt;</span> <span class="number">0</span> =&gt; {
@@ -1565,9 +1575,9 @@
 					<span class="ident">unqueue_invalid</span>.<span class="ident">push</span>(<span class="ident">pending_tx_hash</span>);
 				},
 			}
-		}
+		};
 
-		<span class="kw">if</span> <span class="ident">hit_block_size_limit</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">transaction_pushed</span> {
+		<span class="kw">if</span> <span class="macro">matches!</span>(<span class="ident">end_reason</span>, <span class="ident">EndProposingReason::HitBlockSizeLimit</span>) <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">transaction_pushed</span> {
 			<span class="macro">warn!</span>(
 				<span class="string">&quot;Hit block size limit of `{}` without including any transaction!&quot;</span>,
 				<span class="ident">block_size_limit</span>,
@@ -1581,6 +1591,8 @@
 		<span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">report</span>(<span class="op">|</span><span class="ident">metrics</span><span class="op">|</span> {
 			<span class="ident">metrics</span>.<span class="ident">number_of_transactions</span>.<span class="ident">set</span>(<span class="ident">block</span>.<span class="ident">extrinsics</span>().<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u64</span>);
 			<span class="ident">metrics</span>.<span class="ident">block_constructed</span>.<span class="ident">observe</span>(<span class="ident">block_timer</span>.<span class="ident">elapsed</span>().<span class="ident">as_secs_f64</span>());
+
+			<span class="ident">metrics</span>.<span class="ident">report_end_proposing_reason</span>(<span class="ident">end_reason</span>);
 		});
 
 		<span class="macro">info!</span>(
@@ -1592,7 +1604,7 @@
 			<span class="ident">block</span>.<span class="ident">extrinsics</span>().<span class="ident">len</span>(),
 			<span class="ident">block</span>.<span class="ident">extrinsics</span>()
 				.<span class="ident">iter</span>()
-				.<span class="ident">map</span>(<span class="op">|</span><span class="ident">xt</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">BlakeTwo256::hash_of</span>(<span class="ident">xt</span>)))
+				.<span class="ident">map</span>(<span class="op">|</span><span class="ident">xt</span><span class="op">|</span> <span class="ident">BlakeTwo256::hash_of</span>(<span class="ident">xt</span>).<span class="ident">to_string</span>())
 				.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()
 				.<span class="ident">join</span>(<span class="string">&quot;, &quot;</span>)
 		);

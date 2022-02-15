@@ -119,6 +119,7 @@
 	<span class="ident">params</span>::{<span class="ident">ImportParams</span>, <span class="ident">SharedParams</span>},
 	<span class="ident">CliConfiguration</span>,
 };
+<span class="kw">use</span> <span class="ident">clap::Parser</span>;
 <span class="kw">use</span> <span class="ident">sc_client_api::HeaderBackend</span>;
 <span class="kw">use</span> <span class="ident">sc_service::chain_ops::import_blocks</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime::traits::Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>;
@@ -129,31 +130,30 @@
 	<span class="ident">path::PathBuf</span>,
 	<span class="ident">sync::Arc</span>,
 };
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
 
 <span class="doccomment">/// The `import-blocks` command used to import blocks.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Parser</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ImportBlocksCmd</span> {
 	<span class="doccomment">/// Input file or stdin if unspecified.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">parse</span>(<span class="ident">from_os_str</span>))]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">parse</span>(<span class="ident">from_os_str</span>))]</span>
 	<span class="kw">pub</span> <span class="ident">input</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// The default number of 64KB pages to ever allocate for Wasm execution.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Don&#39;t alter this unless you know what you&#39;re doing.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;default-heap-pages&quot;</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;COUNT&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;COUNT&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">default_heap_pages</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Try importing blocks from binary format rather than JSON.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">binary</span>: <span class="ident">bool</span>,
 
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">shared_params</span>: <span class="ident">SharedParams</span>,
 
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">import_params</span>: <span class="ident">ImportParams</span>,
 }
 

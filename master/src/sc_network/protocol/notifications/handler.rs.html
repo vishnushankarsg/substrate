@@ -1310,9 +1310,9 @@
 }
 
 <span class="doccomment">/// Error specific to the collection of protocols.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">derive_more::Display</span>, <span class="ident">derive_more::Error</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">NotifsHandlerError</span> {
-	<span class="doccomment">/// Channel of synchronous notifications is full.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Channel of synchronous notifications is full.&quot;</span>)]</span>
 	<span class="ident">SyncNotificationsClogged</span>,
 }
 

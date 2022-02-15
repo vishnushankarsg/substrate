@@ -296,6 +296,10 @@
 <span id="296">296</span>
 <span id="297">297</span>
 <span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -571,10 +575,14 @@
 <span class="doccomment">/// Summary of a finalized block.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FinalityNotification</span><span class="op">&lt;</span><span class="ident">Block</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> {
-	<span class="doccomment">/// Imported block header hash.</span>
+	<span class="doccomment">/// Finalized block header hash.</span>
 	<span class="kw">pub</span> <span class="ident">hash</span>: <span class="ident">Block::Hash</span>,
-	<span class="doccomment">/// Imported block header.</span>
+	<span class="doccomment">/// Finalized block header.</span>
 	<span class="kw">pub</span> <span class="ident">header</span>: <span class="ident">Block::Header</span>,
+	<span class="doccomment">/// Path from the old finalized to new finalized parent (implicitly finalized blocks).</span>
+	<span class="kw">pub</span> <span class="ident">tree_route</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="doccomment">/// Stale branches heads.</span>
+	<span class="kw">pub</span> <span class="ident">stale_heads</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">BlockImportNotification</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ChainEvent</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
@@ -591,7 +599,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">FinalityNotification</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ChainEvent</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">n</span>: <span class="ident">FinalityNotification</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
-		<span class="ident"><span class="self">Self</span>::Finalized</span> { <span class="ident">hash</span>: <span class="ident">n</span>.<span class="ident">hash</span> }
+		<span class="ident"><span class="self">Self</span>::Finalized</span> { <span class="ident">hash</span>: <span class="ident">n</span>.<span class="ident">hash</span>, <span class="ident">tree_route</span>: <span class="ident">n</span>.<span class="ident">tree_route</span> }
 	}
 }
 </code></pre></div>

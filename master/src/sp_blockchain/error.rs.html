@@ -286,7 +286,7 @@
 	<span class="ident">ExtrinsicRootInvalid</span> { <span class="ident">received</span>: <span class="ident">String</span>, <span class="ident">expected</span>: <span class="ident">String</span> },
 
 	<span class="comment">// `inner` cannot be made member, since it lacks `std::error::Error` trait bounds.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Execution failed: {0:?}&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Execution failed: {0}&quot;</span>)]</span>
 	<span class="ident">Execution</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">sp_state_machine::Error</span><span class="op">&gt;</span>),
 
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Blockchain&quot;</span>)]</span>

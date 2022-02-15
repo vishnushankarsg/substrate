@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["node_runtime"] = [{"text":"impl <a class=\"trait\" href=\"pallet_referenda/types/trait.TracksInfo.html\" title=\"trait pallet_referenda::types::TracksInfo\">TracksInfo</a>&lt;<a class=\"primitive\" href=\"https://doc.rust-lang.org/nightly/std/primitive.u128.html\">u128</a>, <a class=\"primitive\" href=\"https://doc.rust-lang.org/nightly/std/primitive.u32.html\">u32</a>&gt; for <a class=\"struct\" href=\"node_runtime/struct.TracksInfo.html\" title=\"struct node_runtime::TracksInfo\">TracksInfo</a>","synthetic":false,"types":["node_runtime::TracksInfo"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

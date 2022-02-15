@@ -55,8 +55,6 @@
 <span id="55">55</span>
 <span id="56">56</span>
 <span id="57">57</span>
-<span id="58">58</span>
-<span id="59">59</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -76,16 +74,14 @@
 
 <span class="doccomment">//! Key related CLI utilities</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Error</span>, <span class="ident">SubstrateCli</span>};
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
-
 <span class="kw">use</span> <span class="kw">super</span>::{
 	<span class="ident">generate::GenerateCmd</span>, <span class="ident">generate_node_key::GenerateNodeKeyCmd</span>, <span class="ident">insert_key::InsertKeyCmd</span>,
 	<span class="ident">inspect_key::InspectKeyCmd</span>, <span class="ident">inspect_node_key::InspectNodeKeyCmd</span>,
 };
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Error</span>, <span class="ident">SubstrateCli</span>};
 
 <span class="doccomment">/// Key utilities for the cli.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">clap::Subcommand</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">KeySubcommand</span> {
 	<span class="doccomment">/// Generate a random node libp2p key, save it to file or print it to stdout</span>
 	<span class="doccomment">/// and print its peer ID to stderr.</span>

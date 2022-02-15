@@ -308,6 +308,19 @@
 <span id="308">308</span>
 <span id="309">309</span>
 <span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -471,21 +484,34 @@
 }
 
 <span class="doccomment">/// Block import error.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">BlockImportError</span> {
 	<span class="doccomment">/// Block missed header, can&#39;t be imported</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;block is missing a header (origin = {0:?})&quot;</span>)]</span>
 	<span class="ident">IncompleteHeader</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Origin</span><span class="op">&gt;</span>),
+
 	<span class="doccomment">/// Block verification failed, can&#39;t be imported</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;block verification failed (origin = {0:?}): {1}&quot;</span>)]</span>
 	<span class="ident">VerificationFailed</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Origin</span><span class="op">&gt;</span>, <span class="ident">String</span>),
+
 	<span class="doccomment">/// Block is known to be Bad</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;bad block (origin = {0:?})&quot;</span>)]</span>
 	<span class="ident">BadBlock</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Origin</span><span class="op">&gt;</span>),
+
 	<span class="doccomment">/// Parent state is missing.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;block is missing parent state&quot;</span>)]</span>
 	<span class="ident">MissingState</span>,
+
 	<span class="doccomment">/// Block has an unknown parent</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;block has an unknown parent&quot;</span>)]</span>
 	<span class="ident">UnknownParent</span>,
+
 	<span class="doccomment">/// Block import has been cancelled. This can happen if the parent block fails to be imported.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;import has been cancelled&quot;</span>)]</span>
 	<span class="ident">Cancelled</span>,
+
 	<span class="doccomment">/// Other error.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;consensus error: {0}&quot;</span>)]</span>
 	<span class="ident">Other</span>(<span class="ident">ConsensusError</span>),
 }
 
@@ -555,7 +581,7 @@
 			<span class="prelude-val">Err</span>(<span class="ident">BlockImportError::BadBlock</span>(<span class="ident">peer</span>.<span class="ident">clone</span>()))
 		},
 		<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
-			<span class="macro">debug!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;Error importing block {}: {:?}: {:?}&quot;</span>, <span class="ident">number</span>, <span class="ident">hash</span>, <span class="ident">e</span>);
+			<span class="macro">debug!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;Error importing block {}: {:?}: {}&quot;</span>, <span class="ident">number</span>, <span class="ident">hash</span>, <span class="ident">e</span>);
 			<span class="prelude-val">Err</span>(<span class="ident">BlockImportError::Other</span>(<span class="ident">e</span>))
 		},
 	};

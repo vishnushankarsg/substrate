@@ -1403,7 +1403,7 @@
 <span class="doccomment">/// iteration so that there&#39;s no incentive to churn ids positioning to improve the chances of</span>
 <span class="doccomment">/// appearing within the ids set.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">DefaultNoBound</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">MaxEncodedLen</span>, <span class="ident">TypeInfo</span>)]</span>
-<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">mel_bound</span>(<span class="ident">T</span>: <span class="ident">Config</span>))]</span>
+<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">mel_bound</span>())]</span>
 <span class="attribute">#[<span class="ident">scale_info</span>(<span class="ident">skip_type_params</span>(<span class="ident">T</span>))]</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">derive</span>(<span class="ident">frame_support::DebugNoBound</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Bag</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> {
@@ -1606,7 +1606,7 @@
 
 <span class="doccomment">/// A Node is the fundamental element comprising the doubly-linked list described by `Bag`.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">MaxEncodedLen</span>, <span class="ident">TypeInfo</span>)]</span>
-<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">mel_bound</span>(<span class="ident">T</span>: <span class="ident">Config</span>))]</span>
+<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">mel_bound</span>())]</span>
 <span class="attribute">#[<span class="ident">scale_info</span>(<span class="ident">skip_type_params</span>(<span class="ident">T</span>))]</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">derive</span>(<span class="ident">frame_support::DebugNoBound</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Node</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> {

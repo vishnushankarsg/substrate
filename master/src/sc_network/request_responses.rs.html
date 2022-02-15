@@ -1472,6 +1472,7 @@
 <span id="1472">1472</span>
 <span id="1473">1473</span>
 <span id="1474">1474</span>
+<span id="1475">1475</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -2358,34 +2359,35 @@
 }
 
 <span class="doccomment">/// Error when registering a protocol.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">derive_more::Display</span>, <span class="ident">derive_more::Error</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">RegisterError</span> {
 	<span class="doccomment">/// A protocol has been specified multiple times.</span>
-	<span class="ident">DuplicateProtocol</span>(<span class="attribute">#[<span class="ident">error</span>(<span class="ident">ignore</span>)]</span> <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;{0}&quot;</span>)]</span>
+	<span class="ident">DuplicateProtocol</span>(<span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>),
 }
 
 <span class="doccomment">/// Error in a request.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">derive_more::Display</span>, <span class="ident">derive_more::Error</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>)]</span>
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">RequestFailure</span> {
-	<span class="doccomment">/// We are not currently connected to the requested peer.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;We are not currently connected to the requested peer.&quot;</span>)]</span>
 	<span class="ident">NotConnected</span>,
-	<span class="doccomment">/// Given protocol hasn&#39;t been registered.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Given protocol hasn&#39;t been registered.&quot;</span>)]</span>
 	<span class="ident">UnknownProtocol</span>,
-	<span class="doccomment">/// Remote has closed the substream before answering, thereby signaling that it considers the</span>
-	<span class="doccomment">/// request as valid, but refused to answer it.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Remote has closed the substream before answering, thereby signaling that it considers the request as valid, but refused to answer it.&quot;</span>)]</span>
 	<span class="ident">Refused</span>,
-	<span class="doccomment">/// The remote replied, but the local node is no longer interested in the response.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;The remote replied, but the local node is no longer interested in the response.&quot;</span>)]</span>
 	<span class="ident">Obsolete</span>,
 	<span class="doccomment">/// Problem on the network.</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Problem on the network: {}&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Problem on the network: {0}&quot;</span>)]</span>
 	<span class="ident">Network</span>(<span class="ident">OutboundFailure</span>),
 }
 
 <span class="doccomment">/// Error when processing a request sent by a remote.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">derive_more::Display</span>, <span class="ident">derive_more::Error</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ResponseFailure</span> {
 	<span class="doccomment">/// Problem on the network.</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Problem on the network: {}&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Problem on the network: {0}&quot;</span>)]</span>
 	<span class="ident">Network</span>(<span class="ident">InboundFailure</span>),
 }
 

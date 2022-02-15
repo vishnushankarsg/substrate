@@ -91,23 +91,23 @@
 <span class="doccomment">//! targeted at handling input parameter parsing providing</span>
 <span class="doccomment">//! a reasonable abstraction.</span>
 
+<span class="kw">use</span> <span class="ident">clap::Args</span>;
 <span class="kw">use</span> <span class="ident">sc_network::config::Role</span>;
 <span class="kw">use</span> <span class="ident">sc_service::config::OffchainWorkerConfig</span>;
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">error</span>, <span class="ident">OffchainWorkerEnabled</span>};
 
 <span class="doccomment">/// Offchain worker related parameters.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Args</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OffchainWorkerParams</span> {
 	<span class="doccomment">/// Should execute offchain workers on every block.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// By default it&#39;s only enabled for nodes that are authoring new blocks.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(
+	<span class="attribute">#[<span class="ident">clap</span>(
 		<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;offchain-worker&quot;</span>,
 		<span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;ENABLED&quot;</span>,
-		<span class="ident">possible_values</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">OffchainWorkerEnabled::variants</span>(),
-		<span class="ident">case_insensitive</span> <span class="op">=</span> <span class="bool-val">true</span>,
+		<span class="ident">arg_enum</span>,
+		<span class="ident">ignore_case</span> <span class="op">=</span> <span class="bool-val">true</span>,
 		<span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;WhenValidating&quot;</span>
 	)]</span>
 	<span class="kw">pub</span> <span class="ident">enabled</span>: <span class="ident">OffchainWorkerEnabled</span>,
@@ -116,7 +116,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Enables a runtime to write directly to a offchain workers</span>
 	<span class="doccomment">/// DB during block import.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;enable-offchain-indexing&quot;</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;ENABLE_OFFCHAIN_INDEXING&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;enable-offchain-indexing&quot;</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;ENABLE_OFFCHAIN_INDEXING&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">indexing_enabled</span>: <span class="ident">bool</span>,
 }
 

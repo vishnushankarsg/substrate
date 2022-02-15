@@ -202,6 +202,36 @@
 <span id="202">202</span>
 <span id="203">203</span>
 <span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -221,7 +251,7 @@
 
 <span class="doccomment">//! An implementation of [`ElectionProvider`] that does an on-chain sequential phragmen.</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">ElectionDataProvider</span>, <span class="ident">ElectionProvider</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">ElectionDataProvider</span>, <span class="ident">ElectionProvider</span>, <span class="ident">InstantElectionProvider</span>};
 <span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">traits::Get</span>, <span class="ident">weights::DispatchClass</span>};
 <span class="kw">use</span> <span class="ident">sp_npos_elections</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">collections::btree_map::BTreeMap</span>, <span class="ident">marker::PhantomData</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>};
@@ -251,8 +281,14 @@
 <span class="doccomment">/// implementation ignores the additional data of the election data provider and gives no insight on</span>
 <span class="doccomment">/// how much weight was consumed.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// Finally, this implementation does not impose any limits on the number of voters and targets that</span>
-<span class="doccomment">/// are provided.</span>
+<span class="doccomment">/// Finally, the [`ElectionProvider`] implementation of this type does not impose any limits on the</span>
+<span class="doccomment">/// number of voters and targets that are fetched. This could potentially make this unsuitable for</span>
+<span class="doccomment">/// execution onchain. On the other hand, the [`InstantElectionProvider`] implementation does limit</span>
+<span class="doccomment">/// these inputs.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// It is advisable to use the former ([`ElectionProvider::elect`]) only at genesis, or for testing,</span>
+<span class="doccomment">/// the latter [`InstantElectionProvider::instant_elect`] for onchain operations, with thoughtful</span>
+<span class="doccomment">/// bounds.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OnChainSequentialPhragmen</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>);
 
 <span class="doccomment">/// Configuration trait of [`OnChainSequentialPhragmen`].</span>
@@ -272,16 +308,17 @@
 	<span class="op">&gt;</span>;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">ElectionProvider</span> <span class="kw">for</span> <span class="ident">OnChainSequentialPhragmen</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-	<span class="kw">type</span> <span class="ident">AccountId</span> <span class="op">=</span> <span class="ident">T::AccountId</span>;
-	<span class="kw">type</span> <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="ident">T::BlockNumber</span>;
-	<span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="ident">Error</span>;
-	<span class="kw">type</span> <span class="ident">DataProvider</span> <span class="op">=</span> <span class="ident">T::DataProvider</span>;
-
-	<span class="kw">fn</span> <span class="ident">elect</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Supports</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">voters</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::DataProvider::voters</span>(<span class="prelude-val">None</span>).<span class="ident">map_err</span>(<span class="ident">Error::DataProvider</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">targets</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::DataProvider::targets</span>(<span class="prelude-val">None</span>).<span class="ident">map_err</span>(<span class="ident">Error::DataProvider</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">desired_targets</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::DataProvider::desired_targets</span>().<span class="ident">map_err</span>(<span class="ident">Error::DataProvider</span>)<span class="question-mark">?</span>;
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">OnChainSequentialPhragmen</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">elect_with</span>(
+		<span class="ident">maybe_max_voters</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+		<span class="ident">maybe_max_targets</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Supports</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">voters</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">ElectionProvider</span><span class="op">&gt;</span><span class="ident">::DataProvider::voters</span>(<span class="ident">maybe_max_voters</span>)
+			.<span class="ident">map_err</span>(<span class="ident">Error::DataProvider</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">targets</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">ElectionProvider</span><span class="op">&gt;</span><span class="ident">::DataProvider::targets</span>(<span class="ident">maybe_max_targets</span>)
+			.<span class="ident">map_err</span>(<span class="ident">Error::DataProvider</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">desired_targets</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">ElectionProvider</span><span class="op">&gt;</span><span class="ident">::DataProvider::desired_targets</span>()
+			.<span class="ident">map_err</span>(<span class="ident">Error::DataProvider</span>)<span class="question-mark">?</span>;
 
 		<span class="kw">let</span> <span class="ident">stake_map</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">T::AccountId</span>, <span class="ident">VoteWeight</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">voters</span>
 			.<span class="ident">iter</span>()
@@ -291,9 +328,8 @@
 		<span class="kw">let</span> <span class="ident">stake_of</span> <span class="op">=</span>
 			<span class="op">|</span><span class="ident">w</span>: <span class="kw-2">&amp;</span><span class="ident">T::AccountId</span><span class="op">|</span> -&gt; <span class="ident">VoteWeight</span> { <span class="ident">stake_map</span>.<span class="ident">get</span>(<span class="ident">w</span>).<span class="ident">cloned</span>().<span class="ident">unwrap_or_default</span>() };
 
-		<span class="kw">let</span> <span class="ident">ElectionResult</span> { <span class="ident">winners</span>: <span class="kw">_</span>, <span class="ident">assignments</span> } <span class="op">=</span>
-			<span class="ident">seq_phragmen</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">T::Accuracy</span><span class="op">&gt;</span>(<span class="ident">desired_targets</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">targets</span>, <span class="ident">voters</span>, <span class="prelude-val">None</span>)
-				.<span class="ident">map_err</span>(<span class="ident">Error::from</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">ElectionResult</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">T::Accuracy</span><span class="op">&gt;</span> { <span class="ident">winners</span>: <span class="kw">_</span>, <span class="ident">assignments</span> } <span class="op">=</span>
+			<span class="ident">seq_phragmen</span>(<span class="ident">desired_targets</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">targets</span>, <span class="ident">voters</span>, <span class="prelude-val">None</span>).<span class="ident">map_err</span>(<span class="ident">Error::from</span>)<span class="question-mark">?</span>;
 
 		<span class="kw">let</span> <span class="ident">staked</span> <span class="op">=</span> <span class="ident">assignment_ratio_to_staked_normalized</span>(<span class="ident">assignments</span>, <span class="kw-2">&amp;</span><span class="ident">stake_of</span>)<span class="question-mark">?</span>;
 
@@ -304,6 +340,26 @@
 		);
 
 		<span class="prelude-val">Ok</span>(<span class="ident">to_supports</span>(<span class="kw-2">&amp;</span><span class="ident">staked</span>))
+	}
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">ElectionProvider</span> <span class="kw">for</span> <span class="ident">OnChainSequentialPhragmen</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+	<span class="kw">type</span> <span class="ident">AccountId</span> <span class="op">=</span> <span class="ident">T::AccountId</span>;
+	<span class="kw">type</span> <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="ident">T::BlockNumber</span>;
+	<span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="ident">Error</span>;
+	<span class="kw">type</span> <span class="ident">DataProvider</span> <span class="op">=</span> <span class="ident">T::DataProvider</span>;
+
+	<span class="kw">fn</span> <span class="ident">elect</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Supports</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span> {
+		<span class="ident"><span class="self">Self</span>::elect_with</span>(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>)
+	}
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">InstantElectionProvider</span> <span class="kw">for</span> <span class="ident">OnChainSequentialPhragmen</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">instant_elect</span>(
+		<span class="ident">maybe_max_voters</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+		<span class="ident">maybe_max_targets</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Supports</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span> {
+		<span class="ident"><span class="self">Self</span>::elect_with</span>(<span class="ident">maybe_max_voters</span>, <span class="ident">maybe_max_targets</span>)
 	}
 }
 
@@ -365,18 +421,22 @@
 	<span class="kw">type</span> <span class="ident">OnChainPhragmen</span> <span class="op">=</span> <span class="ident">OnChainSequentialPhragmen</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 
 	<span class="kw">mod</span> <span class="ident">mock_data_provider</span> {
+		<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">bounded_vec</span>, <span class="ident">traits::ConstU32</span>};
+
 		<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-		<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::data_provider</span>;
+		<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">data_provider</span>, <span class="ident">VoterOf</span>};
 
 		<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">DataProvider</span>;
 		<span class="kw">impl</span> <span class="ident">ElectionDataProvider</span> <span class="kw">for</span> <span class="ident">DataProvider</span> {
 			<span class="kw">type</span> <span class="ident">AccountId</span> <span class="op">=</span> <span class="ident">AccountId</span>;
 			<span class="kw">type</span> <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="ident">BlockNumber</span>;
-			<span class="kw">const</span> <span class="ident">MAXIMUM_VOTES_PER_VOTER</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
-			<span class="kw">fn</span> <span class="ident">voters</span>(
-				<span class="kw">_</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-			) -&gt; <span class="ident">data_provider::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">AccountId</span>, <span class="ident">VoteWeight</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>)<span class="op">&gt;</span><span class="op">&gt;</span> {
-				<span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[(<span class="number">1</span>, <span class="number">10</span>, <span class="macro">vec!</span>[<span class="number">10</span>, <span class="number">20</span>]), (<span class="number">2</span>, <span class="number">20</span>, <span class="macro">vec!</span>[<span class="number">30</span>, <span class="number">20</span>]), (<span class="number">3</span>, <span class="number">30</span>, <span class="macro">vec!</span>[<span class="number">10</span>, <span class="number">30</span>])])
+			<span class="kw">type</span> <span class="ident">MaxVotesPerVoter</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">2</span><span class="op">&gt;</span>;
+			<span class="kw">fn</span> <span class="ident">voters</span>(<span class="kw">_</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="ident">data_provider::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">VoterOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+				<span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[
+					(<span class="number">1</span>, <span class="number">10</span>, <span class="macro">bounded_vec!</span>[<span class="number">10</span>, <span class="number">20</span>]),
+					(<span class="number">2</span>, <span class="number">20</span>, <span class="macro">bounded_vec!</span>[<span class="number">30</span>, <span class="number">20</span>]),
+					(<span class="number">3</span>, <span class="number">30</span>, <span class="macro">bounded_vec!</span>[<span class="number">10</span>, <span class="number">30</span>]),
+				])
 			}
 
 			<span class="kw">fn</span> <span class="ident">targets</span>(<span class="kw">_</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="ident">data_provider::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span> {

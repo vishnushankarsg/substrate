@@ -134,12 +134,6 @@
 <span id="134">134</span>
 <span id="135">135</span>
 <span id="136">136</span>
-<span id="137">137</span>
-<span id="138">138</span>
-<span id="139">139</span>
-<span id="140">140</span>
-<span id="141">141</span>
-<span id="142">142</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -159,36 +153,36 @@
 <span class="comment">// along with this program. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::arg_enums::TracingReceiver</span>;
+<span class="kw">use</span> <span class="ident">clap::Args</span>;
 <span class="kw">use</span> <span class="ident">sc_service::config::BasePath</span>;
 <span class="kw">use</span> <span class="ident">std::path::PathBuf</span>;
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
 
 <span class="doccomment">/// Shared parameters used by all `CoreParams`.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Args</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SharedParams</span> {
 	<span class="doccomment">/// Specify the chain specification.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// It can be one of the predefined ones (dev, local, or staging) or it can be a path to a file</span>
 	<span class="doccomment">/// with the chainspec (such as one exported by the `build-spec` subcommand).</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;CHAIN_SPEC&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;CHAIN_SPEC&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">chain</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Specify the development chain.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This flag sets `--chain=dev`, `--force-authoring`, `--rpc-cors=all`,</span>
 	<span class="doccomment">/// `--alice`, and `--tmp` flags, unless explicitly overridden.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">conflicts_with_all</span> <span class="op">=</span> <span class="kw-2">&amp;</span>[<span class="string">&quot;chain&quot;</span>]</span>)]
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">conflicts_with_all</span> <span class="op">=</span> <span class="kw-2">&amp;</span>[<span class="string">&quot;chain&quot;</span>]</span>)]
 	<span class="kw">pub</span> <span class="ident">dev</span>: <span class="ident">bool</span>,
 
 	<span class="doccomment">/// Specify custom base path.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">short</span> <span class="op">=</span> <span class="string">&quot;d&quot;</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;PATH&quot;</span>, <span class="ident">parse</span>(<span class="ident">from_os_str</span>))]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">short</span> <span class="op">=</span> <span class="string">&#39;d&#39;</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;PATH&quot;</span>, <span class="ident">parse</span>(<span class="ident">from_os_str</span>))]</span>
 	<span class="kw">pub</span> <span class="ident">base_path</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Sets a custom logging filter. Syntax is &lt;target&gt;=&lt;level&gt;, e.g. -lsync=debug.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Log levels (least to most verbose) are error, warn, info, debug, and trace.</span>
 	<span class="doccomment">/// By default, all targets log `info`. The global log level can be set with -l&lt;level&gt;.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">short</span> <span class="op">=</span> <span class="string">&quot;l&quot;</span>, <span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;LOG_PATTERN&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">short</span> <span class="op">=</span> <span class="string">&#39;l&#39;</span>, <span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;LOG_PATTERN&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">log</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Enable detailed log output.</span>
@@ -196,11 +190,11 @@
 	<span class="doccomment">/// This includes displaying the log target, log level and thread name.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This is automatically enabled when something is logged with any higher level than `info`.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">detailed_log_output</span>: <span class="ident">bool</span>,
 
 	<span class="doccomment">/// Disable log color output.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">disable_log_color</span>: <span class="ident">bool</span>,
 
 	<span class="doccomment">/// Enable feature to dynamically update and reload the log filter.</span>
@@ -210,21 +204,15 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// The `system_addLogFilter` and `system_resetLogFilter` RPCs will have no effect with this</span>
 	<span class="doccomment">/// option not being set.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">enable_log_reloading</span>: <span class="ident">bool</span>,
 
 	<span class="doccomment">/// Sets a custom profiling filter. Syntax is the same as for logging: &lt;target&gt;=&lt;level&gt;</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;tracing-targets&quot;</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;TARGETS&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;TARGETS&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">tracing_targets</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Receiver to process tracing messages.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(
-		<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;tracing-receiver&quot;</span>,
-		<span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;RECEIVER&quot;</span>,
-		<span class="ident">possible_values</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">TracingReceiver::variants</span>(),
-		<span class="ident">case_insensitive</span> <span class="op">=</span> <span class="bool-val">true</span>,
-		<span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;Log&quot;</span>
-	)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;RECEIVER&quot;</span>, <span class="ident">arg_enum</span>, <span class="ident">ignore_case</span> <span class="op">=</span> <span class="bool-val">true</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;Log&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">tracing_receiver</span>: <span class="ident">TracingReceiver</span>,
 }
 

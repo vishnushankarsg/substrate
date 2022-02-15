@@ -747,6 +747,19 @@
 <span id="747">747</span>
 <span id="748">748</span>
 <span id="749">749</span>
+<span id="750">750</span>
+<span id="751">751</span>
+<span id="752">752</span>
+<span id="753">753</span>
+<span id="754">754</span>
+<span id="755">755</span>
+<span id="756">756</span>
+<span id="757">757</span>
+<span id="758">758</span>
+<span id="759">759</span>
+<span id="760">760</span>
+<span id="761">761</span>
+<span id="762">762</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -903,7 +916,7 @@
 <span class="comment">// Ensure we&#39;re `no_std` when compiling for Wasm.</span>
 <span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>), <span class="ident">no_std</span>)]</span>
 
-<span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
+<span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">MaxEncodedLen</span>};
 <span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime::traits</span>::{<span class="ident">CheckedAdd</span>, <span class="ident">CheckedMul</span>, <span class="ident">Dispatchable</span>, <span class="ident">SaturatedConversion</span>};
 <span class="kw">use</span> <span class="ident">sp_std::prelude</span>::<span class="kw-2">*</span>;
@@ -912,7 +925,7 @@
 	<span class="ident">dispatch::PostDispatchInfo</span>,
 	<span class="ident">traits</span>::{<span class="ident">BalanceStatus</span>, <span class="ident">Currency</span>, <span class="ident">ReservableCurrency</span>},
 	<span class="ident">weights::GetDispatchInfo</span>,
-	<span class="ident">RuntimeDebug</span>,
+	<span class="ident">BoundedVec</span>, <span class="ident">RuntimeDebug</span>,
 };
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">pallet</span>::<span class="kw-2">*</span>;
@@ -925,21 +938,23 @@
 <span class="kw">type</span> <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span>
 	<span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::Currency</span> <span class="kw">as</span> <span class="ident">Currency</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Balance</span>;
 
+<span class="kw">type</span> <span class="ident">FriendsOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span>, <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::MaxFriends</span><span class="op">&gt;</span>;
+
 <span class="doccomment">/// An active recovery process.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Default</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ActiveRecovery</span><span class="op">&lt;</span><span class="ident">BlockNumber</span>, <span class="ident">Balance</span>, <span class="ident">AccountId</span><span class="op">&gt;</span> {
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Default</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>, <span class="ident">MaxEncodedLen</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ActiveRecovery</span><span class="op">&lt;</span><span class="ident">BlockNumber</span>, <span class="ident">Balance</span>, <span class="ident">Friends</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// The block number when the recovery process started.</span>
 	<span class="ident">created</span>: <span class="ident">BlockNumber</span>,
 	<span class="doccomment">/// The amount held in reserve of the `depositor`,</span>
 	<span class="doccomment">/// To be returned once this recovery process is closed.</span>
 	<span class="ident">deposit</span>: <span class="ident">Balance</span>,
 	<span class="doccomment">/// The friends which have vouched so far. Always sorted.</span>
-	<span class="ident">friends</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>,
+	<span class="ident">friends</span>: <span class="ident">Friends</span>,
 }
 
 <span class="doccomment">/// Configuration for recovering an account.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Default</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RecoveryConfig</span><span class="op">&lt;</span><span class="ident">BlockNumber</span>, <span class="ident">Balance</span>, <span class="ident">AccountId</span><span class="op">&gt;</span> {
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Default</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>, <span class="ident">MaxEncodedLen</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RecoveryConfig</span><span class="op">&lt;</span><span class="ident">BlockNumber</span>, <span class="ident">Balance</span>, <span class="ident">Friends</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// The minimum number of blocks since the start of the recovery process before the account</span>
 	<span class="doccomment">/// can be recovered.</span>
 	<span class="ident">delay_period</span>: <span class="ident">BlockNumber</span>,
@@ -947,7 +962,7 @@
 	<span class="doccomment">/// to be returned once this configuration is removed.</span>
 	<span class="ident">deposit</span>: <span class="ident">Balance</span>,
 	<span class="doccomment">/// The list of friends which can help recover an account. Always sorted.</span>
-	<span class="ident">friends</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>,
+	<span class="ident">friends</span>: <span class="ident">Friends</span>,
 	<span class="doccomment">/// The number of approving friends needed to recover an account.</span>
 	<span class="ident">threshold</span>: <span class="ident">u16</span>,
 }
@@ -961,7 +976,6 @@
 
 	<span class="attribute">#[<span class="ident">pallet::pallet</span>]</span>
 	<span class="attribute">#[<span class="ident">pallet::generate_store</span>(<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">trait</span> <span class="ident">Store</span>)]</span>
-	<span class="attribute">#[<span class="ident">pallet::without_storage_info</span>]</span>
 	<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw">_</span>);
 
 	<span class="doccomment">/// Configuration trait.</span>
@@ -994,8 +1008,13 @@
 		<span class="kw">type</span> <span class="ident">FriendDepositFactor</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 		<span class="doccomment">/// The maximum amount of friends allowed in a recovery configuration.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// NOTE: The threshold programmed in this Pallet uses u16, so it does</span>
+		<span class="doccomment">/// not really make sense to have a limit here greater than u16::MAX.</span>
+		<span class="doccomment">/// But also, that is a lot more than you should probably set this value</span>
+		<span class="doccomment">/// to anyway...</span>
 		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
-		<span class="kw">type</span> <span class="ident">MaxFriends</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span>;
+		<span class="kw">type</span> <span class="ident">MaxFriends</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>;
 
 		<span class="doccomment">/// The base amount of currency needed to reserve for starting a recovery.</span>
 		<span class="doccomment">///</span>
@@ -1073,7 +1092,7 @@
 		<span class="kw">_</span>,
 		<span class="ident">Twox64Concat</span>,
 		<span class="ident">T::AccountId</span>,
-		<span class="ident">RecoveryConfig</span><span class="op">&lt;</span><span class="ident">T::BlockNumber</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T::AccountId</span><span class="op">&gt;</span>,
+		<span class="ident">RecoveryConfig</span><span class="op">&lt;</span><span class="ident">T::BlockNumber</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">FriendsOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Active recovery attempts.</span>
@@ -1088,7 +1107,7 @@
 		<span class="ident">T::AccountId</span>,
 		<span class="ident">Twox64Concat</span>,
 		<span class="ident">T::AccountId</span>,
-		<span class="ident">ActiveRecovery</span><span class="op">&lt;</span><span class="ident">T::BlockNumber</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T::AccountId</span><span class="op">&gt;</span>,
+		<span class="ident">ActiveRecovery</span><span class="op">&lt;</span><span class="ident">T::BlockNumber</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">FriendsOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="op">&gt;</span>;
 
 	<span class="doccomment">/// The list of allowed proxy accounts.</span>
@@ -1207,12 +1226,12 @@
 			<span class="macro">ensure!</span>(<span class="ident">threshold</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">1</span>, <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ZeroThreshold</span>);
 			<span class="macro">ensure!</span>(<span class="op">!</span><span class="ident">friends</span>.<span class="ident">is_empty</span>(), <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::NotEnoughFriends</span>);
 			<span class="macro">ensure!</span>(<span class="ident">threshold</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">friends</span>.<span class="ident">len</span>(), <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::NotEnoughFriends</span>);
-			<span class="kw">let</span> <span class="ident">max_friends</span> <span class="op">=</span> <span class="ident">T::MaxFriends::get</span>() <span class="kw">as</span> <span class="ident">usize</span>;
-			<span class="macro">ensure!</span>(<span class="ident">friends</span>.<span class="ident">len</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">max_friends</span>, <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::MaxFriends</span>);
-			<span class="macro">ensure!</span>(<span class="ident"><span class="self">Self</span>::is_sorted_and_unique</span>(<span class="kw-2">&amp;</span><span class="ident">friends</span>), <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::NotSorted</span>);
+			<span class="kw">let</span> <span class="ident">bounded_friends</span>: <span class="ident">FriendsOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span>
+				<span class="ident">friends</span>.<span class="ident">try_into</span>().<span class="ident">map_err</span>(<span class="op">|</span>()<span class="op">|</span> <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::MaxFriends</span>)<span class="question-mark">?</span>;
+			<span class="macro">ensure!</span>(<span class="ident"><span class="self">Self</span>::is_sorted_and_unique</span>(<span class="kw-2">&amp;</span><span class="ident">bounded_friends</span>), <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::NotSorted</span>);
 			<span class="comment">// Total deposit is base fee + number of friends * factor fee</span>
 			<span class="kw">let</span> <span class="ident">friend_deposit</span> <span class="op">=</span> <span class="ident">T::FriendDepositFactor::get</span>()
-				.<span class="ident">checked_mul</span>(<span class="kw-2">&amp;</span><span class="ident">friends</span>.<span class="ident">len</span>().<span class="ident">saturated_into</span>())
+				.<span class="ident">checked_mul</span>(<span class="kw-2">&amp;</span><span class="ident">bounded_friends</span>.<span class="ident">len</span>().<span class="ident">saturated_into</span>())
 				.<span class="ident">ok_or</span>(<span class="ident">ArithmeticError::Overflow</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">total_deposit</span> <span class="op">=</span> <span class="ident">T::ConfigDepositBase::get</span>()
 				.<span class="ident">checked_add</span>(<span class="kw-2">&amp;</span><span class="ident">friend_deposit</span>)
@@ -1220,8 +1239,12 @@
 			<span class="comment">// Reserve the deposit</span>
 			<span class="ident">T::Currency::reserve</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">total_deposit</span>)<span class="question-mark">?</span>;
 			<span class="comment">// Create the recovery configuration</span>
-			<span class="kw">let</span> <span class="ident">recovery_config</span> <span class="op">=</span>
-				<span class="ident">RecoveryConfig</span> { <span class="ident">delay_period</span>, <span class="ident">deposit</span>: <span class="ident">total_deposit</span>, <span class="ident">friends</span>, <span class="ident">threshold</span> };
+			<span class="kw">let</span> <span class="ident">recovery_config</span> <span class="op">=</span> <span class="ident">RecoveryConfig</span> {
+				<span class="ident">delay_period</span>,
+				<span class="ident">deposit</span>: <span class="ident">total_deposit</span>,
+				<span class="ident">friends</span>: <span class="ident">bounded_friends</span>,
+				<span class="ident">threshold</span>,
+			};
 			<span class="comment">// Create the recovery configuration storage item</span>
 			<span class="op">&lt;</span><span class="ident">Recoverable</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">recovery_config</span>);
 
@@ -1268,7 +1291,7 @@
 			<span class="kw">let</span> <span class="ident">recovery_status</span> <span class="op">=</span> <span class="ident">ActiveRecovery</span> {
 				<span class="ident">created</span>: <span class="op">&lt;</span><span class="ident">frame_system::Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::block_number</span>(),
 				<span class="ident">deposit</span>: <span class="ident">recovery_deposit</span>,
-				<span class="ident">friends</span>: <span class="macro">vec!</span>[],
+				<span class="ident">friends</span>: <span class="ident">Default::default</span>(),
 			};
 			<span class="comment">// Create the active recovery storage item</span>
 			<span class="op">&lt;</span><span class="ident">ActiveRecoveries</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="ident">account</span>, <span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">recovery_status</span>);
@@ -1320,7 +1343,10 @@
 			<span class="comment">// Either insert the vouch, or return an error that the user already vouched.</span>
 			<span class="kw">match</span> <span class="ident">active_recovery</span>.<span class="ident">friends</span>.<span class="ident">binary_search</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>) {
 				<span class="prelude-val">Ok</span>(<span class="ident">_pos</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::AlreadyVouched</span>)<span class="question-mark">?</span>,
-				<span class="prelude-val">Err</span>(<span class="ident">pos</span>) =&gt; <span class="ident">active_recovery</span>.<span class="ident">friends</span>.<span class="ident">insert</span>(<span class="ident">pos</span>, <span class="ident">who</span>.<span class="ident">clone</span>()),
+				<span class="prelude-val">Err</span>(<span class="ident">pos</span>) =&gt; <span class="ident">active_recovery</span>
+					.<span class="ident">friends</span>
+					.<span class="ident">try_insert</span>(<span class="ident">pos</span>, <span class="ident">who</span>.<span class="ident">clone</span>())
+					.<span class="ident">map_err</span>(<span class="op">|</span>()<span class="op">|</span> <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::MaxFriends</span>)<span class="question-mark">?</span>,
 			}
 			<span class="comment">// Update storage with the latest details</span>
 			<span class="op">&lt;</span><span class="ident">ActiveRecoveries</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="ident">lost</span>, <span class="kw-2">&amp;</span><span class="ident">rescuer</span>, <span class="ident">active_recovery</span>);

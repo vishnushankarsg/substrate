@@ -266,7 +266,6 @@
 <span id="266">266</span>
 <span id="267">267</span>
 <span id="268">268</span>
-<span id="269">269</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -290,13 +289,13 @@
 	<span class="ident">utils</span>::{<span class="self">self</span>, <span class="ident">print_from_public</span>, <span class="ident">print_from_uri</span>},
 	<span class="ident">with_crypto_scheme</span>, <span class="ident">CryptoSchemeFlag</span>, <span class="ident">Error</span>, <span class="ident">KeystoreParams</span>, <span class="ident">NetworkSchemeFlag</span>, <span class="ident">OutputTypeFlag</span>,
 };
+<span class="kw">use</span> <span class="ident">clap::Parser</span>;
 <span class="kw">use</span> <span class="ident">sp_core::crypto</span>::{<span class="ident">ExposeSecret</span>, <span class="ident">SecretString</span>, <span class="ident">SecretUri</span>, <span class="ident">Ss58Codec</span>};
 <span class="kw">use</span> <span class="ident">std::str::FromStr</span>;
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
 
 <span class="doccomment">/// The `inspect` command</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>)]</span>
-<span class="attribute">#[<span class="ident">structopt</span>(
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Parser</span>)]</span>
+<span class="attribute">#[<span class="ident">clap</span>(
 	<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;inspect&quot;</span>,
 	<span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Gets a public key and a SS58 address from the provided Secret URI&quot;</span>
 )]</span>
@@ -313,23 +312,23 @@
 	<span class="ident">uri</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Is the given `uri` a hex encoded public key?</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="ident">public</span>: <span class="ident">bool</span>,
 
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">keystore_params</span>: <span class="ident">KeystoreParams</span>,
 
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">network_scheme</span>: <span class="ident">NetworkSchemeFlag</span>,
 
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">output_scheme</span>: <span class="ident">OutputTypeFlag</span>,
 
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">crypto_scheme</span>: <span class="ident">CryptoSchemeFlag</span>,
 
 	<span class="doccomment">/// Expect that `--uri` has the given public key/account-id.</span>
@@ -341,7 +340,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// If there is no derivation in `--uri`, the public key will be checked against the public key</span>
 	<span class="doccomment">/// of `--uri` directly.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">conflicts_with</span> <span class="op">=</span> <span class="string">&quot;public&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">conflicts_with</span> <span class="op">=</span> <span class="string">&quot;public&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">expect_public</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 }
 
@@ -427,7 +426,6 @@
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 	<span class="kw">use</span> <span class="ident">sp_core::crypto</span>::{<span class="ident">ByteArray</span>, <span class="ident">Pair</span>};
 	<span class="kw">use</span> <span class="ident">sp_runtime::traits::IdentifyAccount</span>;
-	<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">inspect</span>() {
@@ -435,10 +433,10 @@
 			<span class="string">&quot;remember fiber forum demise paper uniform squirrel feel access exclude casual effort&quot;</span>;
 		<span class="kw">let</span> <span class="ident">seed</span> <span class="op">=</span> <span class="string">&quot;0xad1fb77243b536b90cfe5f0d351ab1b1ac40e3890b41dc64f766ee56340cfca5&quot;</span>;
 
-		<span class="kw">let</span> <span class="ident">inspect</span> <span class="op">=</span> <span class="ident">InspectKeyCmd::from_iter</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;inspect-key&quot;</span>, <span class="ident">words</span>, <span class="string">&quot;--password&quot;</span>, <span class="string">&quot;12345&quot;</span>]);
+		<span class="kw">let</span> <span class="ident">inspect</span> <span class="op">=</span> <span class="ident">InspectKeyCmd::parse_from</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;inspect-key&quot;</span>, <span class="ident">words</span>, <span class="string">&quot;--password&quot;</span>, <span class="string">&quot;12345&quot;</span>]);
 		<span class="macro">assert!</span>(<span class="ident">inspect</span>.<span class="ident">run</span>().<span class="ident">is_ok</span>());
 
-		<span class="kw">let</span> <span class="ident">inspect</span> <span class="op">=</span> <span class="ident">InspectKeyCmd::from_iter</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;inspect-key&quot;</span>, <span class="ident">seed</span>]);
+		<span class="kw">let</span> <span class="ident">inspect</span> <span class="op">=</span> <span class="ident">InspectKeyCmd::parse_from</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;inspect-key&quot;</span>, <span class="ident">seed</span>]);
 		<span class="macro">assert!</span>(<span class="ident">inspect</span>.<span class="ident">run</span>().<span class="ident">is_ok</span>());
 	}
 
@@ -446,14 +444,14 @@
 	<span class="kw">fn</span> <span class="ident">inspect_public_key</span>() {
 		<span class="kw">let</span> <span class="ident">public</span> <span class="op">=</span> <span class="string">&quot;0x12e76e0ae8ce41b6516cce52b3f23a08dcb4cfeed53c6ee8f5eb9f7367341069&quot;</span>;
 
-		<span class="kw">let</span> <span class="ident">inspect</span> <span class="op">=</span> <span class="ident">InspectKeyCmd::from_iter</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;inspect-key&quot;</span>, <span class="string">&quot;--public&quot;</span>, <span class="ident">public</span>]);
+		<span class="kw">let</span> <span class="ident">inspect</span> <span class="op">=</span> <span class="ident">InspectKeyCmd::parse_from</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;inspect-key&quot;</span>, <span class="string">&quot;--public&quot;</span>, <span class="ident">public</span>]);
 		<span class="macro">assert!</span>(<span class="ident">inspect</span>.<span class="ident">run</span>().<span class="ident">is_ok</span>());
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">inspect_with_expected_public_key</span>() {
 		<span class="kw">let</span> <span class="ident">check_cmd</span> <span class="op">=</span> <span class="op">|</span><span class="ident">seed</span>, <span class="ident">expected_public</span>, <span class="ident">success</span><span class="op">|</span> {
-			<span class="kw">let</span> <span class="ident">inspect</span> <span class="op">=</span> <span class="ident">InspectKeyCmd::from_iter</span>(<span class="kw-2">&amp;</span>[
+			<span class="kw">let</span> <span class="ident">inspect</span> <span class="op">=</span> <span class="ident">InspectKeyCmd::parse_from</span>(<span class="kw-2">&amp;</span>[
 				<span class="string">&quot;inspect-key&quot;</span>,
 				<span class="string">&quot;--expect-public&quot;</span>,
 				<span class="ident">expected_public</span>,

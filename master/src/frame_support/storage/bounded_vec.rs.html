@@ -784,6 +784,19 @@
 <span id="784">784</span>
 <span id="785">785</span>
 <span id="786">786</span>
+<span id="787">787</span>
+<span id="788">788</span>
+<span id="789">789</span>
+<span id="790">790</span>
+<span id="791">791</span>
+<span id="792">792</span>
+<span id="793">793</span>
+<span id="794">794</span>
+<span id="795">795</span>
+<span id="796">796</span>
+<span id="797">797</span>
+<span id="798">798</span>
+<span id="799">799</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1448,6 +1461,19 @@
 
 		<span class="macro">assert!</span>(<span class="ident">bounded</span>.<span class="ident">try_insert</span>(<span class="number">0</span>, <span class="number">9</span>).<span class="ident">is_err</span>());
 		<span class="macro">assert_eq!</span>(<span class="kw-2">*</span><span class="ident">bounded</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">0</span>, <span class="number">2</span>, <span class="number">3</span>]);
+	}
+
+	<span class="attribute">#[<span class="ident">test</span>]</span>
+	<span class="kw">fn</span> <span class="ident">constructor_macro_works</span>() {
+		<span class="kw">use</span> <span class="ident">frame_support::bounded_vec</span>;
+
+		<span class="comment">// With values. Use some brackets to make sure the macro doesn&#39;t expand.</span>
+		<span class="kw">let</span> <span class="ident">bv</span>: <span class="ident">BoundedVec</span><span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">u32</span>), <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">3</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">bounded_vec!</span>[(<span class="number">1</span>, <span class="number">2</span>), (<span class="number">1</span>, <span class="number">2</span>), (<span class="number">1</span>, <span class="number">2</span>)];
+		<span class="macro">assert_eq!</span>(<span class="ident">bv</span>, <span class="macro">vec!</span>[(<span class="number">1</span>, <span class="number">2</span>), (<span class="number">1</span>, <span class="number">2</span>), (<span class="number">1</span>, <span class="number">2</span>)]);
+
+		<span class="comment">// With repetition.</span>
+		<span class="kw">let</span> <span class="ident">bv</span>: <span class="ident">BoundedVec</span><span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">u32</span>), <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">3</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">bounded_vec!</span>[(<span class="number">1</span>, <span class="number">2</span>); <span class="number">3</span>];
+		<span class="macro">assert_eq!</span>(<span class="ident">bv</span>, <span class="macro">vec!</span>[(<span class="number">1</span>, <span class="number">2</span>), (<span class="number">1</span>, <span class="number">2</span>), (<span class="number">1</span>, <span class="number">2</span>)]);
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>

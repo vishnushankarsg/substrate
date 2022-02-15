@@ -184,18 +184,6 @@
 <span id="184">184</span>
 <span id="185">185</span>
 <span id="186">186</span>
-<span id="187">187</span>
-<span id="188">188</span>
-<span id="189">189</span>
-<span id="190">190</span>
-<span id="191">191</span>
-<span id="192">192</span>
-<span id="193">193</span>
-<span id="194">194</span>
-<span id="195">195</span>
-<span id="196">196</span>
-<span id="197">197</span>
-<span id="198">198</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -224,13 +212,13 @@
 <span class="kw">mod</span> <span class="ident">transaction_pool_params</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::arg_enums</span>::{<span class="ident">CryptoScheme</span>, <span class="ident">OutputType</span>};
+<span class="kw">use</span> <span class="ident">clap::Args</span>;
 <span class="kw">use</span> <span class="ident">sp_core::crypto::Ss58AddressFormat</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
 	<span class="ident">generic::BlockId</span>,
 	<span class="ident">traits</span>::{<span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>, <span class="ident">NumberFor</span>},
 };
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">convert::TryFrom</span>, <span class="ident">fmt::Debug</span>, <span class="ident">str::FromStr</span>};
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::params</span>::{
 	<span class="ident">database_params</span>::<span class="kw-2">*</span>, <span class="ident">import_params</span>::<span class="kw-2">*</span>, <span class="ident">keystore_params</span>::<span class="kw-2">*</span>, <span class="ident">network_params</span>::<span class="kw-2">*</span>,
@@ -313,44 +301,32 @@
 }
 
 <span class="doccomment">/// Optional flag for specifying crypto algorithm</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Args</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CryptoSchemeFlag</span> {
 	<span class="doccomment">/// cryptography scheme</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(
-		<span class="ident">long</span>,
-		<span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;SCHEME&quot;</span>,
-		<span class="ident">possible_values</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">CryptoScheme::variants</span>(),
-		<span class="ident">case_insensitive</span> <span class="op">=</span> <span class="bool-val">true</span>,
-		<span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;Sr25519&quot;</span>
-	)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;SCHEME&quot;</span>, <span class="ident">arg_enum</span>, <span class="ident">ignore_case</span> <span class="op">=</span> <span class="bool-val">true</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;Sr25519&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">scheme</span>: <span class="ident">CryptoScheme</span>,
 }
 
 <span class="doccomment">/// Optional flag for specifying output type</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Args</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OutputTypeFlag</span> {
 	<span class="doccomment">/// output format</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(
-		<span class="ident">long</span>,
-		<span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;FORMAT&quot;</span>,
-		<span class="ident">possible_values</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">OutputType::variants</span>(),
-		<span class="ident">case_insensitive</span> <span class="op">=</span> <span class="bool-val">true</span>,
-		<span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;Text&quot;</span>
-	)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;FORMAT&quot;</span>, <span class="ident">arg_enum</span>, <span class="ident">ignore_case</span> <span class="op">=</span> <span class="bool-val">true</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;Text&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">output_type</span>: <span class="ident">OutputType</span>,
 }
 
 <span class="doccomment">/// Optional flag for specifying network scheme</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Args</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NetworkSchemeFlag</span> {
 	<span class="doccomment">/// network address format</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(
+	<span class="attribute">#[<span class="ident">clap</span>(
+		<span class="ident">short</span> <span class="op">=</span> <span class="string">&#39;n&#39;</span>,
 		<span class="ident">long</span>,
 		<span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;NETWORK&quot;</span>,
-		<span class="ident">short</span> <span class="op">=</span> <span class="string">&quot;n&quot;</span>,
 		<span class="ident">possible_values</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">Ss58AddressFormat::all_names</span>()[..]</span>,
+		<span class="ident">ignore_case</span> <span class="op">=</span> <span class="bool-val">true</span>,
 		<span class="ident">parse</span>(<span class="ident">try_from_str</span> <span class="op">=</span> <span class="ident">Ss58AddressFormat::try_from</span>),
-		<span class="ident">case_insensitive</span> <span class="op">=</span> <span class="bool-val">true</span>,
 	)]
 	<span class="kw">pub</span> <span class="ident">network</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Ss58AddressFormat</span><span class="op">&gt;</span>,
 }

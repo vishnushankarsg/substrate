@@ -2198,6 +2198,8 @@
 <span id="2198">2198</span>
 <span id="2199">2199</span>
 <span id="2200">2200</span>
+<span id="2201">2201</span>
+<span id="2202">2202</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -3591,7 +3593,7 @@
 }
 
 <span class="doccomment">/// Error returned by [`NetworkService::send_notification`].</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">derive_more::Display</span>, <span class="ident">derive_more::Error</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">NotificationSenderError</span> {
 	<span class="doccomment">/// The notification receiver has been closed, usually because the underlying connection</span>
 	<span class="doccomment">/// closed.</span>
@@ -3599,8 +3601,10 @@
 	<span class="doccomment">/// Some of the notifications most recently sent may not have been received. However,</span>
 	<span class="doccomment">/// the peer may still be connected and a new `NotificationSender` for the same</span>
 	<span class="doccomment">/// protocol obtained from [`NetworkService::notification_sender`].</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;The notification receiver has been closed&quot;</span>)]</span>
 	<span class="ident">Closed</span>,
 	<span class="doccomment">/// Protocol name hasn&#39;t been registered.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Protocol name hasn&#39;t been registered&quot;</span>)]</span>
 	<span class="ident">BadProtocol</span>,
 }
 

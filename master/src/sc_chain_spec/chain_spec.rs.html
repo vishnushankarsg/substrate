@@ -532,6 +532,10 @@
 <span id="532">532</span>
 <span id="533">533</span>
 <span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -698,6 +702,10 @@
 	<span class="ident">boot_nodes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MultiaddrWithPeerId</span><span class="op">&gt;</span>,
 	<span class="ident">telemetry_endpoints</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TelemetryEndpoints</span><span class="op">&gt;</span>,
 	<span class="ident">protocol_id</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+	<span class="doccomment">/// Arbitrary string. Nodes will only synchronize with other nodes that have the same value</span>
+	<span class="doccomment">/// in their `fork_id`. This can be used in order to segregate nodes in cases when multiple</span>
+	<span class="doccomment">/// chains have the same genesis hash.</span>
+	<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span> <span class="op">=</span> <span class="string">&quot;Default::default&quot;</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Option::is_none&quot;</span>)]</span>
 	<span class="ident">fork_id</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 	<span class="ident">properties</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Properties</span><span class="op">&gt;</span>,
 	<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">flatten</span>)]</span>

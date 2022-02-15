@@ -597,20 +597,20 @@
 	}
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">derive_more::Display</span>, <span class="ident">derive_more::From</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>)]</span>
 <span class="kw">enum</span> <span class="ident">HandleRequestError</span> {
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Failed to decode request: {}.&quot;</span>, <span class="ident">_0</span>)]</span>
-	<span class="ident">DecodeProto</span>(<span class="ident">prost::DecodeError</span>),
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Failed to encode response: {}.&quot;</span>, <span class="ident">_0</span>)]</span>
-	<span class="ident">EncodeProto</span>(<span class="ident">prost::EncodeError</span>),
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Failed to send response.&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed to decode request: {0}.&quot;</span>)]</span>
+	<span class="ident">DecodeProto</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">prost::DecodeError</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed to encode response: {0}.&quot;</span>)]</span>
+	<span class="ident">EncodeProto</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">prost::EncodeError</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed to send response.&quot;</span>)]</span>
 	<span class="ident">SendResponse</span>,
 	<span class="doccomment">/// A bad request has been received.</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;bad request: {}&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;bad request: {0}&quot;</span>)]</span>
 	<span class="ident">BadRequest</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>),
 	<span class="doccomment">/// Encoding or decoding of some data failed.</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;codec error: {}&quot;</span>, <span class="ident">_0</span>)]</span>
-	<span class="ident">Codec</span>(<span class="ident">codec::Error</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;codec error: {0}&quot;</span>)]</span>
+	<span class="ident">Codec</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">codec::Error</span>),
 }
 
 <span class="kw">fn</span> <span class="ident">fmt_keys</span>(<span class="ident">first</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">last</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="ident">String</span> {

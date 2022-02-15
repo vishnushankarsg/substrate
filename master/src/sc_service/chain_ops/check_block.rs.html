@@ -97,7 +97,7 @@
 			<span class="ident">import_blocks</span>(<span class="ident">client</span>, <span class="ident">import_queue</span>, <span class="ident">reader</span>, <span class="bool-val">true</span>, <span class="bool-val">true</span>)
 		},
 		<span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>) =&gt; <span class="ident">Box::pin</span>(<span class="ident">future::err</span>(<span class="string">&quot;Unknown block&quot;</span>.<span class="ident">into</span>())),
-		<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; <span class="ident">Box::pin</span>(<span class="ident">future::err</span>(<span class="macro">format!</span>(<span class="string">&quot;Error reading block: {:?}&quot;</span>, <span class="ident">e</span>).<span class="ident">into</span>())),
+		<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; <span class="ident">Box::pin</span>(<span class="ident">future::err</span>(<span class="macro">format!</span>(<span class="string">&quot;Error reading block: {}&quot;</span>, <span class="ident">e</span>).<span class="ident">into</span>())),
 	}
 }
 </code></pre></div>

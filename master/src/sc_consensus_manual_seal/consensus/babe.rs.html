@@ -428,7 +428,7 @@
 				<span class="ident">pre_digest</span>.<span class="ident">slot</span>(),
 			)
 			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;failed to fetch epoch_descriptor: {}&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span>
-			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">sp_consensus::Error::InvalidAuthoritiesSet</span>))<span class="question-mark">?</span>;
+			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">sp_consensus::Error::InvalidAuthoritiesSet</span>))<span class="question-mark">?</span>;
 		<span class="comment">// drop the lock</span>
 		<span class="ident">drop</span>(<span class="ident">epoch_changes</span>);
 

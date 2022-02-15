@@ -93,7 +93,6 @@
 <span id="93">93</span>
 <span id="94">94</span>
 <span id="95">95</span>
-<span id="96">96</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -114,34 +113,34 @@
 
 <span class="doccomment">//! Implementation of the `sign` subcommand</span>
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">error</span>, <span class="ident">utils</span>, <span class="ident">with_crypto_scheme</span>, <span class="ident">CryptoSchemeFlag</span>, <span class="ident">KeystoreParams</span>};
+<span class="kw">use</span> <span class="ident">clap::Parser</span>;
 <span class="kw">use</span> <span class="ident">sp_core::crypto::SecretString</span>;
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
 
 <span class="doccomment">/// The `sign` command</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>, <span class="ident">Clone</span>)]</span>
-<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;sign&quot;</span>, <span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Sign a message, with a given (secret) key&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Parser</span>)]</span>
+<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;sign&quot;</span>, <span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Sign a message, with a given (secret) key&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SignCmd</span> {
 	<span class="doccomment">/// The secret key URI.</span>
 	<span class="doccomment">/// If the value is a file, the file content is used as URI.</span>
 	<span class="doccomment">/// If not given, you will be prompted for the URI.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="ident">suri</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Message to sign, if not provided you will be prompted to</span>
 	<span class="doccomment">/// pass the message via STDIN</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="ident">message</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// The message on STDIN is hex-encoded data</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="ident">hex</span>: <span class="ident">bool</span>,
 
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">keystore_params</span>: <span class="ident">KeystoreParams</span>,
 
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">crypto_scheme</span>: <span class="ident">CryptoSchemeFlag</span>,
 }
 
@@ -171,14 +170,13 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">test</span> {
-	<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::SignCmd</span>;
-	<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
+	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">sign</span>() {
 		<span class="kw">let</span> <span class="ident">seed</span> <span class="op">=</span> <span class="string">&quot;0xad1fb77243b536b90cfe5f0d351ab1b1ac40e3890b41dc64f766ee56340cfca5&quot;</span>;
 
-		<span class="kw">let</span> <span class="ident">sign</span> <span class="op">=</span> <span class="ident">SignCmd::from_iter</span>(<span class="kw-2">&amp;</span>[
+		<span class="kw">let</span> <span class="ident">sign</span> <span class="op">=</span> <span class="ident">SignCmd::parse_from</span>(<span class="kw-2">&amp;</span>[
 			<span class="string">&quot;sign&quot;</span>,
 			<span class="string">&quot;--suri&quot;</span>,
 			<span class="ident">seed</span>,

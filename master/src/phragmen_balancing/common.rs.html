@@ -168,16 +168,6 @@
 <span id="168">168</span>
 <span id="169">169</span>
 <span id="170">170</span>
-<span id="171">171</span>
-<span id="172">172</span>
-<span id="173">173</span>
-<span id="174">174</span>
-<span id="175">175</span>
-<span id="176">176</span>
-<span id="177">177</span>
-<span id="178">178</span>
-<span id="179">179</span>
-<span id="180">180</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -248,7 +238,7 @@
 
 	<span class="comment">// always generate a sensible desired number of candidates: elections are uninteresting if we</span>
 	<span class="comment">// desire 0 candidates, or a number of candidates &gt;= the actual number of candidates present</span>
-	<span class="kw">let</span> <span class="ident">rounds</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen_range</span>(<span class="number">1</span>, <span class="ident">candidate_count</span>);
+	<span class="kw">let</span> <span class="ident">rounds</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen_range</span>(<span class="number">1</span>..<span class="ident">candidate_count</span>);
 
 	<span class="comment">// candidates are easy: just a completely random set of IDs</span>
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">candidates</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">candidate_count</span>);
@@ -275,7 +265,7 @@
 		<span class="kw">let</span> <span class="ident">vote_weight</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen</span>();
 
 		<span class="comment">// it&#39;s not interesting if a voter chooses 0 or all candidates, so rule those cases out.</span>
-		<span class="kw">let</span> <span class="ident">n_candidates_chosen</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen_range</span>(<span class="number">1</span>, <span class="ident">candidates</span>.<span class="ident">len</span>());
+		<span class="kw">let</span> <span class="ident">n_candidates_chosen</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen_range</span>(<span class="number">1</span>..<span class="ident">candidates</span>.<span class="ident">len</span>());
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">chosen_candidates</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">n_candidates_chosen</span>);
 		<span class="ident">chosen_candidates</span>.<span class="ident">extend</span>(<span class="ident">candidates</span>.<span class="ident">choose_multiple</span>(<span class="kw-2">&amp;mut</span> <span class="ident">rng</span>, <span class="ident">n_candidates_chosen</span>));
@@ -312,25 +302,25 @@
 
 	(<span class="number">1</span>..<span class="op">=</span><span class="ident">target_count</span>).<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">acc</span><span class="op">|</span> {
 		<span class="ident">candidates</span>.<span class="ident">push</span>(<span class="ident">acc</span>);
-		<span class="kw">let</span> <span class="ident">stake_var</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen_range</span>(<span class="ident">ed</span>, <span class="number">100</span> <span class="op">*</span> <span class="ident">ed</span>);
+		<span class="kw">let</span> <span class="ident">stake_var</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen_range</span>(<span class="ident">ed</span>..<span class="number">100</span> <span class="op">*</span> <span class="ident">ed</span>);
 		<span class="ident">stake_of</span>.<span class="ident">insert</span>(<span class="ident">acc</span>, <span class="ident">base_stake</span> <span class="op">+</span> <span class="ident">stake_var</span>);
 	});
 
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">voters</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">voter_count</span> <span class="kw">as</span> <span class="ident">usize</span>);
 	(<span class="ident">prefix</span>..<span class="op">=</span>(<span class="ident">prefix</span> <span class="op">+</span> <span class="ident">voter_count</span>)).<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">acc</span><span class="op">|</span> {
-		<span class="kw">let</span> <span class="ident">edge_per_this_voter</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen_range</span>(<span class="number">1</span>, <span class="ident">candidates</span>.<span class="ident">len</span>());
+		<span class="kw">let</span> <span class="ident">edge_per_this_voter</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen_range</span>(<span class="number">1</span>..<span class="ident">candidates</span>.<span class="ident">len</span>());
 		<span class="comment">// all possible targets</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">all_targets</span> <span class="op">=</span> <span class="ident">candidates</span>.<span class="ident">clone</span>();
 		<span class="comment">// we remove and pop into `targets` `edge_per_this_voter` times.</span>
 		<span class="kw">let</span> <span class="ident">targets</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">edge_per_this_voter</span>)
 			.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
 				<span class="kw">let</span> <span class="ident">upper</span> <span class="op">=</span> <span class="ident">all_targets</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>;
-				<span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen_range</span>(<span class="number">0</span>, <span class="ident">upper</span>);
+				<span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen_range</span>(<span class="number">0</span>..<span class="ident">upper</span>);
 				<span class="ident">all_targets</span>.<span class="ident">remove</span>(<span class="ident">idx</span>)
 			})
 			.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 
-		<span class="kw">let</span> <span class="ident">stake_var</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen_range</span>(<span class="ident">ed</span>, <span class="number">100</span> <span class="op">*</span> <span class="ident">ed</span>);
+		<span class="kw">let</span> <span class="ident">stake_var</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen_range</span>(<span class="ident">ed</span>..<span class="number">100</span> <span class="op">*</span> <span class="ident">ed</span>);
 		<span class="kw">let</span> <span class="ident">stake</span> <span class="op">=</span> <span class="ident">base_stake</span> <span class="op">+</span> <span class="ident">stake_var</span>;
 		<span class="ident">stake_of</span>.<span class="ident">insert</span>(<span class="ident">acc</span>, <span class="ident">stake</span>);
 		<span class="ident">voters</span>.<span class="ident">push</span>((<span class="ident">acc</span>, <span class="ident">stake</span>, <span class="ident">targets</span>));
@@ -338,20 +328,10 @@
 
 	(
 		<span class="kw">match</span> <span class="ident">election_type</span> {
-			<span class="ident">ElectionType::Phragmen</span>(<span class="ident">conf</span>) =&gt; <span class="ident">seq_phragmen</span>::<span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">sp_runtime::Perbill</span><span class="op">&gt;</span>(
-				<span class="ident">to_elect</span>,
-				<span class="ident">candidates</span>.<span class="ident">clone</span>(),
-				<span class="ident">voters</span>.<span class="ident">clone</span>(),
-				<span class="ident">conf</span>,
-			)
-			.<span class="ident">unwrap</span>(),
-			<span class="ident">ElectionType::Phragmms</span>(<span class="ident">conf</span>) =&gt; <span class="ident">phragmms</span>::<span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">sp_runtime::Perbill</span><span class="op">&gt;</span>(
-				<span class="ident">to_elect</span>,
-				<span class="ident">candidates</span>.<span class="ident">clone</span>(),
-				<span class="ident">voters</span>.<span class="ident">clone</span>(),
-				<span class="ident">conf</span>,
-			)
-			.<span class="ident">unwrap</span>(),
+			<span class="ident">ElectionType::Phragmen</span>(<span class="ident">conf</span>) =&gt;
+				<span class="ident">seq_phragmen</span>(<span class="ident">to_elect</span>, <span class="ident">candidates</span>.<span class="ident">clone</span>(), <span class="ident">voters</span>.<span class="ident">clone</span>(), <span class="ident">conf</span>).<span class="ident">unwrap</span>(),
+			<span class="ident">ElectionType::Phragmms</span>(<span class="ident">conf</span>) =&gt;
+				<span class="ident">phragmms</span>(<span class="ident">to_elect</span>, <span class="ident">candidates</span>.<span class="ident">clone</span>(), <span class="ident">voters</span>.<span class="ident">clone</span>(), <span class="ident">conf</span>).<span class="ident">unwrap</span>(),
 		},
 		<span class="ident">candidates</span>,
 		<span class="ident">voters</span>,

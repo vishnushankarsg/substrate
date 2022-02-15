@@ -831,6 +831,10 @@
 <span id="831">831</span>
 <span id="832">832</span>
 <span id="833">833</span>
+<span id="834">834</span>
+<span id="835">835</span>
+<span id="836">836</span>
+<span id="837">837</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -1431,7 +1435,7 @@
 				<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
 					<span class="macro">debug!</span>(
 						<span class="ident">target</span>: <span class="string">&quot;afg&quot;</span>,
-						<span class="string">&quot;Restoring old authority set after block import error: {:?}&quot;</span>,
+						<span class="string">&quot;Restoring old authority set after block import error: {}&quot;</span>,
 						<span class="ident">e</span>,
 					);
 					<span class="ident">pending_changes</span>.<span class="ident">revert</span>();
@@ -1496,8 +1500,12 @@
 
 				<span class="ident">import_res</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> {
 					<span class="kw">if</span> <span class="ident">needs_justification</span> {
-						<span class="macro">debug!</span>(<span class="ident">target</span>: <span class="string">&quot;afg&quot;</span>, <span class="string">&quot;Imported block #{} that enacts authority set change with \
-							invalid justification: {:?}, requesting justification from peers.&quot;</span>, <span class="ident">number</span>, <span class="ident">err</span>);
+						<span class="macro">debug!</span>(
+							<span class="ident">target</span>: <span class="string">&quot;afg&quot;</span>,
+							<span class="string">&quot;Requesting justification from peers due to imported block #{} that enacts authority set change with invalid justification: {}&quot;</span>,
+							<span class="ident">number</span>,
+							<span class="ident">err</span>
+						);
 						<span class="ident">imported_aux</span>.<span class="ident">bad_justification</span> <span class="op">=</span> <span class="bool-val">true</span>;
 						<span class="ident">imported_aux</span>.<span class="ident">needs_justification</span> <span class="op">=</span> <span class="bool-val">true</span>;
 					}

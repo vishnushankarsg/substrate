@@ -667,10 +667,6 @@
 <span id="667">667</span>
 <span id="668">668</span>
 <span id="669">669</span>
-<span id="670">670</span>
-<span id="671">671</span>
-<span id="672">672</span>
-<span id="673">673</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1037,13 +1033,9 @@
 <span class="doccomment">/// A stored pending change.</span>
 <span class="doccomment">/// `Limit` is the bound for `next_authorities`</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">TypeInfo</span>, <span class="ident">MaxEncodedLen</span>)]</span>
-<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">mel_bound</span>(<span class="ident">Limit</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>))]</span>
+<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">mel_bound</span>(<span class="ident">N</span>: <span class="ident">MaxEncodedLen</span>, <span class="ident">Limit</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>))]</span>
 <span class="attribute">#[<span class="ident">scale_info</span>(<span class="ident">skip_type_params</span>(<span class="ident">Limit</span>))]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StoredPendingChange</span><span class="op">&lt;</span><span class="ident">N</span>, <span class="ident">Limit</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-	<span class="ident">Limit</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
-	<span class="ident">N</span>: <span class="ident">MaxEncodedLen</span>,
-{
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StoredPendingChange</span><span class="op">&lt;</span><span class="ident">N</span>, <span class="ident">Limit</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// The block number this was scheduled at.</span>
 	<span class="kw">pub</span> <span class="ident">scheduled_at</span>: <span class="ident">N</span>,
 	<span class="doccomment">/// The delay in blocks until it will be applied.</span>

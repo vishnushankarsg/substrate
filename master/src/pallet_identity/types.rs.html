@@ -467,10 +467,6 @@
 <span id="467">467</span>
 <span id="468">468</span>
 <span id="469">469</span>
-<span id="470">470</span>
-<span id="471">471</span>
-<span id="472">472</span>
-<span id="473">473</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -718,7 +714,7 @@
 
 <span class="doccomment">/// Wrapper type for `BitFlags&lt;IdentityField&gt;` that implements `Codec`.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Default</span>, <span class="ident">RuntimeDebug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IdentityFields</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">BitFlags</span><span class="op">&lt;</span><span class="ident">IdentityField</span><span class="op">&gt;</span>);
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IdentityFields</span>(<span class="kw">pub</span> <span class="ident">BitFlags</span><span class="op">&lt;</span><span class="ident">IdentityField</span><span class="op">&gt;</span>);
 
 <span class="kw">impl</span> <span class="ident">MaxEncodedLen</span> <span class="kw">for</span> <span class="ident">IdentityFields</span> {
 	<span class="kw">fn</span> <span class="ident">max_encoded_len</span>() -&gt; <span class="ident">usize</span> {
@@ -756,7 +752,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(
 	<span class="ident">CloneNoBound</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Eq</span>, <span class="ident">MaxEncodedLen</span>, <span class="ident">PartialEqNoBound</span>, <span class="ident">RuntimeDebugNoBound</span>, <span class="ident">TypeInfo</span>,
 )]</span>
-<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">mel_bound</span>(<span class="ident">FieldLimit</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>))]</span>
+<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">mel_bound</span>())]</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">test</span>, <span class="ident">derive</span>(<span class="ident">frame_support::DefaultNoBound</span>))]</span>
 <span class="attribute">#[<span class="ident">scale_info</span>(<span class="ident">skip_type_params</span>(<span class="ident">FieldLimit</span>))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IdentityInfo</span><span class="op">&lt;</span><span class="ident">FieldLimit</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="op">&gt;</span> {
@@ -812,11 +808,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(
 	<span class="ident">CloneNoBound</span>, <span class="ident">Encode</span>, <span class="ident">Eq</span>, <span class="ident">MaxEncodedLen</span>, <span class="ident">PartialEqNoBound</span>, <span class="ident">RuntimeDebugNoBound</span>, <span class="ident">TypeInfo</span>,
 )]</span>
-<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">mel_bound</span>(
-	<span class="ident">Balance</span>: <span class="ident">Encode</span> <span class="op">+</span> <span class="ident">Decode</span> <span class="op">+</span> <span class="ident">MaxEncodedLen</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Debug</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Zero</span> <span class="op">+</span> <span class="ident">Add</span>,
-	<span class="ident">MaxJudgements</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
-	<span class="ident">MaxAdditionalFields</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
-))]</span>
+<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">mel_bound</span>())]</span>
 <span class="attribute">#[<span class="ident">scale_info</span>(<span class="ident">skip_type_params</span>(<span class="ident">MaxJudgements</span>, <span class="ident">MaxAdditionalFields</span>))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Registration</span><span class="op">&lt;</span>
 	<span class="ident">Balance</span>: <span class="ident">Encode</span> <span class="op">+</span> <span class="ident">Decode</span> <span class="op">+</span> <span class="ident">MaxEncodedLen</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Debug</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">PartialEq</span>,

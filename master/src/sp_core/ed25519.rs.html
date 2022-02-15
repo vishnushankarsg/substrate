@@ -927,7 +927,7 @@
 
 <span class="doccomment">/// A signature (a 512-bit value).</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;full_crypto&quot;</span>, <span class="ident">derive</span>(<span class="ident">Hash</span>))]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">PassByInner</span>, <span class="ident">TypeInfo</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">MaxEncodedLen</span>, <span class="ident">PassByInner</span>, <span class="ident">TypeInfo</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Signature</span>(<span class="kw">pub</span> [<span class="ident">u8</span>; <span class="number">64</span>]);
 
 <span class="kw">impl</span> <span class="ident">sp_std::convert::TryFrom</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Signature</span> {

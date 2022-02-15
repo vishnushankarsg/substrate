@@ -331,6 +331,14 @@
 <span id="331">331</span>
 <span id="332">332</span>
 <span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Substrate.</span>
 
@@ -646,22 +654,30 @@
 }
 
 <span class="doccomment">/// Bitswap protocol error.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">derive_more::Display</span>, <span class="ident">derive_more::From</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">BitswapError</span> {
 	<span class="doccomment">/// Protobuf decoding error.</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Failed to decode request: {}.&quot;</span>, <span class="ident">_0</span>)]</span>
-	<span class="ident">DecodeProto</span>(<span class="ident">prost::DecodeError</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed to decode request: {0}.&quot;</span>)]</span>
+	<span class="ident">DecodeProto</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">prost::DecodeError</span>),
+
 	<span class="doccomment">/// Protobuf encoding error.</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Failed to encode response: {}.&quot;</span>, <span class="ident">_0</span>)]</span>
-	<span class="ident">EncodeProto</span>(<span class="ident">prost::EncodeError</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed to encode response: {0}.&quot;</span>)]</span>
+	<span class="ident">EncodeProto</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">prost::EncodeError</span>),
+
 	<span class="doccomment">/// Client backend error.</span>
-	<span class="ident">Client</span>(<span class="ident">sp_blockchain::Error</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
+	<span class="ident">Client</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">sp_blockchain::Error</span>),
+
 	<span class="doccomment">/// Error parsing CID</span>
-	<span class="ident">BadCid</span>(<span class="ident">cid::Error</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
+	<span class="ident">BadCid</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">cid::Error</span>),
+
 	<span class="doccomment">/// Packet read error.</span>
-	<span class="ident">Read</span>(<span class="ident">io::Error</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
+	<span class="ident">Read</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">io::Error</span>),
+
 	<span class="doccomment">/// Error sending response.</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Failed to send response.&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed to send response.&quot;</span>)]</span>
 	<span class="ident">SendResponse</span>,
 }
 </code></pre></div>

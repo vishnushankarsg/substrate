@@ -580,25 +580,6 @@
 <span id="580">580</span>
 <span id="581">581</span>
 <span id="582">582</span>
-<span id="583">583</span>
-<span id="584">584</span>
-<span id="585">585</span>
-<span id="586">586</span>
-<span id="587">587</span>
-<span id="588">588</span>
-<span id="589">589</span>
-<span id="590">590</span>
-<span id="591">591</span>
-<span id="592">592</span>
-<span id="593">593</span>
-<span id="594">594</span>
-<span id="595">595</span>
-<span id="596">596</span>
-<span id="597">597</span>
-<span id="598">598</span>
-<span id="599">599</span>
-<span id="600">600</span>
-<span id="601">601</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -635,10 +616,10 @@
 <span class="kw">mod</span> <span class="ident">metrics</span>;
 <span class="kw">mod</span> <span class="ident">task_manager</span>;
 
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">collections::HashMap</span>, <span class="ident">io</span>, <span class="ident">net::SocketAddr</span>, <span class="ident">pin::Pin</span>, <span class="ident">task::Poll</span>};
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">collections::HashMap</span>, <span class="ident">io</span>, <span class="ident">net::SocketAddr</span>, <span class="ident">pin::Pin</span>};
 
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
-<span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">stream</span>, <span class="ident">Future</span>, <span class="ident">FutureExt</span>, <span class="ident">Stream</span>, <span class="ident">StreamExt</span>};
+<span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">Future</span>, <span class="ident">FutureExt</span>, <span class="ident">StreamExt</span>};
 <span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">debug</span>, <span class="ident">error</span>, <span class="ident">warn</span>};
 <span class="kw">use</span> <span class="ident">sc_network::PeerId</span>;
 <span class="kw">use</span> <span class="ident">sc_utils::mpsc::TracingUnboundedReceiver</span>;
@@ -753,26 +734,7 @@
 	<span class="kw">let</span> <span class="ident">starting_block</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">info</span>().<span class="ident">best_number</span>;
 
 	<span class="comment">// Stream of finalized blocks reported by the client.</span>
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">finality_notification_stream</span> <span class="op">=</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">finality_notification_stream</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">finality_notification_stream</span>().<span class="ident">fuse</span>();
-
-		<span class="comment">// We tweak the `Stream` in order to merge together multiple items if they happen to be</span>
-		<span class="comment">// ready. This way, we only get the latest finalized block.</span>
-		<span class="ident">stream::poll_fn</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">cx</span><span class="op">|</span> {
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">last</span> <span class="op">=</span> <span class="prelude-val">None</span>;
-			<span class="kw">while</span> <span class="kw">let</span> <span class="ident">Poll::Ready</span>(<span class="prelude-val">Some</span>(<span class="ident">item</span>)) <span class="op">=</span>
-				<span class="ident">Pin::new</span>(<span class="kw-2">&amp;mut</span> <span class="ident">finality_notification_stream</span>).<span class="ident">poll_next</span>(<span class="ident">cx</span>)
-			{
-				<span class="ident">last</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">item</span>);
-			}
-			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">last</span>) <span class="op">=</span> <span class="ident">last</span> {
-				<span class="ident">Poll::Ready</span>(<span class="prelude-val">Some</span>(<span class="ident">last</span>))
-			} <span class="kw">else</span> {
-				<span class="ident">Poll::Pending</span>
-			}
-		})
-		.<span class="ident">fuse</span>()
-	};
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">finality_notification_stream</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">finality_notification_stream</span>().<span class="ident">fuse</span>();
 
 	<span class="kw">loop</span> {
 		<span class="macro">futures::select!</span> {
@@ -1129,7 +1091,7 @@
 						<span class="ident">TransactionImport::Bad</span>
 					},
 					<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
-						<span class="macro">debug!</span>(<span class="string">&quot;Error converting pool error: {:?}&quot;</span>, <span class="ident">e</span>);
+						<span class="macro">debug!</span>(<span class="string">&quot;Error converting pool error: {}&quot;</span>, <span class="ident">e</span>);
 						<span class="comment">// it is not bad at least, just some internal node logic error, so peer is</span>
 						<span class="comment">// innocent.</span>
 						<span class="ident">TransactionImport::KnownGood</span>

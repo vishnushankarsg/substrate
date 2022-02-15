@@ -2020,6 +2020,54 @@
 <span id="2020">2020</span>
 <span id="2021">2021</span>
 <span id="2022">2022</span>
+<span id="2023">2023</span>
+<span id="2024">2024</span>
+<span id="2025">2025</span>
+<span id="2026">2026</span>
+<span id="2027">2027</span>
+<span id="2028">2028</span>
+<span id="2029">2029</span>
+<span id="2030">2030</span>
+<span id="2031">2031</span>
+<span id="2032">2032</span>
+<span id="2033">2033</span>
+<span id="2034">2034</span>
+<span id="2035">2035</span>
+<span id="2036">2036</span>
+<span id="2037">2037</span>
+<span id="2038">2038</span>
+<span id="2039">2039</span>
+<span id="2040">2040</span>
+<span id="2041">2041</span>
+<span id="2042">2042</span>
+<span id="2043">2043</span>
+<span id="2044">2044</span>
+<span id="2045">2045</span>
+<span id="2046">2046</span>
+<span id="2047">2047</span>
+<span id="2048">2048</span>
+<span id="2049">2049</span>
+<span id="2050">2050</span>
+<span id="2051">2051</span>
+<span id="2052">2052</span>
+<span id="2053">2053</span>
+<span id="2054">2054</span>
+<span id="2055">2055</span>
+<span id="2056">2056</span>
+<span id="2057">2057</span>
+<span id="2058">2058</span>
+<span id="2059">2059</span>
+<span id="2060">2060</span>
+<span id="2061">2061</span>
+<span id="2062">2062</span>
+<span id="2063">2063</span>
+<span id="2064">2064</span>
+<span id="2065">2065</span>
+<span id="2066">2066</span>
+<span id="2067">2067</span>
+<span id="2068">2068</span>
+<span id="2069">2069</span>
+<span id="2070">2070</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -2052,8 +2100,8 @@
 <span class="kw">use</span> <span class="ident">sc_block_builder</span>::{<span class="ident">BlockBuilderApi</span>, <span class="ident">BlockBuilderProvider</span>, <span class="ident">RecordProof</span>};
 <span class="kw">use</span> <span class="ident">sc_client_api</span>::{
 	<span class="ident">backend</span>::{
-		<span class="self">self</span>, <span class="ident">apply_aux</span>, <span class="ident">BlockImportOperation</span>, <span class="ident">ClientImportOperation</span>, <span class="ident">Finalizer</span>, <span class="ident">ImportSummary</span>,
-		<span class="ident">LockImportRun</span>, <span class="ident">NewBlockState</span>, <span class="ident">StorageProvider</span>,
+		<span class="self">self</span>, <span class="ident">apply_aux</span>, <span class="ident">BlockImportOperation</span>, <span class="ident">ClientImportOperation</span>, <span class="ident">FinalizeSummary</span>, <span class="ident">Finalizer</span>,
+		<span class="ident">ImportSummary</span>, <span class="ident">LockImportRun</span>, <span class="ident">NewBlockState</span>, <span class="ident">StorageProvider</span>,
 	},
 	<span class="ident">client</span>::{
 		<span class="ident">BadBlocks</span>, <span class="ident">BlockBackend</span>, <span class="ident">BlockImportNotification</span>, <span class="ident">BlockOf</span>, <span class="ident">BlockchainEvents</span>, <span class="ident">ClientInfo</span>,
@@ -2296,7 +2344,7 @@
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">op</span> <span class="op">=</span> <span class="ident">ClientImportOperation</span> {
 				<span class="ident">op</span>: <span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">begin_operation</span>()<span class="question-mark">?</span>,
 				<span class="ident">notify_imported</span>: <span class="prelude-val">None</span>,
-				<span class="ident">notify_finalized</span>: <span class="ident">Vec::new</span>(),
+				<span class="ident">notify_finalized</span>: <span class="prelude-val">None</span>,
 			};
 
 			<span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">f</span>(<span class="kw-2">&amp;mut</span> <span class="ident">op</span>)<span class="question-mark">?</span>;
@@ -2644,24 +2692,24 @@
 						<span class="prelude-val">None</span>
 					},
 				};
-				<span class="comment">// Ensure parent chain is finalized to maintain invariant that</span>
-				<span class="comment">// finality is called sequentially. This will also send finality</span>
-				<span class="comment">// notifications for top 250 newly finalized blocks.</span>
-				<span class="kw">if</span> <span class="ident">finalized</span> <span class="op">&amp;&amp;</span> <span class="ident">parent_exists</span> {
-					<span class="self">self</span>.<span class="ident">apply_finality_with_block_hash</span>(
-						<span class="ident">operation</span>,
-						<span class="ident">parent_hash</span>,
-						<span class="prelude-val">None</span>,
-						<span class="ident">info</span>.<span class="ident">best_hash</span>,
-						<span class="ident">make_notifications</span>,
-					)<span class="question-mark">?</span>;
-				}
 
 				<span class="ident">operation</span>.<span class="ident">op</span>.<span class="ident">update_cache</span>(<span class="ident">new_cache</span>);
 				<span class="ident">storage_changes</span>
 			},
 			<span class="prelude-val">None</span> =&gt; <span class="prelude-val">None</span>,
 		};
+
+		<span class="comment">// Ensure parent chain is finalized to maintain invariant that finality is called</span>
+		<span class="comment">// sequentially.</span>
+		<span class="kw">if</span> <span class="ident">finalized</span> <span class="op">&amp;&amp;</span> <span class="ident">parent_exists</span> {
+			<span class="self">self</span>.<span class="ident">apply_finality_with_block_hash</span>(
+				<span class="ident">operation</span>,
+				<span class="ident">parent_hash</span>,
+				<span class="prelude-val">None</span>,
+				<span class="ident">info</span>.<span class="ident">best_hash</span>,
+				<span class="ident">make_notifications</span>,
+			)<span class="question-mark">?</span>;
+		}
 
 		<span class="kw">let</span> <span class="ident">is_new_best</span> <span class="op">=</span> <span class="op">!</span><span class="ident">gap_block</span> <span class="op">&amp;&amp;</span>
 			(<span class="ident">finalized</span> <span class="op">|</span><span class="op">|</span>
@@ -2705,11 +2753,36 @@
 
 		<span class="ident">operation</span>.<span class="ident">op</span>.<span class="ident">insert_aux</span>(<span class="ident">aux</span>)<span class="question-mark">?</span>;
 
-		<span class="comment">// we only notify when we are already synced to the tip of the chain</span>
+		<span class="comment">// We only notify when we are already synced to the tip of the chain</span>
 		<span class="comment">// or if this import triggers a re-org</span>
 		<span class="kw">if</span> <span class="ident">make_notifications</span> <span class="op">|</span><span class="op">|</span> <span class="ident">tree_route</span>.<span class="ident">is_some</span>() {
 			<span class="kw">if</span> <span class="ident">finalized</span> {
-				<span class="ident">operation</span>.<span class="ident">notify_finalized</span>.<span class="ident">push</span>(<span class="ident">hash</span>);
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">summary</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">operation</span>.<span class="ident">notify_finalized</span>.<span class="ident">take</span>() {
+					<span class="prelude-val">Some</span>(<span class="ident">summary</span>) =&gt; <span class="ident">summary</span>,
+					<span class="prelude-val">None</span> =&gt; <span class="ident">FinalizeSummary</span> { <span class="ident">finalized</span>: <span class="ident">Vec::new</span>(), <span class="ident">stale_heads</span>: <span class="ident">Vec::new</span>() },
+				};
+				<span class="ident">summary</span>.<span class="ident">finalized</span>.<span class="ident">push</span>(<span class="ident">hash</span>);
+				<span class="kw">if</span> <span class="ident">parent_exists</span> {
+					<span class="comment">// Add to the stale list all heads that are branching from parent besides our</span>
+					<span class="comment">// current `head`.</span>
+					<span class="kw">for</span> <span class="ident">head</span> <span class="kw">in</span> <span class="self">self</span>
+						.<span class="ident">backend</span>
+						.<span class="ident">blockchain</span>()
+						.<span class="ident">leaves</span>()<span class="question-mark">?</span>
+						.<span class="ident">into_iter</span>()
+						.<span class="ident">filter</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">h</span> <span class="op">!</span><span class="op">=</span> <span class="ident">parent_hash</span>)
+					{
+						<span class="kw">let</span> <span class="ident">route_from_parent</span> <span class="op">=</span> <span class="ident">sp_blockchain::tree_route</span>(
+							<span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">blockchain</span>(),
+							<span class="ident">parent_hash</span>,
+							<span class="ident">head</span>,
+						)<span class="question-mark">?</span>;
+						<span class="kw">if</span> <span class="ident">route_from_parent</span>.<span class="ident">retracted</span>().<span class="ident">is_empty</span>() {
+							<span class="ident">summary</span>.<span class="ident">stale_heads</span>.<span class="ident">push</span>(<span class="ident">head</span>);
+						}
+					}
+				}
+				<span class="ident">operation</span>.<span class="ident">notify_finalized</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">summary</span>);
 			}
 
 			<span class="ident">operation</span>.<span class="ident">notify_imported</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">ImportSummary</span> {
@@ -2853,58 +2926,82 @@
 		<span class="ident">operation</span>.<span class="ident">op</span>.<span class="ident">mark_finalized</span>(<span class="ident">BlockId::Hash</span>(<span class="ident">block</span>), <span class="ident">justification</span>)<span class="question-mark">?</span>;
 
 		<span class="kw">if</span> <span class="ident">notify</span> {
-			<span class="comment">// sometimes when syncing, tons of blocks can be finalized at once.</span>
-			<span class="comment">// we&#39;ll send notifications spuriously in that case.</span>
-			<span class="kw">const</span> <span class="ident">MAX_TO_NOTIFY</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">256</span>;
-			<span class="kw">let</span> <span class="ident">enacted</span> <span class="op">=</span> <span class="ident">route_from_finalized</span>.<span class="ident">enacted</span>();
-			<span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">enacted</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="ident">std::cmp::min</span>(<span class="ident">enacted</span>.<span class="ident">len</span>(), <span class="ident">MAX_TO_NOTIFY</span>);
-			<span class="kw">for</span> <span class="ident">finalized</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">enacted</span>[<span class="ident">start</span>..] {
-				<span class="ident">operation</span>.<span class="ident">notify_finalized</span>.<span class="ident">push</span>(<span class="ident">finalized</span>.<span class="ident">hash</span>);
+			<span class="kw">let</span> <span class="ident">finalized</span> <span class="op">=</span>
+				<span class="ident">route_from_finalized</span>.<span class="ident">enacted</span>().<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">elem</span><span class="op">|</span> <span class="ident">elem</span>.<span class="ident">hash</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+
+			<span class="kw">let</span> <span class="ident">last_finalized_number</span> <span class="op">=</span> <span class="self">self</span>
+				.<span class="ident">backend</span>
+				.<span class="ident">blockchain</span>()
+				.<span class="ident">number</span>(<span class="ident">last_finalized</span>)<span class="question-mark">?</span>
+				.<span class="ident">expect</span>(<span class="string">&quot;Finalized block expected to be onchain; qed&quot;</span>);
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stale_heads</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
+			<span class="kw">for</span> <span class="ident">head</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">leaves</span>()<span class="question-mark">?</span> {
+				<span class="kw">let</span> <span class="ident">route_from_finalized</span> <span class="op">=</span>
+					<span class="ident">sp_blockchain::tree_route</span>(<span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">blockchain</span>(), <span class="ident">block</span>, <span class="ident">head</span>)<span class="question-mark">?</span>;
+				<span class="kw">let</span> <span class="ident">retracted</span> <span class="op">=</span> <span class="ident">route_from_finalized</span>.<span class="ident">retracted</span>();
+				<span class="kw">let</span> <span class="ident">pivot</span> <span class="op">=</span> <span class="ident">route_from_finalized</span>.<span class="ident">common_block</span>();
+				<span class="comment">// It is not guaranteed that `backend.blockchain().leaves()` doesn&#39;t return</span>
+				<span class="comment">// heads that were in a stale state before this finalization and thus already</span>
+				<span class="comment">// included in previous notifications. We want to skip such heads.</span>
+				<span class="comment">// Given the &quot;route&quot; from the currently finalized block to the head under</span>
+				<span class="comment">// analysis, the condition for it to be added to the new stale heads list is:</span>
+				<span class="comment">// `!retracted.is_empty() &amp;&amp; last_finalized_number &lt;= pivot.number`</span>
+				<span class="comment">// 1. &quot;route&quot; has some &quot;retractions&quot;.</span>
+				<span class="comment">// 2. previously finalized block number is not greater than the &quot;route&quot; pivot:</span>
+				<span class="comment">//    - if `last_finalized_number &lt;= pivot.number` then this is a new stale head;</span>
+				<span class="comment">//    - else the stale head was already included by some previous finalization.</span>
+				<span class="kw">if</span> <span class="op">!</span><span class="ident">retracted</span>.<span class="ident">is_empty</span>() <span class="op">&amp;&amp;</span> <span class="ident">last_finalized_number</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">pivot</span>.<span class="ident">number</span> {
+					<span class="ident">stale_heads</span>.<span class="ident">push</span>(<span class="ident">head</span>);
+				}
 			}
+			<span class="ident">operation</span>.<span class="ident">notify_finalized</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">FinalizeSummary</span> { <span class="ident">finalized</span>, <span class="ident">stale_heads</span> });
 		}
 
 		<span class="prelude-val">Ok</span>(())
 	}
 
-	<span class="kw">fn</span> <span class="ident">notify_finalized</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">notify_finalized</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>) -&gt; <span class="ident">sp_blockchain::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">notify_finalized</span>(
+		<span class="kw-2">&amp;</span><span class="self">self</span>,
+		<span class="ident">notify_finalized</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FinalizeSummary</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	) -&gt; <span class="ident">sp_blockchain::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sinks</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">finality_notification_sinks</span>.<span class="ident">lock</span>();
 
-		<span class="kw">if</span> <span class="ident">notify_finalized</span>.<span class="ident">is_empty</span>() {
-			<span class="comment">// cleanup any closed finality notification sinks</span>
-			<span class="comment">// since we won&#39;t be running the loop below which</span>
-			<span class="comment">// would also remove any closed sinks.</span>
-			<span class="ident">sinks</span>.<span class="ident">retain</span>(<span class="op">|</span><span class="ident">sink</span><span class="op">|</span> <span class="op">!</span><span class="ident">sink</span>.<span class="ident">is_closed</span>());
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">notify_finalized</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">notify_finalized</span> {
+			<span class="prelude-val">Some</span>(<span class="ident">notify_finalized</span>) =&gt; <span class="ident">notify_finalized</span>,
+			<span class="prelude-val">None</span> =&gt; {
+				<span class="comment">// Cleanup any closed finality notification sinks</span>
+				<span class="comment">// since we won&#39;t be running the loop below which</span>
+				<span class="comment">// would also remove any closed sinks.</span>
+				<span class="ident">sinks</span>.<span class="ident">retain</span>(<span class="op">|</span><span class="ident">sink</span><span class="op">|</span> <span class="op">!</span><span class="ident">sink</span>.<span class="ident">is_closed</span>());
+				<span class="kw">return</span> <span class="prelude-val">Ok</span>(())
+			},
+		};
 
-			<span class="kw">return</span> <span class="prelude-val">Ok</span>(())
-		}
+		<span class="kw">let</span> <span class="ident">last</span> <span class="op">=</span> <span class="ident">notify_finalized</span>.<span class="ident">finalized</span>.<span class="ident">pop</span>().<span class="ident">expect</span>(
+			<span class="string">&quot;At least one finalized block shall exist within a valid finalization summary; qed&quot;</span>,
+		);
 
-		<span class="comment">// We assume the list is sorted and only want to inform the</span>
-		<span class="comment">// telemetry once about the finalized block.</span>
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">last</span>) <span class="op">=</span> <span class="ident">notify_finalized</span>.<span class="ident">last</span>() {
-			<span class="kw">let</span> <span class="ident">header</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">header</span>(<span class="kw-2">&amp;</span><span class="ident">BlockId::Hash</span>(<span class="kw-2">*</span><span class="ident">last</span>))<span class="question-mark">?</span>.<span class="ident">expect</span>(
-				<span class="string">&quot;Header already known to exist in DB because it is indicated in the tree route; \
-				 qed&quot;</span>,
-			);
+		<span class="kw">let</span> <span class="ident">header</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">header</span>(<span class="kw-2">&amp;</span><span class="ident">BlockId::Hash</span>(<span class="ident">last</span>))<span class="question-mark">?</span>.<span class="ident">expect</span>(
+			<span class="string">&quot;Header already known to exist in DB because it is indicated in the tree route; \
+				qed&quot;</span>,
+		);
 
-			<span class="macro">telemetry!</span>(
-				<span class="self">self</span>.<span class="ident">telemetry</span>;
-				<span class="ident">SUBSTRATE_INFO</span>;
-				<span class="string">&quot;notify.finalized&quot;</span>;
-				<span class="string">&quot;height&quot;</span> =&gt; <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">header</span>.<span class="ident">number</span>()),
-				<span class="string">&quot;best&quot;</span> =&gt; <span class="question-mark">?</span><span class="ident">last</span>,
-			);
-		}
+		<span class="macro">telemetry!</span>(
+			<span class="self">self</span>.<span class="ident">telemetry</span>;
+			<span class="ident">SUBSTRATE_INFO</span>;
+			<span class="string">&quot;notify.finalized&quot;</span>;
+			<span class="string">&quot;height&quot;</span> =&gt; <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">header</span>.<span class="ident">number</span>()),
+			<span class="string">&quot;best&quot;</span> =&gt; <span class="question-mark">?</span><span class="ident">last</span>,
+		);
 
-		<span class="kw">for</span> <span class="ident">finalized_hash</span> <span class="kw">in</span> <span class="ident">notify_finalized</span> {
-			<span class="kw">let</span> <span class="ident">header</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">header</span>(<span class="kw-2">&amp;</span><span class="ident">BlockId::Hash</span>(<span class="ident">finalized_hash</span>))<span class="question-mark">?</span>.<span class="ident">expect</span>(
-				<span class="string">&quot;Header already known to exist in DB because it is indicated in the tree route; \
-				 qed&quot;</span>,
-			);
+		<span class="kw">let</span> <span class="ident">notification</span> <span class="op">=</span> <span class="ident">FinalityNotification</span> {
+			<span class="ident">hash</span>: <span class="ident">last</span>,
+			<span class="ident">header</span>,
+			<span class="ident">tree_route</span>: <span class="ident">Arc::new</span>(<span class="ident">notify_finalized</span>.<span class="ident">finalized</span>),
+			<span class="ident">stale_heads</span>: <span class="ident">Arc::new</span>(<span class="ident">notify_finalized</span>.<span class="ident">stale_heads</span>),
+		};
 
-			<span class="kw">let</span> <span class="ident">notification</span> <span class="op">=</span> <span class="ident">FinalityNotification</span> { <span class="ident">header</span>, <span class="ident">hash</span>: <span class="ident">finalized_hash</span> };
-
-			<span class="ident">sinks</span>.<span class="ident">retain</span>(<span class="op">|</span><span class="ident">sink</span><span class="op">|</span> <span class="ident">sink</span>.<span class="ident">unbounded_send</span>(<span class="ident">notification</span>.<span class="ident">clone</span>()).<span class="ident">is_ok</span>());
-		}
+		<span class="ident">sinks</span>.<span class="ident">retain</span>(<span class="op">|</span><span class="ident">sink</span><span class="op">|</span> <span class="ident">sink</span>.<span class="ident">unbounded_send</span>(<span class="ident">notification</span>.<span class="ident">clone</span>()).<span class="ident">is_ok</span>());
 
 		<span class="prelude-val">Ok</span>(())
 	}
@@ -2923,7 +3020,6 @@
 				<span class="comment">// temporary leak of closed/discarded notification sinks (e.g.</span>
 				<span class="comment">// from consensus code).</span>
 				<span class="self">self</span>.<span class="ident">import_notification_sinks</span>.<span class="ident">lock</span>().<span class="ident">retain</span>(<span class="op">|</span><span class="ident">sink</span><span class="op">|</span> <span class="op">!</span><span class="ident">sink</span>.<span class="ident">is_closed</span>());
-
 				<span class="kw">return</span> <span class="prelude-val">Ok</span>(())
 			},
 		};
@@ -3090,7 +3186,7 @@
 			};
 			<span class="kw">let</span> <span class="ident">runtime_version</span> <span class="op">=</span>
 				<span class="ident">RuntimeVersionOf::runtime_version</span>(<span class="ident">executor</span>, <span class="kw-2">&amp;mut</span> <span class="ident">ext</span>, <span class="kw-2">&amp;</span><span class="ident">runtime_code</span>)
-					.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">sp_blockchain::Error::VersionInvalid</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">e</span>)))<span class="question-mark">?</span>;
+					.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">sp_blockchain::Error::VersionInvalid</span>(<span class="ident">e</span>.<span class="ident">to_string</span>()))<span class="question-mark">?</span>;
 			<span class="prelude-val">Ok</span>(<span class="ident">runtime_version</span>.<span class="ident">state_version</span>())
 		} <span class="kw">else</span> {
 			<span class="prelude-val">Err</span>(<span class="ident">sp_blockchain::Error::VersionInvalid</span>(
@@ -3693,7 +3789,7 @@
 
 		<span class="kw">let</span> <span class="ident">storage_changes</span> <span class="op">=</span>
 			<span class="kw">match</span> <span class="self">self</span>.<span class="ident">prepare_block_storage_changes</span>(<span class="kw-2">&amp;mut</span> <span class="ident">import_block</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
-				<span class="macro">warn!</span>(<span class="string">&quot;Block prepare storage changes error:\n{:?}&quot;</span>, <span class="ident">e</span>);
+				<span class="macro">warn!</span>(<span class="string">&quot;Block prepare storage changes error: {}&quot;</span>, <span class="ident">e</span>);
 				<span class="ident">ConsensusError::ClientImport</span>(<span class="ident">e</span>.<span class="ident">to_string</span>())
 			})<span class="question-mark">?</span> {
 				<span class="ident">PrepareStorageChangesResult::Discard</span>(<span class="ident">res</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">res</span>),
@@ -3704,7 +3800,7 @@
 			<span class="self">self</span>.<span class="ident">apply_block</span>(<span class="ident">operation</span>, <span class="ident">import_block</span>, <span class="ident">new_cache</span>, <span class="ident">storage_changes</span>)
 		})
 		.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
-			<span class="macro">warn!</span>(<span class="string">&quot;Block import error:\n{:?}&quot;</span>, <span class="ident">e</span>);
+			<span class="macro">warn!</span>(<span class="string">&quot;Block import error: {}&quot;</span>, <span class="ident">e</span>);
 			<span class="ident">ConsensusError::ClientImport</span>(<span class="ident">e</span>.<span class="ident">to_string</span>()).<span class="ident">into</span>()
 		})
 	}

@@ -452,6 +452,8 @@
 <span id="452">452</span>
 <span id="453">453</span>
 <span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -478,7 +480,7 @@
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">prelude</span>::<span class="kw-2">*</span>, <span class="ident">vec</span>};
 
 <span class="kw">use</span> <span class="ident">frame_benchmarking</span>::{<span class="ident">account</span>, <span class="ident">benchmarks</span>};
-<span class="kw">use</span> <span class="ident">frame_support::traits</span>::{<span class="ident">Currency</span>, <span class="ident">ValidatorSet</span>, <span class="ident">ValidatorSetWithIdentification</span>};
+<span class="kw">use</span> <span class="ident">frame_support::traits</span>::{<span class="ident">Currency</span>, <span class="ident">Get</span>, <span class="ident">ValidatorSet</span>, <span class="ident">ValidatorSetWithIdentification</span>};
 <span class="kw">use</span> <span class="ident">frame_system</span>::{<span class="ident">Config</span> <span class="kw">as</span> <span class="ident">SystemConfig</span>, <span class="ident">Pallet</span> <span class="kw">as</span> <span class="ident">System</span>, <span class="ident">RawOrigin</span>};
 
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
@@ -729,7 +731,7 @@
 		<span class="kw">let</span> <span class="ident">r</span> <span class="kw">in</span> <span class="number">1</span> .. <span class="ident">MAX_REPORTERS</span>;
 		<span class="comment">// we skip 1 offender, because in such case there is no slashing</span>
 		<span class="kw">let</span> <span class="ident">o</span> <span class="kw">in</span> <span class="number">2</span> .. <span class="ident">MAX_OFFENDERS</span>;
-		<span class="kw">let</span> <span class="ident">n</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">MAX_NOMINATORS</span>.<span class="ident">min</span>(<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">pallet_staking::Config</span><span class="op">&gt;</span><span class="ident">::MAX_NOMINATIONS</span>);
+		<span class="kw">let</span> <span class="ident">n</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">MAX_NOMINATORS</span>.<span class="ident">min</span>(<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">pallet_staking::Config</span><span class="op">&gt;</span><span class="ident">::MaxNominations::get</span>());
 
 		<span class="comment">// Make r reporters</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">reporters</span> <span class="op">=</span> <span class="macro">vec!</span>[];
@@ -835,7 +837,7 @@
 	}
 
 	<span class="ident">report_offence_grandpa</span> {
-		<span class="kw">let</span> <span class="ident">n</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">MAX_NOMINATORS</span>.<span class="ident">min</span>(<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">pallet_staking::Config</span><span class="op">&gt;</span><span class="ident">::MAX_NOMINATIONS</span>);
+		<span class="kw">let</span> <span class="ident">n</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">MAX_NOMINATORS</span>.<span class="ident">min</span>(<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">pallet_staking::Config</span><span class="op">&gt;</span><span class="ident">::MaxNominations::get</span>());
 
 		<span class="comment">// for grandpa equivocation reports the number of reporters</span>
 		<span class="comment">// and offenders is always 1</span>
@@ -859,6 +861,7 @@
 	}
 	<span class="ident">verify</span> {
 		<span class="comment">// make sure that all slashes have been applied</span>
+		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 		<span class="macro">assert_eq!</span>(
 			<span class="ident">System</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::event_count</span>(), <span class="number">0</span>
 			<span class="op">+</span> <span class="number">1</span> <span class="comment">// offence</span>
@@ -870,7 +873,7 @@
 	}
 
 	<span class="ident">report_offence_babe</span> {
-		<span class="kw">let</span> <span class="ident">n</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">MAX_NOMINATORS</span>.<span class="ident">min</span>(<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">pallet_staking::Config</span><span class="op">&gt;</span><span class="ident">::MAX_NOMINATIONS</span>);
+		<span class="kw">let</span> <span class="ident">n</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">MAX_NOMINATORS</span>.<span class="ident">min</span>(<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">pallet_staking::Config</span><span class="op">&gt;</span><span class="ident">::MaxNominations::get</span>());
 
 		<span class="comment">// for babe equivocation reports the number of reporters</span>
 		<span class="comment">// and offenders is always 1</span>
@@ -894,6 +897,7 @@
 	}
 	<span class="ident">verify</span> {
 		<span class="comment">// make sure that all slashes have been applied</span>
+		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 		<span class="macro">assert_eq!</span>(
 			<span class="ident">System</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::event_count</span>(), <span class="number">0</span>
 			<span class="op">+</span> <span class="number">1</span> <span class="comment">// offence</span>

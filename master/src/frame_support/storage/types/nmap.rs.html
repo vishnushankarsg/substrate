@@ -1156,6 +1156,8 @@
 <span id="1156">1156</span>
 <span id="1157">1157</span>
 <span id="1158">1158</span>
+<span id="1159">1159</span>
+<span id="1160">1160</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -1375,6 +1377,8 @@
 	}
 
 	<span class="doccomment">/// Mutate the item, only if an `Ok` value is returned. Deletes the item if mutated to a `None`.</span>
+	<span class="doccomment">/// `f` will always be called with an option representing if the storage item exists (`Some&lt;V&gt;`)</span>
+	<span class="doccomment">/// or if the storage item does not exist (`None`), independent of the `QueryType`.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">try_mutate_exists</span><span class="op">&lt;</span><span class="ident">KArg</span>, <span class="ident">R</span>, <span class="ident">E</span>, <span class="ident">F</span><span class="op">&gt;</span>(<span class="ident">key</span>: <span class="ident">KArg</span>, <span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">E</span><span class="op">&gt;</span>
 	<span class="kw">where</span>
 		<span class="ident">KArg</span>: <span class="ident">EncodeLikeTuple</span><span class="op">&lt;</span><span class="ident">Key::KArg</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">TupleToEncodedIter</span>,

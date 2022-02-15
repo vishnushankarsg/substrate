@@ -1045,7 +1045,7 @@
 				<span class="kw">let</span> <span class="ident">state_version</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">call</span>
 					.<span class="ident">runtime_version_at</span>(<span class="kw-2">&amp;</span><span class="ident">at</span>)
 					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">state_version</span>())
-					.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;Failed to get state version: {:?}&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span>;
+					.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;Failed to get state version: {}&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span>;
 
 				<span class="self">self</span>.<span class="ident">changes</span>.<span class="ident">replace</span>(<span class="ident">Default::default</span>()).<span class="ident">into_storage_changes</span>(
 					<span class="ident">backend</span>,

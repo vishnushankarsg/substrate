@@ -158,7 +158,7 @@
 <span class="doccomment">//! but we imagine they will be useful for other chains that either want to bridge with Polkadot</span>
 <span class="doccomment">//! or are completely standalone, but heavily inspired by Polkadot.</span>
 
-<span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
+<span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">MaxEncodedLen</span>};
 <span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
 
 <span class="doccomment">/// A standard leaf that gets added every block to the MMR constructed by Substrate&#39;s `pallet_mmr`.</span>
@@ -213,7 +213,7 @@
 }
 
 <span class="doccomment">/// Details of the next BEEFY authority set.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">TypeInfo</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">TypeInfo</span>, <span class="ident">MaxEncodedLen</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BeefyNextAuthoritySet</span><span class="op">&lt;</span><span class="ident">MerkleRoot</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Id of the next set.</span>
 	<span class="doccomment">///</span>

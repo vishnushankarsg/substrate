@@ -968,7 +968,6 @@
 <span id="968">968</span>
 <span id="969">969</span>
 <span id="970">970</span>
-<span id="971">971</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -1209,8 +1208,7 @@
 <span class="doccomment">/// `MultiAddrEncodingLimit` represents the size limit of the encoding of `MultiAddr`</span>
 <span class="doccomment">/// `AddressesLimit` represents the size limit of the vector of peers connected</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">MaxEncodedLen</span>, <span class="ident">TypeInfo</span>)]</span>
-<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">mel_bound</span>(<span class="ident">PeerIdEncodingLimit</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
-  	<span class="ident">MultiAddrEncodingLimit</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>, <span class="ident">AddressesLimit</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>))]</span>
+<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">mel_bound</span>())]</span>
 <span class="attribute">#[<span class="ident">scale_info</span>(<span class="ident">skip_type_params</span>(<span class="ident">PeerIdEncodingLimit</span>, <span class="ident">MultiAddrEncodingLimit</span>, <span class="ident">AddressesLimit</span>))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BoundedOpaqueNetworkState</span><span class="op">&lt;</span><span class="ident">PeerIdEncodingLimit</span>, <span class="ident">MultiAddrEncodingLimit</span>, <span class="ident">AddressesLimit</span><span class="op">&gt;</span>
 <span class="kw">where</span>

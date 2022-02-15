@@ -91,23 +91,23 @@
 <span class="comment">// along with this program. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::error</span>;
+<span class="kw">use</span> <span class="ident">clap::Args</span>;
 <span class="kw">use</span> <span class="ident">sc_service</span>::{<span class="ident">KeepBlocks</span>, <span class="ident">PruningMode</span>, <span class="ident">Role</span>};
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
 
 <span class="doccomment">/// Parameters to define the pruning mode</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Args</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PruningParams</span> {
 	<span class="doccomment">/// Specify the state pruning mode, a number of blocks to keep or &#39;archive&#39;.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Default is to keep all block states if the node is running as a</span>
 	<span class="doccomment">/// validator (i.e. &#39;archive&#39;), otherwise state is only kept for the last</span>
 	<span class="doccomment">/// 256 blocks.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;pruning&quot;</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;PRUNING_MODE&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;PRUNING_MODE&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">pruning</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Specify the number of finalized blocks to keep in the database.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Default is to keep all blocks.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;COUNT&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;COUNT&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">keep_blocks</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
 }
 

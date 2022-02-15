@@ -64,6 +64,7 @@
 <span id="64">64</span>
 <span id="65">65</span>
 <span id="66">66</span>
+<span id="67">67</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -82,17 +83,18 @@
 <span class="comment">// You should have received a copy of the GNU General Public License</span>
 <span class="comment">// along with this program. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 
+<span class="kw">use</span> <span class="ident">clap::Parser</span>;
 <span class="kw">use</span> <span class="ident">sc_cli</span>::{
 	<span class="ident">Error</span>, <span class="ident">GenerateCmd</span>, <span class="ident">GenerateNodeKeyCmd</span>, <span class="ident">InspectKeyCmd</span>, <span class="ident">InspectNodeKeyCmd</span>, <span class="ident">SignCmd</span>, <span class="ident">VanityCmd</span>,
 	<span class="ident">VerifyCmd</span>,
 };
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>)]</span>
-<span class="attribute">#[<span class="ident">structopt</span>(
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Parser</span>)]</span>
+<span class="attribute">#[<span class="ident">clap</span>(
 	<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;subkey&quot;</span>,
 	<span class="ident">author</span> <span class="op">=</span> <span class="string">&quot;Parity Team &lt;admin@parity.io&gt;&quot;</span>,
-	<span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Utility for generating and restoring with Substrate keys&quot;</span>
+	<span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Utility for generating and restoring with Substrate keys&quot;</span>,
+	<span class="ident">version</span>
 )]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Subkey</span> {
 	<span class="doccomment">/// Generate a random node libp2p key, save it to file or print it to stdout</span>
@@ -120,7 +122,7 @@
 
 <span class="doccomment">/// Run the subkey command, given the appropriate runtime.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-	<span class="kw">match</span> <span class="ident">Subkey::from_args</span>() {
+	<span class="kw">match</span> <span class="ident">Subkey::parse</span>() {
 		<span class="ident">Subkey::GenerateNodeKey</span>(<span class="ident">cmd</span>) =&gt; <span class="ident">cmd</span>.<span class="ident">run</span>(),
 		<span class="ident">Subkey::Generate</span>(<span class="ident">cmd</span>) =&gt; <span class="ident">cmd</span>.<span class="ident">run</span>(),
 		<span class="ident">Subkey::Inspect</span>(<span class="ident">cmd</span>) =&gt; <span class="ident">cmd</span>.<span class="ident">run</span>(),

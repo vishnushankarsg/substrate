@@ -433,7 +433,7 @@
 		<span class="op">+</span> <span class="ident">Unpin</span>
 		<span class="op">+</span> <span class="lifetime">&#39;static</span>;
 	<span class="doccomment">/// Error which can occur upon creation.</span>
-	<span class="kw">type</span> <span class="ident">Error</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">std::fmt::Debug</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>;
+	<span class="kw">type</span> <span class="ident">Error</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">std::error::Error</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>;
 
 	<span class="doccomment">/// Initialize the proposal logic on top of a specific header. Provide</span>
 	<span class="doccomment">/// the authorities at that header.</span>
@@ -526,7 +526,7 @@
 <span class="doccomment">/// Proposers are generic over bits of &quot;consensus data&quot; which are engine-specific.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Proposer</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Error type which can occur when proposing or evaluating.</span>
-	<span class="kw">type</span> <span class="ident">Error</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">std::fmt::Debug</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>;
+	<span class="kw">type</span> <span class="ident">Error</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">std::error::Error</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>;
 	<span class="doccomment">/// The transaction type used by the backend.</span>
 	<span class="kw">type</span> <span class="ident">Transaction</span>: <span class="ident">Default</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>;
 	<span class="doccomment">/// Future that resolves to a committed proposal with an optional proof.</span>

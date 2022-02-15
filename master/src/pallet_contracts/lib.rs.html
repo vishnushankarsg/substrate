@@ -937,6 +937,26 @@
 <span id="937">937</span>
 <span id="938">938</span>
 <span id="939">939</span>
+<span id="940">940</span>
+<span id="941">941</span>
+<span id="942">942</span>
+<span id="943">943</span>
+<span id="944">944</span>
+<span id="945">945</span>
+<span id="946">946</span>
+<span id="947">947</span>
+<span id="948">948</span>
+<span id="949">949</span>
+<span id="950">950</span>
+<span id="951">951</span>
+<span id="952">952</span>
+<span id="953">953</span>
+<span id="954">954</span>
+<span id="955">955</span>
+<span id="956">956</span>
+<span id="957">957</span>
+<span id="958">958</span>
+<span id="959">959</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -1074,6 +1094,14 @@
 
 <span class="doccomment">/// The current storage version.</span>
 <span class="kw">const</span> <span class="ident">STORAGE_VERSION</span>: <span class="ident">StorageVersion</span> <span class="op">=</span> <span class="ident">StorageVersion::new</span>(<span class="number">6</span>);
+
+<span class="doccomment">/// Used as a sentinel value when reading and writing contract memory.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// It is usually used to signal `None` to a contract when only a primitive is allowed</span>
+<span class="doccomment">/// and we don&#39;t want to go through encoding a full Rust type. Using `u32::Max` is a safe</span>
+<span class="doccomment">/// sentinel because contracts are never allowed to use such a large amount of resources</span>
+<span class="doccomment">/// that this value makes sense for a memory location or length.</span>
+<span class="kw">const</span> <span class="ident">SENTINEL</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="ident">u32::MAX</span>;
 
 <span class="doccomment">/// Provides the contract address generation method.</span>
 <span class="doccomment">///</span>
@@ -1495,12 +1523,24 @@
 
 		<span class="doccomment">/// A code with the specified hash was removed.</span>
 		<span class="ident">CodeRemoved</span> { <span class="ident">code_hash</span>: <span class="ident">T::Hash</span> },
+
+		<span class="doccomment">/// A contract&#39;s code was updated.</span>
+		<span class="ident">ContractCodeUpdated</span> {
+			<span class="doccomment">/// The contract that has been updated.</span>
+			<span class="ident">contract</span>: <span class="ident">T::AccountId</span>,
+			<span class="doccomment">/// New code hash that was set for the contract.</span>
+			<span class="ident">new_code_hash</span>: <span class="ident">T::Hash</span>,
+			<span class="doccomment">/// Previous code hash of the contract.</span>
+			<span class="ident">old_code_hash</span>: <span class="ident">T::Hash</span>,
+		},
 	}
 
 	<span class="attribute">#[<span class="ident">pallet::error</span>]</span>
 	<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 		<span class="doccomment">/// A new schedule must have a greater version than the current one.</span>
 		<span class="ident">InvalidScheduleVersion</span>,
+		<span class="doccomment">/// Invalid combination of flags supplied to `seal_call` or `seal_delegate_call`.</span>
+		<span class="ident">InvalidCallFlags</span>,
 		<span class="doccomment">/// The executed contract exhausted its gas limit.</span>
 		<span class="ident">OutOfGas</span>,
 		<span class="doccomment">/// The output buffer supplied to a contract API call was too small.</span>
@@ -1770,7 +1810,7 @@
 		<span class="ident">module</span>: <span class="kw-2">&amp;mut</span> <span class="ident">PrefabWasmModule</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 		<span class="ident">schedule</span>: <span class="kw-2">&amp;</span><span class="ident">Schedule</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 	) -&gt; <span class="ident">frame_support::dispatch::DispatchResult</span> {
-		<span class="ident"><span class="self">self</span>::wasm::reinstrument</span>(<span class="ident">module</span>, <span class="ident">schedule</span>)
+		<span class="ident"><span class="self">self</span>::wasm::reinstrument</span>(<span class="ident">module</span>, <span class="ident">schedule</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())
 	}
 
 	<span class="doccomment">/// Internal function that does the actual call.</span>

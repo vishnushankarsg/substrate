@@ -472,6 +472,34 @@
 <span id="472">472</span>
 <span id="473">473</span>
 <span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -554,6 +582,7 @@
 <span class="doccomment">//! ```rust</span>
 <span class="doccomment">//! # use frame_election_provider_support::{*, data_provider};</span>
 <span class="doccomment">//! # use sp_npos_elections::{Support, Assignment};</span>
+<span class="doccomment">//! # use frame_support::traits::ConstU32;</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! type AccountId = u64;</span>
 <span class="doccomment">//! type Balance = u64;</span>
@@ -575,13 +604,13 @@
 <span class="doccomment">//!     impl&lt;T: Config&gt; ElectionDataProvider for Pallet&lt;T&gt; {</span>
 <span class="doccomment">//!         type AccountId = AccountId;</span>
 <span class="doccomment">//!         type BlockNumber = BlockNumber;</span>
-<span class="doccomment">//!         const MAXIMUM_VOTES_PER_VOTER: u32 = 1;</span>
+<span class="doccomment">//!         type MaxVotesPerVoter = ConstU32&lt;1&gt;;</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//!         fn desired_targets() -&gt; data_provider::Result&lt;u32&gt; {</span>
 <span class="doccomment">//!             Ok(1)</span>
 <span class="doccomment">//!         }</span>
 <span class="doccomment">//!         fn voters(maybe_max_len: Option&lt;usize&gt;)</span>
-<span class="doccomment">//!           -&gt; data_provider::Result&lt;Vec&lt;(AccountId, VoteWeight, Vec&lt;AccountId&gt;)&gt;&gt;</span>
+<span class="doccomment">//!           -&gt; data_provider::Result&lt;Vec&lt;VoterOf&lt;Self&gt;&gt;&gt;</span>
 <span class="doccomment">//!         {</span>
 <span class="doccomment">//!             Ok(Default::default())</span>
 <span class="doccomment">//!         }</span>
@@ -640,7 +669,7 @@
 <span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>), <span class="ident">no_std</span>)]</span>
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">onchain</span>;
-<span class="kw">use</span> <span class="ident">frame_support::traits::Get</span>;
+<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">traits::Get</span>, <span class="ident">BoundedVec</span>};
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>};
 
 <span class="doccomment">/// Re-export some type as they are used in the interface.</span>
@@ -665,7 +694,7 @@
 	<span class="kw">type</span> <span class="ident">BlockNumber</span>;
 
 	<span class="doccomment">/// Maximum number of votes per voter that this data provider is providing.</span>
-	<span class="kw">const</span> <span class="ident">MAXIMUM_VOTES_PER_VOTER</span>: <span class="ident">u32</span>;
+	<span class="kw">type</span> <span class="ident">MaxVotesPerVoter</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// All possible targets for the election, i.e. the candidates.</span>
 	<span class="doccomment">///</span>
@@ -685,9 +714,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This should be implemented as a self-weighing function. The implementor should register its</span>
 	<span class="doccomment">/// appropriate weight at the end of execution with the system pallet directly.</span>
-	<span class="kw">fn</span> <span class="ident">voters</span>(
-		<span class="ident">maybe_max_len</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-	) -&gt; <span class="ident">data_provider::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident"><span class="self">Self</span>::AccountId</span>, <span class="ident">VoteWeight</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>)<span class="op">&gt;</span><span class="op">&gt;</span>;
+	<span class="kw">fn</span> <span class="ident">voters</span>(<span class="ident">maybe_max_len</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="ident">data_provider::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">VoterOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// The number of targets to elect.</span>
 	<span class="doccomment">///</span>
@@ -707,7 +734,7 @@
 	<span class="doccomment">/// else a noop.</span>
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>, <span class="ident">test</span>))]</span>
 	<span class="kw">fn</span> <span class="ident">put_snapshot</span>(
-		<span class="ident">_voters</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident"><span class="self">Self</span>::AccountId</span>, <span class="ident">VoteWeight</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
+		<span class="ident">_voters</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">VoterOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 		<span class="ident">_targets</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>,
 		<span class="ident">_target_stake</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">VoteWeight</span><span class="op">&gt;</span>,
 	) {
@@ -718,7 +745,12 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Same as `put_snapshot`, but can add a single voter one by one.</span>
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>, <span class="ident">test</span>))]</span>
-	<span class="kw">fn</span> <span class="ident">add_voter</span>(<span class="ident">_voter</span>: <span class="ident"><span class="self">Self</span>::AccountId</span>, <span class="ident">_weight</span>: <span class="ident">VoteWeight</span>, <span class="ident">_targets</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>) {}
+	<span class="kw">fn</span> <span class="ident">add_voter</span>(
+		<span class="ident">_voter</span>: <span class="ident"><span class="self">Self</span>::AccountId</span>,
+		<span class="ident">_weight</span>: <span class="ident">VoteWeight</span>,
+		<span class="ident">_targets</span>: <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span>, <span class="ident"><span class="self">Self</span>::MaxVotesPerVoter</span><span class="op">&gt;</span>,
+	) {
+	}
 
 	<span class="doccomment">/// Utility function only to be used in benchmarking scenarios, to be implemented optionally,</span>
 	<span class="doccomment">/// else a noop.</span>
@@ -740,19 +772,20 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">BlockNumber</span><span class="op">&gt;</span> <span class="ident">ElectionDataProvider</span> <span class="kw">for</span> <span class="ident">TestDataProvider</span><span class="op">&lt;</span>(<span class="ident">AccountId</span>, <span class="ident">BlockNumber</span>)<span class="op">&gt;</span> {
 	<span class="kw">type</span> <span class="ident">AccountId</span> <span class="op">=</span> <span class="ident">AccountId</span>;
 	<span class="kw">type</span> <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="ident">BlockNumber</span>;
+	<span class="kw">type</span> <span class="ident">MaxVotesPerVoter</span> <span class="op">=</span> ();
 
-	<span class="kw">const</span> <span class="ident">MAXIMUM_VOTES_PER_VOTER</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
 	<span class="kw">fn</span> <span class="ident">targets</span>(<span class="ident">_maybe_max_len</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="ident">data_provider::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="prelude-val">Ok</span>(<span class="ident">Default::default</span>())
 	}
-	<span class="kw">fn</span> <span class="ident">voters</span>(
-		<span class="ident">_maybe_max_len</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-	) -&gt; <span class="ident">data_provider::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">AccountId</span>, <span class="ident">VoteWeight</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>)<span class="op">&gt;</span><span class="op">&gt;</span> {
+
+	<span class="kw">fn</span> <span class="ident">voters</span>(<span class="ident">_maybe_max_len</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="ident">data_provider::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">VoterOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="prelude-val">Ok</span>(<span class="ident">Default::default</span>())
 	}
+
 	<span class="kw">fn</span> <span class="ident">desired_targets</span>() -&gt; <span class="ident">data_provider::Result</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
 		<span class="prelude-val">Ok</span>(<span class="ident">Default::default</span>())
 	}
+
 	<span class="kw">fn</span> <span class="ident">next_election_prediction</span>(<span class="ident">now</span>: <span class="ident">BlockNumber</span>) -&gt; <span class="ident">BlockNumber</span> {
 		<span class="ident">now</span>
 	}
@@ -788,6 +821,22 @@
 	<span class="kw">fn</span> <span class="ident">elect</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Supports</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span>;
 }
 
+<span class="doccomment">/// A sub-trait of the [`ElectionProvider`] for cases where we need to be sure an election needs to</span>
+<span class="doccomment">/// happen instantly, not asynchronously.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// The same `DataProvider` is assumed to be used.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Consequently, allows for control over the amount of data that is being fetched from the</span>
+<span class="doccomment">/// [`ElectionProvider::DataProvider`].</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">InstantElectionProvider</span>: <span class="ident">ElectionProvider</span> {
+	<span class="doccomment">/// Elect a new set of winners, instantly, with the given given limits set on the</span>
+	<span class="doccomment">/// `DataProvider`.</span>
+	<span class="kw">fn</span> <span class="ident">instant_elect</span>(
+		<span class="ident">maybe_max_voters</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+		<span class="ident">maybe_max_targets</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Supports</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span>;
+}
+
 <span class="doccomment">/// An election provider to be used only for testing.</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NoElection</span><span class="op">&lt;</span><span class="ident">X</span><span class="op">&gt;</span>(<span class="ident">sp_std::marker::PhantomData</span><span class="op">&lt;</span><span class="ident">X</span><span class="op">&gt;</span>);
@@ -817,7 +866,7 @@
 <span class="doccomment">/// used on the implementing side of [`ElectionDataProvider`].</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">SortedListProvider</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// The list&#39;s error type.</span>
-	<span class="kw">type</span> <span class="ident">Error</span>;
+	<span class="kw">type</span> <span class="ident">Error</span>: <span class="ident">sp_std::fmt::Debug</span>;
 
 	<span class="doccomment">/// An iterator over the list, which can have `take` called on it.</span>
 	<span class="kw">fn</span> <span class="ident">iter</span>() -&gt; <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span>;
@@ -895,7 +944,7 @@
 	<span class="kw">fn</span> <span class="ident">solve</span>(
 		<span class="ident">to_elect</span>: <span class="ident">usize</span>,
 		<span class="ident">targets</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>,
-		<span class="ident">voters</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident"><span class="self">Self</span>::AccountId</span>, <span class="ident">VoteWeight</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
+		<span class="ident">voters</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident"><span class="self">Self</span>::AccountId</span>, <span class="ident">VoteWeight</span>, <span class="kw">impl</span> <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ElectionResult</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span>, <span class="ident"><span class="self">Self</span>::Accuracy</span><span class="op">&gt;</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span>;
 }
 
@@ -917,7 +966,7 @@
 	<span class="kw">fn</span> <span class="ident">solve</span>(
 		<span class="ident">winners</span>: <span class="ident">usize</span>,
 		<span class="ident">targets</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>,
-		<span class="ident">voters</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident"><span class="self">Self</span>::AccountId</span>, <span class="ident">VoteWeight</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
+		<span class="ident">voters</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident"><span class="self">Self</span>::AccountId</span>, <span class="ident">VoteWeight</span>, <span class="kw">impl</span> <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ElectionResult</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span>, <span class="ident"><span class="self">Self</span>::Accuracy</span><span class="op">&gt;</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span> {
 		<span class="ident">sp_npos_elections::seq_phragmen</span>(<span class="ident">winners</span>, <span class="ident">targets</span>, <span class="ident">voters</span>, <span class="ident">Balancing::get</span>())
 	}
@@ -941,11 +990,18 @@
 	<span class="kw">fn</span> <span class="ident">solve</span>(
 		<span class="ident">winners</span>: <span class="ident">usize</span>,
 		<span class="ident">targets</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>,
-		<span class="ident">voters</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident"><span class="self">Self</span>::AccountId</span>, <span class="ident">VoteWeight</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
+		<span class="ident">voters</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident"><span class="self">Self</span>::AccountId</span>, <span class="ident">VoteWeight</span>, <span class="kw">impl</span> <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ElectionResult</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span>, <span class="ident"><span class="self">Self</span>::Accuracy</span><span class="op">&gt;</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span> {
 		<span class="ident">sp_npos_elections::phragmms</span>(<span class="ident">winners</span>, <span class="ident">targets</span>, <span class="ident">voters</span>, <span class="ident">Balancing::get</span>())
 	}
 }
+
+<span class="doccomment">/// A voter, at the level of abstraction of this crate.</span>
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Voter</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">Bound</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="ident">AccountId</span>, <span class="ident">VoteWeight</span>, <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">Bound</span><span class="op">&gt;</span>);
+
+<span class="doccomment">/// Same as [`Voter`], but parameterized by an [`ElectionDataProvider`].</span>
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">VoterOf</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> <span class="op">=</span>
+	<span class="ident">Voter</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">D</span> <span class="kw">as</span> <span class="ident">ElectionDataProvider</span><span class="op">&gt;</span><span class="ident">::AccountId</span>, <span class="op">&lt;</span><span class="ident">D</span> <span class="kw">as</span> <span class="ident">ElectionDataProvider</span><span class="op">&gt;</span><span class="ident">::MaxVotesPerVoter</span><span class="op">&gt;</span>;
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="frame_election_provider_support" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
     <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>

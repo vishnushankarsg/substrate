@@ -107,12 +107,12 @@
 <span class="doccomment">//! implementation of the `verify` subcommand</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">error</span>, <span class="ident">utils</span>, <span class="ident">with_crypto_scheme</span>, <span class="ident">CryptoSchemeFlag</span>};
+<span class="kw">use</span> <span class="ident">clap::Parser</span>;
 <span class="kw">use</span> <span class="ident">sp_core::crypto</span>::{<span class="ident">ByteArray</span>, <span class="ident">Ss58Codec</span>};
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
 
 <span class="doccomment">/// The `verify` command</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>, <span class="ident">Clone</span>)]</span>
-<span class="attribute">#[<span class="ident">structopt</span>(
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Parser</span>)]</span>
+<span class="attribute">#[<span class="ident">clap</span>(
 	<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;verify&quot;</span>,
 	<span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Verify a signature for a message, provided on STDIN, with a given (public or secret) key&quot;</span>
 )]</span>
@@ -127,15 +127,15 @@
 
 	<span class="doccomment">/// Message to verify, if not provided you will be prompted to</span>
 	<span class="doccomment">/// pass the message via STDIN</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="ident">message</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// The message on STDIN is hex-encoded data</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="ident">hex</span>: <span class="ident">bool</span>,
 
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">crypto_scheme</span>: <span class="ident">CryptoSchemeFlag</span>,
 }
 

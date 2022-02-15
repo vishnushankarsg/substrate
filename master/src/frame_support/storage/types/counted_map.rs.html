@@ -1068,6 +1068,15 @@
 <span id="1068">1068</span>
 <span id="1069">1069</span>
 <span id="1070">1070</span>
+<span id="1071">1071</span>
+<span id="1072">1072</span>
+<span id="1073">1073</span>
+<span id="1074">1074</span>
+<span id="1075">1075</span>
+<span id="1076">1076</span>
+<span id="1077">1077</span>
+<span id="1078">1078</span>
+<span id="1079">1079</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -1260,6 +1269,8 @@
 	}
 
 	<span class="doccomment">/// Mutate the item, only if an `Ok` value is returned. Deletes the item if mutated to a `None`.</span>
+	<span class="doccomment">/// `f` will always be called with an option representing if the storage item exists (`Some&lt;V&gt;`)</span>
+	<span class="doccomment">/// or if the storage item does not exist (`None`), independent of the `QueryType`.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">try_mutate_exists</span><span class="op">&lt;</span><span class="ident">KeyArg</span>, <span class="ident">R</span>, <span class="ident">E</span>, <span class="ident">F</span><span class="op">&gt;</span>(<span class="ident">key</span>: <span class="ident">KeyArg</span>, <span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">E</span><span class="op">&gt;</span>
 	<span class="kw">where</span>
 		<span class="ident">KeyArg</span>: <span class="ident">EncodeLike</span><span class="op">&lt;</span><span class="ident">Key</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span>,
@@ -1470,6 +1481,13 @@
 		<span class="ident">starting_raw_key</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
 	) -&gt; <span class="ident"><span class="kw">crate</span>::storage::PrefixIterator</span><span class="op">&lt;</span>(<span class="ident">Key</span>, <span class="ident">Value</span>), <span class="ident">OnRemovalCounterUpdate</span><span class="op">&lt;</span><span class="ident">Prefix</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MapWrapper</span><span class="op">&gt;</span><span class="ident">::Map::iter_from</span>(<span class="ident">starting_raw_key</span>).<span class="ident">convert_on_removal</span>()
+	}
+
+	<span class="doccomment">/// Enumerate all keys in the counted map.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// If you alter the map while doing this, you&#39;ll get undefined results.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter_keys</span>() -&gt; <span class="ident"><span class="kw">crate</span>::storage::KeyPrefixIterator</span><span class="op">&lt;</span><span class="ident">Key</span><span class="op">&gt;</span> {
+		<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MapWrapper</span><span class="op">&gt;</span><span class="ident">::Map::iter_keys</span>()
 	}
 }
 

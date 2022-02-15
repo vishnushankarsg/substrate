@@ -2161,6 +2161,34 @@
 <span id="2161">2161</span>
 <span id="2162">2162</span>
 <span id="2163">2163</span>
+<span id="2164">2164</span>
+<span id="2165">2165</span>
+<span id="2166">2166</span>
+<span id="2167">2167</span>
+<span id="2168">2168</span>
+<span id="2169">2169</span>
+<span id="2170">2170</span>
+<span id="2171">2171</span>
+<span id="2172">2172</span>
+<span id="2173">2173</span>
+<span id="2174">2174</span>
+<span id="2175">2175</span>
+<span id="2176">2176</span>
+<span id="2177">2177</span>
+<span id="2178">2178</span>
+<span id="2179">2179</span>
+<span id="2180">2180</span>
+<span id="2181">2181</span>
+<span id="2182">2182</span>
+<span id="2183">2183</span>
+<span id="2184">2184</span>
+<span id="2185">2185</span>
+<span id="2186">2186</span>
+<span id="2187">2187</span>
+<span id="2188">2188</span>
+<span id="2189">2189</span>
+<span id="2190">2190</span>
+<span id="2191">2191</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -2333,7 +2361,7 @@
 	<span class="ident">pallet_prelude::DispatchResult</span>,
 	<span class="ident">traits</span>::{
 		<span class="ident">tokens</span>::{<span class="ident">fungible</span>, <span class="ident">BalanceStatus</span> <span class="kw">as</span> <span class="ident">Status</span>, <span class="ident">DepositConsequence</span>, <span class="ident">WithdrawConsequence</span>},
-		<span class="ident">Currency</span>, <span class="ident">ExistenceRequirement</span>,
+		<span class="ident">Currency</span>, <span class="ident">DefensiveSaturating</span>, <span class="ident">ExistenceRequirement</span>,
 		<span class="ident">ExistenceRequirement</span>::{<span class="ident">AllowDeath</span>, <span class="ident">KeepAlive</span>},
 		<span class="ident">Get</span>, <span class="ident">Imbalance</span>, <span class="ident">LockIdentifier</span>, <span class="ident">LockableCurrency</span>, <span class="ident">NamedReservableCurrency</span>, <span class="ident">OnUnbalanced</span>,
 		<span class="ident">ReservableCurrency</span>, <span class="ident">SignedImbalance</span>, <span class="ident">StoredMap</span>, <span class="ident">TryDrop</span>, <span class="ident">WithdrawReasons</span>,
@@ -2477,25 +2505,32 @@
 			<span class="kw">let</span> <span class="ident">new_free</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">wipeout</span> { <span class="ident">Zero::zero</span>() } <span class="kw">else</span> { <span class="ident">new_free</span> };
 			<span class="kw">let</span> <span class="ident">new_reserved</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">wipeout</span> { <span class="ident">Zero::zero</span>() } <span class="kw">else</span> { <span class="ident">new_reserved</span> };
 
-			<span class="kw">let</span> (<span class="ident">free</span>, <span class="ident">reserved</span>) <span class="op">=</span> <span class="ident"><span class="self">Self</span>::mutate_account</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="op">|</span><span class="ident">account</span><span class="op">|</span> {
-				<span class="kw">if</span> <span class="ident">new_free</span> <span class="op">&gt;</span> <span class="ident">account</span>.<span class="ident">free</span> {
-					<span class="ident">mem::drop</span>(<span class="ident">PositiveImbalance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">new_free</span> <span class="op">-</span> <span class="ident">account</span>.<span class="ident">free</span>));
-				} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">new_free</span> <span class="op">&lt;</span> <span class="ident">account</span>.<span class="ident">free</span> {
-					<span class="ident">mem::drop</span>(<span class="ident">NegativeImbalance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">account</span>.<span class="ident">free</span> <span class="op">-</span> <span class="ident">new_free</span>));
-				}
-
-				<span class="kw">if</span> <span class="ident">new_reserved</span> <span class="op">&gt;</span> <span class="ident">account</span>.<span class="ident">reserved</span> {
-					<span class="ident">mem::drop</span>(<span class="ident">PositiveImbalance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">new_reserved</span> <span class="op">-</span> <span class="ident">account</span>.<span class="ident">reserved</span>));
-				} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">new_reserved</span> <span class="op">&lt;</span> <span class="ident">account</span>.<span class="ident">reserved</span> {
-					<span class="ident">mem::drop</span>(<span class="ident">NegativeImbalance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">account</span>.<span class="ident">reserved</span> <span class="op">-</span> <span class="ident">new_reserved</span>));
-				}
+			<span class="comment">// First we try to modify the account&#39;s balance to the forced balance.</span>
+			<span class="kw">let</span> (<span class="ident">old_free</span>, <span class="ident">old_reserved</span>) <span class="op">=</span> <span class="ident"><span class="self">Self</span>::mutate_account</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="op">|</span><span class="ident">account</span><span class="op">|</span> {
+				<span class="kw">let</span> <span class="ident">old_free</span> <span class="op">=</span> <span class="ident">account</span>.<span class="ident">free</span>;
+				<span class="kw">let</span> <span class="ident">old_reserved</span> <span class="op">=</span> <span class="ident">account</span>.<span class="ident">reserved</span>;
 
 				<span class="ident">account</span>.<span class="ident">free</span> <span class="op">=</span> <span class="ident">new_free</span>;
 				<span class="ident">account</span>.<span class="ident">reserved</span> <span class="op">=</span> <span class="ident">new_reserved</span>;
 
-				(<span class="ident">account</span>.<span class="ident">free</span>, <span class="ident">account</span>.<span class="ident">reserved</span>)
+				(<span class="ident">old_free</span>, <span class="ident">old_reserved</span>)
 			})<span class="question-mark">?</span>;
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::BalanceSet</span> { <span class="ident">who</span>, <span class="ident">free</span>, <span class="ident">reserved</span> });
+
+			<span class="comment">// This will adjust the total issuance, which was not done by the `mutate_account`</span>
+			<span class="comment">// above.</span>
+			<span class="kw">if</span> <span class="ident">new_free</span> <span class="op">&gt;</span> <span class="ident">old_free</span> {
+				<span class="ident">mem::drop</span>(<span class="ident">PositiveImbalance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">new_free</span> <span class="op">-</span> <span class="ident">old_free</span>));
+			} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">new_free</span> <span class="op">&lt;</span> <span class="ident">old_free</span> {
+				<span class="ident">mem::drop</span>(<span class="ident">NegativeImbalance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">old_free</span> <span class="op">-</span> <span class="ident">new_free</span>));
+			}
+
+			<span class="kw">if</span> <span class="ident">new_reserved</span> <span class="op">&gt;</span> <span class="ident">old_reserved</span> {
+				<span class="ident">mem::drop</span>(<span class="ident">PositiveImbalance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">new_reserved</span> <span class="op">-</span> <span class="ident">old_reserved</span>));
+			} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">new_reserved</span> <span class="op">&lt;</span> <span class="ident">old_reserved</span> {
+				<span class="ident">mem::drop</span>(<span class="ident">NegativeImbalance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">old_reserved</span> <span class="op">-</span> <span class="ident">new_reserved</span>));
+			}
+
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::BalanceSet</span> { <span class="ident">who</span>, <span class="ident">free</span>: <span class="ident">new_free</span>, <span class="ident">reserved</span>: <span class="ident">new_reserved</span> });
 			<span class="prelude-val">Ok</span>(().<span class="ident">into</span>())
 		}
 
@@ -2651,8 +2686,29 @@
 	<span class="attribute">#[<span class="ident">pallet::getter</span>(<span class="kw">fn</span> <span class="ident">total_issuance</span>)]</span>
 	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">TotalIssuance</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageValue</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">T::Balance</span>, <span class="ident">ValueQuery</span><span class="op">&gt;</span>;
 
-	<span class="doccomment">/// The balance of an account.</span>
+	<span class="doccomment">/// The Balances pallet example of storing the balance of an account.</span>
 	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Example</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// ```nocompile</span>
+	<span class="doccomment">///  impl pallet_balances::Config for Runtime {</span>
+	<span class="doccomment">///    type AccountStore = StorageMapShim&lt;Self::Account&lt;Runtime&gt;, frame_system::Provider&lt;Runtime&gt;, AccountId, Self::AccountData&lt;Balance&gt;&gt;</span>
+	<span class="doccomment">///  }</span>
+	<span class="doccomment">/// ```</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// You can also store the balance of an account in the `System` pallet.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Example</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// ```nocompile</span>
+	<span class="doccomment">///  impl pallet_balances::Config for Runtime {</span>
+	<span class="doccomment">///   type AccountStore = System</span>
+	<span class="doccomment">///  }</span>
+	<span class="doccomment">/// ```</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// But this comes with tradeoffs, storing account balances in the system pallet stores</span>
+	<span class="doccomment">/// `frame_system` data alongside the account data contrary to storing account balances in the</span>
+	<span class="doccomment">/// `Balances` pallet, which uses a `StorageMap` to store balances data only.</span>
 	<span class="doccomment">/// NOTE: This is only used in the case that this pallet is used to store balances.</span>
 	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
 	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Account</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageMap</span><span class="op">&lt;</span>
@@ -3659,7 +3715,7 @@
 						.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::LiquidityRestrictions</span>)<span class="question-mark">?</span>;
 
 						<span class="comment">// TODO: This is over-conservative. There may now be other providers, and</span>
-						<span class="comment">// this pallet   may not even be a provider.</span>
+						<span class="comment">// this pallet may not even be a provider.</span>
 						<span class="kw">let</span> <span class="ident">allow_death</span> <span class="op">=</span> <span class="ident">existence_requirement</span> <span class="op">==</span> <span class="ident">ExistenceRequirement::AllowDeath</span>;
 						<span class="kw">let</span> <span class="ident">allow_death</span> <span class="op">=</span>
 							<span class="ident">allow_death</span> <span class="op">&amp;&amp;</span> <span class="ident">system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::can_dec_provider</span>(<span class="ident">transactor</span>);
@@ -3946,7 +4002,7 @@
 			<span class="ident">account</span>.<span class="ident">reserved</span> <span class="op">-</span><span class="op">=</span> <span class="ident">actual</span>;
 			<span class="comment">// defensive only: this can never fail since total issuance which is at least</span>
 			<span class="comment">// free+reserved fits into the same data type.</span>
-			<span class="ident">account</span>.<span class="ident">free</span> <span class="op">=</span> <span class="ident">account</span>.<span class="ident">free</span>.<span class="ident">saturating_add</span>(<span class="ident">actual</span>);
+			<span class="ident">account</span>.<span class="ident">free</span> <span class="op">=</span> <span class="ident">account</span>.<span class="ident">free</span>.<span class="ident">defensive_saturating_add</span>(<span class="ident">actual</span>);
 			<span class="ident">actual</span>
 		}) {
 			<span class="prelude-val">Ok</span>(<span class="ident">x</span>) =&gt; <span class="ident">x</span>,
@@ -4059,7 +4115,7 @@
 			<span class="kw">match</span> <span class="ident">reserves</span>.<span class="ident">binary_search_by_key</span>(<span class="ident">id</span>, <span class="op">|</span><span class="ident">data</span><span class="op">|</span> <span class="ident">data</span>.<span class="ident">id</span>) {
 				<span class="prelude-val">Ok</span>(<span class="ident">index</span>) =&gt; {
 					<span class="comment">// this add can&#39;t overflow but just to be defensive.</span>
-					<span class="ident">reserves</span>[<span class="ident">index</span>].<span class="ident">amount</span> <span class="op">=</span> <span class="ident">reserves</span>[<span class="ident">index</span>].<span class="ident">amount</span>.<span class="ident">saturating_add</span>(<span class="ident">value</span>);
+					<span class="ident">reserves</span>[<span class="ident">index</span>].<span class="ident">amount</span> <span class="op">=</span> <span class="ident">reserves</span>[<span class="ident">index</span>].<span class="ident">amount</span>.<span class="ident">defensive_saturating_add</span>(<span class="ident">value</span>);
 				},
 				<span class="prelude-val">Err</span>(<span class="ident">index</span>) =&gt; {
 					<span class="ident">reserves</span>
@@ -4092,8 +4148,8 @@
 
 						<span class="kw">let</span> <span class="ident">remain</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">ReservableCurrency</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::unreserve</span>(<span class="ident">who</span>, <span class="ident">to_change</span>);
 
-						<span class="comment">// remain should always be zero but just to be defensive here</span>
-						<span class="kw">let</span> <span class="ident">actual</span> <span class="op">=</span> <span class="ident">to_change</span>.<span class="ident">saturating_sub</span>(<span class="ident">remain</span>);
+						<span class="comment">// remain should always be zero but just to be defensive here.</span>
+						<span class="kw">let</span> <span class="ident">actual</span> <span class="op">=</span> <span class="ident">to_change</span>.<span class="ident">defensive_saturating_sub</span>(<span class="ident">remain</span>);
 
 						<span class="comment">// `actual &lt;= to_change` and `to_change &lt;= amount`; qed;</span>
 						<span class="ident">reserves</span>[<span class="ident">index</span>].<span class="ident">amount</span> <span class="op">-</span><span class="op">=</span> <span class="ident">actual</span>;
@@ -4139,8 +4195,8 @@
 					<span class="kw">let</span> (<span class="ident">imb</span>, <span class="ident">remain</span>) <span class="op">=</span>
 						<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">ReservableCurrency</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::slash_reserved</span>(<span class="ident">who</span>, <span class="ident">to_change</span>);
 
-					<span class="comment">// remain should always be zero but just to be defensive here</span>
-					<span class="kw">let</span> <span class="ident">actual</span> <span class="op">=</span> <span class="ident">to_change</span>.<span class="ident">saturating_sub</span>(<span class="ident">remain</span>);
+					<span class="comment">// remain should always be zero but just to be defensive here.</span>
+					<span class="kw">let</span> <span class="ident">actual</span> <span class="op">=</span> <span class="ident">to_change</span>.<span class="ident">defensive_saturating_sub</span>(<span class="ident">remain</span>);
 
 					<span class="comment">// `actual &lt;= to_change` and `to_change &lt;= amount`; qed;</span>
 					<span class="ident">reserves</span>[<span class="ident">index</span>].<span class="ident">amount</span> <span class="op">-</span><span class="op">=</span> <span class="ident">actual</span>;
@@ -4199,12 +4255,12 @@
 											)<span class="question-mark">?</span>;
 
 										<span class="comment">// remain should always be zero but just to be defensive</span>
-										<span class="comment">// here</span>
-										<span class="kw">let</span> <span class="ident">actual</span> <span class="op">=</span> <span class="ident">to_change</span>.<span class="ident">saturating_sub</span>(<span class="ident">remain</span>);
+										<span class="comment">// here.</span>
+										<span class="kw">let</span> <span class="ident">actual</span> <span class="op">=</span> <span class="ident">to_change</span>.<span class="ident">defensive_saturating_sub</span>(<span class="ident">remain</span>);
 
 										<span class="comment">// this add can&#39;t overflow but just to be defensive.</span>
 										<span class="ident">reserves</span>[<span class="ident">index</span>].<span class="ident">amount</span> <span class="op">=</span>
-											<span class="ident">reserves</span>[<span class="ident">index</span>].<span class="ident">amount</span>.<span class="ident">saturating_add</span>(<span class="ident">actual</span>);
+											<span class="ident">reserves</span>[<span class="ident">index</span>].<span class="ident">amount</span>.<span class="ident">defensive_saturating_add</span>(<span class="ident">actual</span>);
 
 										<span class="prelude-val">Ok</span>(<span class="ident">actual</span>)
 									},
@@ -4219,7 +4275,7 @@
 
 										<span class="comment">// remain should always be zero but just to be defensive</span>
 										<span class="comment">// here</span>
-										<span class="kw">let</span> <span class="ident">actual</span> <span class="op">=</span> <span class="ident">to_change</span>.<span class="ident">saturating_sub</span>(<span class="ident">remain</span>);
+										<span class="kw">let</span> <span class="ident">actual</span> <span class="op">=</span> <span class="ident">to_change</span>.<span class="ident">defensive_saturating_sub</span>(<span class="ident">remain</span>);
 
 										<span class="ident">reserves</span>
 											.<span class="ident">try_insert</span>(
@@ -4242,7 +4298,7 @@
 						)<span class="question-mark">?</span>;
 
 						<span class="comment">// remain should always be zero but just to be defensive here</span>
-						<span class="ident">to_change</span>.<span class="ident">saturating_sub</span>(<span class="ident">remain</span>)
+						<span class="ident">to_change</span>.<span class="ident">defensive_saturating_sub</span>(<span class="ident">remain</span>)
 					};
 
 					<span class="comment">// `actual &lt;= to_change` and `to_change &lt;= amount`; qed;</span>

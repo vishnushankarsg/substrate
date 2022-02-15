@@ -130,46 +130,46 @@
 	<span class="ident">params</span>::{<span class="ident">DatabaseParams</span>, <span class="ident">GenericNumber</span>, <span class="ident">PruningParams</span>, <span class="ident">SharedParams</span>},
 	<span class="ident">CliConfiguration</span>,
 };
+<span class="kw">use</span> <span class="ident">clap::Parser</span>;
 <span class="kw">use</span> <span class="ident">log::info</span>;
 <span class="kw">use</span> <span class="ident">sc_client_api</span>::{<span class="ident">BlockBackend</span>, <span class="ident">UsageProvider</span>};
 <span class="kw">use</span> <span class="ident">sc_service</span>::{<span class="ident">chain_ops::export_blocks</span>, <span class="ident">config::DatabaseSource</span>};
 <span class="kw">use</span> <span class="ident">sp_runtime::traits</span>::{<span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>, <span class="ident">Header</span> <span class="kw">as</span> <span class="ident">HeaderT</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">fs</span>, <span class="ident">io</span>, <span class="ident">path::PathBuf</span>, <span class="ident">str::FromStr</span>, <span class="ident">sync::Arc</span>};
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
 
 <span class="doccomment">/// The `export-blocks` command used to export blocks.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Parser</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ExportBlocksCmd</span> {
 	<span class="doccomment">/// Output file name or stdout if unspecified.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">parse</span>(<span class="ident">from_os_str</span>))]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">parse</span>(<span class="ident">from_os_str</span>))]</span>
 	<span class="kw">pub</span> <span class="ident">output</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Specify starting block number.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Default is 1.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;from&quot;</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;BLOCK&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;BLOCK&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">from</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">GenericNumber</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Specify last block number.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Default is best block.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;to&quot;</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;BLOCK&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;BLOCK&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">to</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">GenericNumber</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Use binary output rather than JSON.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">binary</span>: <span class="ident">bool</span>,
 
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">shared_params</span>: <span class="ident">SharedParams</span>,
 
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">pruning_params</span>: <span class="ident">PruningParams</span>,
 
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">database_params</span>: <span class="ident">DatabaseParams</span>,
 }
 
@@ -185,7 +185,7 @@
 		<span class="ident">C</span>: <span class="ident">BlockBackend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">UsageProvider</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 		<span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">B::Header</span> <span class="kw">as</span> <span class="ident">HeaderT</span><span class="op">&gt;</span><span class="ident">::Number</span> <span class="kw">as</span> <span class="ident">FromStr</span><span class="op">&gt;</span><span class="ident">::Err</span>: <span class="ident">Debug</span>,
 	{
-		<span class="kw">if</span> <span class="kw">let</span> <span class="ident">DatabaseSource::RocksDb</span> { <span class="kw-2">ref</span> <span class="ident">path</span>, .. } <span class="op">=</span> <span class="ident">database_config</span> {
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">path</span>) <span class="op">=</span> <span class="ident">database_config</span>.<span class="ident">path</span>() {
 			<span class="macro">info!</span>(<span class="string">&quot;DB path: {}&quot;</span>, <span class="ident">path</span>.<span class="ident">display</span>());
 		}
 

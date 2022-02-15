@@ -288,6 +288,8 @@
 <span id="288">288</span>
 <span id="289">289</span>
 <span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -313,8 +315,8 @@
 };
 
 <span class="kw">use</span> <span class="ident">ansi_term::Style</span>;
+<span class="kw">use</span> <span class="ident">clap::Parser</span>;
 <span class="kw">use</span> <span class="ident">rand</span>::{<span class="ident">distributions::Alphanumeric</span>, <span class="ident">rngs::OsRng</span>, <span class="ident">Rng</span>};
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
 
 <span class="kw">use</span> <span class="ident">node_cli::chain_spec</span>::{<span class="self">self</span>, <span class="ident">AccountId</span>};
 <span class="kw">use</span> <span class="ident">sc_keystore::LocalKeystore</span>;
@@ -326,52 +328,52 @@
 
 <span class="doccomment">/// A utility to easily create a testnet chain spec definition with a given set</span>
 <span class="doccomment">/// of authorities and endowed accounts and/or generate random accounts.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">StructOpt</span>)]</span>
-<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;kebab-case&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Parser</span>)]</span>
+<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;kebab-case&quot;</span>)]</span>
 <span class="kw">enum</span> <span class="ident">ChainSpecBuilder</span> {
 	<span class="doccomment">/// Create a new chain spec with the given authorities, endowed and sudo</span>
 	<span class="doccomment">/// accounts.</span>
 	<span class="ident">New</span> {
 		<span class="doccomment">/// Authority key seed.</span>
-		<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">short</span>, <span class="ident">required</span> <span class="op">=</span> <span class="bool-val">true</span>)]</span>
+		<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">short</span>, <span class="ident">required</span> <span class="op">=</span> <span class="bool-val">true</span>)]</span>
 		<span class="ident">authority_seeds</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 		<span class="doccomment">/// Active nominators (SS58 format), each backing a random subset of the aforementioned</span>
 		<span class="doccomment">/// authorities.</span>
-		<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">short</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;0&quot;</span>)]</span>
+		<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">short</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;0&quot;</span>)]</span>
 		<span class="ident">nominator_accounts</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 		<span class="doccomment">/// Endowed account address (SS58 format).</span>
-		<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">short</span>)]</span>
+		<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">short</span>)]</span>
 		<span class="ident">endowed_accounts</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 		<span class="doccomment">/// Sudo account address (SS58 format).</span>
-		<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">short</span>)]</span>
+		<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">short</span>)]</span>
 		<span class="ident">sudo_account</span>: <span class="ident">String</span>,
 		<span class="doccomment">/// The path where the chain spec should be saved.</span>
-		<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">short</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;./chain_spec.json&quot;</span>)]</span>
+		<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">short</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;./chain_spec.json&quot;</span>)]</span>
 		<span class="ident">chain_spec_path</span>: <span class="ident">PathBuf</span>,
 	},
 	<span class="doccomment">/// Create a new chain spec with the given number of authorities and endowed</span>
 	<span class="doccomment">/// accounts. Random keys will be generated as required.</span>
 	<span class="ident">Generate</span> {
 		<span class="doccomment">/// The number of authorities.</span>
-		<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">short</span>)]</span>
+		<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">short</span>)]</span>
 		<span class="ident">authorities</span>: <span class="ident">usize</span>,
 		<span class="doccomment">/// The number of nominators backing the aforementioned authorities.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Will nominate a random subset of `authorities`.</span>
-		<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">short</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;0&quot;</span>)]</span>
+		<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">short</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;0&quot;</span>)]</span>
 		<span class="ident">nominators</span>: <span class="ident">usize</span>,
 		<span class="doccomment">/// The number of endowed accounts.</span>
-		<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">short</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;0&quot;</span>)]</span>
+		<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">short</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;0&quot;</span>)]</span>
 		<span class="ident">endowed</span>: <span class="ident">usize</span>,
 		<span class="doccomment">/// The path where the chain spec should be saved.</span>
-		<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">short</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;./chain_spec.json&quot;</span>)]</span>
+		<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">short</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;./chain_spec.json&quot;</span>)]</span>
 		<span class="ident">chain_spec_path</span>: <span class="ident">PathBuf</span>,
 		<span class="doccomment">/// Path to use when saving generated keystores for each authority.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// At this path, a new folder will be created for each authority&#39;s</span>
 		<span class="doccomment">/// keystore named `auth-$i` where `i` is the authority index, i.e.</span>
 		<span class="doccomment">/// `auth-0`, `auth-1`, etc.</span>
-		<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">short</span>)]</span>
+		<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">short</span>)]</span>
 		<span class="ident">keystore_path</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
 	},
 }
@@ -526,13 +528,15 @@
 		 the chain spec builder binary in `--release` mode.\n&quot;</span>,
 	);
 
-	<span class="kw">let</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">ChainSpecBuilder::from_args</span>();
+	<span class="kw">let</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">ChainSpecBuilder::parse</span>();
 	<span class="kw">let</span> <span class="ident">chain_spec_path</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">chain_spec_path</span>().<span class="ident">to_path_buf</span>();
 
 	<span class="kw">let</span> (<span class="ident">authority_seeds</span>, <span class="ident">nominator_accounts</span>, <span class="ident">endowed_accounts</span>, <span class="ident">sudo_account</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">builder</span> {
 		<span class="ident">ChainSpecBuilder::Generate</span> { <span class="ident">authorities</span>, <span class="ident">nominators</span>, <span class="ident">endowed</span>, <span class="ident">keystore_path</span>, .. } =&gt; {
 			<span class="kw">let</span> <span class="ident">authorities</span> <span class="op">=</span> <span class="ident">authorities</span>.<span class="ident">max</span>(<span class="number">1</span>);
-			<span class="kw">let</span> <span class="ident">rand_str</span> <span class="op">=</span> <span class="op">|</span><span class="op">|</span> -&gt; <span class="ident">String</span> { <span class="ident">OsRng</span>.<span class="ident">sample_iter</span>(<span class="kw-2">&amp;</span><span class="ident">Alphanumeric</span>).<span class="ident">take</span>(<span class="number">32</span>).<span class="ident">collect</span>() };
+			<span class="kw">let</span> <span class="ident">rand_str</span> <span class="op">=</span> <span class="op">|</span><span class="op">|</span> -&gt; <span class="ident">String</span> {
+				<span class="ident">OsRng</span>.<span class="ident">sample_iter</span>(<span class="kw-2">&amp;</span><span class="ident">Alphanumeric</span>).<span class="ident">take</span>(<span class="number">32</span>).<span class="ident">map</span>(<span class="ident">char::from</span>).<span class="ident">collect</span>()
+			};
 
 			<span class="kw">let</span> <span class="ident">authority_seeds</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">authorities</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rand_str</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 			<span class="kw">let</span> <span class="ident">nominator_seeds</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">nominators</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rand_str</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();

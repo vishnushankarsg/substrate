@@ -940,11 +940,11 @@
 				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
 					<span class="macro">debug!</span>(
 						<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>,
-						<span class="string">&quot;Justification import failed with {:?} for hash: {:?} number: {:?} coming from node: {:?}&quot;</span>,
-						<span class="ident">e</span>,
+						<span class="string">&quot;Justification import failed for hash = {:?} with number = {:?} coming from node = {:?} with error: {}&quot;</span>,
 						<span class="ident">hash</span>,
 						<span class="ident">number</span>,
 						<span class="ident">who</span>,
+						<span class="ident">e</span>,
 					);
 					<span class="ident">e</span>
 				})

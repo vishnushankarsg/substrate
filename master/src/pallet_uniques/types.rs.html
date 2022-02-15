@@ -120,6 +120,11 @@
 <span id="120">120</span>
 <span id="121">121</span>
 <span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -140,7 +145,10 @@
 <span class="doccomment">//! Various basic types for use in the assets pallet.</span>
 
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">traits::Get</span>, <span class="ident">BoundedVec</span>};
+<span class="kw">use</span> <span class="ident">frame_support</span>::{
+	<span class="ident">pallet_prelude</span>::{<span class="ident">BoundedVec</span>, <span class="ident">MaxEncodedLen</span>},
+	<span class="ident">traits::Get</span>,
+};
 <span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">type</span> <span class="ident">DepositBalanceOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">=</span>
@@ -150,7 +158,7 @@
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">type</span> <span class="ident">InstanceDetailsFor</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span> <span class="op">=</span>
 	<span class="ident">InstanceDetails</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">SystemConfig</span><span class="op">&gt;</span><span class="ident">::AccountId</span>, <span class="ident">DepositBalanceOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>, <span class="ident">MaxEncodedLen</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ClassDetails</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">DepositBalance</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Can change `owner`, `issuer`, `freezer` and `admin` accounts.</span>
 	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="ident">owner</span>: <span class="ident">AccountId</span>,
@@ -176,7 +184,7 @@
 }
 
 <span class="doccomment">/// Witness data for the destroy transactions.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>, <span class="ident">MaxEncodedLen</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">DestroyWitness</span> {
 	<span class="doccomment">/// The total number of outstanding instances of this asset class.</span>
 	<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">compact</span>)]</span>
@@ -200,7 +208,7 @@
 }
 
 <span class="doccomment">/// Information concerning the ownership of a single unique asset.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">Default</span>, <span class="ident">TypeInfo</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">Default</span>, <span class="ident">TypeInfo</span>, <span class="ident">MaxEncodedLen</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">InstanceDetails</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">DepositBalance</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// The owner of this asset.</span>
 	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="ident">owner</span>: <span class="ident">AccountId</span>,
@@ -213,8 +221,9 @@
 	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="ident">deposit</span>: <span class="ident">DepositBalance</span>,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">Default</span>, <span class="ident">TypeInfo</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">Default</span>, <span class="ident">TypeInfo</span>, <span class="ident">MaxEncodedLen</span>)]</span>
 <span class="attribute">#[<span class="ident">scale_info</span>(<span class="ident">skip_type_params</span>(<span class="ident">StringLimit</span>))]</span>
+<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">mel_bound</span>(<span class="ident">DepositBalance</span>: <span class="ident">MaxEncodedLen</span>))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ClassMetadata</span><span class="op">&lt;</span><span class="ident">DepositBalance</span>, <span class="ident">StringLimit</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// The balance deposited for this metadata.</span>
 	<span class="doccomment">///</span>
@@ -228,8 +237,9 @@
 	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="ident">is_frozen</span>: <span class="ident">bool</span>,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">Default</span>, <span class="ident">TypeInfo</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">Default</span>, <span class="ident">TypeInfo</span>, <span class="ident">MaxEncodedLen</span>)]</span>
 <span class="attribute">#[<span class="ident">scale_info</span>(<span class="ident">skip_type_params</span>(<span class="ident">StringLimit</span>))]</span>
+<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">mel_bound</span>(<span class="ident">DepositBalance</span>: <span class="ident">MaxEncodedLen</span>))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">InstanceMetadata</span><span class="op">&lt;</span><span class="ident">DepositBalance</span>, <span class="ident">StringLimit</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// The balance deposited for this metadata.</span>
 	<span class="doccomment">///</span>

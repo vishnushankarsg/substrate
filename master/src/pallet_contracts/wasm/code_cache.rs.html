@@ -262,7 +262,6 @@
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">dispatch</span>::{<span class="ident">DispatchError</span>, <span class="ident">DispatchResult</span>},
 	<span class="ident">ensure</span>,
-	<span class="ident">storage::StorageMap</span>,
 	<span class="ident">traits::ReservableCurrency</span>,
 };
 <span class="kw">use</span> <span class="ident">sp_core::crypto::UncheckedFrom</span>;
@@ -333,13 +332,28 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// A contract whose refcount dropped to zero isn&#39;t automatically removed. A `remove_code`</span>
 <span class="doccomment">/// transaction must be submitted by the original uploader to do so.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">decrement_refcount</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">code_hash</span>: <span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">DispatchError</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">decrement_refcount</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">code_hash</span>: <span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) {
 	<span class="op">&lt;</span><span class="ident">OwnerInfoOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::mutate</span>(<span class="ident">code_hash</span>, <span class="op">|</span><span class="ident">existing</span><span class="op">|</span> {
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">info</span>) <span class="op">=</span> <span class="ident">existing</span> {
 			<span class="ident">info</span>.<span class="ident">refcount</span> <span class="op">=</span> <span class="ident">info</span>.<span class="ident">refcount</span>.<span class="ident">saturating_sub</span>(<span class="number">1</span>);
 		}
 	});
-	<span class="prelude-val">Ok</span>(())
+}
+
+<span class="doccomment">/// Increment the refcount of a code in-storage by one.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Errors</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// [`Error::CodeNotFound`] is returned if the specified `code_hash` does not exist.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">increment_refcount</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">code_hash</span>: <span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">DispatchError</span><span class="op">&gt;</span> {
+	<span class="op">&lt;</span><span class="ident">OwnerInfoOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::mutate</span>(<span class="ident">code_hash</span>, <span class="op">|</span><span class="ident">existing</span><span class="op">|</span> -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">DispatchError</span><span class="op">&gt;</span> {
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">info</span>) <span class="op">=</span> <span class="ident">existing</span> {
+			<span class="ident">info</span>.<span class="ident">refcount</span> <span class="op">=</span> <span class="ident">info</span>.<span class="ident">refcount</span>.<span class="ident">saturating_add</span>(<span class="number">1</span>);
+			<span class="prelude-val">Ok</span>(())
+		} <span class="kw">else</span> {
+			<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::CodeNotFound</span>.<span class="ident">into</span>())
+		}
+	})
 }
 
 <span class="doccomment">/// Try to remove code together with all associated information.</span>
@@ -373,52 +387,38 @@
 <span class="kw">where</span>
 	<span class="ident">T::AccountId</span>: <span class="ident">UncheckedFrom</span><span class="op">&lt;</span><span class="ident">T::Hash</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AsRef</span><span class="op">&lt;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span>,
 {
-	<span class="ident">gas_meter</span>.<span class="ident">charge</span>(<span class="ident">CodeToken::Load</span>(<span class="ident">estimate_code_size</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">CodeStorage</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">code_hash</span>)<span class="question-mark">?</span>))<span class="question-mark">?</span>;
+	<span class="kw">let</span> <span class="ident">charged</span> <span class="op">=</span> <span class="ident">gas_meter</span>.<span class="ident">charge</span>(<span class="ident">CodeToken::Load</span>(<span class="ident">schedule</span>.<span class="ident">limits</span>.<span class="ident">code_len</span>))<span class="question-mark">?</span>;
 
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">prefab_module</span> <span class="op">=</span>
 		<span class="op">&lt;</span><span class="ident">CodeStorage</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">code_hash</span>).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::CodeNotFound</span>)<span class="question-mark">?</span>;
+	<span class="ident">gas_meter</span>.<span class="ident">adjust_gas</span>(<span class="ident">charged</span>, <span class="ident">CodeToken::Load</span>(<span class="ident">prefab_module</span>.<span class="ident">code</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>));
 	<span class="ident">prefab_module</span>.<span class="ident">code_hash</span> <span class="op">=</span> <span class="ident">code_hash</span>;
 
 	<span class="kw">if</span> <span class="ident">prefab_module</span>.<span class="ident">instruction_weights_version</span> <span class="op">&lt;</span> <span class="ident">schedule</span>.<span class="ident">instruction_weights</span>.<span class="ident">version</span> {
 		<span class="comment">// The instruction weights have changed.</span>
 		<span class="comment">// We need to re-instrument the code with the new instruction weights.</span>
-		<span class="ident">gas_meter</span>.<span class="ident">charge</span>(<span class="ident">CodeToken::Reinstrument</span>(<span class="ident">estimate_code_size</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">PristineCode</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="kw">_</span><span class="op">&gt;</span>(
-			<span class="kw-2">&amp;</span><span class="ident">code_hash</span>,
-		)<span class="question-mark">?</span>))<span class="question-mark">?</span>;
-		<span class="ident">reinstrument</span>(<span class="kw-2">&amp;mut</span> <span class="ident">prefab_module</span>, <span class="ident">schedule</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">charged</span> <span class="op">=</span> <span class="ident">gas_meter</span>.<span class="ident">charge</span>(<span class="ident">CodeToken::Reinstrument</span>(<span class="ident">schedule</span>.<span class="ident">limits</span>.<span class="ident">code_len</span>))<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">code_size</span> <span class="op">=</span> <span class="ident">reinstrument</span>(<span class="kw-2">&amp;mut</span> <span class="ident">prefab_module</span>, <span class="ident">schedule</span>)<span class="question-mark">?</span>;
+		<span class="ident">gas_meter</span>.<span class="ident">adjust_gas</span>(<span class="ident">charged</span>, <span class="ident">CodeToken::Reinstrument</span>(<span class="ident">code_size</span>));
 	}
 
 	<span class="prelude-val">Ok</span>(<span class="ident">prefab_module</span>)
 }
 
 <span class="doccomment">/// Instruments the passed prefab wasm module with the supplied schedule.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Returns the size in bytes of the uninstrumented code.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reinstrument</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(
 	<span class="ident">prefab_module</span>: <span class="kw-2">&amp;mut</span> <span class="ident">PrefabWasmModule</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 	<span class="ident">schedule</span>: <span class="kw-2">&amp;</span><span class="ident">Schedule</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">DispatchError</span><span class="op">&gt;</span> {
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">DispatchError</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> <span class="ident">original_code</span> <span class="op">=</span>
 		<span class="op">&lt;</span><span class="ident">PristineCode</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">prefab_module</span>.<span class="ident">code_hash</span>).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::CodeNotFound</span>)<span class="question-mark">?</span>;
+	<span class="kw">let</span> <span class="ident">original_code_len</span> <span class="op">=</span> <span class="ident">original_code</span>.<span class="ident">len</span>();
 	<span class="ident">prefab_module</span>.<span class="ident">code</span> <span class="op">=</span> <span class="ident">prepare::reinstrument_contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">original_code</span>, <span class="ident">schedule</span>)<span class="question-mark">?</span>;
 	<span class="ident">prefab_module</span>.<span class="ident">instruction_weights_version</span> <span class="op">=</span> <span class="ident">schedule</span>.<span class="ident">instruction_weights</span>.<span class="ident">version</span>;
 	<span class="op">&lt;</span><span class="ident">CodeStorage</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="ident">prefab_module</span>.<span class="ident">code_hash</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">prefab_module</span>);
-	<span class="prelude-val">Ok</span>(())
-}
-
-<span class="doccomment">/// Get the size of the code stored at `code_hash` without loading it.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// The returned value is slightly too large when using it for the [`PrefabWasmModule`]</span>
-<span class="doccomment">/// because it has other fields in addition to the code itself. However, those are negligible</span>
-<span class="doccomment">/// when compared to the code size. Additionally, charging too much weight is completely safe.</span>
-<span class="kw">fn</span> <span class="ident">estimate_code_size</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">M</span>, <span class="ident">V</span><span class="op">&gt;</span>(<span class="ident">code_hash</span>: <span class="kw-2">&amp;</span><span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">DispatchError</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-	<span class="ident">T</span>: <span class="ident">Config</span>,
-	<span class="ident">M</span>: <span class="ident">StorageMap</span><span class="op">&lt;</span><span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">V</span><span class="op">&gt;</span>,
-	<span class="ident">V</span>: <span class="ident">codec::FullCodec</span>,
-{
-	<span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="ident">M::hashed_key_for</span>(<span class="ident">code_hash</span>);
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">data</span> <span class="op">=</span> [<span class="number">0u8</span>; <span class="number">0</span>];
-	<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">sp_io::storage::read</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>, <span class="kw-2">&amp;mut</span> <span class="ident">data</span>, <span class="number">0</span>).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::CodeNotFound</span>)<span class="question-mark">?</span>;
-	<span class="prelude-val">Ok</span>(<span class="ident">len</span>)
+	<span class="prelude-val">Ok</span>(<span class="ident">original_code_len</span> <span class="kw">as</span> <span class="ident">u32</span>)
 }
 
 <span class="doccomment">/// Costs for operations that are related to code handling.</span>

@@ -152,6 +152,9 @@
 <span id="152">152</span>
 <span id="153">153</span>
 <span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -171,8 +174,11 @@
 
 <span class="doccomment">//! Traits for dealing with dispatching calls and the origin from which they are dispatched.</span>
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dispatch::DispatchResultWithPostInfo</span>;
-<span class="kw">use</span> <span class="ident">sp_runtime</span>::{<span class="ident">traits::BadOrigin</span>, <span class="ident">Either</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dispatch</span>::{<span class="ident">DispatchResultWithPostInfo</span>, <span class="ident">Parameter</span>, <span class="ident">RawOrigin</span>};
+<span class="kw">use</span> <span class="ident">sp_runtime</span>::{
+	<span class="ident">traits</span>::{<span class="ident">BadOrigin</span>, <span class="ident">Member</span>},
+	<span class="ident">Either</span>,
+};
 
 <span class="doccomment">/// Some sort of check on the origin is performed by this object.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">EnsureOrigin</span><span class="op">&lt;</span><span class="ident">OuterOrigin</span><span class="op">&gt;</span> {
@@ -210,7 +216,7 @@
 	<span class="kw">type</span> <span class="ident">Call</span>;
 
 	<span class="doccomment">/// The caller origin, overarching type of all pallets origins.</span>
-	<span class="kw">type</span> <span class="ident">PalletsOrigin</span>;
+	<span class="kw">type</span> <span class="ident">PalletsOrigin</span>: <span class="ident">Parameter</span> <span class="op">+</span> <span class="ident">Member</span> <span class="op">+</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">RawOrigin</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// The AccountId used across the system.</span>
 	<span class="kw">type</span> <span class="ident">AccountId</span>;

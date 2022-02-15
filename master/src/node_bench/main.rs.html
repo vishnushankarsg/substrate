@@ -230,7 +230,7 @@
 <span class="kw">mod</span> <span class="ident">trie</span>;
 <span class="kw">mod</span> <span class="ident">txpool</span>;
 
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
+<span class="kw">use</span> <span class="ident">clap::Parser</span>;
 
 <span class="kw">use</span> <span class="ident">node_testing::bench</span>::{<span class="ident">BlockType</span>, <span class="ident">DatabaseType</span> <span class="kw">as</span> <span class="ident">BenchDataBaseType</span>, <span class="ident">KeyTypes</span>, <span class="ident">Profile</span>};
 
@@ -244,19 +244,19 @@
 	<span class="ident">txpool::PoolBenchmarkDescription</span>,
 };
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>)]</span>
-<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;node-bench&quot;</span>, <span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Node integration benchmarks&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Parser</span>)]</span>
+<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;node-bench&quot;</span>, <span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Node integration benchmarks&quot;</span>)]</span>
 <span class="kw">struct</span> <span class="ident">Opt</span> {
 	<span class="doccomment">/// Show list of all available benchmarks.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Will output (&quot;name&quot;, &quot;path&quot;). Benchmarks can then be filtered by path.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">short</span>, <span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">short</span>, <span class="ident">long</span>)]</span>
 	<span class="ident">list</span>: <span class="ident">bool</span>,
 
 	<span class="doccomment">/// Machine readable json output.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This also suppresses all regular output (except to stderr)</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">short</span>, <span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">short</span>, <span class="ident">long</span>)]</span>
 	<span class="ident">json</span>: <span class="ident">bool</span>,
 
 	<span class="doccomment">/// Filter benchmarks.</span>
@@ -265,7 +265,7 @@
 	<span class="ident">filter</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Number of transactions for block import with `custom` size.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="ident">transactions</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Mode</span>
@@ -274,12 +274,12 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// &quot;profile&quot; mode adds pauses between measurable runs,</span>
 	<span class="doccomment">/// so that actual interval can be selected in the profiler of choice.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">short</span>, <span class="ident">long</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;regular&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">short</span>, <span class="ident">long</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;regular&quot;</span>)]</span>
 	<span class="ident">mode</span>: <span class="ident">BenchmarkMode</span>,
 }
 
 <span class="kw">fn</span> <span class="ident">main</span>() {
-	<span class="kw">let</span> <span class="ident">opt</span> <span class="op">=</span> <span class="ident">Opt::from_args</span>();
+	<span class="kw">let</span> <span class="ident">opt</span> <span class="op">=</span> <span class="ident">Opt::parse</span>();
 
 	<span class="kw">if</span> <span class="op">!</span><span class="ident">opt</span>.<span class="ident">json</span> {
 		<span class="ident">sp_tracing::try_init_simple</span>();

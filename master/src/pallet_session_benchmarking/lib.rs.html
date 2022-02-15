@@ -194,7 +194,7 @@
 <span class="kw">use</span> <span class="ident">frame_benchmarking::benchmarks</span>;
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">codec::Decode</span>,
-	<span class="ident">traits</span>::{<span class="ident">KeyOwnerProofSystem</span>, <span class="ident">OnInitialize</span>},
+	<span class="ident">traits</span>::{<span class="ident">Get</span>, <span class="ident">KeyOwnerProofSystem</span>, <span class="ident">OnInitialize</span>},
 };
 <span class="kw">use</span> <span class="ident">frame_system::RawOrigin</span>;
 <span class="kw">use</span> <span class="ident">pallet_session</span>::{<span class="ident">historical::Pallet</span> <span class="kw">as</span> <span class="ident">Historical</span>, <span class="ident">Pallet</span> <span class="kw">as</span> <span class="ident">Session</span>, <span class="kw-2">*</span>};
@@ -219,10 +219,10 @@
 
 <span class="macro">benchmarks!</span> {
 	<span class="ident">set_keys</span> {
-		<span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">pallet_staking::Config</span><span class="op">&gt;</span><span class="ident">::MAX_NOMINATIONS</span>;
+		<span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">pallet_staking::Config</span><span class="op">&gt;</span><span class="ident">::MaxNominations::get</span>();
 		<span class="kw">let</span> (<span class="ident">v_stash</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_validator_with_nominators</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
 			<span class="ident">n</span>,
-			<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">pallet_staking::Config</span><span class="op">&gt;</span><span class="ident">::MAX_NOMINATIONS</span>,
+			<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">pallet_staking::Config</span><span class="op">&gt;</span><span class="ident">::MaxNominations::get</span>(),
 			<span class="bool-val">false</span>,
 			<span class="ident">RewardDestination::Staked</span>,
 		)<span class="question-mark">?</span>;
@@ -236,10 +236,10 @@
 	}: <span class="kw">_</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">v_controller</span>), <span class="ident">keys</span>, <span class="ident">proof</span>)
 
 	<span class="ident">purge_keys</span> {
-		<span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">pallet_staking::Config</span><span class="op">&gt;</span><span class="ident">::MAX_NOMINATIONS</span>;
+		<span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">pallet_staking::Config</span><span class="op">&gt;</span><span class="ident">::MaxNominations::get</span>();
 		<span class="kw">let</span> (<span class="ident">v_stash</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_validator_with_nominators</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
 			<span class="ident">n</span>,
-			<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">pallet_staking::Config</span><span class="op">&gt;</span><span class="ident">::MAX_NOMINATIONS</span>,
+			<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">pallet_staking::Config</span><span class="op">&gt;</span><span class="ident">::MaxNominations::get</span>(),
 			<span class="bool-val">false</span>,
 			<span class="ident">RewardDestination::Staked</span>
 		)<span class="question-mark">?</span>;

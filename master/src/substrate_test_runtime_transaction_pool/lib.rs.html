@@ -365,11 +365,6 @@
 <span id="365">365</span>
 <span id="366">366</span>
 <span id="367">367</span>
-<span id="368">368</span>
-<span id="369">369</span>
-<span id="370">370</span>
-<span id="371">371</span>
-<span id="372">372</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -412,18 +407,13 @@
 };
 
 <span class="doccomment">/// Error type used by [`TestApi`].</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">derive_more::From</span>, <span class="ident">derive_more::Display</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Error</span>(<span class="ident">sc_transaction_pool_api::error::Error</span>);
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>)]</span>
+<span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Error</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">sc_transaction_pool_api::error::Error</span>);
 
 <span class="kw">impl</span> <span class="ident">sc_transaction_pool_api::error::IntoPoolError</span> <span class="kw">for</span> <span class="ident">Error</span> {
 	<span class="kw">fn</span> <span class="ident">into_pool_error</span>(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">sc_transaction_pool_api::error::Error</span>, <span class="self">Self</span><span class="op">&gt;</span> {
 		<span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="number">0</span>)
-	}
-}
-
-<span class="kw">impl</span> <span class="ident">std::error::Error</span> <span class="kw">for</span> <span class="ident">Error</span> {
-	<span class="kw">fn</span> <span class="ident">source</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>(<span class="kw">dyn</span> <span class="ident">std::error::Error</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>)<span class="op">&gt;</span> {
-		<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>)
 	}
 }
 

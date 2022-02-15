@@ -1159,6 +1159,21 @@
 <span id="1159">1159</span>
 <span id="1160">1160</span>
 <span id="1161">1161</span>
+<span id="1162">1162</span>
+<span id="1163">1163</span>
+<span id="1164">1164</span>
+<span id="1165">1165</span>
+<span id="1166">1166</span>
+<span id="1167">1167</span>
+<span id="1168">1168</span>
+<span id="1169">1169</span>
+<span id="1170">1170</span>
+<span id="1171">1171</span>
+<span id="1172">1172</span>
+<span id="1173">1173</span>
+<span id="1174">1174</span>
+<span id="1175">1175</span>
+<span id="1176">1176</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -1436,23 +1451,38 @@
 }
 
 <span class="doccomment">/// Errors that can occur while voting in GRANDPA.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span> {
 	<span class="doccomment">/// An error within grandpa.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;grandpa error: {0}&quot;</span>)]</span>
 	<span class="ident">Grandpa</span>(<span class="ident">GrandpaError</span>),
+
 	<span class="doccomment">/// A network error.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;network error: {0}&quot;</span>)]</span>
 	<span class="ident">Network</span>(<span class="ident">String</span>),
+
 	<span class="doccomment">/// A blockchain error.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;blockchain error: {0}&quot;</span>)]</span>
 	<span class="ident">Blockchain</span>(<span class="ident">String</span>),
+
 	<span class="doccomment">/// Could not complete a round on disk.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;could not complete a round on disk: {0}&quot;</span>)]</span>
 	<span class="ident">Client</span>(<span class="ident">ClientError</span>),
+
 	<span class="doccomment">/// Could not sign outgoing message</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;could not sign outgoing message: {0}&quot;</span>)]</span>
 	<span class="ident">Signing</span>(<span class="ident">String</span>),
+
 	<span class="doccomment">/// An invariant has been violated (e.g. not finalizing pending change blocks in-order)</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;safety invariant has been violated: {0}&quot;</span>)]</span>
 	<span class="ident">Safety</span>(<span class="ident">String</span>),
+
 	<span class="doccomment">/// A timer failed to fire.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;a timer failed to fire: {0}&quot;</span>)]</span>
 	<span class="ident">Timer</span>(<span class="ident">io::Error</span>),
+
 	<span class="doccomment">/// A runtime api request failed.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;runtime API request failed: {0}&quot;</span>)]</span>
 	<span class="ident">RuntimeApi</span>(<span class="ident">sp_api::ApiError</span>),
 }
 
@@ -1483,7 +1513,7 @@
 {
 	<span class="kw">fn</span> <span class="ident">block_number</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hash</span>: <span class="ident">Block::Hash</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">block_number_from_id</span>(<span class="kw-2">&amp;</span><span class="ident">BlockId::Hash</span>(<span class="ident">hash</span>))
-			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">Error::Blockchain</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">e</span>)))
+			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">Error::Blockchain</span>(<span class="ident">e</span>.<span class="ident">to_string</span>()))
 	}
 }
 
@@ -1620,7 +1650,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">CommandOrError</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span>) -&gt; <span class="ident">fmt::Result</span> {
 		<span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-			<span class="ident">CommandOrError::Error</span>(<span class="kw-2">ref</span> <span class="ident">e</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{:?}&quot;</span>, <span class="ident">e</span>),
+			<span class="ident">CommandOrError::Error</span>(<span class="kw-2">ref</span> <span class="ident">e</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">e</span>),
 			<span class="ident">CommandOrError::VoterCommand</span>(<span class="kw-2">ref</span> <span class="ident">cmd</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">cmd</span>),
 		}
 	}
@@ -1999,7 +2029,7 @@
 		<span class="prelude-val">Ok</span>(()) =&gt; <span class="macro">error!</span>(<span class="ident">target</span>: <span class="string">&quot;afg&quot;</span>,
 			<span class="string">&quot;GRANDPA voter future has concluded naturally, this should be unreachable.&quot;</span>
 		),
-		<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; <span class="macro">error!</span>(<span class="ident">target</span>: <span class="string">&quot;afg&quot;</span>, <span class="string">&quot;GRANDPA voter error: {:?}&quot;</span>, <span class="ident">e</span>),
+		<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; <span class="macro">error!</span>(<span class="ident">target</span>: <span class="string">&quot;afg&quot;</span>, <span class="string">&quot;GRANDPA voter error: {}&quot;</span>, <span class="ident">e</span>),
 	});
 
 	<span class="comment">// Make sure that `telemetry_task` doesn&#39;t accidentally finish and kill grandpa.</span>

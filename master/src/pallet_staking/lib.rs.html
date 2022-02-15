@@ -851,6 +851,9 @@
 <span id="851">851</span>
 <span id="852">852</span>
 <span id="853">853</span>
+<span id="854">854</span>
+<span id="855">855</span>
+<span id="856">856</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1156,6 +1159,7 @@
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">traits</span>::{<span class="ident">ConstU32</span>, <span class="ident">Currency</span>, <span class="ident">Get</span>},
 	<span class="ident">weights::Weight</span>,
+	<span class="ident">BoundedVec</span>, <span class="ident">EqNoBound</span>, <span class="ident">PartialEqNoBound</span>, <span class="ident">RuntimeDebugNoBound</span>,
 };
 <span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
@@ -1427,10 +1431,12 @@
 }
 
 <span class="doccomment">/// A record of the nominations made by a specific account.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Nominations</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span> {
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEqNoBound</span>, <span class="ident">EqNoBound</span>, <span class="ident">Clone</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">RuntimeDebugNoBound</span>, <span class="ident">TypeInfo</span>)]</span>
+<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">mel_bound</span>())]</span>
+<span class="attribute">#[<span class="ident">scale_info</span>(<span class="ident">skip_type_params</span>(<span class="ident">T</span>))]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Nominations</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// The targets of nomination.</span>
-	<span class="kw">pub</span> <span class="ident">targets</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">targets</span>: <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">T::AccountId</span>, <span class="ident">T::MaxNominations</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// The era the nominations were submitted.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Except for initial nominations which are considered submitted at era 0.</span>

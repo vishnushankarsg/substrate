@@ -1731,6 +1731,8 @@
 <span id="1731">1731</span>
 <span id="1732">1732</span>
 <span id="1733">1733</span>
+<span id="1734">1734</span>
+<span id="1735">1735</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -2481,7 +2483,9 @@
 
 <span class="doccomment">/// Implementor is an [`Extrinsic`] and provides metadata about this extrinsic.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ExtrinsicMetadata</span> {
-	<span class="doccomment">/// The version of the `Extrinsic`.</span>
+	<span class="doccomment">/// The format version of the `Extrinsic`.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// By format is meant the encoded representation of the `Extrinsic`.</span>
 	<span class="kw">const</span> <span class="ident">VERSION</span>: <span class="ident">u8</span>;
 
 	<span class="doccomment">/// Signed extensions attached to this `Extrinsic`.</span>
@@ -3318,7 +3322,7 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">BlockIdTo</span><span class="op">&lt;</span><span class="ident">Block</span>: <span class="ident"><span class="self">self</span>::Block</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// The error type that will be returned by the functions.</span>
-	<span class="kw">type</span> <span class="ident">Error</span>: <span class="ident">std::fmt::Debug</span>;
+	<span class="kw">type</span> <span class="ident">Error</span>: <span class="ident">std::error::Error</span>;
 
 	<span class="doccomment">/// Convert the given `block_id` to the corresponding block hash.</span>
 	<span class="kw">fn</span> <span class="ident">to_hash</span>(

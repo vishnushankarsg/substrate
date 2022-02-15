@@ -348,11 +348,11 @@
 					<span class="ident">::index</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">module</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">generic</span> $(, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">inst_generic</span>)<span class="question-mark">?</span><span class="op">&gt;</span><span class="op">&gt;</span>()
 					.<span class="ident">expect</span>(<span class="string">&quot;Every active module has an index in the runtime; qed&quot;</span>) <span class="kw">as</span> <span class="ident">u8</span>;
 
-				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::sp_runtime::DispatchError::Module</span> {
+				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::sp_runtime::DispatchError::Module</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::sp_runtime::ModuleError</span> {
 					<span class="ident">index</span>,
 					<span class="ident">error</span>: <span class="ident">err</span>.<span class="ident">as_u8</span>(),
 					<span class="ident">message</span>: <span class="prelude-val">Some</span>(<span class="ident">err</span>.<span class="ident">as_str</span>()),
-				}
+				})
 			}
 		}
 	};

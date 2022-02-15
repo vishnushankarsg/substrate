@@ -1579,8 +1579,6 @@
 <span id="1579">1579</span>
 <span id="1580">1580</span>
 <span id="1581">1581</span>
-<span id="1582">1582</span>
-<span id="1583">1583</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -1630,11 +1628,7 @@
 
 <span class="doccomment">/// A voter&#39;s fundamental data: their ID, their stake, and the list of candidates for whom they</span>
 <span class="doccomment">/// voted.</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Voter</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> (
-	<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span>,
-	<span class="ident">sp_npos_elections::VoteWeight</span>,
-	<span class="ident">Vec</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span><span class="op">&gt;</span>,
-);
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">VoterOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">frame_election_provider_support::VoterOf</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::DataProvider</span><span class="op">&gt;</span>;
 
 <span class="doccomment">/// The relative distribution of a voter&#39;s stake among the winning targets.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Assignment</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span>
@@ -2332,12 +2326,14 @@
 	};
 	<span class="kw">use</span> <span class="ident">codec::Decode</span>;
 	<span class="kw">use</span> <span class="ident">frame_benchmarking::Zero</span>;
-	<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">assert_noop</span>, <span class="ident">assert_ok</span>, <span class="ident">dispatch::Dispatchable</span>, <span class="ident">traits::OffchainWorker</span>};
+	<span class="kw">use</span> <span class="ident">frame_support</span>::{
+		<span class="ident">assert_noop</span>, <span class="ident">assert_ok</span>, <span class="ident">bounded_vec</span>, <span class="ident">dispatch::Dispatchable</span>, <span class="ident">traits::OffchainWorker</span>,
+	};
 	<span class="kw">use</span> <span class="ident">sp_npos_elections::IndexAssignment</span>;
 	<span class="kw">use</span> <span class="ident">sp_runtime</span>::{
 		<span class="ident">offchain::storage_lock</span>::{<span class="ident">BlockAndTime</span>, <span class="ident">StorageLock</span>},
 		<span class="ident">traits::ValidateUnsigned</span>,
-		<span class="ident">PerU16</span>,
+		<span class="ident">ModuleError</span>, <span class="ident">PerU16</span>,
 	};
 
 	<span class="kw">type</span> <span class="ident">Assignment</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::unsigned::Assignment</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
@@ -2507,8 +2503,8 @@
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="attribute">#[<span class="ident">should_panic</span>(<span class="ident">expected</span> <span class="op">=</span> <span class="string">&quot;Invalid unsigned submission must produce invalid block and \
 	                           deprive validator from their authoring reward.: \
-	                           Module { index: 2, error: 1, message: \
-	                           Some(\&quot;PreDispatchWrongWinnerCount\&quot;) }&quot;</span>)]</span>
+	                           Module(ModuleError { index: 2, error: 1, message: \
+	                           Some(\&quot;PreDispatchWrongWinnerCount\&quot;) })&quot;</span>)]</span>
 	<span class="kw">fn</span> <span class="ident">unfeasible_solution_panics</span>() {
 		<span class="ident">ExtBuilder::default</span>().<span class="ident">build_and_execute</span>(<span class="op">|</span><span class="op">|</span> {
 			<span class="ident">roll_to</span>(<span class="number">25</span>);
@@ -2618,11 +2614,11 @@
 
 			<span class="macro">assert_eq!</span>(
 				<span class="ident">MultiPhase::mine_check_save_submit</span>().<span class="ident">unwrap_err</span>(),
-				<span class="ident">MinerError::PreDispatchChecksFailed</span>(<span class="ident">DispatchError::Module</span> {
+				<span class="ident">MinerError::PreDispatchChecksFailed</span>(<span class="ident">DispatchError::Module</span>(<span class="ident">ModuleError</span> {
 					<span class="ident">index</span>: <span class="number">2</span>,
 					<span class="ident">error</span>: <span class="number">1</span>,
 					<span class="ident">message</span>: <span class="prelude-val">Some</span>(<span class="string">&quot;PreDispatchWrongWinnerCount&quot;</span>),
-				}),
+				})),
 			);
 		})
 	}
@@ -2631,8 +2627,8 @@
 	<span class="kw">fn</span> <span class="ident">unsigned_per_dispatch_checks_can_only_submit_threshold_better</span>() {
 		<span class="ident">ExtBuilder::default</span>()
 			.<span class="ident">desired_targets</span>(<span class="number">1</span>)
-			.<span class="ident">add_voter</span>(<span class="number">7</span>, <span class="number">2</span>, <span class="macro">vec!</span>[<span class="number">10</span>])
-			.<span class="ident">add_voter</span>(<span class="number">8</span>, <span class="number">5</span>, <span class="macro">vec!</span>[<span class="number">10</span>])
+			.<span class="ident">add_voter</span>(<span class="number">7</span>, <span class="number">2</span>, <span class="macro">bounded_vec!</span>[<span class="number">10</span>])
+			.<span class="ident">add_voter</span>(<span class="number">8</span>, <span class="number">5</span>, <span class="macro">bounded_vec!</span>[<span class="number">10</span>])
 			.<span class="ident">solution_improvement_threshold</span>(<span class="ident">Perbill::from_percent</span>(<span class="number">50</span>))
 			.<span class="ident">build_and_execute</span>(<span class="op">|</span><span class="op">|</span> {
 				<span class="ident">roll_to</span>(<span class="number">25</span>);

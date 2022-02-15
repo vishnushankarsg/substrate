@@ -84,7 +84,6 @@
 <span id="84">84</span>
 <span id="85">85</span>
 <span id="86">86</span>
-<span id="87">87</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -103,35 +102,30 @@
 <span class="comment">// You should have received a copy of the GNU General Public License</span>
 <span class="comment">// along with this program. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 
-<span class="kw">use</span> <span class="ident">sc_cli</span>::{<span class="ident">KeySubcommand</span>, <span class="ident">RunCmd</span>, <span class="ident">SignCmd</span>, <span class="ident">VanityCmd</span>, <span class="ident">VerifyCmd</span>};
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
-
 <span class="doccomment">/// An overarching CLI command definition.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">clap::Parser</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Cli</span> {
 	<span class="doccomment">/// Possible subcommand with parameters.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">subcommand</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">subcommand</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">subcommand</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Subcommand</span><span class="op">&gt;</span>,
+
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
-	<span class="kw">pub</span> <span class="ident">run</span>: <span class="ident">RunCmd</span>,
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
+	<span class="kw">pub</span> <span class="ident">run</span>: <span class="ident">sc_cli::RunCmd</span>,
 }
 
 <span class="doccomment">/// Possible subcommands of the main binary.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">clap::Subcommand</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Subcommand</span> {
-	<span class="doccomment">/// Key management cli utilities</span>
-	<span class="ident">Key</span>(<span class="ident">KeySubcommand</span>),
-
 	<span class="doccomment">/// The custom inspect subcommmand for decoding blocks and extrinsics.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(
+	<span class="attribute">#[<span class="ident">clap</span>(
 		<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;inspect&quot;</span>,
 		<span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Decode given block or extrinsic using current native runtime.&quot;</span>
 	)]</span>
 	<span class="ident">Inspect</span>(<span class="ident">node_inspect::cli::InspectCmd</span>),
 
 	<span class="doccomment">/// The custom benchmark subcommmand benchmarking runtime pallets.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;benchmark&quot;</span>, <span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Benchmark runtime pallets.&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;benchmark&quot;</span>, <span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Benchmark runtime pallets.&quot;</span>)]</span>
 	<span class="ident">Benchmark</span>(<span class="ident">frame_benchmarking_cli::BenchmarkCmd</span>),
 
 	<span class="doccomment">/// Try some command against runtime state.</span>
@@ -142,14 +136,18 @@
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;try-runtime&quot;</span>))]</span>
 	<span class="ident">TryRuntime</span>,
 
+	<span class="doccomment">/// Key management cli utilities</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">subcommand</span>)]</span>
+	<span class="ident">Key</span>(<span class="ident">sc_cli::KeySubcommand</span>),
+
 	<span class="doccomment">/// Verify a signature for a message, provided on STDIN, with a given (public or secret) key.</span>
-	<span class="ident">Verify</span>(<span class="ident">VerifyCmd</span>),
+	<span class="ident">Verify</span>(<span class="ident">sc_cli::VerifyCmd</span>),
 
 	<span class="doccomment">/// Generate a seed that provides a vanity address.</span>
-	<span class="ident">Vanity</span>(<span class="ident">VanityCmd</span>),
+	<span class="ident">Vanity</span>(<span class="ident">sc_cli::VanityCmd</span>),
 
 	<span class="doccomment">/// Sign a message, with a given (secret) key.</span>
-	<span class="ident">Sign</span>(<span class="ident">SignCmd</span>),
+	<span class="ident">Sign</span>(<span class="ident">sc_cli::SignCmd</span>),
 
 	<span class="doccomment">/// Build a chain specification.</span>
 	<span class="ident">BuildSpec</span>(<span class="ident">sc_cli::BuildSpecCmd</span>),

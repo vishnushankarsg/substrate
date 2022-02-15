@@ -148,7 +148,6 @@
 <span id="148">148</span>
 <span id="149">149</span>
 <span id="150">150</span>
-<span id="151">151</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -170,7 +169,7 @@
 <span class="kw">mod</span> <span class="ident">writer</span>;
 
 <span class="kw">use</span> <span class="ident">sc_cli</span>::{<span class="ident">ExecutionStrategy</span>, <span class="ident">WasmExecutionMethod</span>};
-<span class="kw">use</span> <span class="ident">std::fmt::Debug</span>;
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">path::PathBuf</span>};
 
 <span class="comment">// Add a more relaxed parsing for pallet names by allowing pallet directory names with `-` to be</span>
 <span class="comment">// used like crate names with `_`</span>
@@ -179,125 +178,124 @@
 }
 
 <span class="doccomment">/// The `benchmark` command used to benchmark FRAME Pallets.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">structopt::StructOpt</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">clap::Parser</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BenchmarkCmd</span> {
 	<span class="doccomment">/// Select a FRAME Pallet to benchmark, or `*` for all (in which case `extrinsic` must be `*`).</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">short</span>, <span class="ident">long</span>, <span class="ident">parse</span>(<span class="ident">from_str</span> <span class="op">=</span> <span class="ident">parse_pallet_name</span>), <span class="ident">required_unless</span> <span class="op">=</span> <span class="string">&quot;list&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">short</span>, <span class="ident">long</span>, <span class="ident">parse</span>(<span class="ident">from_str</span> <span class="op">=</span> <span class="ident">parse_pallet_name</span>), <span class="ident">required_unless_present</span> <span class="op">=</span> <span class="string">&quot;list&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">pallet</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Select an extrinsic inside the pallet to benchmark, or `*` for all.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">short</span>, <span class="ident">long</span>, <span class="ident">required_unless</span> <span class="op">=</span> <span class="string">&quot;list&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">short</span>, <span class="ident">long</span>, <span class="ident">required_unless_present</span> <span class="op">=</span> <span class="string">&quot;list&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">extrinsic</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Select how many samples we should take across the variable components.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">short</span>, <span class="ident">long</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;1&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">short</span>, <span class="ident">long</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;1&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">steps</span>: <span class="ident">u32</span>,
 
 	<span class="doccomment">/// Indicates lowest values for each of the component ranges.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;low&quot;</span>, <span class="ident">use_delimiter</span> <span class="op">=</span> <span class="bool-val">true</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;low&quot;</span>, <span class="ident">use_delimiter</span> <span class="op">=</span> <span class="bool-val">true</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">lowest_range_values</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Indicates highest values for each of the component ranges.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;high&quot;</span>, <span class="ident">use_delimiter</span> <span class="op">=</span> <span class="bool-val">true</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;high&quot;</span>, <span class="ident">use_delimiter</span> <span class="op">=</span> <span class="bool-val">true</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">highest_range_values</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Select how many repetitions of this benchmark should run from within the wasm.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">short</span>, <span class="ident">long</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;1&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">short</span>, <span class="ident">long</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;1&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">repeat</span>: <span class="ident">u32</span>,
 
 	<span class="doccomment">/// Select how many repetitions of this benchmark should run from the client.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// NOTE: Using this alone may give slower results, but will afford you maximum Wasm memory.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;1&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;1&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">external_repeat</span>: <span class="ident">u32</span>,
 
-	<span class="doccomment">/// Print the raw results.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;raw&quot;</span>)]</span>
-	<span class="kw">pub</span> <span class="ident">raw_data</span>: <span class="ident">bool</span>,
+	<span class="doccomment">/// Print the raw results in JSON format.</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;json&quot;</span>)]</span>
+	<span class="kw">pub</span> <span class="ident">json_output</span>: <span class="ident">bool</span>,
+
+	<span class="doccomment">/// Write the raw results in JSON format into the give file.</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">conflicts_with</span> <span class="op">=</span> <span class="string">&quot;json-output&quot;</span>)]</span>
+	<span class="kw">pub</span> <span class="ident">json_file</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Don&#39;t print the median-slopes linear regression analysis.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">no_median_slopes</span>: <span class="ident">bool</span>,
 
 	<span class="doccomment">/// Don&#39;t print the min-squares linear regression analysis.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">no_min_squares</span>: <span class="ident">bool</span>,
 
 	<span class="doccomment">/// Output the benchmarks to a Rust file at the given path.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
-	<span class="kw">pub</span> <span class="ident">output</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">std::path::PathBuf</span><span class="op">&gt;</span>,
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
+	<span class="kw">pub</span> <span class="ident">output</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Add a header file to your outputted benchmarks</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
-	<span class="kw">pub</span> <span class="ident">header</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">std::path::PathBuf</span><span class="op">&gt;</span>,
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
+	<span class="kw">pub</span> <span class="ident">header</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Path to Handlebars template file used for outputting benchmark results. (Optional)</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
-	<span class="kw">pub</span> <span class="ident">template</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">std::path::PathBuf</span><span class="op">&gt;</span>,
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
+	<span class="kw">pub</span> <span class="ident">template</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Which analysis function to use when outputting benchmarks:</span>
 	<span class="doccomment">/// * min-squares (default)</span>
 	<span class="doccomment">/// * median-slopes</span>
 	<span class="doccomment">/// * max (max of min squares and median slopes for each value)</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">output_analysis</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Set the heap pages while running benchmarks. If not set, the default value from the client</span>
 	<span class="doccomment">/// is used.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">heap_pages</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Disable verification logic when running benchmarks.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">no_verify</span>: <span class="ident">bool</span>,
 
 	<span class="doccomment">/// Display and run extra benchmarks that would otherwise not be needed for weight</span>
 	<span class="doccomment">/// construction.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">extra</span>: <span class="ident">bool</span>,
 
 	<span class="doccomment">/// Estimate PoV size.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">record_proof</span>: <span class="ident">bool</span>,
 
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">shared_params</span>: <span class="ident">sc_cli::SharedParams</span>,
 
 	<span class="doccomment">/// The execution strategy that should be used for benchmarks</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(
-		<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;execution&quot;</span>,
-		<span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;STRATEGY&quot;</span>,
-		<span class="ident">possible_values</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">ExecutionStrategy::variants</span>(),
-		<span class="ident">case_insensitive</span> <span class="op">=</span> <span class="bool-val">true</span>,
-	)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;STRATEGY&quot;</span>, <span class="ident">arg_enum</span>, <span class="ident">ignore_case</span> <span class="op">=</span> <span class="bool-val">true</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">execution</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ExecutionStrategy</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Method for executing Wasm runtime code.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(
+	<span class="attribute">#[<span class="ident">clap</span>(
 		<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;wasm-execution&quot;</span>,
 		<span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;METHOD&quot;</span>,
-		<span class="ident">possible_values</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">WasmExecutionMethod::variants</span>(),
-		<span class="ident">case_insensitive</span> <span class="op">=</span> <span class="bool-val">true</span>,
+		<span class="ident">possible_values</span> <span class="op">=</span> <span class="ident">WasmExecutionMethod::variants</span>(),
+		<span class="ident">ignore_case</span> <span class="op">=</span> <span class="bool-val">true</span>,
 		<span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;compiled&quot;</span>
 	)]</span>
 	<span class="kw">pub</span> <span class="ident">wasm_method</span>: <span class="ident">WasmExecutionMethod</span>,
 
 	<span class="doccomment">/// Limit the memory the database cache can use.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;db-cache&quot;</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;MiB&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;1024&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;db-cache&quot;</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;MiB&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;1024&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">database_cache_size</span>: <span class="ident">u32</span>,
 
 	<span class="doccomment">/// List the benchmarks that match your query rather than running them.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// When nothing is provided, we list all benchmarks.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">list</span>: <span class="ident">bool</span>,
 
 	<span class="doccomment">/// If enabled, the storage info is not displayed in the output next to the analysis.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This is independent of the storage info appearing in the *output file*. Use a Handlebar</span>
 	<span class="doccomment">/// template for that purpose.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">no_storage_info</span>: <span class="ident">bool</span>,
 }
 </code></pre></div>

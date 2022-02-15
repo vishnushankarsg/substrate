@@ -91,25 +91,25 @@
 	<span class="ident">params</span>::{<span class="ident">GenericNumber</span>, <span class="ident">PruningParams</span>, <span class="ident">SharedParams</span>},
 	<span class="ident">CliConfiguration</span>,
 };
+<span class="kw">use</span> <span class="ident">clap::Parser</span>;
 <span class="kw">use</span> <span class="ident">sc_client_api</span>::{<span class="ident">Backend</span>, <span class="ident">UsageProvider</span>};
 <span class="kw">use</span> <span class="ident">sc_service::chain_ops::revert_chain</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime::traits</span>::{<span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>, <span class="ident">Header</span> <span class="kw">as</span> <span class="ident">HeaderT</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">str::FromStr</span>, <span class="ident">sync::Arc</span>};
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
 
 <span class="doccomment">/// The `revert` command used revert the chain to a previous state.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Parser</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RevertCmd</span> {
 	<span class="doccomment">/// Number of blocks to revert.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;256&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;256&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">num</span>: <span class="ident">GenericNumber</span>,
 
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">shared_params</span>: <span class="ident">SharedParams</span>,
 
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">pruning_params</span>: <span class="ident">PruningParams</span>,
 }
 

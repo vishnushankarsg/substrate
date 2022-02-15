@@ -359,6 +359,8 @@
 <span id="359">359</span>
 <span id="360">360</span>
 <span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -639,7 +641,7 @@
 
 <span class="doccomment">/// Events that the transaction pool listens for.</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ChainEvent</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> {
-	<span class="doccomment">/// New best block have been added to the chain</span>
+	<span class="doccomment">/// New best block have been added to the chain.</span>
 	<span class="ident">NewBestBlock</span> {
 		<span class="doccomment">/// Hash of the block.</span>
 		<span class="ident">hash</span>: <span class="ident">B::Hash</span>,
@@ -650,8 +652,10 @@
 	},
 	<span class="doccomment">/// An existing block has been finalized.</span>
 	<span class="ident">Finalized</span> {
-		<span class="doccomment">/// Hash of just finalized block</span>
+		<span class="doccomment">/// Hash of just finalized block.</span>
 		<span class="ident">hash</span>: <span class="ident">B::Hash</span>,
+		<span class="doccomment">/// Path from old finalized to new finalized parent.</span>
+		<span class="ident">tree_route</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">B::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	},
 }
 
@@ -714,7 +718,7 @@
 		<span class="ident">result</span>.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ()).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
 			<span class="macro">log::warn!</span>(
 				<span class="ident">target</span>: <span class="string">&quot;txpool&quot;</span>,
-				<span class="string">&quot;(offchain call) Error submitting a transaction to the pool: {:?}&quot;</span>,
+				<span class="string">&quot;(offchain call) Error submitting a transaction to the pool: {}&quot;</span>,
 				<span class="ident">e</span>
 			)
 		})

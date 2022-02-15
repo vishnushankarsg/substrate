@@ -967,7 +967,7 @@
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">HasCompact</span>};
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">storage::bounded_btree_map::BoundedBTreeMap</span>,
-	<span class="ident">traits</span>::{<span class="ident">Currency</span>, <span class="ident">Get</span>, <span class="ident">OnUnbalanced</span>, <span class="ident">ReservableCurrency</span>},
+	<span class="ident">traits</span>::{<span class="ident">defensive_prelude</span>::<span class="kw-2">*</span>, <span class="ident">Currency</span>, <span class="ident">Get</span>, <span class="ident">OnUnbalanced</span>, <span class="ident">ReservableCurrency</span>},
 };
 <span class="kw">use</span> <span class="ident">sp_arithmetic::traits::SaturatedConversion</span>;
 <span class="kw">use</span> <span class="ident">sp_npos_elections</span>::{<span class="ident">is_score_better</span>, <span class="ident">ElectionScore</span>, <span class="ident">NposSolution</span>};
@@ -1307,7 +1307,7 @@
 			<span class="kw">let</span> <span class="ident">active_voters</span> <span class="op">=</span> <span class="ident">raw_solution</span>.<span class="ident">solution</span>.<span class="ident">voter_count</span>() <span class="kw">as</span> <span class="ident">u32</span>;
 			<span class="kw">let</span> <span class="ident">feasibility_weight</span> <span class="op">=</span> {
 				<span class="comment">// defensive only: at the end of signed phase, snapshot will exits.</span>
-				<span class="kw">let</span> <span class="ident">desired_targets</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::desired_targets</span>().<span class="ident">unwrap_or_default</span>();
+				<span class="kw">let</span> <span class="ident">desired_targets</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::desired_targets</span>().<span class="ident">defensive_unwrap_or_default</span>();
 				<span class="ident">T::WeightInfo::feasibility_check</span>(<span class="ident">voters</span>, <span class="ident">targets</span>, <span class="ident">active_voters</span>, <span class="ident">desired_targets</span>)
 			};
 			<span class="comment">// the feasibility check itself has some weight</span>

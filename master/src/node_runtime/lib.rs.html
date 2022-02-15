@@ -1811,6 +1811,87 @@
 <span id="1811">1811</span>
 <span id="1812">1812</span>
 <span id="1813">1813</span>
+<span id="1814">1814</span>
+<span id="1815">1815</span>
+<span id="1816">1816</span>
+<span id="1817">1817</span>
+<span id="1818">1818</span>
+<span id="1819">1819</span>
+<span id="1820">1820</span>
+<span id="1821">1821</span>
+<span id="1822">1822</span>
+<span id="1823">1823</span>
+<span id="1824">1824</span>
+<span id="1825">1825</span>
+<span id="1826">1826</span>
+<span id="1827">1827</span>
+<span id="1828">1828</span>
+<span id="1829">1829</span>
+<span id="1830">1830</span>
+<span id="1831">1831</span>
+<span id="1832">1832</span>
+<span id="1833">1833</span>
+<span id="1834">1834</span>
+<span id="1835">1835</span>
+<span id="1836">1836</span>
+<span id="1837">1837</span>
+<span id="1838">1838</span>
+<span id="1839">1839</span>
+<span id="1840">1840</span>
+<span id="1841">1841</span>
+<span id="1842">1842</span>
+<span id="1843">1843</span>
+<span id="1844">1844</span>
+<span id="1845">1845</span>
+<span id="1846">1846</span>
+<span id="1847">1847</span>
+<span id="1848">1848</span>
+<span id="1849">1849</span>
+<span id="1850">1850</span>
+<span id="1851">1851</span>
+<span id="1852">1852</span>
+<span id="1853">1853</span>
+<span id="1854">1854</span>
+<span id="1855">1855</span>
+<span id="1856">1856</span>
+<span id="1857">1857</span>
+<span id="1858">1858</span>
+<span id="1859">1859</span>
+<span id="1860">1860</span>
+<span id="1861">1861</span>
+<span id="1862">1862</span>
+<span id="1863">1863</span>
+<span id="1864">1864</span>
+<span id="1865">1865</span>
+<span id="1866">1866</span>
+<span id="1867">1867</span>
+<span id="1868">1868</span>
+<span id="1869">1869</span>
+<span id="1870">1870</span>
+<span id="1871">1871</span>
+<span id="1872">1872</span>
+<span id="1873">1873</span>
+<span id="1874">1874</span>
+<span id="1875">1875</span>
+<span id="1876">1876</span>
+<span id="1877">1877</span>
+<span id="1878">1878</span>
+<span id="1879">1879</span>
+<span id="1880">1880</span>
+<span id="1881">1881</span>
+<span id="1882">1882</span>
+<span id="1883">1883</span>
+<span id="1884">1884</span>
+<span id="1885">1885</span>
+<span id="1886">1886</span>
+<span id="1887">1887</span>
+<span id="1888">1888</span>
+<span id="1889">1889</span>
+<span id="1890">1890</span>
+<span id="1891">1891</span>
+<span id="1892">1892</span>
+<span id="1893">1893</span>
+<span id="1894">1894</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -1836,6 +1917,7 @@
 <span class="attribute">#![<span class="ident">recursion_limit</span> <span class="op">=</span> <span class="string">&quot;256&quot;</span>]</span>
 
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">MaxEncodedLen</span>};
+<span class="kw">use</span> <span class="ident">frame_election_provider_support::onchain</span>;
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">construct_runtime</span>, <span class="ident">parameter_types</span>,
 	<span class="ident">traits</span>::{
@@ -1865,11 +1947,7 @@
 <span class="kw">use</span> <span class="ident">pallet_transaction_payment</span>::{<span class="ident">FeeDetails</span>, <span class="ident">RuntimeDispatchInfo</span>};
 <span class="kw">use</span> <span class="ident">sp_api::impl_runtime_apis</span>;
 <span class="kw">use</span> <span class="ident">sp_authority_discovery::AuthorityId</span> <span class="kw">as</span> <span class="ident">AuthorityDiscoveryId</span>;
-<span class="kw">use</span> <span class="ident">sp_core</span>::{
-	<span class="ident">crypto::KeyTypeId</span>,
-	<span class="ident">u32_trait</span>::{<span class="ident">_1</span>, <span class="ident">_2</span>, <span class="ident">_3</span>, <span class="ident">_4</span>, <span class="ident">_5</span>},
-	<span class="ident">OpaqueMetadata</span>,
-};
+<span class="kw">use</span> <span class="ident">sp_core</span>::{<span class="ident">crypto::KeyTypeId</span>, <span class="ident">OpaqueMetadata</span>};
 <span class="kw">use</span> <span class="ident">sp_inherents</span>::{<span class="ident">CheckInherentsResult</span>, <span class="ident">InherentData</span>};
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
 	<span class="ident">create_runtime_str</span>,
@@ -2341,12 +2419,6 @@
 	<span class="kw">pub</span> <span class="ident">OffchainRepeat</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">5</span>;
 }
 
-<span class="kw">use</span> <span class="ident">frame_election_provider_support::onchain</span>;
-<span class="kw">impl</span> <span class="ident">onchain::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
-	<span class="kw">type</span> <span class="ident">Accuracy</span> <span class="op">=</span> <span class="ident">Perbill</span>;
-	<span class="kw">type</span> <span class="ident">DataProvider</span> <span class="op">=</span> <span class="ident">Staking</span>;
-}
-
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StakingBenchmarkingConfig</span>;
 <span class="kw">impl</span> <span class="ident">pallet_staking::BenchmarkingConfig</span> <span class="kw">for</span> <span class="ident">StakingBenchmarkingConfig</span> {
 	<span class="kw">type</span> <span class="ident">MaxNominators</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">1000</span><span class="op">&gt;</span>;
@@ -2354,7 +2426,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">pallet_staking::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
-	<span class="kw">const</span> <span class="ident">MAX_NOMINATIONS</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="ident">MAX_NOMINATIONS</span>;
+	<span class="kw">type</span> <span class="ident">MaxNominations</span> <span class="op">=</span> <span class="ident">MaxNominations</span>;
 	<span class="kw">type</span> <span class="ident">Currency</span> <span class="op">=</span> <span class="ident">Balances</span>;
 	<span class="kw">type</span> <span class="ident">UnixTime</span> <span class="op">=</span> <span class="ident">Timestamp</span>;
 	<span class="kw">type</span> <span class="ident">CurrencyToVote</span> <span class="op">=</span> <span class="ident">U128CurrencyToVote</span>;
@@ -2368,7 +2440,7 @@
 	<span class="doccomment">/// A super-majority of the council can cancel the slash.</span>
 	<span class="kw">type</span> <span class="ident">SlashCancelOrigin</span> <span class="op">=</span> <span class="ident">EnsureOneOf</span><span class="op">&lt;</span>
 		<span class="ident">EnsureRoot</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>,
-		<span class="ident">pallet_collective::EnsureProportionAtLeast</span><span class="op">&lt;</span><span class="ident">_3</span>, <span class="ident">_4</span>, <span class="ident">AccountId</span>, <span class="ident">CouncilCollective</span><span class="op">&gt;</span>,
+		<span class="ident">pallet_collective::EnsureProportionAtLeast</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">CouncilCollective</span>, <span class="number">3</span>, <span class="number">4</span><span class="op">&gt;</span>,
 	<span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">SessionInterface</span> <span class="op">=</span> <span class="self">Self</span>;
 	<span class="kw">type</span> <span class="ident">EraPayout</span> <span class="op">=</span> <span class="ident">pallet_staking::ConvertCurve</span><span class="op">&lt;</span><span class="ident">RewardCurve</span><span class="op">&gt;</span>;
@@ -2418,7 +2490,9 @@
 	<span class="op">&gt;</span>(<span class="number">16</span>)
 );
 
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MAX_NOMINATIONS</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">NposSolution16</span> <span class="kw">as</span> <span class="ident">sp_npos_elections::NposSolution</span><span class="op">&gt;</span><span class="ident">::LIMIT</span> <span class="kw">as</span> <span class="ident">u32</span>;
+<span class="macro">parameter_types!</span> {
+	<span class="kw">pub</span> <span class="ident">MaxNominations</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">NposSolution16</span> <span class="kw">as</span> <span class="ident">sp_npos_elections::NposSolution</span><span class="op">&gt;</span><span class="ident">::LIMIT</span> <span class="kw">as</span> <span class="ident">u32</span>;
+}
 
 <span class="doccomment">/// The numbers configured here could always be more than the the maximum limits of staking pallet</span>
 <span class="doccomment">/// to ensure election snapshot will not run out of memory. For now, we set them to smaller values</span>
@@ -2460,6 +2534,11 @@
 	}
 }
 
+<span class="kw">impl</span> <span class="ident">onchain::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
+	<span class="kw">type</span> <span class="ident">Accuracy</span> <span class="op">=</span> <span class="ident">Perbill</span>;
+	<span class="kw">type</span> <span class="ident">DataProvider</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">pallet_election_provider_multi_phase::Config</span><span class="op">&gt;</span><span class="ident">::DataProvider</span>;
+}
+
 <span class="kw">impl</span> <span class="ident">pallet_election_provider_multi_phase::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
 	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
 	<span class="kw">type</span> <span class="ident">Currency</span> <span class="op">=</span> <span class="ident">Balances</span>;
@@ -2482,6 +2561,8 @@
 	<span class="kw">type</span> <span class="ident">DataProvider</span> <span class="op">=</span> <span class="ident">Staking</span>;
 	<span class="kw">type</span> <span class="ident">Solution</span> <span class="op">=</span> <span class="ident">NposSolution16</span>;
 	<span class="kw">type</span> <span class="ident">Fallback</span> <span class="op">=</span> <span class="ident">pallet_election_provider_multi_phase::NoFallback</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">GovernanceFallback</span> <span class="op">=</span>
+		<span class="ident">frame_election_provider_support::onchain::OnChainSequentialPhragmen</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">Solver</span> <span class="op">=</span> <span class="ident">frame_election_provider_support::SequentialPhragmen</span><span class="op">&lt;</span>
 		<span class="ident">AccountId</span>,
 		<span class="ident">pallet_election_provider_multi_phase::SolutionAccuracyOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>,
@@ -2508,6 +2589,83 @@
 }
 
 <span class="macro">parameter_types!</span> {
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">VoteLockingPeriod</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">30</span> <span class="op">*</span> <span class="ident">DAYS</span>;
+}
+
+<span class="kw">impl</span> <span class="ident">pallet_conviction_voting::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">pallet_conviction_voting::weights::SubstrateWeight</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
+	<span class="kw">type</span> <span class="ident">Currency</span> <span class="op">=</span> <span class="ident">Balances</span>;
+	<span class="kw">type</span> <span class="ident">VoteLockingPeriod</span> <span class="op">=</span> <span class="ident">VoteLockingPeriod</span>;
+	<span class="kw">type</span> <span class="ident">MaxVotes</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">512</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">MaxTurnout</span> <span class="op">=</span> <span class="ident">frame_support::traits::TotalIssuanceOf</span><span class="op">&lt;</span><span class="ident">Balances</span>, <span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">Polls</span> <span class="op">=</span> <span class="ident">Referenda</span>;
+}
+
+<span class="macro">parameter_types!</span> {
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">AlarmInterval</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">1</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SubmissionDeposit</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">100</span> <span class="op">*</span> <span class="ident">DOLLARS</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">UndecidingTimeout</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">28</span> <span class="op">*</span> <span class="ident">DAYS</span>;
+}
+
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TracksInfo</span>;
+<span class="kw">impl</span> <span class="ident">pallet_referenda::TracksInfo</span><span class="op">&lt;</span><span class="ident">Balance</span>, <span class="ident">BlockNumber</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TracksInfo</span> {
+	<span class="kw">type</span> <span class="ident">Id</span> <span class="op">=</span> <span class="ident">u8</span>;
+	<span class="kw">type</span> <span class="ident">Origin</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Origin</span> <span class="kw">as</span> <span class="ident">frame_support::traits::OriginTrait</span><span class="op">&gt;</span><span class="ident">::PalletsOrigin</span>;
+	<span class="kw">fn</span> <span class="ident">tracks</span>() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [(<span class="ident"><span class="self">Self</span>::Id</span>, <span class="ident">pallet_referenda::TrackInfo</span><span class="op">&lt;</span><span class="ident">Balance</span>, <span class="ident">BlockNumber</span><span class="op">&gt;</span>)] {
+		<span class="kw">static</span> <span class="ident">DATA</span>: [(<span class="ident">u8</span>, <span class="ident">pallet_referenda::TrackInfo</span><span class="op">&lt;</span><span class="ident">Balance</span>, <span class="ident">BlockNumber</span><span class="op">&gt;</span>); <span class="number">1</span>] <span class="op">=</span> [(
+			<span class="number">0u8</span>,
+			<span class="ident">pallet_referenda::TrackInfo</span> {
+				<span class="ident">name</span>: <span class="string">&quot;root&quot;</span>,
+				<span class="ident">max_deciding</span>: <span class="number">1</span>,
+				<span class="ident">decision_deposit</span>: <span class="number">10</span>,
+				<span class="ident">prepare_period</span>: <span class="number">4</span>,
+				<span class="ident">decision_period</span>: <span class="number">4</span>,
+				<span class="ident">confirm_period</span>: <span class="number">2</span>,
+				<span class="ident">min_enactment_period</span>: <span class="number">4</span>,
+				<span class="ident">min_approval</span>: <span class="ident">pallet_referenda::Curve::LinearDecreasing</span> {
+					<span class="ident">begin</span>: <span class="ident">Perbill::from_percent</span>(<span class="number">100</span>),
+					<span class="ident">delta</span>: <span class="ident">Perbill::from_percent</span>(<span class="number">50</span>),
+				},
+				<span class="ident">min_turnout</span>: <span class="ident">pallet_referenda::Curve::LinearDecreasing</span> {
+					<span class="ident">begin</span>: <span class="ident">Perbill::from_percent</span>(<span class="number">100</span>),
+					<span class="ident">delta</span>: <span class="ident">Perbill::from_percent</span>(<span class="number">100</span>),
+				},
+			},
+		)];
+		<span class="kw-2">&amp;</span><span class="ident">DATA</span>[..]
+	}
+	<span class="kw">fn</span> <span class="ident">track_for</span>(<span class="ident">id</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::Origin</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Id</span>, ()<span class="op">&gt;</span> {
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">system_origin</span>) <span class="op">=</span> <span class="ident">frame_system::RawOrigin::try_from</span>(<span class="ident">id</span>.<span class="ident">clone</span>()) {
+			<span class="kw">match</span> <span class="ident">system_origin</span> {
+				<span class="ident">frame_system::RawOrigin::Root</span> =&gt; <span class="prelude-val">Ok</span>(<span class="number">0</span>),
+				<span class="kw">_</span> =&gt; <span class="prelude-val">Err</span>(()),
+			}
+		} <span class="kw">else</span> {
+			<span class="prelude-val">Err</span>(())
+		}
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">pallet_referenda::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">pallet_referenda::weights::SubstrateWeight</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">Call</span> <span class="op">=</span> <span class="ident">Call</span>;
+	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
+	<span class="kw">type</span> <span class="ident">Scheduler</span> <span class="op">=</span> <span class="ident">Scheduler</span>;
+	<span class="kw">type</span> <span class="ident">Currency</span> <span class="op">=</span> <span class="ident">pallet_balances::Pallet</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">CancelOrigin</span> <span class="op">=</span> <span class="ident">EnsureRoot</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">KillOrigin</span> <span class="op">=</span> <span class="ident">EnsureRoot</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">Slash</span> <span class="op">=</span> ();
+	<span class="kw">type</span> <span class="ident">Votes</span> <span class="op">=</span> <span class="ident">pallet_conviction_voting::VotesOf</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">Tally</span> <span class="op">=</span> <span class="ident">pallet_conviction_voting::TallyOf</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">SubmissionDeposit</span> <span class="op">=</span> <span class="ident">SubmissionDeposit</span>;
+	<span class="kw">type</span> <span class="ident">MaxQueued</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">100</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">UndecidingTimeout</span> <span class="op">=</span> <span class="ident">UndecidingTimeout</span>;
+	<span class="kw">type</span> <span class="ident">AlarmInterval</span> <span class="op">=</span> <span class="ident">AlarmInterval</span>;
+	<span class="kw">type</span> <span class="ident">Tracks</span> <span class="op">=</span> <span class="ident">TracksInfo</span>;
+}
+
+<span class="macro">parameter_types!</span> {
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">LaunchPeriod</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">28</span> <span class="op">*</span> <span class="number">24</span> <span class="op">*</span> <span class="number">60</span> <span class="op">*</span> <span class="ident">MINUTES</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">VotingPeriod</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">28</span> <span class="op">*</span> <span class="number">24</span> <span class="op">*</span> <span class="number">60</span> <span class="op">*</span> <span class="ident">MINUTES</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FastTrackVotingPeriod</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">3</span> <span class="op">*</span> <span class="number">24</span> <span class="op">*</span> <span class="number">60</span> <span class="op">*</span> <span class="ident">MINUTES</span>;
@@ -2528,30 +2686,30 @@
 	<span class="kw">type</span> <span class="ident">MinimumDeposit</span> <span class="op">=</span> <span class="ident">MinimumDeposit</span>;
 	<span class="doccomment">/// A straight majority of the council can decide what their next motion is.</span>
 	<span class="kw">type</span> <span class="ident">ExternalOrigin</span> <span class="op">=</span>
-		<span class="ident">pallet_collective::EnsureProportionAtLeast</span><span class="op">&lt;</span><span class="ident">_1</span>, <span class="ident">_2</span>, <span class="ident">AccountId</span>, <span class="ident">CouncilCollective</span><span class="op">&gt;</span>;
+		<span class="ident">pallet_collective::EnsureProportionAtLeast</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">CouncilCollective</span>, <span class="number">1</span>, <span class="number">2</span><span class="op">&gt;</span>;
 	<span class="doccomment">/// A super-majority can have the next scheduled referendum be a straight majority-carries vote.</span>
 	<span class="kw">type</span> <span class="ident">ExternalMajorityOrigin</span> <span class="op">=</span>
-		<span class="ident">pallet_collective::EnsureProportionAtLeast</span><span class="op">&lt;</span><span class="ident">_3</span>, <span class="ident">_4</span>, <span class="ident">AccountId</span>, <span class="ident">CouncilCollective</span><span class="op">&gt;</span>;
+		<span class="ident">pallet_collective::EnsureProportionAtLeast</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">CouncilCollective</span>, <span class="number">3</span>, <span class="number">4</span><span class="op">&gt;</span>;
 	<span class="doccomment">/// A unanimous council can have the next scheduled referendum be a straight default-carries</span>
 	<span class="doccomment">/// (NTB) vote.</span>
 	<span class="kw">type</span> <span class="ident">ExternalDefaultOrigin</span> <span class="op">=</span>
-		<span class="ident">pallet_collective::EnsureProportionAtLeast</span><span class="op">&lt;</span><span class="ident">_1</span>, <span class="ident">_1</span>, <span class="ident">AccountId</span>, <span class="ident">CouncilCollective</span><span class="op">&gt;</span>;
+		<span class="ident">pallet_collective::EnsureProportionAtLeast</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">CouncilCollective</span>, <span class="number">1</span>, <span class="number">1</span><span class="op">&gt;</span>;
 	<span class="doccomment">/// Two thirds of the technical committee can have an ExternalMajority/ExternalDefault vote</span>
 	<span class="doccomment">/// be tabled immediately and with a shorter voting/enactment period.</span>
 	<span class="kw">type</span> <span class="ident">FastTrackOrigin</span> <span class="op">=</span>
-		<span class="ident">pallet_collective::EnsureProportionAtLeast</span><span class="op">&lt;</span><span class="ident">_2</span>, <span class="ident">_3</span>, <span class="ident">AccountId</span>, <span class="ident">TechnicalCollective</span><span class="op">&gt;</span>;
+		<span class="ident">pallet_collective::EnsureProportionAtLeast</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">TechnicalCollective</span>, <span class="number">2</span>, <span class="number">3</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">InstantOrigin</span> <span class="op">=</span>
-		<span class="ident">pallet_collective::EnsureProportionAtLeast</span><span class="op">&lt;</span><span class="ident">_1</span>, <span class="ident">_1</span>, <span class="ident">AccountId</span>, <span class="ident">TechnicalCollective</span><span class="op">&gt;</span>;
+		<span class="ident">pallet_collective::EnsureProportionAtLeast</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">TechnicalCollective</span>, <span class="number">1</span>, <span class="number">1</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">InstantAllowed</span> <span class="op">=</span> <span class="ident">frame_support::traits::ConstBool</span><span class="op">&lt;</span><span class="bool-val">true</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">FastTrackVotingPeriod</span> <span class="op">=</span> <span class="ident">FastTrackVotingPeriod</span>;
 	<span class="comment">// To cancel a proposal which has been passed, 2/3 of the council must agree to it.</span>
 	<span class="kw">type</span> <span class="ident">CancellationOrigin</span> <span class="op">=</span>
-		<span class="ident">pallet_collective::EnsureProportionAtLeast</span><span class="op">&lt;</span><span class="ident">_2</span>, <span class="ident">_3</span>, <span class="ident">AccountId</span>, <span class="ident">CouncilCollective</span><span class="op">&gt;</span>;
+		<span class="ident">pallet_collective::EnsureProportionAtLeast</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">CouncilCollective</span>, <span class="number">2</span>, <span class="number">3</span><span class="op">&gt;</span>;
 	<span class="comment">// To cancel a proposal before it has been passed, the technical committee must be unanimous or</span>
 	<span class="comment">// Root must agree.</span>
 	<span class="kw">type</span> <span class="ident">CancelProposalOrigin</span> <span class="op">=</span> <span class="ident">EnsureOneOf</span><span class="op">&lt;</span>
 		<span class="ident">EnsureRoot</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>,
-		<span class="ident">pallet_collective::EnsureProportionAtLeast</span><span class="op">&lt;</span><span class="ident">_1</span>, <span class="ident">_1</span>, <span class="ident">AccountId</span>, <span class="ident">TechnicalCollective</span><span class="op">&gt;</span>,
+		<span class="ident">pallet_collective::EnsureProportionAtLeast</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">TechnicalCollective</span>, <span class="number">1</span>, <span class="number">1</span><span class="op">&gt;</span>,
 	<span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">BlacklistOrigin</span> <span class="op">=</span> <span class="ident">EnsureRoot</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>;
 	<span class="comment">// Any single technical committee member may veto a coming council proposal, however they can</span>
@@ -2641,7 +2799,7 @@
 
 <span class="kw">type</span> <span class="ident">EnsureRootOrHalfCouncil</span> <span class="op">=</span> <span class="ident">EnsureOneOf</span><span class="op">&lt;</span>
 	<span class="ident">EnsureRoot</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>,
-	<span class="ident">pallet_collective::EnsureProportionMoreThan</span><span class="op">&lt;</span><span class="ident">_1</span>, <span class="ident">_2</span>, <span class="ident">AccountId</span>, <span class="ident">CouncilCollective</span><span class="op">&gt;</span>,
+	<span class="ident">pallet_collective::EnsureProportionMoreThan</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">CouncilCollective</span>, <span class="number">1</span>, <span class="number">2</span><span class="op">&gt;</span>,
 <span class="op">&gt;</span>;
 <span class="kw">impl</span> <span class="ident">pallet_membership::Config</span><span class="op">&lt;</span><span class="ident">pallet_membership::Instance1</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
 	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
@@ -2683,11 +2841,11 @@
 	<span class="kw">type</span> <span class="ident">Currency</span> <span class="op">=</span> <span class="ident">Balances</span>;
 	<span class="kw">type</span> <span class="ident">ApproveOrigin</span> <span class="op">=</span> <span class="ident">EnsureOneOf</span><span class="op">&lt;</span>
 		<span class="ident">EnsureRoot</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>,
-		<span class="ident">pallet_collective::EnsureProportionAtLeast</span><span class="op">&lt;</span><span class="ident">_3</span>, <span class="ident">_5</span>, <span class="ident">AccountId</span>, <span class="ident">CouncilCollective</span><span class="op">&gt;</span>,
+		<span class="ident">pallet_collective::EnsureProportionAtLeast</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">CouncilCollective</span>, <span class="number">3</span>, <span class="number">5</span><span class="op">&gt;</span>,
 	<span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">RejectOrigin</span> <span class="op">=</span> <span class="ident">EnsureOneOf</span><span class="op">&lt;</span>
 		<span class="ident">EnsureRoot</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>,
-		<span class="ident">pallet_collective::EnsureProportionMoreThan</span><span class="op">&lt;</span><span class="ident">_1</span>, <span class="ident">_2</span>, <span class="ident">AccountId</span>, <span class="ident">CouncilCollective</span><span class="op">&gt;</span>,
+		<span class="ident">pallet_collective::EnsureProportionMoreThan</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">CouncilCollective</span>, <span class="number">1</span>, <span class="number">2</span><span class="op">&gt;</span>,
 	<span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
 	<span class="kw">type</span> <span class="ident">OnSlash</span> <span class="op">=</span> ();
@@ -2958,7 +3116,7 @@
 	<span class="kw">type</span> <span class="ident">RotationPeriod</span> <span class="op">=</span> <span class="ident">RotationPeriod</span>;
 	<span class="kw">type</span> <span class="ident">MaxLockDuration</span> <span class="op">=</span> <span class="ident">MaxLockDuration</span>;
 	<span class="kw">type</span> <span class="ident">FounderSetOrigin</span> <span class="op">=</span>
-		<span class="ident">pallet_collective::EnsureProportionMoreThan</span><span class="op">&lt;</span><span class="ident">_1</span>, <span class="ident">_2</span>, <span class="ident">AccountId</span>, <span class="ident">CouncilCollective</span><span class="op">&gt;</span>;
+		<span class="ident">pallet_collective::EnsureProportionMoreThan</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">CouncilCollective</span>, <span class="number">1</span>, <span class="number">2</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">SuspensionJudgementOrigin</span> <span class="op">=</span> <span class="ident">pallet_society::EnsureFounder</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">MaxCandidateIntake</span> <span class="op">=</span> <span class="ident">MaxCandidateIntake</span>;
 	<span class="kw">type</span> <span class="ident">ChallengePeriod</span> <span class="op">=</span> <span class="ident">ChallengePeriod</span>;
@@ -3145,6 +3303,8 @@
 		<span class="ident">TransactionStorage</span>: <span class="ident">pallet_transaction_storage</span>,
 		<span class="ident">BagsList</span>: <span class="ident">pallet_bags_list</span>,
 		<span class="ident">ChildBounties</span>: <span class="ident">pallet_child_bounties</span>,
+		<span class="ident">Referenda</span>: <span class="ident">pallet_referenda</span>,
+		<span class="ident">ConvictionVoting</span>: <span class="ident">pallet_conviction_voting</span>,
 	}
 );
 
@@ -3214,6 +3374,7 @@
 		[<span class="ident">pallet_bounties</span>, <span class="ident">Bounties</span>]
 		[<span class="ident">pallet_child_bounties</span>, <span class="ident">ChildBounties</span>]
 		[<span class="ident">pallet_collective</span>, <span class="ident">Council</span>]
+		[<span class="ident">pallet_conviction_voting</span>, <span class="ident">ConvictionVoting</span>]
 		[<span class="ident">pallet_contracts</span>, <span class="ident">Contracts</span>]
 		[<span class="ident">pallet_democracy</span>, <span class="ident">Democracy</span>]
 		[<span class="ident">pallet_election_provider_multi_phase</span>, <span class="ident">ElectionProviderMultiPhase</span>]
@@ -3230,6 +3391,7 @@
 		[<span class="ident">pallet_offences</span>, <span class="ident">OffencesBench</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>]
 		[<span class="ident">pallet_preimage</span>, <span class="ident">Preimage</span>]
 		[<span class="ident">pallet_proxy</span>, <span class="ident">Proxy</span>]
+		[<span class="ident">pallet_referenda</span>, <span class="ident">Referenda</span>]
 		[<span class="ident">pallet_scheduler</span>, <span class="ident">Scheduler</span>]
 		[<span class="ident">pallet_session</span>, <span class="ident">SessionBench</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>]
 		[<span class="ident">pallet_staking</span>, <span class="ident">Staking</span>]
@@ -3605,7 +3767,7 @@
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">perbill_as_onchain_accuracy</span>() {
 		<span class="kw">type</span> <span class="ident">OnChainAccuracy</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Runtime</span> <span class="kw">as</span> <span class="ident">onchain::Config</span><span class="op">&gt;</span><span class="ident">::Accuracy</span>;
-		<span class="kw">let</span> <span class="ident">maximum_chain_accuracy</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">UpperOf</span><span class="op">&lt;</span><span class="ident">OnChainAccuracy</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">MAX_NOMINATIONS</span>)
+		<span class="kw">let</span> <span class="ident">maximum_chain_accuracy</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">UpperOf</span><span class="op">&lt;</span><span class="ident">OnChainAccuracy</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">MaxNominations::get</span>())
 			.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="op">&lt;</span><span class="ident">UpperOf</span><span class="op">&lt;</span><span class="ident">OnChainAccuracy</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="ident">OnChainAccuracy::one</span>().<span class="ident">deconstruct</span>()))
 			.<span class="ident">collect</span>();
 		<span class="kw">let</span> <span class="kw">_</span>: <span class="ident">UpperOf</span><span class="op">&lt;</span><span class="ident">OnChainAccuracy</span><span class="op">&gt;</span> <span class="op">=</span>

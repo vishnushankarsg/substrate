@@ -43,7 +43,6 @@
 <span id="43">43</span>
 <span id="44">44</span>
 <span id="45">45</span>
-<span id="46">46</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -64,27 +63,26 @@
 <span class="doccomment">//! Means for splitting an imbalance into two and hanlding them differently.</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::<span class="kw">super</span>::imbalance</span>::{<span class="ident">Imbalance</span>, <span class="ident">OnUnbalanced</span>};
-<span class="kw">use</span> <span class="ident">sp_core::u32_trait::Value</span> <span class="kw">as</span> <span class="ident">U32</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime::traits::Saturating</span>;
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">marker::PhantomData</span>, <span class="ident">ops::Div</span>};
 
 <span class="doccomment">/// Split an unbalanced amount two ways between a common divisor.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SplitTwoWays</span><span class="op">&lt;</span><span class="ident">Balance</span>, <span class="ident">Imbalance</span>, <span class="ident">Part1</span>, <span class="ident">Target1</span>, <span class="ident">Part2</span>, <span class="ident">Target2</span><span class="op">&gt;</span>(
-	<span class="ident">PhantomData</span><span class="op">&lt;</span>(<span class="ident">Balance</span>, <span class="ident">Imbalance</span>, <span class="ident">Part1</span>, <span class="ident">Target1</span>, <span class="ident">Part2</span>, <span class="ident">Target2</span>)<span class="op">&gt;</span>,
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SplitTwoWays</span><span class="op">&lt;</span><span class="ident">Balance</span>, <span class="ident">Imbalance</span>, <span class="ident">Target1</span>, <span class="ident">Target2</span>, <span class="kw">const</span> <span class="ident">PART1</span>: <span class="ident">u32</span>, <span class="kw">const</span> <span class="ident">PART2</span>: <span class="ident">u32</span><span class="op">&gt;</span>(
+	<span class="ident">PhantomData</span><span class="op">&lt;</span>(<span class="ident">Balance</span>, <span class="ident">Imbalance</span>, <span class="ident">Target1</span>, <span class="ident">Target2</span>)<span class="op">&gt;</span>,
 );
 
 <span class="kw">impl</span><span class="op">&lt;</span>
 		<span class="ident">Balance</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Saturating</span> <span class="op">+</span> <span class="ident">Div</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">Balance</span><span class="op">&gt;</span>,
 		<span class="ident">I</span>: <span class="ident">Imbalance</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span>,
-		<span class="ident">Part1</span>: <span class="ident">U32</span>,
 		<span class="ident">Target1</span>: <span class="ident">OnUnbalanced</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>,
-		<span class="ident">Part2</span>: <span class="ident">U32</span>,
 		<span class="ident">Target2</span>: <span class="ident">OnUnbalanced</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>,
-	<span class="op">&gt;</span> <span class="ident">OnUnbalanced</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">SplitTwoWays</span><span class="op">&lt;</span><span class="ident">Balance</span>, <span class="ident">I</span>, <span class="ident">Part1</span>, <span class="ident">Target1</span>, <span class="ident">Part2</span>, <span class="ident">Target2</span><span class="op">&gt;</span>
+		<span class="kw">const</span> <span class="ident">PART1</span>: <span class="ident">u32</span>,
+		<span class="kw">const</span> <span class="ident">PART2</span>: <span class="ident">u32</span>,
+	<span class="op">&gt;</span> <span class="ident">OnUnbalanced</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">SplitTwoWays</span><span class="op">&lt;</span><span class="ident">Balance</span>, <span class="ident">I</span>, <span class="ident">Target1</span>, <span class="ident">Target2</span>, <span class="ident">PART1</span>, <span class="ident">PART2</span><span class="op">&gt;</span>
 {
 	<span class="kw">fn</span> <span class="ident">on_nonzero_unbalanced</span>(<span class="ident">amount</span>: <span class="ident">I</span>) {
-		<span class="kw">let</span> <span class="ident">total</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="ident">Part1::VALUE</span> <span class="op">+</span> <span class="ident">Part2::VALUE</span>;
-		<span class="kw">let</span> <span class="ident">amount1</span> <span class="op">=</span> <span class="ident">amount</span>.<span class="ident">peek</span>().<span class="ident">saturating_mul</span>(<span class="ident">Part1::VALUE</span>.<span class="ident">into</span>()) <span class="op">/</span> <span class="ident">total</span>.<span class="ident">into</span>();
+		<span class="kw">let</span> <span class="ident">total</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="ident">PART1</span> <span class="op">+</span> <span class="ident">PART2</span>;
+		<span class="kw">let</span> <span class="ident">amount1</span> <span class="op">=</span> <span class="ident">amount</span>.<span class="ident">peek</span>().<span class="ident">saturating_mul</span>(<span class="ident">PART1</span>.<span class="ident">into</span>()) <span class="op">/</span> <span class="ident">total</span>.<span class="ident">into</span>();
 		<span class="kw">let</span> (<span class="ident">imb1</span>, <span class="ident">imb2</span>) <span class="op">=</span> <span class="ident">amount</span>.<span class="ident">split</span>(<span class="ident">amount1</span>);
 		<span class="ident">Target1::on_unbalanced</span>(<span class="ident">imb1</span>);
 		<span class="ident">Target2::on_unbalanced</span>(<span class="ident">imb2</span>);

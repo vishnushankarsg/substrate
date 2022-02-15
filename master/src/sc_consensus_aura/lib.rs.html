@@ -913,6 +913,7 @@
 <span id="913">913</span>
 <span id="914">914</span>
 <span id="915">915</span>
+<span id="916">916</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -1406,33 +1407,34 @@
 }
 
 <span class="doccomment">/// Aura Errors</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">derive_more::Display</span>, <span class="ident">Debug</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Multiple Aura pre-runtime headers</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Multiple Aura pre-runtime headers&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Multiple Aura pre-runtime headers&quot;</span>)]</span>
 	<span class="ident">MultipleHeaders</span>,
 	<span class="doccomment">/// No Aura pre-runtime digest found</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;No Aura pre-runtime digest found&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;No Aura pre-runtime digest found&quot;</span>)]</span>
 	<span class="ident">NoDigestFound</span>,
 	<span class="doccomment">/// Header is unsealed</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Header {:?} is unsealed&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Header {0:?} is unsealed&quot;</span>)]</span>
 	<span class="ident">HeaderUnsealed</span>(<span class="ident">B::Hash</span>),
 	<span class="doccomment">/// Header has a bad seal</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Header {:?} has a bad seal&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Header {0:?} has a bad seal&quot;</span>)]</span>
 	<span class="ident">HeaderBadSeal</span>(<span class="ident">B::Hash</span>),
 	<span class="doccomment">/// Slot Author not found</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Slot Author not found&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Slot Author not found&quot;</span>)]</span>
 	<span class="ident">SlotAuthorNotFound</span>,
 	<span class="doccomment">/// Bad signature</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Bad signature on {:?}&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Bad signature on {0:?}&quot;</span>)]</span>
 	<span class="ident">BadSignature</span>(<span class="ident">B::Hash</span>),
 	<span class="doccomment">/// Client Error</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
 	<span class="ident">Client</span>(<span class="ident">sp_blockchain::Error</span>),
 	<span class="doccomment">/// Unknown inherent error for identifier</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Unknown inherent error for identifier: {}&quot;</span>, <span class="string">&quot;String::from_utf8_lossy(_0)&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Unknown inherent error for identifier: {}&quot;</span>, <span class="ident">String::from_utf8_lossy</span>(.<span class="number">0</span>))]</span>
 	<span class="ident">UnknownInherentError</span>(<span class="ident">sp_inherents::InherentIdentifier</span>),
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Inherent error: {}&quot;</span>, <span class="ident">_0</span>)]</span>
 	<span class="doccomment">/// Inherents Error</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Inherent error: {0}&quot;</span>)]</span>
 	<span class="ident">Inherent</span>(<span class="ident">sp_inherents::Error</span>),
 }
 

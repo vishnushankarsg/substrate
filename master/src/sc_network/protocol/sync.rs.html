@@ -3219,6 +3219,12 @@
 <span id="3219">3219</span>
 <span id="3220">3220</span>
 <span id="3221">3221</span>
+<span id="3222">3222</span>
+<span id="3223">3223</span>
+<span id="3224">3224</span>
+<span id="3225">3225</span>
+<span id="3226">3226</span>
+<span id="3227">3227</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -3886,7 +3892,7 @@
 		<span class="comment">// There is nothing sync can get from the node that has no blockchain data.</span>
 		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">block_status</span>(<span class="kw-2">&amp;</span><span class="ident">best_hash</span>) {
 			<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
-				<span class="macro">debug!</span>(<span class="ident">target</span>:<span class="string">&quot;sync&quot;</span>, <span class="string">&quot;Error reading blockchain: {:?}&quot;</span>, <span class="ident">e</span>);
+				<span class="macro">debug!</span>(<span class="ident">target</span>:<span class="string">&quot;sync&quot;</span>, <span class="string">&quot;Error reading blockchain: {}&quot;</span>, <span class="ident">e</span>);
 				<span class="prelude-val">Err</span>(<span class="ident">BadPeer</span>(<span class="ident">who</span>, <span class="ident">rep::BLOCKCHAIN_READ_ERROR</span>))
 			},
 			<span class="prelude-val">Ok</span>(<span class="ident">BlockStatus::KnownBad</span>) =&gt; {
@@ -4413,7 +4419,7 @@
 							(<span class="kw">_</span>, <span class="prelude-val">Err</span>(<span class="ident">e</span>)) =&gt; {
 								<span class="macro">info!</span>(
 									<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>,
-									<span class="string">&quot;❌ Error answering legitimate blockchain query: {:?}&quot;</span>,
+									<span class="string">&quot;❌ Error answering legitimate blockchain query: {}&quot;</span>,
 									<span class="ident">e</span>,
 								);
 								<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">BadPeer</span>(<span class="kw-2">*</span><span class="ident">who</span>, <span class="ident">rep::BLOCKCHAIN_READ_ERROR</span>))
@@ -4850,7 +4856,7 @@
 					<span class="macro">trace!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;Obsolete block {:?}&quot;</span>, <span class="ident">hash</span>);
 				},
 				<span class="ident">e</span> @ <span class="prelude-val">Err</span>(<span class="ident">BlockImportError::UnknownParent</span>) <span class="op">|</span> <span class="ident">e</span> @ <span class="prelude-val">Err</span>(<span class="ident">BlockImportError::Other</span>(<span class="kw">_</span>)) =&gt; {
-					<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;💔 Error importing block {:?}: {:?}&quot;</span>, <span class="ident">hash</span>, <span class="ident">e</span>);
+					<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;💔 Error importing block {:?}: {}&quot;</span>, <span class="ident">hash</span>, <span class="ident">e</span>.<span class="ident">unwrap_err</span>());
 					<span class="self">self</span>.<span class="ident">state_sync</span> <span class="op">=</span> <span class="prelude-val">None</span>;
 					<span class="self">self</span>.<span class="ident">warp_sync</span> <span class="op">=</span> <span class="prelude-val">None</span>;
 					<span class="ident">output</span>.<span class="ident">extend</span>(<span class="self">self</span>.<span class="ident">restart</span>());
@@ -4904,7 +4910,7 @@
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">r</span> {
 			<span class="macro">warn!</span>(
 				<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>,
-				<span class="string">&quot;💔 Error cleaning up pending extra justification data requests: {:?}&quot;</span>,
+				<span class="string">&quot;💔 Error cleaning up pending extra justification data requests: {}&quot;</span>,
 				<span class="ident">err</span>,
 			);
 		}
@@ -5302,7 +5308,7 @@
 	) -&gt; <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">PeerId</span>, <span class="ident">BlockRequest</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>), <span class="ident">BadPeer</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
 		<span class="self">self</span>.<span class="ident">blocks</span>.<span class="ident">clear</span>();
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">reset_sync_start_point</span>() {
-			<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;💔  Unable to restart sync. :{:?}&quot;</span>, <span class="ident">e</span>);
+			<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;💔  Unable to restart sync: {}&quot;</span>, <span class="ident">e</span>);
 		}
 		<span class="self">self</span>.<span class="ident">pending_requests</span>.<span class="ident">set_all</span>();
 		<span class="macro">debug!</span>(<span class="ident">target</span>:<span class="string">&quot;sync&quot;</span>, <span class="string">&quot;Restarted with {} ({})&quot;</span>, <span class="self">self</span>.<span class="ident">best_queued_number</span>, <span class="self">self</span>.<span class="ident">best_queued_hash</span>);
@@ -5639,7 +5645,11 @@
 		<span class="kw">if</span> <span class="op">!</span><span class="ident">r</span>.<span class="ident">peers</span>.<span class="ident">contains</span>(<span class="ident">id</span>) {
 			<span class="kw">continue</span>
 		}
-		<span class="kw">if</span> <span class="ident">r</span>.<span class="ident">number</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">best_num</span> {
+		<span class="comment">// Download the fork only if it is behind or not too far ahead our tip of the chain</span>
+		<span class="comment">// Otherwise it should be downloaded in full sync mode.</span>
+		<span class="kw">if</span> <span class="ident">r</span>.<span class="ident">number</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">best_num</span> <span class="op">|</span><span class="op">|</span>
+			(<span class="ident">r</span>.<span class="ident">number</span> <span class="op">-</span> <span class="ident">best_num</span>).<span class="ident">saturated_into</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>() <span class="op">&lt;</span> <span class="ident">MAX_BLOCKS_TO_REQUEST</span> <span class="kw">as</span> <span class="ident">u32</span>
+		{
 			<span class="kw">let</span> <span class="ident">parent_status</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">parent_hash</span>.<span class="ident">as_ref</span>().<span class="ident">map_or</span>(<span class="ident">BlockStatus::Unknown</span>, <span class="ident">check_block</span>);
 			<span class="kw">let</span> <span class="ident">count</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">parent_status</span> <span class="op">==</span> <span class="ident">BlockStatus::Unknown</span> {
 				(<span class="ident">r</span>.<span class="ident">number</span> <span class="op">-</span> <span class="ident">finalized</span>).<span class="ident">saturated_into</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>() <span class="comment">// up to the last finalized block</span>
@@ -5659,6 +5669,8 @@
 					<span class="ident">max</span>: <span class="prelude-val">Some</span>(<span class="ident">count</span>),
 				},
 			))
+		} <span class="kw">else</span> {
+			<span class="macro">trace!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;Fork too far in the future: {:?} (#{})&quot;</span>, <span class="ident">hash</span>, <span class="ident">r</span>.<span class="ident">number</span>);
 		}
 	}
 	<span class="prelude-val">None</span>

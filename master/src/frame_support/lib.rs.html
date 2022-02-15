@@ -2452,6 +2452,29 @@
 <span id="2452">2452</span>
 <span id="2453">2453</span>
 <span id="2454">2454</span>
+<span id="2455">2455</span>
+<span id="2456">2456</span>
+<span id="2457">2457</span>
+<span id="2458">2458</span>
+<span id="2459">2459</span>
+<span id="2460">2460</span>
+<span id="2461">2461</span>
+<span id="2462">2462</span>
+<span id="2463">2463</span>
+<span id="2464">2464</span>
+<span id="2465">2465</span>
+<span id="2466">2466</span>
+<span id="2467">2467</span>
+<span id="2468">2468</span>
+<span id="2469">2469</span>
+<span id="2470">2470</span>
+<span id="2471">2471</span>
+<span id="2472">2472</span>
+<span id="2473">2473</span>
+<span id="2474">2474</span>
+<span id="2475">2475</span>
+<span id="2476">2476</span>
+<span id="2477">2477</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -2566,6 +2589,29 @@
 
 <span class="kw">impl</span> <span class="ident">TypeId</span> <span class="kw">for</span> <span class="ident">PalletId</span> {
 	<span class="kw">const</span> <span class="ident">TYPE_ID</span>: [<span class="ident">u8</span>; <span class="number">4</span>] <span class="op">=</span> <span class="kw-2">*</span><span class="string">b&quot;modl&quot;</span>;
+}
+
+<span class="doccomment">/// Build a bounded vec from the given literals.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// The type of the outcome must be known.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Will not handle any errors and just panic if the given literals cannot fit in the corresponding</span>
+<span class="doccomment">/// bounded vec type. Thus, this is only suitable for testing and non-consensus code.</span>
+<span class="attribute">#[<span class="ident">macro_export</span>]</span>
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
+<span class="macro">macro_rules!</span> <span class="ident">bounded_vec</span> {
+	($ (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">values</span>:<span class="ident">expr</span>),<span class="op">*</span> ) =&gt; {
+		{
+			<span class="kw">use</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::sp_std::convert::TryInto</span> <span class="kw">as</span> <span class="kw">_</span>;
+			<span class="macro-nonterminal">$</span><span class="macro">crate::sp_std::vec!</span>[$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">values</span>),<span class="kw-2">*</span>].<span class="ident">try_into</span>().<span class="ident">unwrap</span>()
+		}
+	};
+	( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span>:<span class="ident">expr</span> ; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">repetition</span>:<span class="ident">expr</span> ) =&gt; {
+		{
+			<span class="kw">use</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::sp_std::convert::TryInto</span> <span class="kw">as</span> <span class="kw">_</span>;
+			<span class="macro-nonterminal">$</span><span class="macro">crate::sp_std::vec!</span>[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span> ; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">repetition</span>].<span class="ident">try_into</span>().<span class="ident">unwrap</span>()
+		}
+	}
 }
 
 <span class="doccomment">/// Generate a new type alias for [`storage::types::StorageValue`],</span>

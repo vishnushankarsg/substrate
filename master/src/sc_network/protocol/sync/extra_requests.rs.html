@@ -593,8 +593,6 @@
 <span id="593">593</span>
 <span id="594">594</span>
 <span id="595">595</span>
-<span id="596">596</span>
-<span id="597">597</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -705,7 +703,7 @@
 				<span class="comment">// ignore the `Revert` error.</span>
 			},
 			<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; {
-				<span class="macro">debug!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;Failed to insert request {:?} into tree: {:?}&quot;</span>, <span class="ident">request</span>, <span class="ident">err</span>);
+				<span class="macro">debug!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;Failed to insert request {:?} into tree: {}&quot;</span>, <span class="ident">request</span>, <span class="ident">err</span>);
 			},
 			<span class="kw">_</span> =&gt; (),
 		}
@@ -770,9 +768,7 @@
 		}
 
 		<span class="kw">if</span> <span class="ident">best_finalized_number</span> <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">best_seen_finalized_number</span> {
-			<span class="comment">// normally we&#39;ll receive finality notifications for every block =&gt; finalize would be</span>
-			<span class="comment">// enough but if many blocks are finalized at once, some notifications may be omitted</span>
-			<span class="comment">// =&gt; let&#39;s use finalize_with_ancestors here</span>
+			<span class="comment">// we receive finality notification only for the finalized branch head.</span>
 			<span class="kw">match</span> <span class="self">self</span>.<span class="ident">tree</span>.<span class="ident">finalize_with_ancestors</span>(
 				<span class="ident">best_finalized_hash</span>,
 				<span class="ident">best_finalized_number</span>,

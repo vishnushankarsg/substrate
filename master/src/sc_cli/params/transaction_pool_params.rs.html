@@ -66,18 +66,18 @@
 <span class="comment">// You should have received a copy of the GNU General Public License</span>
 <span class="comment">// along with this program. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 
+<span class="kw">use</span> <span class="ident">clap::Args</span>;
 <span class="kw">use</span> <span class="ident">sc_service::config::TransactionPoolOptions</span>;
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
 
 <span class="doccomment">/// Parameters used to create the pool configuration.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Args</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TransactionPoolParams</span> {
 	<span class="doccomment">/// Maximum number of transactions in the transaction pool.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;pool-limit&quot;</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;COUNT&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;8192&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;COUNT&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;8192&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">pool_limit</span>: <span class="ident">usize</span>,
 
 	<span class="doccomment">/// Maximum number of kilobytes of all transactions stored in the pool.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;pool-kbytes&quot;</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;COUNT&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;20480&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;COUNT&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;20480&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">pool_kbytes</span>: <span class="ident">usize</span>,
 }
 

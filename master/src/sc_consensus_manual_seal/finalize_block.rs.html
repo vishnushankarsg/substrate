@@ -107,7 +107,7 @@
 
 	<span class="kw">match</span> <span class="ident">finalizer</span>.<span class="ident">finalize_block</span>(<span class="ident">BlockId::Hash</span>(<span class="ident">hash</span>), <span class="ident">justification</span>, <span class="bool-val">true</span>) {
 		<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
-			<span class="macro">log::warn!</span>(<span class="string">&quot;Failed to finalize block {:?}&quot;</span>, <span class="ident">e</span>);
+			<span class="macro">log::warn!</span>(<span class="string">&quot;Failed to finalize block {}&quot;</span>, <span class="ident">e</span>);
 			<span class="ident">rpc::send_result</span>(<span class="kw-2">&amp;mut</span> <span class="ident">sender</span>, <span class="prelude-val">Err</span>(<span class="ident">e</span>.<span class="ident">into</span>()))
 		},
 		<span class="prelude-val">Ok</span>(()) =&gt; {

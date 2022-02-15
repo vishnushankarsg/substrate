@@ -120,10 +120,10 @@
 };
 
 <span class="doccomment">/// Configurations of the [`Command::OnRuntimeUpgrade`].</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">structopt::StructOpt</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">clap::Parser</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OnRuntimeUpgradeCmd</span> {
 	<span class="doccomment">/// The state type to use.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">subcommand</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">subcommand</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">state</span>: <span class="ident">State</span>,
 }
 

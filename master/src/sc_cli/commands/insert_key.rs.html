@@ -168,12 +168,6 @@
 <span id="168">168</span>
 <span id="169">169</span>
 <span id="170">170</span>
-<span id="171">171</span>
-<span id="172">172</span>
-<span id="173">173</span>
-<span id="174">174</span>
-<span id="175">175</span>
-<span id="176">176</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -196,42 +190,37 @@
 <span class="kw">use</span> <span class="kw">crate</span>::{
 	<span class="ident">utils</span>, <span class="ident">with_crypto_scheme</span>, <span class="ident">CryptoScheme</span>, <span class="ident">Error</span>, <span class="ident">KeystoreParams</span>, <span class="ident">SharedParams</span>, <span class="ident">SubstrateCli</span>,
 };
+<span class="kw">use</span> <span class="ident">clap::Parser</span>;
 <span class="kw">use</span> <span class="ident">sc_keystore::LocalKeystore</span>;
 <span class="kw">use</span> <span class="ident">sc_service::config</span>::{<span class="ident">BasePath</span>, <span class="ident">KeystoreConfig</span>};
 <span class="kw">use</span> <span class="ident">sp_core::crypto</span>::{<span class="ident">KeyTypeId</span>, <span class="ident">SecretString</span>};
 <span class="kw">use</span> <span class="ident">sp_keystore</span>::{<span class="ident">SyncCryptoStore</span>, <span class="ident">SyncCryptoStorePtr</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">convert::TryFrom</span>, <span class="ident">sync::Arc</span>};
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
 
 <span class="doccomment">/// The `insert` command</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>, <span class="ident">Clone</span>)]</span>
-<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;insert&quot;</span>, <span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Insert a key to the keystore of a node.&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Parser</span>)]</span>
+<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;insert&quot;</span>, <span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Insert a key to the keystore of a node.&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">InsertKeyCmd</span> {
 	<span class="doccomment">/// The secret key URI.</span>
 	<span class="doccomment">/// If the value is a file, the file content is used as URI.</span>
 	<span class="doccomment">/// If not given, you will be prompted for the URI.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="ident">suri</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Key type, examples: &quot;gran&quot;, or &quot;imon&quot;</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="ident">key_type</span>: <span class="ident">String</span>,
 
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">shared_params</span>: <span class="ident">SharedParams</span>,
 
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">keystore_params</span>: <span class="ident">KeystoreParams</span>,
 
 	<span class="doccomment">/// The cryptography scheme that should be used to generate the key out of the given URI.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(
-		<span class="ident">long</span>,
-		<span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;SCHEME&quot;</span>,
-		<span class="ident">possible_values</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">CryptoScheme::variants</span>(),
-		<span class="ident">case_insensitive</span> <span class="op">=</span> <span class="bool-val">true</span>,
-	)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;SCHEME&quot;</span>, <span class="ident">arg_enum</span>, <span class="ident">ignore_case</span> <span class="op">=</span> <span class="bool-val">true</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">scheme</span>: <span class="ident">CryptoScheme</span>,
 }
 
@@ -276,7 +265,6 @@
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 	<span class="kw">use</span> <span class="ident">sc_service</span>::{<span class="ident">ChainSpec</span>, <span class="ident">ChainType</span>, <span class="ident">GenericChainSpec</span>, <span class="ident">NoExtension</span>};
 	<span class="kw">use</span> <span class="ident">sp_core</span>::{<span class="ident">sr25519::Pair</span>, <span class="ident">ByteArray</span>, <span class="ident">Pair</span> <span class="kw">as</span> <span class="kw">_</span>};
-	<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
 	<span class="kw">use</span> <span class="ident">tempfile::TempDir</span>;
 
 	<span class="kw">struct</span> <span class="ident">Cli</span>;
@@ -332,7 +320,7 @@
 		<span class="kw">let</span> <span class="ident">path_str</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">path</span>.<span class="ident">path</span>().<span class="ident">display</span>());
 		<span class="kw">let</span> (<span class="ident">key</span>, <span class="ident">uri</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">Pair::generate_with_phrase</span>(<span class="prelude-val">None</span>);
 
-		<span class="kw">let</span> <span class="ident">inspect</span> <span class="op">=</span> <span class="ident">InsertKeyCmd::from_iter</span>(<span class="kw-2">&amp;</span>[
+		<span class="kw">let</span> <span class="ident">inspect</span> <span class="op">=</span> <span class="ident">InsertKeyCmd::parse_from</span>(<span class="kw-2">&amp;</span>[
 			<span class="string">&quot;insert-key&quot;</span>,
 			<span class="string">&quot;-d&quot;</span>,
 			<span class="kw-2">&amp;</span><span class="ident">path_str</span>,

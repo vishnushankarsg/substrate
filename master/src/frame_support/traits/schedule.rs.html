@@ -496,7 +496,7 @@
 	<span class="doccomment">/// A type that can be used as a scheduler.</span>
 	<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Anon</span><span class="op">&lt;</span><span class="ident">BlockNumber</span>, <span class="ident">Call</span>, <span class="ident">Origin</span><span class="op">&gt;</span> {
 		<span class="doccomment">/// An address which can be used for removing a scheduled task.</span>
-		<span class="kw">type</span> <span class="ident">Address</span>: <span class="ident">Codec</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">EncodeLike</span> <span class="op">+</span> <span class="ident">Debug</span>;
+		<span class="kw">type</span> <span class="ident">Address</span>: <span class="ident">Codec</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">EncodeLike</span> <span class="op">+</span> <span class="ident">Debug</span> <span class="op">+</span> <span class="ident">TypeInfo</span>;
 
 		<span class="doccomment">/// Schedule a dispatch to happen at the beginning of some block in the future.</span>
 		<span class="doccomment">///</span>
@@ -651,7 +651,7 @@
 	<span class="doccomment">/// A type that can be used as a scheduler.</span>
 	<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Anon</span><span class="op">&lt;</span><span class="ident">BlockNumber</span>, <span class="ident">Call</span>, <span class="ident">Origin</span><span class="op">&gt;</span> {
 		<span class="doccomment">/// An address which can be used for removing a scheduled task.</span>
-		<span class="kw">type</span> <span class="ident">Address</span>: <span class="ident">Codec</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">EncodeLike</span> <span class="op">+</span> <span class="ident">Debug</span>;
+		<span class="kw">type</span> <span class="ident">Address</span>: <span class="ident">Codec</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">EncodeLike</span> <span class="op">+</span> <span class="ident">Debug</span> <span class="op">+</span> <span class="ident">TypeInfo</span>;
 		<span class="doccomment">/// A means of expressing a call by the hash of its encoded data.</span>
 		<span class="kw">type</span> <span class="ident">Hash</span>;
 

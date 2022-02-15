@@ -710,6 +710,11 @@
 <span id="710">710</span>
 <span id="711">711</span>
 <span id="712">712</span>
+<span id="713">713</span>
+<span id="714">714</span>
+<span id="715">715</span>
+<span id="716">716</span>
+<span id="717">717</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -784,45 +789,50 @@
 	<span class="ident">time::Duration</span>,
 };
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">derive_more::Display</span>, <span class="ident">Debug</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> {
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Header uses the wrong engine {:?}&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Header uses the wrong engine {0:?}&quot;</span>)]</span>
 	<span class="ident">WrongEngine</span>([<span class="ident">u8</span>; <span class="number">4</span>]),
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Header {:?} is unsealed&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Header {0:?} is unsealed&quot;</span>)]</span>
 	<span class="ident">HeaderUnsealed</span>(<span class="ident">B::Hash</span>),
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;PoW validation error: invalid seal&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;PoW validation error: invalid seal&quot;</span>)]</span>
 	<span class="ident">InvalidSeal</span>,
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;PoW validation error: preliminary verification failed&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;PoW validation error: preliminary verification failed&quot;</span>)]</span>
 	<span class="ident">FailedPreliminaryVerify</span>,
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Rejecting block too far in future&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Rejecting block too far in future&quot;</span>)]</span>
 	<span class="ident">TooFarInFuture</span>,
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Fetching best header failed using select chain: {:?}&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Fetching best header failed using select chain: {0}&quot;</span>)]</span>
 	<span class="ident">BestHeaderSelectChain</span>(<span class="ident">ConsensusError</span>),
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Fetching best header failed: {:?}&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Fetching best header failed: {0}&quot;</span>)]</span>
 	<span class="ident">BestHeader</span>(<span class="ident">sp_blockchain::Error</span>),
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Best header does not exist&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Best header does not exist&quot;</span>)]</span>
 	<span class="ident">NoBestHeader</span>,
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Block proposing error: {:?}&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Block proposing error: {0}&quot;</span>)]</span>
 	<span class="ident">BlockProposingError</span>(<span class="ident">String</span>),
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Fetch best hash failed via select chain: {:?}&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Fetch best hash failed via select chain: {0}&quot;</span>)]</span>
 	<span class="ident">BestHashSelectChain</span>(<span class="ident">ConsensusError</span>),
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Error with block built on {:?}: {:?}&quot;</span>, <span class="ident">_0</span>, <span class="ident">_1</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error with block built on {0:?}: {1}&quot;</span>)]</span>
 	<span class="ident">BlockBuiltError</span>(<span class="ident">B::Hash</span>, <span class="ident">ConsensusError</span>),
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Creating inherents failed: {}&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Creating inherents failed: {0}&quot;</span>)]</span>
 	<span class="ident">CreateInherents</span>(<span class="ident">sp_inherents::Error</span>),
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Checking inherents failed: {}&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Checking inherents failed: {0}&quot;</span>)]</span>
 	<span class="ident">CheckInherents</span>(<span class="ident">sp_inherents::Error</span>),
-	<span class="attribute">#[<span class="ident">display</span>(
-		<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Checking inherents unknown error for identifier: {:?}&quot;</span>,
-		<span class="string">&quot;String::from_utf8_lossy(_0)&quot;</span>
+	<span class="attribute">#[<span class="ident">error</span>(
+		<span class="string">&quot;Checking inherents unknown error for identifier: {}&quot;</span>,
+		<span class="ident">String::from_utf8_lossy</span>(.<span class="number">0</span>)
 	)]</span>
 	<span class="ident">CheckInherentsUnknownError</span>(<span class="ident">sp_inherents::InherentIdentifier</span>),
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Multiple pre-runtime digests&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Multiple pre-runtime digests&quot;</span>)]</span>
 	<span class="ident">MultiplePreRuntimeDigests</span>,
+	<span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
 	<span class="ident">Client</span>(<span class="ident">sp_blockchain::Error</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
 	<span class="ident">Codec</span>(<span class="ident">codec::Error</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;{0}&quot;</span>)]</span>
 	<span class="ident">Environment</span>(<span class="ident">String</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;{0}&quot;</span>)]</span>
 	<span class="ident">Runtime</span>(<span class="ident">RuntimeString</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;{0}&quot;</span>)]</span>
 	<span class="ident">Other</span>(<span class="ident">String</span>),
 }
 
@@ -1057,7 +1067,7 @@
 			.<span class="ident">select_chain</span>
 			.<span class="ident">best_chain</span>()
 			.<span class="kw">await</span>
-			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;Fetch best chain failed via select chain: {:?}&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span>;
+			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;Fetch best chain failed via select chain: {}&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">best_hash</span> <span class="op">=</span> <span class="ident">best_header</span>.<span class="ident">hash</span>();
 
 		<span class="kw">let</span> <span class="ident">parent_hash</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">block</span>.<span class="ident">header</span>.<span class="ident">parent_hash</span>();
@@ -1272,7 +1282,7 @@
 					<span class="macro">warn!</span>(
 						<span class="ident">target</span>: <span class="string">&quot;pow&quot;</span>,
 						<span class="string">&quot;Unable to pull new block for authoring. \
-						 Select best chain error: {:?}&quot;</span>,
+						 Select best chain error: {}&quot;</span>,
 						<span class="ident">err</span>
 					);
 					<span class="kw">continue</span>
@@ -1303,7 +1313,7 @@
 					<span class="macro">warn!</span>(
 						<span class="ident">target</span>: <span class="string">&quot;pow&quot;</span>,
 						<span class="string">&quot;Unable to propose new block for authoring. \
-						 Fetch difficulty failed: {:?}&quot;</span>,
+						 Fetch difficulty failed: {}&quot;</span>,
 						<span class="ident">err</span>,
 					);
 					<span class="kw">continue</span>
@@ -1319,7 +1329,7 @@
 					<span class="macro">warn!</span>(
 						<span class="ident">target</span>: <span class="string">&quot;pow&quot;</span>,
 						<span class="string">&quot;Unable to propose new block for authoring. \
-						 Creating inherent data providers failed: {:?}&quot;</span>,
+						 Creating inherent data providers failed: {}&quot;</span>,
 						<span class="ident">err</span>,
 					);
 					<span class="kw">continue</span>
@@ -1332,7 +1342,7 @@
 					<span class="macro">warn!</span>(
 						<span class="ident">target</span>: <span class="string">&quot;pow&quot;</span>,
 						<span class="string">&quot;Unable to propose new block for authoring. \
-						 Creating inherent data failed: {:?}&quot;</span>,
+						 Creating inherent data failed: {}&quot;</span>,
 						<span class="ident">e</span>,
 					);
 					<span class="kw">continue</span>
@@ -1368,7 +1378,7 @@
 					<span class="macro">warn!</span>(
 						<span class="ident">target</span>: <span class="string">&quot;pow&quot;</span>,
 						<span class="string">&quot;Unable to propose new block for authoring. \
-						 Creating proposal failed: {:?}&quot;</span>,
+						 Creating proposal failed: {}&quot;</span>,
 						<span class="ident">err</span>,
 					);
 					<span class="kw">continue</span>

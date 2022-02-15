@@ -484,7 +484,7 @@
 			<span class="prelude-val">Err</span>(<span class="ident">validation_err</span>) =&gt; {
 				<span class="macro">log::debug!</span>(
 					<span class="ident">target</span>: <span class="string">&quot;txpool&quot;</span>,
-					<span class="string">&quot;[{:?}]: Error during revalidation: {:?}. Removing.&quot;</span>,
+					<span class="string">&quot;[{:?}]: Removing due to error during revalidation: {}&quot;</span>,
 					<span class="ident">ext_hash</span>,
 					<span class="ident">validation_err</span>
 				);

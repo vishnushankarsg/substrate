@@ -814,8 +814,6 @@
 <span id="814">814</span>
 <span id="815">815</span>
 <span id="816">816</span>
-<span id="817">817</span>
-<span id="818">818</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -931,6 +929,8 @@
 <span class="doccomment">//! well with try-runtime&#39;s expensive RPC queries:</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! - set `--rpc-max-payload 1000` to ensure large RPC queries can work.</span>
+<span class="doccomment">//! - set `--ws-max-out-buffer-capacity 1000` to ensure the websocket connection can handle large</span>
+<span class="doccomment">//!   RPC queries.</span>
 <span class="doccomment">//! - set `--rpc-cors all` to ensure ws connections can come through.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Note that *none* of the try-runtime operations need unsafe RPCs.</span>
@@ -959,7 +959,9 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! These hooks allow you to execute some code, only within the `on-runtime-upgrade` command, before</span>
 <span class="doccomment">//! and after the migration. If any data needs to be temporarily stored between the pre/post</span>
-<span class="doccomment">//! migration hooks, `OnRuntimeUpgradeHelpersExt` can help with that.</span>
+<span class="doccomment">//! migration hooks, `OnRuntimeUpgradeHelpersExt` can help with that. Note that you should be</span>
+<span class="doccomment">//! mindful with any mutable storage ops in the pre/post migration checks, as you almost certainly</span>
+<span class="doccomment">//! will not want to mutate any of the storage that is to be migrated.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! #### Logging</span>
 <span class="doccomment">//!</span>
@@ -1111,7 +1113,7 @@
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const</span> <span class="ident">LOG_TARGET</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;try-runtime::cli&quot;</span>;
 
 <span class="doccomment">/// Possible commands of `try-runtime`.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">structopt::StructOpt</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">clap::Subcommand</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Command</span> {
 	<span class="doccomment">/// Execute the migrations of the &quot;local runtime&quot;.</span>
 	<span class="doccomment">///</span>
@@ -1191,70 +1193,64 @@
 }
 
 <span class="doccomment">/// Shared parameters of the `try-runtime` commands</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">structopt::StructOpt</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">clap::Parser</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SharedParams</span> {
 	<span class="doccomment">/// Shared parameters of substrate cli.</span>
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">shared_params</span>: <span class="ident">sc_cli::SharedParams</span>,
 
 	<span class="doccomment">/// The execution strategy that should be used.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(
-		<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;execution&quot;</span>,
-		<span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;STRATEGY&quot;</span>,
-		<span class="ident">possible_values</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">ExecutionStrategy::variants</span>(),
-		<span class="ident">case_insensitive</span> <span class="op">=</span> <span class="bool-val">true</span>,
-		<span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;Wasm&quot;</span>,
-	)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;STRATEGY&quot;</span>, <span class="ident">arg_enum</span>, <span class="ident">ignore_case</span> <span class="op">=</span> <span class="bool-val">true</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;Wasm&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">execution</span>: <span class="ident">ExecutionStrategy</span>,
 
 	<span class="doccomment">/// Type of wasm execution used.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(
+	<span class="attribute">#[<span class="ident">clap</span>(
 		<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;wasm-execution&quot;</span>,
 		<span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;METHOD&quot;</span>,
-		<span class="ident">possible_values</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">WasmExecutionMethod::variants</span>(),
-		<span class="ident">case_insensitive</span> <span class="op">=</span> <span class="bool-val">true</span>,
+		<span class="ident">possible_values</span> <span class="op">=</span> <span class="ident">WasmExecutionMethod::variants</span>(),
+		<span class="ident">ignore_case</span> <span class="op">=</span> <span class="bool-val">true</span>,
 		<span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;Compiled&quot;</span>
 	)]</span>
 	<span class="kw">pub</span> <span class="ident">wasm_method</span>: <span class="ident">WasmExecutionMethod</span>,
 
 	<span class="doccomment">/// The number of 64KB pages to allocate for Wasm execution. Defaults to</span>
 	<span class="doccomment">/// [`sc_service::Configuration.default_heap_pages`].</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">heap_pages</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// When enabled, the spec name check will not panic, and instead only show a warning.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">no_spec_name_check</span>: <span class="ident">bool</span>,
 }
 
 <span class="doccomment">/// Our `try-runtime` command.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// See [`Command`] for more info.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">structopt::StructOpt</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">clap::Parser</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TryRuntimeCmd</span> {
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">shared</span>: <span class="ident">SharedParams</span>,
 
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">subcommand</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">subcommand</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">command</span>: <span class="ident">Command</span>,
 }
 
 <span class="doccomment">/// The source of runtime *state* to use.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">structopt::StructOpt</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">clap::Subcommand</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">State</span> {
 	<span class="doccomment">/// Use a state snapshot as the source of runtime state.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This can be crated by passing a value to [`State::Live::snapshot_path`].</span>
 	<span class="ident">Snap</span> {
-		<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">short</span>, <span class="ident">long</span>)]</span>
+		<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">short</span>, <span class="ident">long</span>)]</span>
 		<span class="ident">snapshot_path</span>: <span class="ident">PathBuf</span>,
 	},
 
 	<span class="doccomment">/// Use a live chain as the source of runtime state.</span>
 	<span class="ident">Live</span> {
 		<span class="doccomment">/// The url to connect to.</span>
-		<span class="attribute">#[<span class="ident">structopt</span>(
+		<span class="attribute">#[<span class="ident">clap</span>(
 			<span class="ident">short</span>,
 			<span class="ident">long</span>,
 			<span class="ident">parse</span>(<span class="ident">try_from_str</span> <span class="op">=</span> <span class="ident">parse::url</span>),
@@ -1265,20 +1261,20 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// If non provided, then the latest finalized head is used. This is particularly useful</span>
 		<span class="doccomment">/// for [`Command::OnRuntimeUpgrade`].</span>
-		<span class="attribute">#[<span class="ident">structopt</span>(
+		<span class="attribute">#[<span class="ident">clap</span>(
 			<span class="ident">short</span>,
 			<span class="ident">long</span>,
-			<span class="ident">multiple</span> <span class="op">=</span> <span class="bool-val">false</span>,
+			<span class="ident">multiple_values</span> <span class="op">=</span> <span class="bool-val">false</span>,
 			<span class="ident">parse</span>(<span class="ident">try_from_str</span> <span class="op">=</span> <span class="ident">parse::hash</span>),
 		)]</span>
 		<span class="ident">at</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
 		<span class="doccomment">/// An optional state snapshot file to WRITE to. Not written if set to `None`.</span>
-		<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">short</span>, <span class="ident">long</span>)]</span>
+		<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">short</span>, <span class="ident">long</span>)]</span>
 		<span class="ident">snapshot_path</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
 
 		<span class="doccomment">/// The pallets to scrape. If empty, entire chain state will be scraped.</span>
-		<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">short</span>, <span class="ident">long</span>, <span class="ident">require_delimiter</span> <span class="op">=</span> <span class="bool-val">true</span>)]</span>
+		<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">short</span>, <span class="ident">long</span>, <span class="ident">require_delimiter</span> <span class="op">=</span> <span class="bool-val">true</span>)]</span>
 		<span class="ident">pallets</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 
 		<span class="doccomment">/// Fetch the child-keys as well.</span>
@@ -1286,7 +1282,7 @@
 		<span class="doccomment">/// Default is `false`, if specific `pallets` are specified, true otherwise. In other</span>
 		<span class="doccomment">/// words, if you scrape the whole state the child tree data is included out of the box.</span>
 		<span class="doccomment">/// Otherwise, it must be enabled explicitly using this flag.</span>
-		<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">require_delimiter</span> <span class="op">=</span> <span class="bool-val">true</span>)]</span>
+		<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">require_delimiter</span> <span class="op">=</span> <span class="bool-val">true</span>)]</span>
 		<span class="ident">child_tree</span>: <span class="ident">bool</span>,
 	},
 }
@@ -1527,7 +1523,7 @@
 		<span class="ident">sp_core::testing::TaskExecutor::new</span>(),
 	)
 	.<span class="ident">execute</span>(<span class="ident">execution</span>.<span class="ident">into</span>())
-	.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;failed to execute &#39;TryRuntime_on_runtime_upgrade&#39;: {:?}&quot;</span>, <span class="ident">e</span>))
+	.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;failed to execute &#39;TryRuntime_on_runtime_upgrade&#39;: {}&quot;</span>, <span class="ident">e</span>))
 	.<span class="ident">map_err</span>::<span class="op">&lt;</span><span class="ident">sc_cli::Error</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">Into::into</span>)<span class="question-mark">?</span>;
 
 	<span class="prelude-val">Ok</span>((<span class="ident">changes</span>, <span class="ident">encoded_results</span>))
@@ -1568,7 +1564,7 @@
 		<span class="ident">sp_core::testing::TaskExecutor::new</span>(),
 	)
 	.<span class="ident">execute</span>(<span class="ident">execution</span>.<span class="ident">into</span>())
-	.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;failed to execute {}: {:?}&quot;</span>, <span class="ident">method</span>, <span class="ident">e</span>))
+	.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;failed to execute {}: {}&quot;</span>, <span class="ident">method</span>, <span class="ident">e</span>))
 	.<span class="ident">map_err</span>::<span class="op">&lt;</span><span class="ident">sc_cli::Error</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">Into::into</span>)<span class="question-mark">?</span>;
 
 	<span class="kw">let</span> <span class="ident">proof</span> <span class="op">=</span> <span class="ident">proving_backend</span>.<span class="ident">extract_proof</span>();

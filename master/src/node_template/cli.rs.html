@@ -39,22 +39,24 @@
 <span id="39">39</span>
 <span id="40">40</span>
 <span id="41">41</span>
+<span id="42">42</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">sc_cli::RunCmd</span>;
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">clap::Parser</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Cli</span> {
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">subcommand</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">subcommand</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">subcommand</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Subcommand</span><span class="op">&gt;</span>,
 
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">flatten</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">run</span>: <span class="ident">RunCmd</span>,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">clap::Subcommand</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Subcommand</span> {
 	<span class="doccomment">/// Key management cli utilities</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">subcommand</span>)]</span>
 	<span class="ident">Key</span>(<span class="ident">sc_cli::KeySubcommand</span>),
+
 	<span class="doccomment">/// Build a chain specification.</span>
 	<span class="ident">BuildSpec</span>(<span class="ident">sc_cli::BuildSpecCmd</span>),
 
@@ -77,7 +79,7 @@
 	<span class="ident">Revert</span>(<span class="ident">sc_cli::RevertCmd</span>),
 
 	<span class="doccomment">/// The custom benchmark subcommand benchmarking runtime pallets.</span>
-	<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;benchmark&quot;</span>, <span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Benchmark runtime pallets.&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;benchmark&quot;</span>, <span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Benchmark runtime pallets.&quot;</span>)]</span>
 	<span class="ident">Benchmark</span>(<span class="ident">frame_benchmarking_cli::BenchmarkCmd</span>),
 }
 </code></pre></div>

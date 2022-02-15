@@ -99,6 +99,18 @@
 <span id="99"> 99</span>
 <span id="100">100</span>
 <span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -139,40 +151,52 @@
 }
 
 <span class="doccomment">/// errors encountered by background block authorship task</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">derive_more::Display</span>, <span class="ident">derive_more::From</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span> {
 	<span class="doccomment">/// An error occurred while importing the block</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Block import failed: {:?}&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Block import failed: {0:?}&quot;</span>)]</span>
 	<span class="ident">BlockImportError</span>(<span class="ident">ImportResult</span>),
 	<span class="doccomment">/// Transaction pool is empty, cannot create a block</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Transaction pool is empty, set create_empty to true,\
-	if you want to create empty blocks&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(
+		<span class="string">&quot;Transaction pool is empty, set create_empty to true, if you want to create empty blocks&quot;</span>
+	)]</span>
 	<span class="ident">EmptyTransactionPool</span>,
 	<span class="doccomment">/// encountered during creation of Proposer.</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Consensus Error: {}&quot;</span>, <span class="ident">_0</span>)]</span>
-	<span class="ident">ConsensusError</span>(<span class="ident">ConsensusError</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Consensus Error: {0}&quot;</span>)]</span>
+	<span class="ident">ConsensusError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">ConsensusError</span>),
 	<span class="doccomment">/// Failed to create Inherents data</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Inherents Error: {}&quot;</span>, <span class="ident">_0</span>)]</span>
-	<span class="ident">InherentError</span>(<span class="ident">InherentsError</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Inherents Error: {0}&quot;</span>)]</span>
+	<span class="ident">InherentError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">InherentsError</span>),
 	<span class="doccomment">/// error encountered during finalization</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Finalization Error: {}&quot;</span>, <span class="ident">_0</span>)]</span>
-	<span class="ident">BlockchainError</span>(<span class="ident">BlockchainError</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Finalization Error: {0}&quot;</span>)]</span>
+	<span class="ident">BlockchainError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">BlockchainError</span>),
 	<span class="doccomment">/// Supplied parent_hash doesn&#39;t exist in chain</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Supplied parent_hash: {} doesn&#39;t exist in chain&quot;</span>, <span class="ident">_0</span>)]</span>
-	<span class="attribute">#[<span class="ident">from</span>(<span class="ident">ignore</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Supplied parent_hash: {0} doesn&#39;t exist in chain&quot;</span>)]</span>
 	<span class="ident">BlockNotFound</span>(<span class="ident">String</span>),
 	<span class="doccomment">/// Some string error</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;{}&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;{0}&quot;</span>)]</span>
 	<span class="ident">StringError</span>(<span class="ident">String</span>),
 	<span class="doccomment">/// send error</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Consensus process is terminating&quot;</span>)]</span>
-	<span class="ident">Canceled</span>(<span class="ident">oneshot::Canceled</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Consensus process is terminating&quot;</span>)]</span>
+	<span class="ident">Canceled</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">oneshot::Canceled</span>),
 	<span class="doccomment">/// send error</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Consensus process is terminating&quot;</span>)]</span>
-	<span class="ident">SendError</span>(<span class="ident">SendError</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Consensus process is terminating&quot;</span>)]</span>
+	<span class="ident">SendError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">SendError</span>),
 	<span class="doccomment">/// Some other error.</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Other error: {}&quot;</span>, <span class="ident">_0</span>)]</span>
-	<span class="ident">Other</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">std::error::Error</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Other error: {0}&quot;</span>)]</span>
+	<span class="ident">Other</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">std::error::Error</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span>),
+}
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ImportResult</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Error</span> {
+	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">err</span>: <span class="ident">ImportResult</span>) -&gt; <span class="self">Self</span> {
+		<span class="ident">Error::BlockImportError</span>(<span class="ident">err</span>)
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Error</span> {
+	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">s</span>: <span class="ident">String</span>) -&gt; <span class="self">Self</span> {
+		<span class="ident">Error::StringError</span>(<span class="ident">s</span>)
+	}
 }
 
 <span class="kw">impl</span> <span class="ident">Error</span> {

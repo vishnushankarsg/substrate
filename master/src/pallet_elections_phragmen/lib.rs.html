@@ -3289,9 +3289,9 @@
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">dispatch::WithPostDispatchInfo</span>,
 	<span class="ident">traits</span>::{
-		<span class="ident">ChangeMembers</span>, <span class="ident">Contains</span>, <span class="ident">ContainsLengthBound</span>, <span class="ident">Currency</span>, <span class="ident">CurrencyToVote</span>, <span class="ident">Get</span>,
-		<span class="ident">InitializeMembers</span>, <span class="ident">LockIdentifier</span>, <span class="ident">LockableCurrency</span>, <span class="ident">OnUnbalanced</span>, <span class="ident">ReservableCurrency</span>,
-		<span class="ident">SortedMembers</span>, <span class="ident">StorageVersion</span>, <span class="ident">WithdrawReasons</span>,
+		<span class="ident">defensive_prelude</span>::<span class="kw-2">*</span>, <span class="ident">ChangeMembers</span>, <span class="ident">Contains</span>, <span class="ident">ContainsLengthBound</span>, <span class="ident">Currency</span>,
+		<span class="ident">CurrencyToVote</span>, <span class="ident">Get</span>, <span class="ident">InitializeMembers</span>, <span class="ident">LockIdentifier</span>, <span class="ident">LockableCurrency</span>, <span class="ident">OnUnbalanced</span>,
+		<span class="ident">ReservableCurrency</span>, <span class="ident">SortedMembers</span>, <span class="ident">StorageVersion</span>, <span class="ident">WithdrawReasons</span>,
 	},
 	<span class="ident">weights::Weight</span>,
 };
@@ -4113,13 +4113,13 @@
 		<span class="kw">let</span> <span class="ident">weight_candidates</span> <span class="op">=</span> <span class="ident">candidates_and_deposit</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>;
 		<span class="kw">let</span> <span class="ident">weight_voters</span> <span class="op">=</span> <span class="ident">voters_and_votes</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>;
 		<span class="kw">let</span> <span class="ident">weight_edges</span> <span class="op">=</span> <span class="ident">num_edges</span>;
-		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">sp_npos_elections::seq_phragmen</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span>, <span class="ident">Perbill</span><span class="op">&gt;</span>(
+		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">sp_npos_elections::seq_phragmen</span>(
 			<span class="ident">num_to_elect</span>,
 			<span class="ident">candidate_ids</span>,
 			<span class="ident">voters_and_votes</span>.<span class="ident">clone</span>(),
 			<span class="prelude-val">None</span>,
 		)
-		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ElectionResult</span> { <span class="ident">winners</span>, <span class="ident">assignments</span>: <span class="kw">_</span> }<span class="op">|</span> {
+		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ElectionResult</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span>, <span class="ident">Perbill</span><span class="op">&gt;</span> { <span class="ident">winners</span>, <span class="ident">assignments</span>: <span class="kw">_</span> }<span class="op">|</span> {
 			<span class="comment">// this is already sorted by id.</span>
 			<span class="kw">let</span> <span class="ident">old_members_ids_sorted</span> <span class="op">=</span>
 				<span class="op">&lt;</span><span class="ident">Members</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::take</span>().<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">m</span><span class="op">|</span> <span class="ident">m</span>.<span class="ident">who</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span>();
@@ -4215,7 +4215,7 @@
 				<span class="ident">candidates_and_deposit</span>
 					.<span class="ident">iter</span>()
 					.<span class="ident">find_map</span>(<span class="op">|</span>(<span class="ident">c</span>, <span class="ident">d</span>)<span class="op">|</span> <span class="kw">if</span> <span class="ident">c</span> <span class="op">==</span> <span class="ident">x</span> { <span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="ident">d</span>) } <span class="kw">else</span> { <span class="prelude-val">None</span> })
-					.<span class="ident">unwrap_or_default</span>()
+					.<span class="ident">defensive_unwrap_or_default</span>()
 			};
 			<span class="comment">// fetch deposits from the one recorded one. This will make sure that a candidate who</span>
 			<span class="comment">// submitted candidacy before a change to candidacy deposit will have the correct amount</span>
@@ -4319,7 +4319,7 @@
 	<span class="kw">use</span> <span class="ident">sp_runtime</span>::{
 		<span class="ident">testing::Header</span>,
 		<span class="ident">traits</span>::{<span class="ident">BlakeTwo256</span>, <span class="ident">IdentityLookup</span>},
-		<span class="ident">BuildStorage</span>,
+		<span class="ident">BuildStorage</span>, <span class="ident">ModuleError</span>,
 	};
 	<span class="kw">use</span> <span class="ident">substrate_test_utils::assert_eq_uvec</span>;
 
@@ -5701,7 +5701,7 @@
 			<span class="kw">let</span> <span class="ident">unwrapped_error</span> <span class="op">=</span> <span class="ident">Elections::remove_member</span>(<span class="ident">Origin::root</span>(), <span class="number">4</span>, <span class="bool-val">true</span>).<span class="ident">unwrap_err</span>();
 			<span class="macro">assert!</span>(<span class="macro">matches!</span>(
 				<span class="ident">unwrapped_error</span>.<span class="ident">error</span>,
-				<span class="ident">DispatchError::Module</span> { <span class="ident">message</span>: <span class="prelude-val">Some</span>(<span class="string">&quot;InvalidReplacement&quot;</span>), .. }
+				<span class="ident">DispatchError::Module</span>(<span class="ident">ModuleError</span> { <span class="ident">message</span>: <span class="prelude-val">Some</span>(<span class="string">&quot;InvalidReplacement&quot;</span>), .. })
 			));
 			<span class="macro">assert!</span>(<span class="ident">unwrapped_error</span>.<span class="ident">post_info</span>.<span class="ident">actual_weight</span>.<span class="ident">is_some</span>());
 		});
@@ -5724,7 +5724,7 @@
 			<span class="kw">let</span> <span class="ident">unwrapped_error</span> <span class="op">=</span> <span class="ident">Elections::remove_member</span>(<span class="ident">Origin::root</span>(), <span class="number">4</span>, <span class="bool-val">false</span>).<span class="ident">unwrap_err</span>();
 			<span class="macro">assert!</span>(<span class="macro">matches!</span>(
 				<span class="ident">unwrapped_error</span>.<span class="ident">error</span>,
-				<span class="ident">DispatchError::Module</span> { <span class="ident">message</span>: <span class="prelude-val">Some</span>(<span class="string">&quot;InvalidReplacement&quot;</span>), .. }
+				<span class="ident">DispatchError::Module</span>(<span class="ident">ModuleError</span> { <span class="ident">message</span>: <span class="prelude-val">Some</span>(<span class="string">&quot;InvalidReplacement&quot;</span>), .. })
 			));
 			<span class="macro">assert!</span>(<span class="ident">unwrapped_error</span>.<span class="ident">post_info</span>.<span class="ident">actual_weight</span>.<span class="ident">is_some</span>());
 		});

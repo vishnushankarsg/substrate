@@ -432,15 +432,15 @@
 
 <span class="kw">type</span> <span class="ident">FutureResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">jsonrpc_core::BoxFuture</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">jsonrpc_core::Error</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">derive_more::Display</span>, <span class="ident">derive_more::From</span>, <span class="ident">thiserror::Error</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>)]</span>
 <span class="doccomment">/// Top-level error type for the RPC handler</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span> {
 	<span class="doccomment">/// The BEEFY RPC endpoint is not ready.</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;BEEFY RPC endpoint not ready&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;BEEFY RPC endpoint not ready&quot;</span>)]</span>
 	<span class="ident">EndpointNotReady</span>,
 	<span class="doccomment">/// The BEEFY RPC background task failed to spawn.</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;BEEFY RPC background task failed to spawn&quot;</span>)]</span>
-	<span class="ident">RpcTaskFailure</span>(<span class="ident">SpawnError</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;BEEFY RPC background task failed to spawn&quot;</span>)]</span>
+	<span class="ident">RpcTaskFailure</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">SpawnError</span>),
 }
 
 <span class="doccomment">/// The error codes returned by jsonrpc.</span>

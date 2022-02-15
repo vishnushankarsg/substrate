@@ -490,7 +490,7 @@
 	}
 
 	<span class="comment">// Set identity so `set_subs` does not fail.</span>
-	<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">BalanceOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::max_value</span>());
+	<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">BalanceOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::max_value</span>() <span class="op">/</span> <span class="number">2u32</span>.<span class="ident">into</span>());
 	<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">create_identity_info</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="number">1</span>);
 	<span class="ident">Identity</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::set_identity</span>(<span class="ident">who_origin</span>.<span class="ident">clone</span>().<span class="ident">into</span>(), <span class="ident">Box::new</span>(<span class="ident">info</span>))<span class="question-mark">?</span>;
 

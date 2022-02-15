@@ -1751,7 +1751,6 @@
 <span id="1751">1751</span>
 <span id="1752">1752</span>
 <span id="1753">1753</span>
-<span id="1754">1754</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -1971,95 +1970,94 @@
 }
 
 <span class="doccomment">/// Errors encountered by the babe authorship task.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">derive_more::Display</span>, <span class="ident">Debug</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Multiple BABE pre-runtime digests</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Multiple BABE pre-runtime digests, rejecting!&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Multiple BABE pre-runtime digests, rejecting!&quot;</span>)]</span>
 	<span class="ident">MultiplePreRuntimeDigests</span>,
 	<span class="doccomment">/// No BABE pre-runtime digest found</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;No BABE pre-runtime digest found&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;No BABE pre-runtime digest found&quot;</span>)]</span>
 	<span class="ident">NoPreRuntimeDigest</span>,
 	<span class="doccomment">/// Multiple BABE epoch change digests</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Multiple BABE epoch change digests, rejecting!&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Multiple BABE epoch change digests, rejecting!&quot;</span>)]</span>
 	<span class="ident">MultipleEpochChangeDigests</span>,
 	<span class="doccomment">/// Multiple BABE config change digests</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Multiple BABE config change digests, rejecting!&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Multiple BABE config change digests, rejecting!&quot;</span>)]</span>
 	<span class="ident">MultipleConfigChangeDigests</span>,
 	<span class="doccomment">/// Could not extract timestamp and slot</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Could not extract timestamp and slot: {:?}&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Could not extract timestamp and slot: {0}&quot;</span>)]</span>
 	<span class="ident">Extraction</span>(<span class="ident">sp_consensus::Error</span>),
 	<span class="doccomment">/// Could not fetch epoch</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Could not fetch epoch at {:?}&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Could not fetch epoch at {0:?}&quot;</span>)]</span>
 	<span class="ident">FetchEpoch</span>(<span class="ident">B::Hash</span>),
 	<span class="doccomment">/// Header rejected: too far in the future</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Header {:?} rejected: too far in the future&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Header {0:?} rejected: too far in the future&quot;</span>)]</span>
 	<span class="ident">TooFarInFuture</span>(<span class="ident">B::Hash</span>),
 	<span class="doccomment">/// Parent unavailable. Cannot import</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Parent ({}) of {} unavailable. Cannot import&quot;</span>, <span class="ident">_0</span>, <span class="ident">_1</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Parent ({0}) of {1} unavailable. Cannot import&quot;</span>)]</span>
 	<span class="ident">ParentUnavailable</span>(<span class="ident">B::Hash</span>, <span class="ident">B::Hash</span>),
 	<span class="doccomment">/// Slot number must increase</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Slot number must increase: parent slot: {}, this slot: {}&quot;</span>, <span class="ident">_0</span>, <span class="ident">_1</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Slot number must increase: parent slot: {0}, this slot: {1}&quot;</span>)]</span>
 	<span class="ident">SlotMustIncrease</span>(<span class="ident">Slot</span>, <span class="ident">Slot</span>),
 	<span class="doccomment">/// Header has a bad seal</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Header {:?} has a bad seal&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Header {0:?} has a bad seal&quot;</span>)]</span>
 	<span class="ident">HeaderBadSeal</span>(<span class="ident">B::Hash</span>),
 	<span class="doccomment">/// Header is unsealed</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Header {:?} is unsealed&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Header {0:?} is unsealed&quot;</span>)]</span>
 	<span class="ident">HeaderUnsealed</span>(<span class="ident">B::Hash</span>),
 	<span class="doccomment">/// Slot author not found</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Slot author not found&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Slot author not found&quot;</span>)]</span>
 	<span class="ident">SlotAuthorNotFound</span>,
 	<span class="doccomment">/// Secondary slot assignments are disabled for the current epoch.</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Secondary slot assignments are disabled for the current epoch.&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Secondary slot assignments are disabled for the current epoch.&quot;</span>)]</span>
 	<span class="ident">SecondarySlotAssignmentsDisabled</span>,
 	<span class="doccomment">/// Bad signature</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Bad signature on {:?}&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Bad signature on {0:?}&quot;</span>)]</span>
 	<span class="ident">BadSignature</span>(<span class="ident">B::Hash</span>),
 	<span class="doccomment">/// Invalid author: Expected secondary author</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Invalid author: Expected secondary author: {:?}, got: {:?}.&quot;</span>, <span class="ident">_0</span>, <span class="ident">_1</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Invalid author: Expected secondary author: {0:?}, got: {1:?}.&quot;</span>)]</span>
 	<span class="ident">InvalidAuthor</span>(<span class="ident">AuthorityId</span>, <span class="ident">AuthorityId</span>),
 	<span class="doccomment">/// No secondary author expected.</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;No secondary author expected.&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;No secondary author expected.&quot;</span>)]</span>
 	<span class="ident">NoSecondaryAuthorExpected</span>,
 	<span class="doccomment">/// VRF verification of block by author failed</span>
-	<span class="attribute">#[<span class="ident">display</span>(
-		<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;VRF verification of block by author {:?} failed: threshold {} exceeded&quot;</span>,
-		<span class="ident">_0</span>,
-		<span class="ident">_1</span>
-	)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;VRF verification of block by author {0:?} failed: threshold {1} exceeded&quot;</span>)]</span>
 	<span class="ident">VRFVerificationOfBlockFailed</span>(<span class="ident">AuthorityId</span>, <span class="ident">u128</span>),
 	<span class="doccomment">/// VRF verification failed</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;VRF verification failed: {:?}&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;VRF verification failed: {0:?}&quot;</span>)]</span>
 	<span class="ident">VRFVerificationFailed</span>(<span class="ident">SignatureError</span>),
 	<span class="doccomment">/// Could not fetch parent header</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Could not fetch parent header: {:?}&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Could not fetch parent header: {0}&quot;</span>)]</span>
 	<span class="ident">FetchParentHeader</span>(<span class="ident">sp_blockchain::Error</span>),
 	<span class="doccomment">/// Expected epoch change to happen.</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Expected epoch change to happen at {:?}, s{}&quot;</span>, <span class="ident">_0</span>, <span class="ident">_1</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Expected epoch change to happen at {0:?}, s{1}&quot;</span>)]</span>
 	<span class="ident">ExpectedEpochChange</span>(<span class="ident">B::Hash</span>, <span class="ident">Slot</span>),
 	<span class="doccomment">/// Unexpected config change.</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Unexpected config change&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Unexpected config change&quot;</span>)]</span>
 	<span class="ident">UnexpectedConfigChange</span>,
 	<span class="doccomment">/// Unexpected epoch change</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Unexpected epoch change&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Unexpected epoch change&quot;</span>)]</span>
 	<span class="ident">UnexpectedEpochChange</span>,
 	<span class="doccomment">/// Parent block has no associated weight</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Parent block of {} has no associated weight&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Parent block of {0} has no associated weight&quot;</span>)]</span>
 	<span class="ident">ParentBlockNoAssociatedWeight</span>(<span class="ident">B::Hash</span>),
 	<span class="doccomment">/// Check inherents error</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Checking inherents failed: {}&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Checking inherents failed: {0}&quot;</span>)]</span>
 	<span class="ident">CheckInherents</span>(<span class="ident">sp_inherents::Error</span>),
 	<span class="doccomment">/// Unhandled check inherents error</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Checking inherents unhandled error: {}&quot;</span>, <span class="string">&quot;String::from_utf8_lossy(_0)&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Checking inherents unhandled error: {}&quot;</span>, <span class="ident">String::from_utf8_lossy</span>(.<span class="number">0</span>))]</span>
 	<span class="ident">CheckInherentsUnhandled</span>(<span class="ident">sp_inherents::InherentIdentifier</span>),
 	<span class="doccomment">/// Create inherents error.</span>
-	<span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Creating inherents failed: {}&quot;</span>, <span class="ident">_0</span>)]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Creating inherents failed: {0}&quot;</span>)]</span>
 	<span class="ident">CreateInherents</span>(<span class="ident">sp_inherents::Error</span>),
 	<span class="doccomment">/// Client error</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
 	<span class="ident">Client</span>(<span class="ident">sp_blockchain::Error</span>),
 	<span class="doccomment">/// Runtime Api error.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
 	<span class="ident">RuntimeApi</span>(<span class="ident">sp_api::ApiError</span>),
 	<span class="doccomment">/// Fork tree error</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
 	<span class="ident">ForkTree</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="ident">fork_tree::Error</span><span class="op">&lt;</span><span class="ident">sp_blockchain::Error</span><span class="op">&gt;</span><span class="op">&gt;</span>),
 }
 
@@ -2468,7 +2466,7 @@
 				<span class="ident">parent</span>.<span class="ident">number</span>().<span class="ident">clone</span>(),
 				<span class="ident">slot</span>,
 			)
-			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">ConsensusError::ChainLookup</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">e</span>)))<span class="question-mark">?</span>
+			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">ConsensusError::ChainLookup</span>(<span class="ident">e</span>.<span class="ident">to_string</span>()))<span class="question-mark">?</span>
 			.<span class="ident">ok_or</span>(<span class="ident">sp_consensus::Error::InvalidAuthoritiesSet</span>)
 	}
 
@@ -2956,7 +2954,7 @@
 					)
 					.<span class="kw">await</span>
 				{
-					<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="string">&quot;babe&quot;</span>, <span class="string">&quot;Error checking/reporting BABE equivocation: {:?}&quot;</span>, <span class="ident">err</span>);
+					<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="string">&quot;babe&quot;</span>, <span class="string">&quot;Error checking/reporting BABE equivocation: {}&quot;</span>, <span class="ident">err</span>);
 				}
 
 				<span class="comment">// if the body is passed through, we need to use the runtime</span>
@@ -3306,7 +3304,7 @@
 						)
 						.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
 							<span class="ident">ConsensusError::ClientImport</span>(<span class="macro">format!</span>(
-								<span class="string">&quot;Error importing epoch changes: {:?}&quot;</span>,
+								<span class="string">&quot;Error importing epoch changes: {}&quot;</span>,
 								<span class="ident">e</span>
 							))
 						})<span class="question-mark">?</span>;
@@ -3314,7 +3312,7 @@
 				};
 
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">prune_and_import</span>() {
-					<span class="macro">debug!</span>(<span class="ident">target</span>: <span class="string">&quot;babe&quot;</span>, <span class="string">&quot;Failed to launch next epoch: {:?}&quot;</span>, <span class="ident">e</span>);
+					<span class="macro">debug!</span>(<span class="ident">target</span>: <span class="string">&quot;babe&quot;</span>, <span class="string">&quot;Failed to launch next epoch: {}&quot;</span>, <span class="ident">e</span>);
 					<span class="kw-2">*</span><span class="ident">epoch_changes</span> <span class="op">=</span>
 						<span class="ident">old_epoch_changes</span>.<span class="ident">expect</span>(<span class="string">&quot;set `Some` above and not taken; qed&quot;</span>);
 					<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>)
@@ -3345,7 +3343,7 @@
 					<span class="ident">parent_weight</span>
 				} <span class="kw">else</span> {
 					<span class="ident">aux_schema::load_block_weight</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">client</span>, <span class="ident">last_best</span>)
-						.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">ConsensusError::ChainLookup</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">e</span>)))<span class="question-mark">?</span>
+						.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">ConsensusError::ChainLookup</span>(<span class="ident">e</span>.<span class="ident">to_string</span>()))<span class="question-mark">?</span>
 						.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> {
 							<span class="ident">ConsensusError::ChainLookup</span>(
 								<span class="string">&quot;No block weight for parent header.&quot;</span>.<span class="ident">to_string</span>(),
@@ -3404,7 +3402,7 @@
 	<span class="kw">let</span> <span class="ident">finalized_slot</span> <span class="op">=</span> {
 		<span class="kw">let</span> <span class="ident">finalized_header</span> <span class="op">=</span> <span class="ident">client</span>
 			.<span class="ident">header</span>(<span class="ident">BlockId::Hash</span>(<span class="ident">info</span>.<span class="ident">finalized_hash</span>))
-			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">ConsensusError::ClientImport</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">e</span>)))<span class="question-mark">?</span>
+			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">ConsensusError::ClientImport</span>(<span class="ident">e</span>.<span class="ident">to_string</span>()))<span class="question-mark">?</span>
 			.<span class="ident">expect</span>(
 				<span class="string">&quot;best finalized hash was given by client; finalized headers must exist in db; qed&quot;</span>,
 			);
@@ -3421,7 +3419,7 @@
 			<span class="ident">info</span>.<span class="ident">finalized_number</span>,
 			<span class="ident">finalized_slot</span>,
 		)
-		.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">ConsensusError::ClientImport</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">e</span>)))<span class="question-mark">?</span>;
+		.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">ConsensusError::ClientImport</span>(<span class="ident">e</span>.<span class="ident">to_string</span>()))<span class="question-mark">?</span>;
 
 	<span class="prelude-val">Ok</span>(())
 }

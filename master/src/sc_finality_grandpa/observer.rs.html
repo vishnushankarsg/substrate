@@ -673,7 +673,7 @@
 	);
 
 	<span class="kw">let</span> <span class="ident">observer_work</span> <span class="op">=</span> <span class="ident">observer_work</span>.<span class="ident">map_ok</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ()).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
-		<span class="macro">warn!</span>(<span class="string">&quot;GRANDPA Observer failed: {:?}&quot;</span>, <span class="ident">e</span>);
+		<span class="macro">warn!</span>(<span class="string">&quot;GRANDPA Observer failed: {}&quot;</span>, <span class="ident">e</span>);
 	});
 
 	<span class="prelude-val">Ok</span>(<span class="ident">observer_work</span>.<span class="ident">map</span>(<span class="ident">drop</span>))

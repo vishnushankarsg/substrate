@@ -1259,9 +1259,6 @@
 <span id="1259">1259</span>
 <span id="1260">1260</span>
 <span id="1261">1261</span>
-<span id="1262">1262</span>
-<span id="1263">1263</span>
-<span id="1264">1264</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -1478,7 +1475,7 @@
 			<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; {
 				<span class="macro">warn!</span>(
 					<span class="ident">target</span>: <span class="ident">logging_target</span>,
-					<span class="string">&quot;Unable to fetch epoch data at block {:?}: {:?}&quot;</span>,
+					<span class="string">&quot;Unable to fetch epoch data at block {:?}: {}&quot;</span>,
 					<span class="ident">slot_info</span>.<span class="ident">chain_head</span>.<span class="ident">hash</span>(),
 					<span class="ident">err</span>,
 				);
@@ -1538,10 +1535,7 @@
 		<span class="kw">let</span> <span class="ident">proposer</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">proposer</span>(<span class="kw-2">&amp;</span><span class="ident">slot_info</span>.<span class="ident">chain_head</span>).<span class="kw">await</span> {
 			<span class="prelude-val">Ok</span>(<span class="ident">p</span>) =&gt; <span class="ident">p</span>,
 			<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; {
-				<span class="macro">warn!</span>(
-					<span class="ident">target</span>: <span class="ident">logging_target</span>,
-					<span class="string">&quot;Unable to author block in slot {:?}: {:?}&quot;</span>, <span class="ident">slot</span>, <span class="ident">err</span>,
-				);
+				<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="ident">logging_target</span>, <span class="string">&quot;Unable to author block in slot {:?}: {}&quot;</span>, <span class="ident">slot</span>, <span class="ident">err</span>,);
 
 				<span class="macro">telemetry!</span>(
 					<span class="ident">telemetry</span>;
@@ -1567,12 +1561,12 @@
 				<span class="ident">proposing_remaining_duration</span>.<span class="ident">mul_f32</span>(<span class="number">0.98</span>),
 				<span class="prelude-val">None</span>,
 			)
-			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">sp_consensus::Error::ClientImport</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">e</span>)));
+			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">sp_consensus::Error::ClientImport</span>(<span class="ident">e</span>.<span class="ident">to_string</span>()));
 
 		<span class="kw">let</span> <span class="ident">proposal</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">futures::future::select</span>(<span class="ident">proposing</span>, <span class="ident">proposing_remaining</span>).<span class="kw">await</span> {
 			<span class="ident">Either::Left</span>((<span class="prelude-val">Ok</span>(<span class="ident">p</span>), <span class="kw">_</span>)) =&gt; <span class="ident">p</span>,
 			<span class="ident">Either::Left</span>((<span class="prelude-val">Err</span>(<span class="ident">err</span>), <span class="kw">_</span>)) =&gt; {
-				<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="ident">logging_target</span>, <span class="string">&quot;Proposing failed: {:?}&quot;</span>, <span class="ident">err</span>);
+				<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="ident">logging_target</span>, <span class="string">&quot;Proposing failed: {}&quot;</span>, <span class="ident">err</span>);
 
 				<span class="kw">return</span> <span class="prelude-val">None</span>
 			},
@@ -1617,7 +1611,7 @@
 		{
 			<span class="prelude-val">Ok</span>(<span class="ident">bi</span>) =&gt; <span class="ident">bi</span>,
 			<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; {
-				<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="ident">logging_target</span>, <span class="string">&quot;Failed to create block import params: {:?}&quot;</span>, <span class="ident">err</span>);
+				<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="ident">logging_target</span>, <span class="string">&quot;Failed to create block import params: {}&quot;</span>, <span class="ident">err</span>);
 
 				<span class="kw">return</span> <span class="prelude-val">None</span>
 			},
@@ -1652,7 +1646,7 @@
 			<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; {
 				<span class="macro">warn!</span>(
 					<span class="ident">target</span>: <span class="ident">logging_target</span>,
-					<span class="string">&quot;Error with block built on {:?}: {:?}&quot;</span>, <span class="ident">parent_hash</span>, <span class="ident">err</span>,
+					<span class="string">&quot;Error with block built on {:?}: {}&quot;</span>, <span class="ident">parent_hash</span>, <span class="ident">err</span>,
 				);
 
 				<span class="macro">telemetry!</span>(
@@ -1752,7 +1746,7 @@
 		<span class="kw">let</span> <span class="ident">slot_info</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">slots</span>.<span class="ident">next_slot</span>().<span class="kw">await</span> {
 			<span class="prelude-val">Ok</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>,
 			<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
-				<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="string">&quot;slots&quot;</span>, <span class="string">&quot;Error while polling for next slot: {:?}&quot;</span>, <span class="ident">e</span>);
+				<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="string">&quot;slots&quot;</span>, <span class="string">&quot;Error while polling for next slot: {}&quot;</span>, <span class="ident">e</span>);
 				<span class="kw">return</span>
 			},
 		};

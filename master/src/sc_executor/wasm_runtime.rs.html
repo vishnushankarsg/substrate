@@ -674,13 +674,13 @@
 					<span class="kw">if</span> <span class="ident">new_inst</span> {
 						<span class="macro">log::warn!</span>(
 							<span class="ident">target</span>: <span class="string">&quot;wasm-runtime&quot;</span>,
-							<span class="string">&quot;Fresh runtime instance failed with {:?}&quot;</span>,
+							<span class="string">&quot;Fresh runtime instance failed with {}&quot;</span>,
 							<span class="ident">e</span>,
 						)
 					} <span class="kw">else</span> {
 						<span class="macro">log::warn!</span>(
 							<span class="ident">target</span>: <span class="string">&quot;wasm-runtime&quot;</span>,
-							<span class="string">&quot;Evicting failed runtime instance: {:?}&quot;</span>,
+							<span class="string">&quot;Evicting failed runtime instance: {}&quot;</span>,
 							<span class="ident">e</span>,
 						);
 					}
