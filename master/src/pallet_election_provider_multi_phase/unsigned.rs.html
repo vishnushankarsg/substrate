@@ -1579,6 +1579,19 @@
 <span id="1579">1579</span>
 <span id="1580">1580</span>
 <span id="1581">1581</span>
+<span id="1582">1582</span>
+<span id="1583">1583</span>
+<span id="1584">1584</span>
+<span id="1585">1585</span>
+<span id="1586">1586</span>
+<span id="1587">1587</span>
+<span id="1588">1588</span>
+<span id="1589">1589</span>
+<span id="1590">1590</span>
+<span id="1591">1591</span>
+<span id="1592">1592</span>
+<span id="1593">1593</span>
+<span id="1594">1594</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -1607,10 +1620,9 @@
 <span class="kw">use</span> <span class="ident">frame_election_provider_support</span>::{<span class="ident">NposSolver</span>, <span class="ident">PerThing128</span>};
 <span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">dispatch::DispatchResult</span>, <span class="ident">ensure</span>, <span class="ident">traits::Get</span>};
 <span class="kw">use</span> <span class="ident">frame_system::offchain::SubmitTransaction</span>;
-<span class="kw">use</span> <span class="ident">sp_arithmetic::Perbill</span>;
 <span class="kw">use</span> <span class="ident">sp_npos_elections</span>::{
-	<span class="ident">assignment_ratio_to_staked_normalized</span>, <span class="ident">assignment_staked_to_ratio_normalized</span>, <span class="ident">is_score_better</span>,
-	<span class="ident">ElectionResult</span>, <span class="ident">NposSolution</span>,
+	<span class="ident">assignment_ratio_to_staked_normalized</span>, <span class="ident">assignment_staked_to_ratio_normalized</span>, <span class="ident">ElectionResult</span>,
+	<span class="ident">NposSolution</span>,
 };
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
 	<span class="ident">offchain::storage</span>::{<span class="ident">MutateStorageError</span>, <span class="ident">StorageValueRef</span>},
@@ -2205,11 +2217,9 @@
 
 		<span class="comment">// ensure score is being improved. Panic henceforth.</span>
 		<span class="macro">ensure!</span>(
-			<span class="ident"><span class="self">Self</span>::queued_solution</span>().<span class="ident">map_or</span>(<span class="bool-val">true</span>, <span class="op">|</span><span class="ident">q</span>: <span class="ident">ReadySolution</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">|</span> <span class="ident">is_score_better</span>::<span class="op">&lt;</span><span class="ident">Perbill</span><span class="op">&gt;</span>(
-				<span class="ident">raw_solution</span>.<span class="ident">score</span>,
-				<span class="ident">q</span>.<span class="ident">score</span>,
-				<span class="ident">T::SolutionImprovementThreshold::get</span>()
-			)),
+			<span class="ident"><span class="self">Self</span>::queued_solution</span>().<span class="ident">map_or</span>(<span class="bool-val">true</span>, <span class="op">|</span><span class="ident">q</span>: <span class="ident">ReadySolution</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">|</span> <span class="ident">raw_solution</span>
+				.<span class="ident">score</span>
+				.<span class="ident">strict_threshold_better</span>(<span class="ident">q</span>.<span class="ident">score</span>, <span class="ident">T::SolutionImprovementThreshold::get</span>())),
 			<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::PreDispatchWeakSubmission</span>,
 		);
 
@@ -2329,11 +2339,11 @@
 	<span class="kw">use</span> <span class="ident">frame_support</span>::{
 		<span class="ident">assert_noop</span>, <span class="ident">assert_ok</span>, <span class="ident">bounded_vec</span>, <span class="ident">dispatch::Dispatchable</span>, <span class="ident">traits::OffchainWorker</span>,
 	};
-	<span class="kw">use</span> <span class="ident">sp_npos_elections::IndexAssignment</span>;
+	<span class="kw">use</span> <span class="ident">sp_npos_elections</span>::{<span class="ident">ElectionScore</span>, <span class="ident">IndexAssignment</span>};
 	<span class="kw">use</span> <span class="ident">sp_runtime</span>::{
 		<span class="ident">offchain::storage_lock</span>::{<span class="ident">BlockAndTime</span>, <span class="ident">StorageLock</span>},
 		<span class="ident">traits::ValidateUnsigned</span>,
-		<span class="ident">ModuleError</span>, <span class="ident">PerU16</span>,
+		<span class="ident">ModuleError</span>, <span class="ident">PerU16</span>, <span class="ident">Perbill</span>,
 	};
 
 	<span class="kw">type</span> <span class="ident">Assignment</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::unsigned::Assignment</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
@@ -2341,8 +2351,10 @@
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">validate_unsigned_retracts_wrong_phase</span>() {
 		<span class="ident">ExtBuilder::default</span>().<span class="ident">desired_targets</span>(<span class="number">0</span>).<span class="ident">build_and_execute</span>(<span class="op">|</span><span class="op">|</span> {
-			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span>
-				<span class="ident">RawSolution</span>::<span class="op">&lt;</span><span class="ident">TestNposSolution</span><span class="op">&gt;</span> { <span class="ident">score</span>: [<span class="number">5</span>, <span class="number">0</span>, <span class="number">0</span>], ..<span class="ident">Default::default</span>() };
+			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span>::<span class="op">&lt;</span><span class="ident">TestNposSolution</span><span class="op">&gt;</span> {
+				<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: <span class="number">5</span>, ..<span class="ident">Default::default</span>() },
+				..<span class="ident">Default::default</span>()
+			};
 			<span class="kw">let</span> <span class="ident">call</span> <span class="op">=</span> <span class="ident">Call::submit_unsigned</span> {
 				<span class="ident">raw_solution</span>: <span class="ident">Box::new</span>(<span class="ident">solution</span>.<span class="ident">clone</span>()),
 				<span class="ident">witness</span>: <span class="ident">witness</span>(),
@@ -2414,8 +2426,10 @@
 			<span class="ident">roll_to</span>(<span class="number">25</span>);
 			<span class="macro">assert!</span>(<span class="ident">MultiPhase::current_phase</span>().<span class="ident">is_unsigned</span>());
 
-			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span>
-				<span class="ident">RawSolution</span>::<span class="op">&lt;</span><span class="ident">TestNposSolution</span><span class="op">&gt;</span> { <span class="ident">score</span>: [<span class="number">5</span>, <span class="number">0</span>, <span class="number">0</span>], ..<span class="ident">Default::default</span>() };
+			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span>::<span class="op">&lt;</span><span class="ident">TestNposSolution</span><span class="op">&gt;</span> {
+				<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: <span class="number">5</span>, ..<span class="ident">Default::default</span>() },
+				..<span class="ident">Default::default</span>()
+			};
 			<span class="kw">let</span> <span class="ident">call</span> <span class="op">=</span> <span class="ident">Call::submit_unsigned</span> {
 				<span class="ident">raw_solution</span>: <span class="ident">Box::new</span>(<span class="ident">solution</span>.<span class="ident">clone</span>()),
 				<span class="ident">witness</span>: <span class="ident">witness</span>(),
@@ -2430,7 +2444,10 @@
 			<span class="macro">assert!</span>(<span class="op">&lt;</span><span class="ident">MultiPhase</span> <span class="kw">as</span> <span class="ident">ValidateUnsigned</span><span class="op">&gt;</span><span class="ident">::pre_dispatch</span>(<span class="kw-2">&amp;</span><span class="ident">call</span>).<span class="ident">is_ok</span>());
 
 			<span class="comment">// set a better score</span>
-			<span class="kw">let</span> <span class="ident">ready</span> <span class="op">=</span> <span class="ident">ReadySolution</span> { <span class="ident">score</span>: [<span class="number">10</span>, <span class="number">0</span>, <span class="number">0</span>], ..<span class="ident">Default::default</span>() };
+			<span class="kw">let</span> <span class="ident">ready</span> <span class="op">=</span> <span class="ident">ReadySolution</span> {
+				<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: <span class="number">10</span>, ..<span class="ident">Default::default</span>() },
+				..<span class="ident">Default::default</span>()
+			};
 			<span class="op">&lt;</span><span class="ident">QueuedSolution</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="ident">ready</span>);
 
 			<span class="comment">// won&#39;t work anymore.</span>
@@ -2455,7 +2472,10 @@
 			<span class="ident">roll_to</span>(<span class="number">25</span>);
 			<span class="macro">assert!</span>(<span class="ident">MultiPhase::current_phase</span>().<span class="ident">is_unsigned</span>());
 
-			<span class="kw">let</span> <span class="ident">raw</span> <span class="op">=</span> <span class="ident">RawSolution</span>::<span class="op">&lt;</span><span class="ident">TestNposSolution</span><span class="op">&gt;</span> { <span class="ident">score</span>: [<span class="number">5</span>, <span class="number">0</span>, <span class="number">0</span>], ..<span class="ident">Default::default</span>() };
+			<span class="kw">let</span> <span class="ident">raw</span> <span class="op">=</span> <span class="ident">RawSolution</span>::<span class="op">&lt;</span><span class="ident">TestNposSolution</span><span class="op">&gt;</span> {
+				<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: <span class="number">5</span>, ..<span class="ident">Default::default</span>() },
+				..<span class="ident">Default::default</span>()
+			};
 			<span class="kw">let</span> <span class="ident">call</span> <span class="op">=</span>
 				<span class="ident">Call::submit_unsigned</span> { <span class="ident">raw_solution</span>: <span class="ident">Box::new</span>(<span class="ident">raw</span>.<span class="ident">clone</span>()), <span class="ident">witness</span>: <span class="ident">witness</span>() };
 			<span class="macro">assert_eq!</span>(<span class="ident">raw</span>.<span class="ident">solution</span>.<span class="ident">unique_targets</span>().<span class="ident">len</span>(), <span class="number">0</span>);
@@ -2481,8 +2501,10 @@
 				<span class="ident">roll_to</span>(<span class="number">25</span>);
 				<span class="macro">assert!</span>(<span class="ident">MultiPhase::current_phase</span>().<span class="ident">is_unsigned</span>());
 
-				<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span>
-					<span class="ident">RawSolution</span>::<span class="op">&lt;</span><span class="ident">TestNposSolution</span><span class="op">&gt;</span> { <span class="ident">score</span>: [<span class="number">5</span>, <span class="number">0</span>, <span class="number">0</span>], ..<span class="ident">Default::default</span>() };
+				<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span>::<span class="op">&lt;</span><span class="ident">TestNposSolution</span><span class="op">&gt;</span> {
+					<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: <span class="number">5</span>, ..<span class="ident">Default::default</span>() },
+					..<span class="ident">Default::default</span>()
+				};
 				<span class="kw">let</span> <span class="ident">call</span> <span class="op">=</span> <span class="ident">Call::submit_unsigned</span> {
 					<span class="ident">raw_solution</span>: <span class="ident">Box::new</span>(<span class="ident">solution</span>.<span class="ident">clone</span>()),
 					<span class="ident">witness</span>: <span class="ident">witness</span>(),
@@ -2511,8 +2533,10 @@
 			<span class="macro">assert!</span>(<span class="ident">MultiPhase::current_phase</span>().<span class="ident">is_unsigned</span>());
 
 			<span class="comment">// This is in itself an invalid BS solution.</span>
-			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span>
-				<span class="ident">RawSolution</span>::<span class="op">&lt;</span><span class="ident">TestNposSolution</span><span class="op">&gt;</span> { <span class="ident">score</span>: [<span class="number">5</span>, <span class="number">0</span>, <span class="number">0</span>], ..<span class="ident">Default::default</span>() };
+			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span>::<span class="op">&lt;</span><span class="ident">TestNposSolution</span><span class="op">&gt;</span> {
+				<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: <span class="number">5</span>, ..<span class="ident">Default::default</span>() },
+				..<span class="ident">Default::default</span>()
+			};
 			<span class="kw">let</span> <span class="ident">call</span> <span class="op">=</span> <span class="ident">Call::submit_unsigned</span> {
 				<span class="ident">raw_solution</span>: <span class="ident">Box::new</span>(<span class="ident">solution</span>.<span class="ident">clone</span>()),
 				<span class="ident">witness</span>: <span class="ident">witness</span>(),
@@ -2531,8 +2555,10 @@
 			<span class="macro">assert!</span>(<span class="ident">MultiPhase::current_phase</span>().<span class="ident">is_unsigned</span>());
 
 			<span class="comment">// This solution is unfeasible as well, but we won&#39;t even get there.</span>
-			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span>
-				<span class="ident">RawSolution</span>::<span class="op">&lt;</span><span class="ident">TestNposSolution</span><span class="op">&gt;</span> { <span class="ident">score</span>: [<span class="number">5</span>, <span class="number">0</span>, <span class="number">0</span>], ..<span class="ident">Default::default</span>() };
+			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span>::<span class="op">&lt;</span><span class="ident">TestNposSolution</span><span class="op">&gt;</span> {
+				<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: <span class="number">5</span>, ..<span class="ident">Default::default</span>() },
+				..<span class="ident">Default::default</span>()
+			};
 
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">correct_witness</span> <span class="op">=</span> <span class="ident">witness</span>();
 			<span class="ident">correct_witness</span>.<span class="ident">voters</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
@@ -2651,7 +2677,7 @@
 					<span class="ident">Box::new</span>(<span class="ident">solution</span>),
 					<span class="ident">witness</span>
 				));
-				<span class="macro">assert_eq!</span>(<span class="ident">MultiPhase::queued_solution</span>().<span class="ident">unwrap</span>().<span class="ident">score</span>[<span class="number">0</span>], <span class="number">10</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">MultiPhase::queued_solution</span>().<span class="ident">unwrap</span>().<span class="ident">score</span>.<span class="ident">minimal_stake</span>, <span class="number">10</span>);
 
 				<span class="comment">// trial 1: a solution who&#39;s score is only 2, i.e. 20% better in the first element.</span>
 				<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">ElectionResult</span> {
@@ -2667,7 +2693,7 @@
 				};
 				<span class="kw">let</span> (<span class="ident">solution</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">MultiPhase::prepare_election_result</span>(<span class="ident">result</span>).<span class="ident">unwrap</span>();
 				<span class="comment">// 12 is not 50% more than 10</span>
-				<span class="macro">assert_eq!</span>(<span class="ident">solution</span>.<span class="ident">score</span>[<span class="number">0</span>], <span class="number">12</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">solution</span>.<span class="ident">score</span>.<span class="ident">minimal_stake</span>, <span class="number">12</span>);
 				<span class="macro">assert_noop!</span>(
 					<span class="ident">MultiPhase::unsigned_pre_dispatch_checks</span>(<span class="kw-2">&amp;</span><span class="ident">solution</span>),
 					<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::PreDispatchWeakSubmission</span>,
@@ -2688,7 +2714,7 @@
 					],
 				};
 				<span class="kw">let</span> (<span class="ident">solution</span>, <span class="ident">witness</span>) <span class="op">=</span> <span class="ident">MultiPhase::prepare_election_result</span>(<span class="ident">result</span>).<span class="ident">unwrap</span>();
-				<span class="macro">assert_eq!</span>(<span class="ident">solution</span>.<span class="ident">score</span>[<span class="number">0</span>], <span class="number">17</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">solution</span>.<span class="ident">score</span>.<span class="ident">minimal_stake</span>, <span class="number">17</span>);
 
 				<span class="comment">// and it is fine</span>
 				<span class="macro">assert_ok!</span>(<span class="ident">MultiPhase::unsigned_pre_dispatch_checks</span>(<span class="kw-2">&amp;</span><span class="ident">solution</span>));

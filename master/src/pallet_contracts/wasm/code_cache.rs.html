@@ -440,9 +440,9 @@
 		<span class="comment">// point because when charging the general weight for calling the contract we not know the</span>
 		<span class="comment">// size of the contract.</span>
 		<span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-			<span class="ident">Reinstrument</span>(<span class="ident">len</span>) =&gt; <span class="ident">T::WeightInfo::reinstrument</span>(<span class="ident">len</span> <span class="op">/</span> <span class="number">1024</span>),
-			<span class="ident">Load</span>(<span class="ident">len</span>) =&gt; <span class="ident">T::WeightInfo::call_with_code_kb</span>(<span class="ident">len</span> <span class="op">/</span> <span class="number">1024</span>)
-				.<span class="ident">saturating_sub</span>(<span class="ident">T::WeightInfo::call_with_code_kb</span>(<span class="number">0</span>)),
+			<span class="ident">Reinstrument</span>(<span class="ident">len</span>) =&gt; <span class="ident">T::WeightInfo::reinstrument</span>(<span class="ident">len</span>),
+			<span class="ident">Load</span>(<span class="ident">len</span>) =&gt; <span class="ident">T::WeightInfo::call_with_code_per_byte</span>(<span class="ident">len</span>)
+				.<span class="ident">saturating_sub</span>(<span class="ident">T::WeightInfo::call_with_code_per_byte</span>(<span class="number">0</span>)),
 		}
 	}
 }

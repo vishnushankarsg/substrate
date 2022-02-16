@@ -517,6 +517,9 @@
 <span id="517">517</span>
 <span id="518">518</span>
 <span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -667,7 +670,10 @@
 	<span class="kw">let</span> <span class="ident">score</span> <span class="op">=</span> <span class="ident">solution</span>.<span class="ident">clone</span>().<span class="ident">score</span>(<span class="ident">stake_of</span>, <span class="ident">voter_at</span>, <span class="ident">target_at</span>).<span class="ident">unwrap</span>();
 	<span class="kw">let</span> <span class="ident">round</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">MultiPhase</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::round</span>();
 
-	<span class="macro">assert!</span>(<span class="ident">score</span>[<span class="number">0</span>] <span class="op">&gt;</span> <span class="number">0</span>, <span class="string">&quot;score is zero, this probably means that the stakes are not set.&quot;</span>);
+	<span class="macro">assert!</span>(
+		<span class="ident">score</span>.<span class="ident">minimal_stake</span> <span class="op">&gt;</span> <span class="number">0</span>,
+		<span class="string">&quot;score is zero, this probably means that the stakes are not set.&quot;</span>
+	);
 	<span class="prelude-val">Ok</span>(<span class="ident">RawSolution</span> { <span class="ident">solution</span>, <span class="ident">score</span>, <span class="ident">round</span> })
 }
 
@@ -831,7 +837,7 @@
 		<span class="comment">// the solution will be worse than all of them meaning the score need to be checked against</span>
 		<span class="comment">// ~ log2(c)</span>
 		<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> {
-			<span class="ident">score</span>: [(<span class="number">10_000_000u128</span> <span class="op">-</span> <span class="number">1</span>).<span class="ident">into</span>(), <span class="number">0</span>, <span class="number">0</span>],
+			<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: <span class="number">10_000_000u128</span> <span class="op">-</span> <span class="number">1</span>, ..<span class="ident">Default::default</span>() },
 			..<span class="ident">Default::default</span>()
 		};
 
@@ -842,7 +848,7 @@
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">signed_submissions</span> <span class="op">=</span> <span class="ident">SignedSubmissions</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>();
 		<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">c</span> {
 			<span class="kw">let</span> <span class="ident">raw_solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> {
-				<span class="ident">score</span>: [(<span class="number">10_000_000</span> <span class="op">+</span> <span class="ident">i</span>).<span class="ident">into</span>(), <span class="number">0</span>, <span class="number">0</span>],
+				<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: <span class="number">10_000_000u128</span> <span class="op">+</span> (<span class="ident">i</span> <span class="kw">as</span> <span class="ident">u128</span>), ..<span class="ident">Default::default</span>() },
 				..<span class="ident">Default::default</span>()
 			};
 			<span class="kw">let</span> <span class="ident">signed_submission</span> <span class="op">=</span> <span class="ident">SignedSubmission</span> {

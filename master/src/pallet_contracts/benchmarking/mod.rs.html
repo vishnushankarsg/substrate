@@ -3054,8 +3054,8 @@
 	<span class="comment">// first time after a new schedule was deployed: For every new schedule a contract needs</span>
 	<span class="comment">// to re-run the instrumentation once.</span>
 	<span class="ident">reinstrument</span> {
-		<span class="kw">let</span> <span class="ident">c</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">code_len</span> <span class="op">/</span> <span class="number">1024</span>;
-		<span class="kw">let</span> <span class="ident">WasmModule</span> { <span class="ident">code</span>, <span class="ident">hash</span>, .. } <span class="op">=</span> <span class="ident">WasmModule</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::sized</span>(<span class="ident">c</span> <span class="op">*</span> <span class="number">1024</span>, <span class="ident">Location::Call</span>);
+		<span class="kw">let</span> <span class="ident">c</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">code_len</span>;
+		<span class="kw">let</span> <span class="ident">WasmModule</span> { <span class="ident">code</span>, <span class="ident">hash</span>, .. } <span class="op">=</span> <span class="ident">WasmModule</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::sized</span>(<span class="ident">c</span>, <span class="ident">Location::Call</span>);
 		<span class="ident">Contracts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::store_code_raw</span>(<span class="ident">code</span>, <span class="ident">whitelisted_caller</span>())<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">schedule</span> <span class="op">=</span> <span class="ident">T::Schedule::get</span>();
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">gas_meter</span> <span class="op">=</span> <span class="ident">GasMeter::new</span>(<span class="ident">Weight::MAX</span>);
@@ -3064,15 +3064,15 @@
 		<span class="ident">Contracts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::reinstrument_module</span>(<span class="kw-2">&amp;mut</span> <span class="ident">module</span>, <span class="kw-2">&amp;</span><span class="ident">schedule</span>)<span class="question-mark">?</span>;
 	}
 
-	<span class="comment">// This benchmarks the overhead of loading a code of size `c` kb from storage and into</span>
+	<span class="comment">// This benchmarks the overhead of loading a code of size `c` byte from storage and into</span>
 	<span class="comment">// the sandbox. This does **not** include the actual execution for which the gas meter</span>
 	<span class="comment">// is responsible. This is achieved by generating all code to the `deploy` function</span>
 	<span class="comment">// which is in the wasm module but not executed on `call`.</span>
 	<span class="comment">// The results are supposed to be used as `call_with_code_kb(c) - call_with_code_kb(0)`.</span>
-	<span class="ident">call_with_code_kb</span> {
-		<span class="kw">let</span> <span class="ident">c</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">code_len</span> <span class="op">/</span> <span class="number">1024</span>;
+	<span class="ident">call_with_code_per_byte</span> {
+		<span class="kw">let</span> <span class="ident">c</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">code_len</span>;
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::with_caller</span>(
-			<span class="ident">whitelisted_caller</span>(), <span class="ident">WasmModule::sized</span>(<span class="ident">c</span> <span class="op">*</span> <span class="number">1024</span>, <span class="ident">Location::Deploy</span>), <span class="macro">vec!</span>[],
+			<span class="ident">whitelisted_caller</span>(), <span class="ident">WasmModule::sized</span>(<span class="ident">c</span>, <span class="ident">Location::Deploy</span>), <span class="macro">vec!</span>[],
 		)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">T::Currency::minimum_balance</span>();
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
@@ -3094,13 +3094,13 @@
 	<span class="comment">// We cannot let `c` grow to the maximum code size because the code is not allowed</span>
 	<span class="comment">// to be larger than the maximum size **after instrumentation**.</span>
 	<span class="ident">instantiate_with_code</span> {
-		<span class="kw">let</span> <span class="ident">c</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">Perbill::from_percent</span>(<span class="number">49</span>).<span class="ident">mul_ceil</span>(<span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">code_len</span>) <span class="op">/</span> <span class="number">1024</span>;
-		<span class="kw">let</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">code::max_pages</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() <span class="op">*</span> <span class="number">64</span>;
-		<span class="kw">let</span> <span class="ident">salt</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">42u8</span>; (<span class="ident">s</span> <span class="op">*</span> <span class="number">1024</span>) <span class="kw">as</span> <span class="ident">usize</span>];
+		<span class="kw">let</span> <span class="ident">c</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">Perbill::from_percent</span>(<span class="number">49</span>).<span class="ident">mul_ceil</span>(<span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">code_len</span>);
+		<span class="kw">let</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">code::max_pages</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() <span class="op">*</span> <span class="number">64</span> <span class="op">*</span> <span class="number">1024</span>;
+		<span class="kw">let</span> <span class="ident">salt</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">42u8</span>; <span class="ident">s</span> <span class="kw">as</span> <span class="ident">usize</span>];
 		<span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">T::Currency::minimum_balance</span>();
 		<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">whitelisted_caller</span>();
 		<span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>, <span class="ident">caller_funding</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>());
-		<span class="kw">let</span> <span class="ident">WasmModule</span> { <span class="ident">code</span>, <span class="ident">hash</span>, .. } <span class="op">=</span> <span class="ident">WasmModule</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::sized</span>(<span class="ident">c</span> <span class="op">*</span> <span class="number">1024</span>, <span class="ident">Location::Call</span>);
+		<span class="kw">let</span> <span class="ident">WasmModule</span> { <span class="ident">code</span>, <span class="ident">hash</span>, .. } <span class="op">=</span> <span class="ident">WasmModule</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::sized</span>(<span class="ident">c</span>, <span class="ident">Location::Call</span>);
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>());
 		<span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">Contracts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::contract_address</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>, <span class="kw-2">&amp;</span><span class="ident">hash</span>, <span class="kw-2">&amp;</span><span class="ident">salt</span>);
 	}: <span class="kw">_</span>(<span class="ident">origin</span>, <span class="ident">value</span>, <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="ident">code</span>, <span class="macro">vec!</span>[], <span class="ident">salt</span>)
@@ -3122,8 +3122,8 @@
 	<span class="comment">// Instantiate uses a dummy contract constructor to measure the overhead of the instantiate.</span>
 	<span class="comment">// `s`: Size of the salt in kilobytes.</span>
 	<span class="ident">instantiate</span> {
-		<span class="kw">let</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">code::max_pages</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() <span class="op">*</span> <span class="number">64</span>;
-		<span class="kw">let</span> <span class="ident">salt</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">42u8</span>; (<span class="ident">s</span> <span class="op">*</span> <span class="number">1024</span>) <span class="kw">as</span> <span class="ident">usize</span>];
+		<span class="kw">let</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">code::max_pages</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() <span class="op">*</span> <span class="number">64</span> <span class="op">*</span> <span class="number">1024</span>;
+		<span class="kw">let</span> <span class="ident">salt</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">42u8</span>; <span class="ident">s</span> <span class="kw">as</span> <span class="ident">usize</span>];
 		<span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">T::Currency::minimum_balance</span>();
 		<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">whitelisted_caller</span>();
 		<span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>, <span class="ident">caller_funding</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>());
@@ -3183,10 +3183,10 @@
 	<span class="comment">// We cannot let `c` grow to the maximum code size because the code is not allowed</span>
 	<span class="comment">// to be larger than the maximum size **after instrumentation**.</span>
 	<span class="ident">upload_code</span> {
-		<span class="kw">let</span> <span class="ident">c</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">Perbill::from_percent</span>(<span class="number">50</span>).<span class="ident">mul_ceil</span>(<span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">code_len</span> <span class="op">/</span> <span class="number">1024</span>);
+		<span class="kw">let</span> <span class="ident">c</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">Perbill::from_percent</span>(<span class="number">50</span>).<span class="ident">mul_ceil</span>(<span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">code_len</span>);
 		<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">whitelisted_caller</span>();
 		<span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>, <span class="ident">caller_funding</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>());
-		<span class="kw">let</span> <span class="ident">WasmModule</span> { <span class="ident">code</span>, <span class="ident">hash</span>, .. } <span class="op">=</span> <span class="ident">WasmModule</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::sized</span>(<span class="ident">c</span> <span class="op">*</span> <span class="number">1024</span>, <span class="ident">Location::Call</span>);
+		<span class="kw">let</span> <span class="ident">WasmModule</span> { <span class="ident">code</span>, <span class="ident">hash</span>, .. } <span class="op">=</span> <span class="ident">WasmModule</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::sized</span>(<span class="ident">c</span>, <span class="ident">Location::Call</span>);
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>());
 	}: <span class="kw">_</span>(<span class="ident">origin</span>, <span class="ident">code</span>, <span class="prelude-val">None</span>)
 	<span class="ident">verify</span> {

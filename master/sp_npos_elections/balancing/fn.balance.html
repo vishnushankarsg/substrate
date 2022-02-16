@@ -3,7 +3,7 @@ point where the biggest difference created per iteration of all stakes is <code>
 is called with <code>tolerance = 0</code>, then exactly <code>iterations</code> rounds will be executed, except if no
 change has been made (<code>difference = 0</code>).</p>
 <p>In almost all cases, a balanced solution will have a better score than an unbalanced solution,
-yet this is not 100% guaranteed because the first element of a <a href="../type.ElectionScore.html" title="crate::ElectionScore"><code>crate::ElectionScore</code></a> does not
+yet this is not 100% guaranteed because the first element of a <a href="../struct.ElectionScore.html" title="crate::ElectionScore"><code>crate::ElectionScore</code></a> does not
 directly related to balancing.</p>
 <p>Note that some reference implementation adopt an approach in which voters are balanced randomly
 per round. To advocate determinism, we don’t do this. In each round, all voters are exactly

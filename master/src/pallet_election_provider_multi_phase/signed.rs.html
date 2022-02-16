@@ -940,6 +940,45 @@
 <span id="940">940</span>
 <span id="941">941</span>
 <span id="942">942</span>
+<span id="943">943</span>
+<span id="944">944</span>
+<span id="945">945</span>
+<span id="946">946</span>
+<span id="947">947</span>
+<span id="948">948</span>
+<span id="949">949</span>
+<span id="950">950</span>
+<span id="951">951</span>
+<span id="952">952</span>
+<span id="953">953</span>
+<span id="954">954</span>
+<span id="955">955</span>
+<span id="956">956</span>
+<span id="957">957</span>
+<span id="958">958</span>
+<span id="959">959</span>
+<span id="960">960</span>
+<span id="961">961</span>
+<span id="962">962</span>
+<span id="963">963</span>
+<span id="964">964</span>
+<span id="965">965</span>
+<span id="966">966</span>
+<span id="967">967</span>
+<span id="968">968</span>
+<span id="969">969</span>
+<span id="970">970</span>
+<span id="971">971</span>
+<span id="972">972</span>
+<span id="973">973</span>
+<span id="974">974</span>
+<span id="975">975</span>
+<span id="976">976</span>
+<span id="977">977</span>
+<span id="978">978</span>
+<span id="979">979</span>
+<span id="980">980</span>
+<span id="981">981</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -970,7 +1009,7 @@
 	<span class="ident">traits</span>::{<span class="ident">defensive_prelude</span>::<span class="kw-2">*</span>, <span class="ident">Currency</span>, <span class="ident">Get</span>, <span class="ident">OnUnbalanced</span>, <span class="ident">ReservableCurrency</span>},
 };
 <span class="kw">use</span> <span class="ident">sp_arithmetic::traits::SaturatedConversion</span>;
-<span class="kw">use</span> <span class="ident">sp_npos_elections</span>::{<span class="ident">is_score_better</span>, <span class="ident">ElectionScore</span>, <span class="ident">NposSolution</span>};
+<span class="kw">use</span> <span class="ident">sp_npos_elections</span>::{<span class="ident">ElectionScore</span>, <span class="ident">NposSolution</span>};
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
 	<span class="ident">traits</span>::{<span class="ident">Saturating</span>, <span class="ident">Zero</span>},
 	<span class="ident">RuntimeDebug</span>,
@@ -1235,7 +1274,7 @@
 				<span class="kw">let</span> <span class="ident">threshold</span> <span class="op">=</span> <span class="ident">T::SolutionImprovementThreshold::get</span>();
 
 				<span class="comment">// if we haven&#39;t improved on the weakest score, don&#39;t change anything.</span>
-				<span class="kw">if</span> <span class="op">!</span><span class="ident">is_score_better</span>(<span class="ident">insert_score</span>, <span class="ident">weakest_score</span>, <span class="ident">threshold</span>) {
+				<span class="kw">if</span> <span class="op">!</span><span class="ident">insert_score</span>.<span class="ident">strict_threshold_better</span>(<span class="ident">weakest_score</span>, <span class="ident">threshold</span>) {
 					<span class="kw">return</span> <span class="ident">InsertResult::NotInserted</span>
 				}
 
@@ -1534,7 +1573,7 @@
 			<span class="macro">assert_eq!</span>(<span class="ident">balances</span>(<span class="kw-2">&amp;</span><span class="number">99</span>), (<span class="number">100</span>, <span class="number">0</span>));
 
 			<span class="comment">// make the solution invalid.</span>
-			<span class="ident">solution</span>.<span class="ident">score</span>[<span class="number">0</span>] <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+			<span class="ident">solution</span>.<span class="ident">score</span>.<span class="ident">minimal_stake</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
 
 			<span class="macro">assert_ok!</span>(<span class="ident">submit_with_witness</span>(<span class="ident">Origin::signed</span>(<span class="number">99</span>), <span class="ident">solution</span>));
 			<span class="macro">assert_eq!</span>(<span class="ident">balances</span>(<span class="kw-2">&amp;</span><span class="number">99</span>), (<span class="number">95</span>, <span class="number">5</span>));
@@ -1560,7 +1599,7 @@
 			<span class="macro">assert_ok!</span>(<span class="ident">submit_with_witness</span>(<span class="ident">Origin::signed</span>(<span class="number">99</span>), <span class="ident">solution</span>.<span class="ident">clone</span>()));
 
 			<span class="comment">// make the solution invalid and weaker.</span>
-			<span class="ident">solution</span>.<span class="ident">score</span>[<span class="number">0</span>] <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
+			<span class="ident">solution</span>.<span class="ident">score</span>.<span class="ident">minimal_stake</span> <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
 			<span class="macro">assert_ok!</span>(<span class="ident">submit_with_witness</span>(<span class="ident">Origin::signed</span>(<span class="number">999</span>), <span class="ident">solution</span>));
 			<span class="macro">assert_eq!</span>(<span class="ident">balances</span>(<span class="kw-2">&amp;</span><span class="number">99</span>), (<span class="number">95</span>, <span class="number">5</span>));
 			<span class="macro">assert_eq!</span>(<span class="ident">balances</span>(<span class="kw-2">&amp;</span><span class="number">999</span>), (<span class="number">95</span>, <span class="number">5</span>));
@@ -1583,12 +1622,18 @@
 
 			<span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">SignedMaxSubmissions::get</span>() {
 				<span class="comment">// score is always getting better</span>
-				<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> { <span class="ident">score</span>: [(<span class="number">5</span> <span class="op">+</span> <span class="ident">s</span>).<span class="ident">into</span>(), <span class="number">0</span>, <span class="number">0</span>], ..<span class="ident">Default::default</span>() };
+				<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> {
+					<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: (<span class="number">5</span> <span class="op">+</span> <span class="ident">s</span>).<span class="ident">into</span>(), ..<span class="ident">Default::default</span>() },
+					..<span class="ident">Default::default</span>()
+				};
 				<span class="macro">assert_ok!</span>(<span class="ident">submit_with_witness</span>(<span class="ident">Origin::signed</span>(<span class="number">99</span>), <span class="ident">solution</span>));
 			}
 
 			<span class="comment">// weaker.</span>
-			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> { <span class="ident">score</span>: [<span class="number">4</span>, <span class="number">0</span>, <span class="number">0</span>], ..<span class="ident">Default::default</span>() };
+			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> {
+				<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: <span class="number">4</span>, ..<span class="ident">Default::default</span>() },
+				..<span class="ident">Default::default</span>()
+			};
 
 			<span class="macro">assert_noop!</span>(
 				<span class="ident">submit_with_witness</span>(<span class="ident">Origin::signed</span>(<span class="number">99</span>), <span class="ident">solution</span>),
@@ -1605,27 +1650,33 @@
 
 			<span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">SignedMaxSubmissions::get</span>() {
 				<span class="comment">// score is always getting better</span>
-				<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> { <span class="ident">score</span>: [(<span class="number">5</span> <span class="op">+</span> <span class="ident">s</span>).<span class="ident">into</span>(), <span class="number">0</span>, <span class="number">0</span>], ..<span class="ident">Default::default</span>() };
+				<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> {
+					<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: (<span class="number">5</span> <span class="op">+</span> <span class="ident">s</span>).<span class="ident">into</span>(), ..<span class="ident">Default::default</span>() },
+					..<span class="ident">Default::default</span>()
+				};
 				<span class="macro">assert_ok!</span>(<span class="ident">submit_with_witness</span>(<span class="ident">Origin::signed</span>(<span class="number">99</span>), <span class="ident">solution</span>));
 			}
 
 			<span class="macro">assert_eq!</span>(
 				<span class="ident">MultiPhase::signed_submissions</span>()
 					.<span class="ident">iter</span>()
-					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">raw_solution</span>.<span class="ident">score</span>[<span class="number">0</span>])
+					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">raw_solution</span>.<span class="ident">score</span>.<span class="ident">minimal_stake</span>)
 					.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
 				<span class="macro">vec!</span>[<span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]
 			);
 
 			<span class="comment">// better.</span>
-			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> { <span class="ident">score</span>: [<span class="number">20</span>, <span class="number">0</span>, <span class="number">0</span>], ..<span class="ident">Default::default</span>() };
+			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> {
+				<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: <span class="number">20</span>, ..<span class="ident">Default::default</span>() },
+				..<span class="ident">Default::default</span>()
+			};
 			<span class="macro">assert_ok!</span>(<span class="ident">submit_with_witness</span>(<span class="ident">Origin::signed</span>(<span class="number">99</span>), <span class="ident">solution</span>));
 
 			<span class="comment">// the one with score 5 was rejected, the new one inserted.</span>
 			<span class="macro">assert_eq!</span>(
 				<span class="ident">MultiPhase::signed_submissions</span>()
 					.<span class="ident">iter</span>()
-					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">raw_solution</span>.<span class="ident">score</span>[<span class="number">0</span>])
+					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">raw_solution</span>.<span class="ident">score</span>.<span class="ident">minimal_stake</span>)
 					.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
 				<span class="macro">vec!</span>[<span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">20</span>]
 			);
@@ -1640,30 +1691,39 @@
 
 			<span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">1</span>..<span class="ident">SignedMaxSubmissions::get</span>() {
 				<span class="comment">// score is always getting better</span>
-				<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> { <span class="ident">score</span>: [(<span class="number">5</span> <span class="op">+</span> <span class="ident">s</span>).<span class="ident">into</span>(), <span class="number">0</span>, <span class="number">0</span>], ..<span class="ident">Default::default</span>() };
+				<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> {
+					<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: (<span class="number">5</span> <span class="op">+</span> <span class="ident">s</span>).<span class="ident">into</span>(), ..<span class="ident">Default::default</span>() },
+					..<span class="ident">Default::default</span>()
+				};
 				<span class="macro">assert_ok!</span>(<span class="ident">submit_with_witness</span>(<span class="ident">Origin::signed</span>(<span class="number">99</span>), <span class="ident">solution</span>));
 			}
 
-			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> { <span class="ident">score</span>: [<span class="number">4</span>, <span class="number">0</span>, <span class="number">0</span>], ..<span class="ident">Default::default</span>() };
+			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> {
+				<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: <span class="number">4</span>, ..<span class="ident">Default::default</span>() },
+				..<span class="ident">Default::default</span>()
+			};
 			<span class="macro">assert_ok!</span>(<span class="ident">submit_with_witness</span>(<span class="ident">Origin::signed</span>(<span class="number">99</span>), <span class="ident">solution</span>));
 
 			<span class="macro">assert_eq!</span>(
 				<span class="ident">MultiPhase::signed_submissions</span>()
 					.<span class="ident">iter</span>()
-					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">raw_solution</span>.<span class="ident">score</span>[<span class="number">0</span>])
+					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">raw_solution</span>.<span class="ident">score</span>.<span class="ident">minimal_stake</span>)
 					.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
 				<span class="macro">vec!</span>[<span class="number">4</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>],
 			);
 
 			<span class="comment">// better.</span>
-			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> { <span class="ident">score</span>: [<span class="number">5</span>, <span class="number">0</span>, <span class="number">0</span>], ..<span class="ident">Default::default</span>() };
+			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> {
+				<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: <span class="number">5</span>, ..<span class="ident">Default::default</span>() },
+				..<span class="ident">Default::default</span>()
+			};
 			<span class="macro">assert_ok!</span>(<span class="ident">submit_with_witness</span>(<span class="ident">Origin::signed</span>(<span class="number">99</span>), <span class="ident">solution</span>));
 
 			<span class="comment">// the one with score 5 was rejected, the new one inserted.</span>
 			<span class="macro">assert_eq!</span>(
 				<span class="ident">MultiPhase::signed_submissions</span>()
 					.<span class="ident">iter</span>()
-					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">raw_solution</span>.<span class="ident">score</span>[<span class="number">0</span>])
+					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">raw_solution</span>.<span class="ident">score</span>.<span class="ident">minimal_stake</span>)
 					.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
 				<span class="macro">vec!</span>[<span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>],
 			);
@@ -1678,7 +1738,10 @@
 
 			<span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">SignedMaxSubmissions::get</span>() {
 				<span class="comment">// score is always getting better</span>
-				<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> { <span class="ident">score</span>: [(<span class="number">5</span> <span class="op">+</span> <span class="ident">s</span>).<span class="ident">into</span>(), <span class="number">0</span>, <span class="number">0</span>], ..<span class="ident">Default::default</span>() };
+				<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> {
+					<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: (<span class="number">5</span> <span class="op">+</span> <span class="ident">s</span>).<span class="ident">into</span>(), ..<span class="ident">Default::default</span>() },
+					..<span class="ident">Default::default</span>()
+				};
 				<span class="macro">assert_ok!</span>(<span class="ident">submit_with_witness</span>(<span class="ident">Origin::signed</span>(<span class="number">99</span>), <span class="ident">solution</span>));
 			}
 
@@ -1686,7 +1749,10 @@
 			<span class="macro">assert_eq!</span>(<span class="ident">balances</span>(<span class="kw-2">&amp;</span><span class="number">999</span>).<span class="number">1</span>, <span class="number">0</span>);
 
 			<span class="comment">// better.</span>
-			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> { <span class="ident">score</span>: [<span class="number">20</span>, <span class="number">0</span>, <span class="number">0</span>], ..<span class="ident">Default::default</span>() };
+			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> {
+				<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: <span class="number">20</span>, ..<span class="ident">Default::default</span>() },
+				..<span class="ident">Default::default</span>()
+			};
 			<span class="macro">assert_ok!</span>(<span class="ident">submit_with_witness</span>(<span class="ident">Origin::signed</span>(<span class="number">999</span>), <span class="ident">solution</span>));
 
 			<span class="comment">// got one bond back.</span>
@@ -1702,19 +1768,25 @@
 			<span class="macro">assert!</span>(<span class="ident">MultiPhase::current_phase</span>().<span class="ident">is_signed</span>());
 
 			<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">SignedMaxSubmissions::get</span>() {
-				<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> { <span class="ident">score</span>: [(<span class="number">5</span> <span class="op">+</span> <span class="ident">i</span>).<span class="ident">into</span>(), <span class="number">0</span>, <span class="number">0</span>], ..<span class="ident">Default::default</span>() };
+				<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> {
+					<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: (<span class="number">5</span> <span class="op">+</span> <span class="ident">i</span>).<span class="ident">into</span>(), ..<span class="ident">Default::default</span>() },
+					..<span class="ident">Default::default</span>()
+				};
 				<span class="macro">assert_ok!</span>(<span class="ident">submit_with_witness</span>(<span class="ident">Origin::signed</span>(<span class="number">99</span>), <span class="ident">solution</span>));
 			}
 			<span class="macro">assert_eq!</span>(
 				<span class="ident">MultiPhase::signed_submissions</span>()
 					.<span class="ident">iter</span>()
-					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">raw_solution</span>.<span class="ident">score</span>[<span class="number">0</span>])
+					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">raw_solution</span>.<span class="ident">score</span>.<span class="ident">minimal_stake</span>)
 					.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
 				<span class="macro">vec!</span>[<span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>]
 			);
 
 			<span class="comment">// 5 is not accepted. This will only cause processing with no benefit.</span>
-			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> { <span class="ident">score</span>: [<span class="number">5</span>, <span class="number">0</span>, <span class="number">0</span>], ..<span class="ident">Default::default</span>() };
+			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> {
+				<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: <span class="number">5</span>, ..<span class="ident">Default::default</span>() },
+				..<span class="ident">Default::default</span>()
+			};
 			<span class="macro">assert_noop!</span>(
 				<span class="ident">submit_with_witness</span>(<span class="ident">Origin::signed</span>(<span class="number">99</span>), <span class="ident">solution</span>),
 				<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::SignedQueueFull</span>,
@@ -1742,13 +1814,13 @@
 
 			<span class="comment">// make the solution invalidly better and submit. This ought to be slashed.</span>
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">solution_999</span> <span class="op">=</span> <span class="ident">solution</span>.<span class="ident">clone</span>();
-			<span class="ident">solution_999</span>.<span class="ident">score</span>[<span class="number">0</span>] <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+			<span class="ident">solution_999</span>.<span class="ident">score</span>.<span class="ident">minimal_stake</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
 			<span class="macro">assert_ok!</span>(<span class="ident">submit_with_witness</span>(<span class="ident">Origin::signed</span>(<span class="number">999</span>), <span class="ident">solution_999</span>));
 
 			<span class="comment">// make the solution invalidly worse and submit. This ought to be suppressed and</span>
 			<span class="comment">// returned.</span>
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">solution_9999</span> <span class="op">=</span> <span class="ident">solution</span>.<span class="ident">clone</span>();
-			<span class="ident">solution_9999</span>.<span class="ident">score</span>[<span class="number">0</span>] <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
+			<span class="ident">solution_9999</span>.<span class="ident">score</span>.<span class="ident">minimal_stake</span> <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
 			<span class="macro">assert_ok!</span>(<span class="ident">submit_with_witness</span>(<span class="ident">Origin::signed</span>(<span class="number">9999</span>), <span class="ident">solution_9999</span>));
 
 			<span class="macro">assert_eq!</span>(
@@ -1831,13 +1903,19 @@
 
 			<span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">SignedMaxSubmissions::get</span>() {
 				<span class="comment">// score is always getting better</span>
-				<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> { <span class="ident">score</span>: [(<span class="number">5</span> <span class="op">+</span> <span class="ident">s</span>).<span class="ident">into</span>(), <span class="number">0</span>, <span class="number">0</span>], ..<span class="ident">Default::default</span>() };
+				<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> {
+					<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: (<span class="number">5</span> <span class="op">+</span> <span class="ident">s</span>).<span class="ident">into</span>(), ..<span class="ident">Default::default</span>() },
+					..<span class="ident">Default::default</span>()
+				};
 				<span class="macro">assert_ok!</span>(<span class="ident">submit_with_witness</span>(<span class="ident">Origin::signed</span>(<span class="number">99</span>), <span class="ident">solution</span>));
 			}
 
 			<span class="comment">// this solution has a higher score than any in the queue</span>
 			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> {
-				<span class="ident">score</span>: [(<span class="number">5</span> <span class="op">+</span> <span class="ident">SignedMaxSubmissions::get</span>()).<span class="ident">into</span>(), <span class="number">0</span>, <span class="number">0</span>],
+				<span class="ident">score</span>: <span class="ident">ElectionScore</span> {
+					<span class="ident">minimal_stake</span>: (<span class="number">5</span> <span class="op">+</span> <span class="ident">SignedMaxSubmissions::get</span>()).<span class="ident">into</span>(),
+					..<span class="ident">Default::default</span>()
+				},
 				..<span class="ident">Default::default</span>()
 			};
 

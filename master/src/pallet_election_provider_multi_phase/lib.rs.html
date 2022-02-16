@@ -2129,6 +2129,21 @@
 <span id="2129">2129</span>
 <span id="2130">2130</span>
 <span id="2131">2131</span>
+<span id="2132">2132</span>
+<span id="2133">2133</span>
+<span id="2134">2134</span>
+<span id="2135">2135</span>
+<span id="2136">2136</span>
+<span id="2137">2137</span>
+<span id="2138">2138</span>
+<span id="2139">2139</span>
+<span id="2140">2140</span>
+<span id="2141">2141</span>
+<span id="2142">2142</span>
+<span id="2143">2143</span>
+<span id="2144">2144</span>
+<span id="2145">2145</span>
+<span id="2146">2146</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -3075,8 +3090,11 @@
 			<span class="comment">// Note: we don&#39;t `rotate_round` at this point; the next call to</span>
 			<span class="comment">// `ElectionProvider::elect` will succeed and take care of that.</span>
 
-			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span>
-				<span class="ident">ReadySolution</span> { <span class="ident">supports</span>, <span class="ident">score</span>: [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>], <span class="ident">compute</span>: <span class="ident">ElectionCompute::Emergency</span> };
+			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">ReadySolution</span> {
+				<span class="ident">supports</span>,
+				<span class="ident">score</span>: <span class="ident">Default::default</span>(),
+				<span class="ident">compute</span>: <span class="ident">ElectionCompute::Emergency</span>,
+			};
 
 			<span class="op">&lt;</span><span class="ident">QueuedSolution</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="ident">solution</span>);
 			<span class="prelude-val">Ok</span>(())
@@ -3190,8 +3208,11 @@
 					},
 				)<span class="question-mark">?</span>;
 
-			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span>
-				<span class="ident">ReadySolution</span> { <span class="ident">supports</span>, <span class="ident">score</span>: [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>], <span class="ident">compute</span>: <span class="ident">ElectionCompute::Fallback</span> };
+			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">ReadySolution</span> {
+				<span class="ident">supports</span>,
+				<span class="ident">score</span>: <span class="ident">Default::default</span>(),
+				<span class="ident">compute</span>: <span class="ident">ElectionCompute::Fallback</span>,
+			};
 
 			<span class="op">&lt;</span><span class="ident">QueuedSolution</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="ident">solution</span>);
 			<span class="prelude-val">Ok</span>(())
@@ -3269,10 +3290,10 @@
 					.<span class="ident">map_err</span>(<span class="ident">dispatch_error_to_invalid</span>)<span class="question-mark">?</span>;
 
 				<span class="ident">ValidTransaction::with_tag_prefix</span>(<span class="string">&quot;OffchainElection&quot;</span>)
-					<span class="comment">// The higher the score[0], the better a solution is.</span>
+					<span class="comment">// The higher the score.minimal_stake, the better a solution is.</span>
 					.<span class="ident">priority</span>(
 						<span class="ident">T::MinerTxPriority::get</span>()
-							.<span class="ident">saturating_add</span>(<span class="ident">raw_solution</span>.<span class="ident">score</span>[<span class="number">0</span>].<span class="ident">saturated_into</span>()),
+							.<span class="ident">saturating_add</span>(<span class="ident">raw_solution</span>.<span class="ident">score</span>.<span class="ident">minimal_stake</span>.<span class="ident">saturated_into</span>()),
 					)
 					<span class="comment">// Used to deduplicate unsigned solutions: each validator should produce one</span>
 					<span class="comment">// solution per round at most, and solutions are not propagate.</span>
@@ -3561,7 +3582,7 @@
 		<span class="kw">let</span> <span class="ident">submitted_score</span> <span class="op">=</span> <span class="ident">raw_solution</span>.<span class="ident">score</span>.<span class="ident">clone</span>();
 		<span class="macro">ensure!</span>(
 			<span class="ident"><span class="self">Self</span>::minimum_untrusted_score</span>().<span class="ident">map_or</span>(<span class="bool-val">true</span>, <span class="op">|</span><span class="ident">min_score</span><span class="op">|</span> {
-				<span class="ident">sp_npos_elections::is_score_better</span>(<span class="ident">submitted_score</span>, <span class="ident">min_score</span>, <span class="ident">Perbill::zero</span>())
+				<span class="ident">submitted_score</span>.<span class="ident">strict_threshold_better</span>(<span class="ident">min_score</span>, <span class="ident">Perbill::zero</span>())
 			}),
 			<span class="ident">FeasibilityError::UntrustedScoreTooLow</span>
 		);
@@ -3881,7 +3902,7 @@
 			<span class="macro">assert_eq!</span>(<span class="ident">MultiPhase::snapshot</span>().<span class="ident">unwrap</span>().<span class="ident">voters</span>.<span class="ident">len</span>(), <span class="number">8</span>);
 
 			<span class="comment">// Simply faff with the score.</span>
-			<span class="ident">solution</span>.<span class="ident">score</span>[<span class="number">0</span>] <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+			<span class="ident">solution</span>.<span class="ident">score</span>.<span class="ident">minimal_stake</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
 
 			<span class="macro">assert_noop!</span>(
 				<span class="ident">MultiPhase::feasibility_check</span>(<span class="ident">solution</span>, <span class="ident">COMPUTE</span>),
@@ -4091,7 +4112,10 @@
 
 			<span class="comment">// fill the queue with signed submissions</span>
 			<span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">SignedMaxSubmissions::get</span>() {
-				<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> { <span class="ident">score</span>: [(<span class="number">5</span> <span class="op">+</span> <span class="ident">s</span>).<span class="ident">into</span>(), <span class="number">0</span>, <span class="number">0</span>], ..<span class="ident">Default::default</span>() };
+				<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> {
+					<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: (<span class="number">5</span> <span class="op">+</span> <span class="ident">s</span>).<span class="ident">into</span>(), ..<span class="ident">Default::default</span>() },
+					..<span class="ident">Default::default</span>()
+				};
 				<span class="macro">assert_ok!</span>(<span class="ident">MultiPhase::submit</span>(
 					<span class="ident"><span class="kw">crate</span>::mock::Origin::signed</span>(<span class="number">99</span>),
 					<span class="ident">Box::new</span>(<span class="ident">solution</span>),
@@ -4218,13 +4242,19 @@
 			<span class="ident"><span class="kw">crate</span>::mock::Balancing::set</span>(<span class="prelude-val">Some</span>((<span class="number">2</span>, <span class="number">0</span>)));
 
 			<span class="kw">let</span> (<span class="ident">solution</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">MultiPhase::mine_solution</span>::<span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Runtime</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::Solver</span><span class="op">&gt;</span>().<span class="ident">unwrap</span>();
-			<span class="comment">// Default solution has a score of [50, 100, 5000].</span>
-			<span class="macro">assert_eq!</span>(<span class="ident">solution</span>.<span class="ident">score</span>, [<span class="number">50</span>, <span class="number">100</span>, <span class="number">5000</span>]);
+			<span class="comment">// Default solution&#39;s score.</span>
+			<span class="macro">assert!</span>(<span class="macro">matches!</span>(<span class="ident">solution</span>.<span class="ident">score</span>, <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: <span class="number">50</span>, .. }));
 
-			<span class="op">&lt;</span><span class="ident">MinimumUntrustedScore</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::put</span>([<span class="number">49</span>, <span class="number">0</span>, <span class="number">0</span>]);
+			<span class="op">&lt;</span><span class="ident">MinimumUntrustedScore</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="ident">ElectionScore</span> {
+				<span class="ident">minimal_stake</span>: <span class="number">49</span>,
+				..<span class="ident">Default::default</span>()
+			});
 			<span class="macro">assert_ok!</span>(<span class="ident">MultiPhase::feasibility_check</span>(<span class="ident">solution</span>.<span class="ident">clone</span>(), <span class="ident">ElectionCompute::Signed</span>));
 
-			<span class="op">&lt;</span><span class="ident">MinimumUntrustedScore</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::put</span>([<span class="number">51</span>, <span class="number">0</span>, <span class="number">0</span>]);
+			<span class="op">&lt;</span><span class="ident">MinimumUntrustedScore</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="ident">ElectionScore</span> {
+				<span class="ident">minimal_stake</span>: <span class="number">51</span>,
+				..<span class="ident">Default::default</span>()
+			});
 			<span class="macro">assert_noop!</span>(
 				<span class="ident">MultiPhase::feasibility_check</span>(<span class="ident">solution</span>, <span class="ident">ElectionCompute::Signed</span>),
 				<span class="ident">FeasibilityError::UntrustedScoreTooLow</span>,

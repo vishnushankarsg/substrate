@@ -875,7 +875,7 @@
 				<span class="kw">let</span> <span class="ident">imported</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pool</span>.<span class="ident">write</span>().<span class="ident">import</span>(<span class="ident">tx</span>)<span class="question-mark">?</span>;
 
 				<span class="kw">if</span> <span class="kw">let</span> <span class="ident">base::Imported::Ready</span> { <span class="kw-2">ref</span> <span class="ident">hash</span>, .. } <span class="op">=</span> <span class="ident">imported</span> {
-					<span class="self">self</span>.<span class="ident">import_notification_sinks</span>.<span class="ident">lock</span>().<span class="ident">retain_mut</span>(<span class="op">|</span><span class="ident">sink</span><span class="op">|</span> {
+					<span class="ident">RetainMut::retain_mut</span>(<span class="kw-2">&amp;mut</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">import_notification_sinks</span>.<span class="ident">lock</span>(), <span class="op">|</span><span class="ident">sink</span><span class="op">|</span> {
 						<span class="kw">match</span> <span class="ident">sink</span>.<span class="ident">try_send</span>(<span class="kw-2">*</span><span class="ident">hash</span>) {
 							<span class="prelude-val">Ok</span>(()) =&gt; <span class="bool-val">true</span>,
 							<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt;
