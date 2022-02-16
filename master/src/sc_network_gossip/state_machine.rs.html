@@ -730,11 +730,6 @@
 <span id="730">730</span>
 <span id="731">731</span>
 <span id="732">732</span>
-<span id="733">733</span>
-<span id="734">734</span>
-<span id="735">735</span>
-<span id="736">736</span>
-<span id="737">737</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -755,19 +750,13 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">MessageIntent</span>, <span class="ident">Network</span>, <span class="ident">ValidationResult</span>, <span class="ident">Validator</span>, <span class="ident">ValidatorContext</span>};
 
+<span class="kw">use</span> <span class="ident">ahash::AHashSet</span>;
 <span class="kw">use</span> <span class="ident">libp2p::PeerId</span>;
 <span class="kw">use</span> <span class="ident">lru::LruCache</span>;
 <span class="kw">use</span> <span class="ident">prometheus_endpoint</span>::{<span class="ident">register</span>, <span class="ident">Counter</span>, <span class="ident">PrometheusError</span>, <span class="ident">Registry</span>, <span class="ident">U64</span>};
 <span class="kw">use</span> <span class="ident">sc_network::ObservedRole</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime::traits</span>::{<span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>, <span class="ident">Hash</span>, <span class="ident">HashFor</span>};
-<span class="kw">use</span> <span class="ident">std</span>::{
-	<span class="ident">borrow::Cow</span>,
-	<span class="ident">collections</span>::{<span class="ident">HashMap</span>, <span class="ident">HashSet</span>},
-	<span class="ident">iter</span>,
-	<span class="ident">sync::Arc</span>,
-	<span class="ident">time</span>,
-	<span class="ident">time::Instant</span>,
-};
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">borrow::Cow</span>, <span class="ident">collections::HashMap</span>, <span class="ident">iter</span>, <span class="ident">sync::Arc</span>, <span class="ident">time</span>, <span class="ident">time::Instant</span>};
 
 <span class="comment">// FIXME: Add additional spam/DoS attack protection: https://github.com/paritytech/substrate/issues/1115</span>
 <span class="comment">// NOTE: The current value is adjusted based on largest production network deployment (Kusama) and</span>
@@ -793,7 +782,7 @@
 }
 
 <span class="kw">struct</span> <span class="ident">PeerConsensus</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span> {
-	<span class="ident">known_messages</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span>,
+	<span class="ident">known_messages</span>: <span class="ident">AHashSet</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span>,
 }
 
 <span class="doccomment">/// Topic stream message with sender.</span>
@@ -941,7 +930,8 @@
 			<span class="question-mark">?</span><span class="ident">role</span>,
 			<span class="string">&quot;Registering peer&quot;</span>,
 		);
-		<span class="self">self</span>.<span class="ident">peers</span>.<span class="ident">insert</span>(<span class="ident">who</span>.<span class="ident">clone</span>(), <span class="ident">PeerConsensus</span> { <span class="ident">known_messages</span>: <span class="ident">HashSet::new</span>() });
+		<span class="self">self</span>.<span class="ident">peers</span>
+			.<span class="ident">insert</span>(<span class="ident">who</span>.<span class="ident">clone</span>(), <span class="ident">PeerConsensus</span> { <span class="ident">known_messages</span>: <span class="ident">Default::default</span>() });
 
 		<span class="kw">let</span> <span class="ident">validator</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">validator</span>.<span class="ident">clone</span>();
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">NetworkContext</span> { <span class="ident">gossip</span>: <span class="self">self</span>, <span class="ident">network</span> };
