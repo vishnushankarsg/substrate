@@ -672,23 +672,23 @@
 				<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">f</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">module</span>, <span class="kw-2">&amp;mut</span> <span class="kw-2">*</span><span class="ident">instance</span>, <span class="self">self</span>.<span class="ident">version</span>.<span class="ident">as_ref</span>(), <span class="ident">ext</span>);
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">result</span> {
 					<span class="kw">if</span> <span class="ident">new_inst</span> {
-						<span class="macro">log::warn!</span>(
+						<span class="macro">tracing::warn!</span>(
 							<span class="ident">target</span>: <span class="string">&quot;wasm-runtime&quot;</span>,
-							<span class="string">&quot;Fresh runtime instance failed with {}&quot;</span>,
-							<span class="ident">e</span>,
+							<span class="ident">error</span> <span class="op">=</span> <span class="op">%</span><span class="ident">e</span>,
+							<span class="string">&quot;Fresh runtime instance failed&quot;</span>,
 						)
 					} <span class="kw">else</span> {
-						<span class="macro">log::warn!</span>(
+						<span class="macro">tracing::warn!</span>(
 							<span class="ident">target</span>: <span class="string">&quot;wasm-runtime&quot;</span>,
-							<span class="string">&quot;Evicting failed runtime instance: {}&quot;</span>,
-							<span class="ident">e</span>,
+							<span class="ident">error</span> <span class="op">=</span> <span class="op">%</span><span class="ident">e</span>,
+							<span class="string">&quot;Evicting failed runtime instance&quot;</span>,
 						);
 					}
 				} <span class="kw">else</span> {
 					<span class="kw-2">*</span><span class="ident">locked</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">instance</span>);
 
 					<span class="kw">if</span> <span class="ident">new_inst</span> {
-						<span class="macro">log::debug!</span>(
+						<span class="macro">tracing::debug!</span>(
 							<span class="ident">target</span>: <span class="string">&quot;wasm-runtime&quot;</span>,
 							<span class="string">&quot;Allocated WASM instance {}/{}&quot;</span>,
 							<span class="ident">index</span> <span class="op">+</span> <span class="number">1</span>,
@@ -700,7 +700,7 @@
 				<span class="ident">result</span>
 			},
 			<span class="prelude-val">None</span> =&gt; {
-				<span class="macro">log::warn!</span>(<span class="ident">target</span>: <span class="string">&quot;wasm-runtime&quot;</span>, <span class="string">&quot;Ran out of free WASM instances&quot;</span>);
+				<span class="macro">tracing::warn!</span>(<span class="ident">target</span>: <span class="string">&quot;wasm-runtime&quot;</span>, <span class="string">&quot;Ran out of free WASM instances&quot;</span>);
 
 				<span class="comment">// Allocate a new instance</span>
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">instance</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">module</span>.<span class="ident">new_instance</span>()<span class="question-mark">?</span>;
@@ -828,7 +828,7 @@
 
 			<span class="kw">match</span> <span class="ident">result</span> {
 				<span class="prelude-val">Ok</span>(<span class="kw-2">ref</span> <span class="ident">result</span>) =&gt; {
-					<span class="macro">log::debug!</span>(
+					<span class="macro">tracing::debug!</span>(
 						<span class="ident">target</span>: <span class="string">&quot;wasm-runtime&quot;</span>,
 						<span class="string">&quot;Prepared new runtime version {:?} in {} ms.&quot;</span>,
 						<span class="ident">result</span>.<span class="ident">version</span>,
@@ -836,7 +836,7 @@
 					);
 				},
 				<span class="prelude-val">Err</span>(<span class="kw-2">ref</span> <span class="ident">err</span>) =&gt; {
-					<span class="macro">log::warn!</span>(<span class="ident">target</span>: <span class="string">&quot;wasm-runtime&quot;</span>, <span class="string">&quot;Cannot create a runtime: {:?}&quot;</span>, <span class="ident">err</span>);
+					<span class="macro">tracing::warn!</span>(<span class="ident">target</span>: <span class="string">&quot;wasm-runtime&quot;</span>, <span class="ident">error</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">err</span>, <span class="string">&quot;Cannot create a runtime&quot;</span>);
 				},
 			}
 
