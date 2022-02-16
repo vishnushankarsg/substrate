@@ -1027,8 +1027,6 @@
 
 <span class="kw">use</span> <span class="ident">std::collections::HashMap</span>;
 
-<span class="kw">use</span> <span class="ident">blake2_rfc</span>;
-
 <span class="doccomment">/// The ident used for the block generic parameter.</span>
 <span class="kw">const</span> <span class="ident">BLOCK_GENERIC_IDENT</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;Block&quot;</span>;
 
@@ -1738,8 +1736,10 @@
 <span class="doccomment">/// Generates the identifier as const variable for the given `trait_name`</span>
 <span class="doccomment">/// by hashing the `trait_name`.</span>
 <span class="kw">fn</span> <span class="ident">generate_runtime_api_id</span>(<span class="ident">trait_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">TokenStream</span> {
+	<span class="kw">use</span> <span class="ident">blake2::digest</span>::{<span class="ident">consts::U8</span>, <span class="ident">Digest</span>};
+
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> [<span class="number">0</span>; <span class="number">8</span>];
-	<span class="ident">res</span>.<span class="ident">copy_from_slice</span>(<span class="ident">blake2_rfc::blake2b::blake2b</span>(<span class="number">8</span>, <span class="kw-2">&amp;</span>[], <span class="ident">trait_name</span>.<span class="ident">as_bytes</span>()).<span class="ident">as_bytes</span>());
+	<span class="ident">res</span>.<span class="ident">copy_from_slice</span>(<span class="ident">blake2::Blake2b</span>::<span class="op">&lt;</span><span class="ident">U8</span><span class="op">&gt;</span><span class="ident">::digest</span>(<span class="ident">trait_name</span>).<span class="ident">as_slice</span>());
 
 	<span class="macro">quote!</span>( <span class="kw">const</span> <span class="ident">ID</span>: [<span class="ident">u8</span>; <span class="number">8</span>] <span class="op">=</span> [ #( #<span class="ident">res</span> ),<span class="op">*</span> ]; )
 }
