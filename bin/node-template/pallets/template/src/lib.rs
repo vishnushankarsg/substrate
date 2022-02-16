@@ -123,7 +123,24 @@ where
 {
 
 	pub fn submit_processing_result_hash(hash: H256) -> Result<(), ()> {
-		let call = Call::<T>::64 { something: hash };
+		use frame_system::offchain::SubmitTransaction;
+
+		let call = Call::do_something_unsigned { something: hash };
+
+		match SubmitTransaction::<T, Call<T>>::submit_unsigned_transaction(call.into()) {
+			Ok(()) => log::info!(
+				target: "runtime::template",
+				"Submitted something {}.",
+				hash
+			),
+			Err(e) => log::error!(
+				target: "runtime::template",
+				"Error submitting something ({}): {:?}",
+				hash,
+				e,
+			),
+		}
+
 		Ok(())
 	}
 }

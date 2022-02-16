@@ -372,8 +372,6 @@ use node_template_runtime::opaque::UncheckedExtrinsic as OpaqueRuntimeExtrinsic;
 use futures::stream::StreamExt;
 use futures::FutureExt;
 use sp_api::BlockId;
-use sp_runtime::traits::One;
-use sp_keyring::Sr25519Keyring;
 use construct_extrinsic::ConstructExtrinsicApi;
 use sp_core::H256;
 
@@ -397,7 +395,6 @@ where
 			let client = client.clone();
 			let elapsed = now.duration_since(start).as_secs_f32();
 			log::info!("[{:?}] Tick interval stream", elapsed);
-			let sender = Sr25519Keyring::Alice.pair();
 			async move {
 				let something = fetch_price().await;
 
