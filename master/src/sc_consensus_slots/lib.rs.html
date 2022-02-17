@@ -1259,6 +1259,8 @@
 <span id="1259">1259</span>
 <span id="1260">1260</span>
 <span id="1261">1261</span>
+<span id="1262">1262</span>
+<span id="1263">1263</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -2050,7 +2052,9 @@
 			<span class="kw">return</span> <span class="bool-val">false</span>
 		}
 
-		<span class="kw">let</span> <span class="ident">unfinalized_block_length</span> <span class="op">=</span> <span class="ident">chain_head_number</span> <span class="op">-</span> <span class="ident">finalized_number</span>;
+		<span class="comment">// There can be race between getting the finalized number and getting the best number.</span>
+		<span class="comment">// So, better be safe than sorry.</span>
+		<span class="kw">let</span> <span class="ident">unfinalized_block_length</span> <span class="op">=</span> <span class="ident">chain_head_number</span>.<span class="ident">saturating_sub</span>(<span class="ident">finalized_number</span>);
 		<span class="kw">let</span> <span class="ident">interval</span> <span class="op">=</span>
 			<span class="ident">unfinalized_block_length</span>.<span class="ident">saturating_sub</span>(<span class="self">self</span>.<span class="ident">unfinalized_slack</span>) <span class="op">/</span> <span class="self">self</span>.<span class="ident">authoring_bias</span>;
 		<span class="kw">let</span> <span class="ident">interval</span> <span class="op">=</span> <span class="ident">interval</span>.<span class="ident">min</span>(<span class="self">self</span>.<span class="ident">max_interval</span>);
