@@ -343,11 +343,6 @@
 <span id="343">343</span>
 <span id="344">344</span>
 <span id="345">345</span>
-<span id="346">346</span>
-<span id="347">347</span>
-<span id="348">348</span>
-<span id="349">349</span>
-<span id="350">350</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -419,7 +414,6 @@
 	<span class="kw">pub</span> <span class="ident">notifications_streams_closed_total</span>: <span class="ident">CounterVec</span><span class="op">&lt;</span><span class="ident">U64</span><span class="op">&gt;</span>,
 	<span class="kw">pub</span> <span class="ident">notifications_streams_opened_total</span>: <span class="ident">CounterVec</span><span class="op">&lt;</span><span class="ident">U64</span><span class="op">&gt;</span>,
 	<span class="kw">pub</span> <span class="ident">peerset_num_discovered</span>: <span class="ident">Gauge</span><span class="op">&lt;</span><span class="ident">U64</span><span class="op">&gt;</span>,
-	<span class="kw">pub</span> <span class="ident">peerset_num_requested</span>: <span class="ident">Gauge</span><span class="op">&lt;</span><span class="ident">U64</span><span class="op">&gt;</span>,
 	<span class="kw">pub</span> <span class="ident">pending_connections</span>: <span class="ident">Gauge</span><span class="op">&lt;</span><span class="ident">U64</span><span class="op">&gt;</span>,
 	<span class="kw">pub</span> <span class="ident">pending_connections_errors_total</span>: <span class="ident">CounterVec</span><span class="op">&lt;</span><span class="ident">U64</span><span class="op">&gt;</span>,
 	<span class="kw">pub</span> <span class="ident">requests_in_failure_total</span>: <span class="ident">CounterVec</span><span class="op">&lt;</span><span class="ident">U64</span><span class="op">&gt;</span>,
@@ -553,10 +547,6 @@
 			<span class="ident">peerset_num_discovered</span>: <span class="ident">prometheus::register</span>(<span class="ident">Gauge::new</span>(
 				<span class="string">&quot;substrate_sub_libp2p_peerset_num_discovered&quot;</span>,
 				<span class="string">&quot;Number of nodes stored in the peerset manager&quot;</span>,
-			)<span class="question-mark">?</span>, <span class="ident">registry</span>)<span class="question-mark">?</span>,
-			<span class="ident">peerset_num_requested</span>: <span class="ident">prometheus::register</span>(<span class="ident">Gauge::new</span>(
-				<span class="string">&quot;substrate_sub_libp2p_peerset_num_requested&quot;</span>,
-				<span class="string">&quot;Number of nodes that the peerset manager wants us to be connected to&quot;</span>,
 			)<span class="question-mark">?</span>, <span class="ident">registry</span>)<span class="question-mark">?</span>,
 			<span class="ident">pending_connections</span>: <span class="ident">prometheus::register</span>(<span class="ident">Gauge::new</span>(
 				<span class="string">&quot;substrate_sub_libp2p_pending_connections&quot;</span>,
