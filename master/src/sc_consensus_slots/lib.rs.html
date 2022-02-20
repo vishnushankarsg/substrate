@@ -1917,10 +1917,10 @@
 
 		<span class="macro">debug!</span>(
 			<span class="ident">target</span>: <span class="ident">log_target</span>,
-			<span class="string">&quot;No block for {} slots. Applying {} lenience, total proposing duration: {}&quot;</span>,
+			<span class="string">&quot;No block for {} slots. Applying {} lenience, total proposing duration: {}ms&quot;</span>,
 			<span class="ident">slot_info</span>.<span class="ident">slot</span>.<span class="ident">saturating_sub</span>(<span class="ident">parent_slot</span> <span class="op">+</span> <span class="number">1</span>),
 			<span class="ident">slot_lenience_type</span>.<span class="ident">as_str</span>(),
-			<span class="ident">lenient_proposing_duration</span>.<span class="ident">as_secs</span>(),
+			<span class="ident">lenient_proposing_duration</span>.<span class="ident">as_millis</span>(),
 		);
 
 		<span class="ident">lenient_proposing_duration</span>
