@@ -144,16 +144,16 @@ they received during the era. Points are added to a validator using
 <a href="../pallet_authorship/trait.EventHandler.html" title="pallet_authorship::EventHandler"><code>pallet_authorship::EventHandler</code></a> to add reward
 points to block producer and block producer of referenced uncles.</p>
 <p>The validator and its nominator split their reward as following:</p>
-<p>The validator can declare an amount, named
-<a href="struct.ValidatorPrefs.html#structfield.commission"><code>commission</code></a>, that does not get shared
-with the nominators at each reward payout through its
-<a href="struct.ValidatorPrefs.html" title="ValidatorPrefs"><code>ValidatorPrefs</code></a>. This value gets deducted from the total reward
-that is paid to the validator and its nominators. The remaining portion is split among the
-validator and all of the nominators that nominated the validator, proportional to the value
-staked behind this validator (<em>i.e.</em> dividing the
-<a href="struct.Exposure.html#structfield.own"><code>own</code></a> or
-<a href="struct.Exposure.html#structfield.others"><code>others</code></a> by
-<a href="struct.Exposure.html#structfield.total"><code>total</code></a> in <a href="struct.Exposure.html" title="Exposure"><code>Exposure</code></a>).</p>
+<p>The validator can declare an amount, named <a href="struct.ValidatorPrefs.html#structfield.commission"><code>commission</code></a>, that does
+not get shared with the nominators at each reward payout through its <a href="struct.ValidatorPrefs.html" title="ValidatorPrefs"><code>ValidatorPrefs</code></a>. This
+value gets deducted from the total reward that is paid to the validator and its nominators. The
+remaining portion is split pro rata among the validator and the top
+<a href="pallet/trait.Config.html#associatedtype.MaxNominatorRewardedPerValidator" title="Config::MaxNominatorRewardedPerValidator"><code>Config::MaxNominatorRewardedPerValidator</code></a> nominators that nominated the validator,
+proportional to the value staked behind the validator (<em>i.e.</em> dividing the
+<a href="struct.Exposure.html#structfield.own"><code>own</code></a> or <a href="struct.Exposure.html#structfield.others"><code>others</code></a> by <a href="struct.Exposure.html#structfield.total"><code>total</code></a> in
+<a href="struct.Exposure.html" title="Exposure"><code>Exposure</code></a>). Note that the pro rata division of rewards uses the total exposure behind the
+validator, <em>not</em> just the exposure of the validator and the top
+<a href="pallet/trait.Config.html#associatedtype.MaxNominatorRewardedPerValidator" title="Config::MaxNominatorRewardedPerValidator"><code>Config::MaxNominatorRewardedPerValidator</code></a> nominators.</p>
 <p>All entities who receive a reward have the option to choose their reward destination through the
 <a href="pallet/type.Payee.html" title="Payee"><code>Payee</code></a> storage item (see
 <a href="pallet/enum.Call.html#variant.set_payee"><code>set_payee</code></a>), to be one of the following:</p>
