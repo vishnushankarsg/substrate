@@ -5073,7 +5073,7 @@
 	<span class="comment">// w_local_get = w_bench - 1 * w_param</span>
 	<span class="ident">instr_local_get</span> {
 		<span class="kw">let</span> <span class="ident">r</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">INSTR_BENCHMARK_BATCHES</span>;
-		<span class="kw">let</span> <span class="ident">max_locals</span> <span class="op">=</span> <span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">stack_height</span>;
+		<span class="kw">let</span> <span class="ident">max_locals</span> <span class="op">=</span> <span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">stack_height</span>.<span class="ident">unwrap_or</span>(<span class="number">512</span>);
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">call_body</span> <span class="op">=</span> <span class="ident">body::repeated_dyn</span>(<span class="ident">r</span> <span class="op">*</span> <span class="ident">INSTR_BENCHMARK_BATCH_SIZE</span>, <span class="macro">vec!</span>[
 			<span class="ident">RandomGetLocal</span>(<span class="number">0</span>, <span class="ident">max_locals</span>),
 			<span class="ident">Regular</span>(<span class="ident">Instruction::Drop</span>),
@@ -5090,7 +5090,7 @@
 	<span class="comment">// w_local_set = w_bench - 1 * w_param</span>
 	<span class="ident">instr_local_set</span> {
 		<span class="kw">let</span> <span class="ident">r</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">INSTR_BENCHMARK_BATCHES</span>;
-		<span class="kw">let</span> <span class="ident">max_locals</span> <span class="op">=</span> <span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">stack_height</span>;
+		<span class="kw">let</span> <span class="ident">max_locals</span> <span class="op">=</span> <span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">stack_height</span>.<span class="ident">unwrap_or</span>(<span class="number">512</span>);
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">call_body</span> <span class="op">=</span> <span class="ident">body::repeated_dyn</span>(<span class="ident">r</span> <span class="op">*</span> <span class="ident">INSTR_BENCHMARK_BATCH_SIZE</span>, <span class="macro">vec!</span>[
 			<span class="ident">RandomI64Repeated</span>(<span class="number">1</span>),
 			<span class="ident">RandomSetLocal</span>(<span class="number">0</span>, <span class="ident">max_locals</span>),
@@ -5107,7 +5107,7 @@
 	<span class="comment">// w_local_tee = w_bench - 2 * w_param</span>
 	<span class="ident">instr_local_tee</span> {
 		<span class="kw">let</span> <span class="ident">r</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">INSTR_BENCHMARK_BATCHES</span>;
-		<span class="kw">let</span> <span class="ident">max_locals</span> <span class="op">=</span> <span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">stack_height</span>;
+		<span class="kw">let</span> <span class="ident">max_locals</span> <span class="op">=</span> <span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">stack_height</span>.<span class="ident">unwrap_or</span>(<span class="number">512</span>);
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">call_body</span> <span class="op">=</span> <span class="ident">body::repeated_dyn</span>(<span class="ident">r</span> <span class="op">*</span> <span class="ident">INSTR_BENCHMARK_BATCH_SIZE</span>, <span class="macro">vec!</span>[
 			<span class="ident">RandomI64Repeated</span>(<span class="number">1</span>),
 			<span class="ident">RandomTeeLocal</span>(<span class="number">0</span>, <span class="ident">max_locals</span>),

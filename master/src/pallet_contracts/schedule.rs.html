@@ -768,6 +768,12 @@
 <span id="768">768</span>
 <span id="769">769</span>
 <span id="770">770</span>
+<span id="771">771</span>
+<span id="772">772</span>
+<span id="773">773</span>
+<span id="774">774</span>
+<span id="775">775</span>
+<span id="776">776</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -874,7 +880,13 @@
 	<span class="doccomment">/// See &lt;https://wiki.parity.io/WebAssembly-StackHeight&gt; to find out</span>
 	<span class="doccomment">/// how the stack frame cost is calculated. Each element can be of one of the</span>
 	<span class="doccomment">/// wasm value types. This means the maximum size per element is 64bit.</span>
-	<span class="kw">pub</span> <span class="ident">stack_height</span>: <span class="ident">u32</span>,
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Note</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// It is safe to disable (pass `None`) the `stack_height` when the execution engine</span>
+	<span class="doccomment">/// is part of the runtime and hence there can be no indeterminism between different</span>
+	<span class="doccomment">/// client resident execution engines.</span>
+	<span class="kw">pub</span> <span class="ident">stack_height</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Maximum number of globals a module is allowed to declare.</span>
 	<span class="doccomment">///</span>
@@ -1266,8 +1278,8 @@
 	<span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
 		<span class="self">Self</span> {
 			<span class="ident">event_topics</span>: <span class="number">4</span>,
-			<span class="comment">// 512 * sizeof(i64) will give us a 4k stack.</span>
-			<span class="ident">stack_height</span>: <span class="number">512</span>,
+			<span class="comment">// No stack limit required because we use a runtime resident execution engine.</span>
+			<span class="ident">stack_height</span>: <span class="prelude-val">None</span>,
 			<span class="ident">globals</span>: <span class="number">256</span>,
 			<span class="ident">parameters</span>: <span class="number">128</span>,
 			<span class="ident">memory_pages</span>: <span class="number">16</span>,

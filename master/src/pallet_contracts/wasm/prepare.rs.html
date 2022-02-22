@@ -1094,6 +1094,9 @@
 <span id="1094">1094</span>
 <span id="1095">1095</span>
 <span id="1096">1096</span>
+<span id="1097">1097</span>
+<span id="1098">1098</span>
+<span id="1099">1099</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -1287,10 +1290,13 @@
 	}
 
 	<span class="kw">fn</span> <span class="ident">inject_stack_height_metering</span>(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">contract_module</span> <span class="op">=</span>
-			<span class="ident">wasm_instrument::inject_stack_limiter</span>(<span class="self">self</span>.<span class="ident">module</span>, <span class="self">self</span>.<span class="ident">schedule</span>.<span class="ident">limits</span>.<span class="ident">stack_height</span>)
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">limit</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">schedule</span>.<span class="ident">limits</span>.<span class="ident">stack_height</span> {
+			<span class="kw">let</span> <span class="ident">contract_module</span> <span class="op">=</span> <span class="ident">wasm_instrument::inject_stack_limiter</span>(<span class="self">self</span>.<span class="ident">module</span>, <span class="ident">limit</span>)
 				.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;stack height instrumentation failed&quot;</span>)<span class="question-mark">?</span>;
-		<span class="prelude-val">Ok</span>(<span class="ident">ContractModule</span> { <span class="ident">module</span>: <span class="ident">contract_module</span>, <span class="ident">schedule</span>: <span class="self">self</span>.<span class="ident">schedule</span> })
+			<span class="prelude-val">Ok</span>(<span class="ident">ContractModule</span> { <span class="ident">module</span>: <span class="ident">contract_module</span>, <span class="ident">schedule</span>: <span class="self">self</span>.<span class="ident">schedule</span> })
+		} <span class="kw">else</span> {
+			<span class="prelude-val">Ok</span>(<span class="ident">ContractModule</span> { <span class="ident">module</span>: <span class="self">self</span>.<span class="ident">module</span>, <span class="ident">schedule</span>: <span class="self">self</span>.<span class="ident">schedule</span> })
+		}
 	}
 
 	<span class="doccomment">/// Check that the module has required exported functions. For now</span>

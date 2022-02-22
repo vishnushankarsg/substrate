@@ -569,6 +569,9 @@
 <span id="569">569</span>
 <span id="570">570</span>
 <span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -1137,8 +1140,11 @@
 }
 
 <span class="kw">fn</span> <span class="ident">inject_stack_metering</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">module</span>: <span class="ident">Module</span>) -&gt; <span class="ident">Module</span> {
-	<span class="kw">let</span> <span class="ident">height</span> <span class="op">=</span> <span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">stack_height</span>;
-	<span class="ident">wasm_instrument::inject_stack_limiter</span>(<span class="ident">module</span>, <span class="ident">height</span>).<span class="ident">unwrap</span>()
+	<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">height</span>) <span class="op">=</span> <span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">stack_height</span> {
+		<span class="ident">wasm_instrument::inject_stack_limiter</span>(<span class="ident">module</span>, <span class="ident">height</span>).<span class="ident">unwrap</span>()
+	} <span class="kw">else</span> {
+		<span class="ident">module</span>
+	}
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="pallet_contracts" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
