@@ -1509,7 +1509,7 @@
 <span class="doccomment">/// Means for interacting with a specialized version of the `session` trait.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// This is needed because `Staking` sets the `ValidatorIdOf` of the `pallet_session::Config`</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">SessionInterface</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>: <span class="ident">frame_system::Config</span> {
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">SessionInterface</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Disable the validator at the given index, returns `false` if the validator was already</span>
 	<span class="doccomment">/// disabled or the index is out of bounds.</span>
 	<span class="kw">fn</span> <span class="ident">disable_validator</span>(<span class="ident">validator_index</span>: <span class="ident">u32</span>) -&gt; <span class="ident">bool</span>;
