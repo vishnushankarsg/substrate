@@ -154,6 +154,14 @@
 <span id="154">154</span>
 <span id="155">155</span>
 <span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2021 Parity Technologies (UK) Ltd.</span>
@@ -177,8 +185,6 @@
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::Error</span>;
 <span class="kw">use</span> <span class="ident">sc_client_api</span>::{<span class="ident">AuxStore</span>, <span class="ident">UsageProvider</span>};
-<span class="kw">use</span> <span class="ident">sc_consensus_aura::slot_duration</span>;
-<span class="kw">use</span> <span class="ident">sc_consensus_babe::Config</span>;
 <span class="kw">use</span> <span class="ident">sp_api::ProvideRuntimeApi</span>;
 <span class="kw">use</span> <span class="ident">sp_blockchain::HeaderBackend</span>;
 <span class="kw">use</span> <span class="ident">sp_consensus_aura</span>::{
@@ -186,6 +192,7 @@
 	<span class="ident">AuraApi</span>,
 };
 <span class="kw">use</span> <span class="ident">sp_consensus_babe::BabeApi</span>;
+<span class="kw">use</span> <span class="ident">sp_consensus_slots</span>::{<span class="ident">Slot</span>, <span class="ident">SlotDuration</span>};
 <span class="kw">use</span> <span class="ident">sp_inherents</span>::{<span class="ident">InherentData</span>, <span class="ident">InherentDataProvider</span>, <span class="ident">InherentIdentifier</span>};
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
 	<span class="ident">generic::BlockId</span>,
@@ -209,7 +216,7 @@
 	<span class="comment">// holds the unix millisecnd timestamp for the most recent block</span>
 	<span class="ident">unix_millis</span>: <span class="ident">atomic::AtomicU64</span>,
 	<span class="comment">// configured slot_duration in the runtime</span>
-	<span class="ident">slot_duration</span>: <span class="ident">u64</span>,
+	<span class="ident">slot_duration</span>: <span class="ident">SlotDuration</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">SlotTimestampProvider</span> {
@@ -220,7 +227,7 @@
 		<span class="ident">C</span>: <span class="ident">AuxStore</span> <span class="op">+</span> <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">UsageProvider</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 		<span class="ident">C::Api</span>: <span class="ident">BabeApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 	{
-		<span class="kw">let</span> <span class="ident">slot_duration</span> <span class="op">=</span> <span class="ident">Config::get</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">client</span>)<span class="question-mark">?</span>.<span class="ident">slot_duration</span>;
+		<span class="kw">let</span> <span class="ident">slot_duration</span> <span class="op">=</span> <span class="ident">sc_consensus_babe::Config::get</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">client</span>)<span class="question-mark">?</span>.<span class="ident">slot_duration</span>();
 
 		<span class="kw">let</span> <span class="ident">time</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::with_header</span>(<span class="kw-2">&amp;</span><span class="ident">client</span>, <span class="ident">slot_duration</span>, <span class="op">|</span><span class="ident">header</span><span class="op">|</span> {
 			<span class="kw">let</span> <span class="ident">slot_number</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">sc_consensus_babe::find_pre_digest</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">header</span>)
@@ -239,7 +246,7 @@
 		<span class="ident">C</span>: <span class="ident">AuxStore</span> <span class="op">+</span> <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">UsageProvider</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 		<span class="ident">C::Api</span>: <span class="ident">AuraApi</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">AuthorityId</span><span class="op">&gt;</span>,
 	{
-		<span class="kw">let</span> <span class="ident">slot_duration</span> <span class="op">=</span> (<span class="kw-2">*</span><span class="ident">slot_duration</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">client</span>)<span class="question-mark">?</span>).<span class="ident">get</span>();
+		<span class="kw">let</span> <span class="ident">slot_duration</span> <span class="op">=</span> <span class="ident">sc_consensus_aura::slot_duration</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">client</span>)<span class="question-mark">?</span>;
 
 		<span class="kw">let</span> <span class="ident">time</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::with_header</span>(<span class="kw-2">&amp;</span><span class="ident">client</span>, <span class="ident">slot_duration</span>, <span class="op">|</span><span class="ident">header</span><span class="op">|</span> {
 			<span class="kw">let</span> <span class="ident">slot_number</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">sc_consensus_aura::find_pre_digest</span>::<span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">AuthoritySignature</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">header</span>)
@@ -250,7 +257,11 @@
 		<span class="prelude-val">Ok</span>(<span class="self">Self</span> { <span class="ident">unix_millis</span>: <span class="ident">atomic::AtomicU64::new</span>(<span class="ident">time</span>), <span class="ident">slot_duration</span> })
 	}
 
-	<span class="kw">fn</span> <span class="ident">with_header</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span>(<span class="ident">client</span>: <span class="kw-2">&amp;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>, <span class="ident">slot_duration</span>: <span class="ident">u64</span>, <span class="ident">func</span>: <span class="ident">F</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u64</span>, <span class="ident">Error</span><span class="op">&gt;</span>
+	<span class="kw">fn</span> <span class="ident">with_header</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span>(
+		<span class="ident">client</span>: <span class="kw-2">&amp;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>,
+		<span class="ident">slot_duration</span>: <span class="ident">SlotDuration</span>,
+		<span class="ident">func</span>: <span class="ident">F</span>,
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u64</span>, <span class="ident">Error</span><span class="op">&gt;</span>
 	<span class="kw">where</span>
 		<span class="ident">B</span>: <span class="ident">BlockT</span>,
 		<span class="ident">C</span>: <span class="ident">AuxStore</span> <span class="op">+</span> <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">UsageProvider</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
@@ -266,7 +277,7 @@
 				.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;best header not found in the db!&quot;</span>.<span class="ident">to_string</span>())<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">slot</span> <span class="op">=</span> <span class="ident">func</span>(<span class="ident">header</span>)<span class="question-mark">?</span>;
 			<span class="comment">// add the slot duration so there&#39;s no collision of slots</span>
-			(<span class="ident">slot</span> <span class="op">*</span> <span class="ident">slot_duration</span>) <span class="op">+</span> <span class="ident">slot_duration</span>
+			(<span class="ident">slot</span> <span class="op">*</span> <span class="ident">slot_duration</span>.<span class="ident">as_millis</span>() <span class="kw">as</span> <span class="ident">u64</span>) <span class="op">+</span> <span class="ident">slot_duration</span>.<span class="ident">as_millis</span>() <span class="kw">as</span> <span class="ident">u64</span>
 		} <span class="kw">else</span> {
 			<span class="comment">// this is the first block, use the correct time.</span>
 			<span class="kw">let</span> <span class="ident">now</span> <span class="op">=</span> <span class="ident">SystemTime::now</span>();
@@ -279,8 +290,11 @@
 	}
 
 	<span class="doccomment">/// Get the current slot number</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">slot</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u64</span> {
-		<span class="self">self</span>.<span class="ident">unix_millis</span>.<span class="ident">load</span>(<span class="ident">atomic::Ordering::SeqCst</span>) <span class="op">/</span> <span class="self">self</span>.<span class="ident">slot_duration</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">slot</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Slot</span> {
+		<span class="ident">Slot::from_timestamp</span>(
+			<span class="self">self</span>.<span class="ident">unix_millis</span>.<span class="ident">load</span>(<span class="ident">atomic::Ordering::SeqCst</span>).<span class="ident">into</span>(),
+			<span class="self">self</span>.<span class="ident">slot_duration</span>,
+		)
 	}
 
 	<span class="doccomment">/// Gets the current time stamp.</span>
@@ -296,8 +310,10 @@
 		<span class="ident">inherent_data</span>: <span class="kw-2">&amp;mut</span> <span class="ident">InherentData</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">sp_inherents::Error</span><span class="op">&gt;</span> {
 		<span class="comment">// we update the time here.</span>
-		<span class="kw">let</span> <span class="ident">new_time</span>: <span class="ident">InherentType</span> <span class="op">=</span>
-			<span class="self">self</span>.<span class="ident">unix_millis</span>.<span class="ident">fetch_add</span>(<span class="self">self</span>.<span class="ident">slot_duration</span>, <span class="ident">atomic::Ordering::SeqCst</span>).<span class="ident">into</span>();
+		<span class="kw">let</span> <span class="ident">new_time</span>: <span class="ident">InherentType</span> <span class="op">=</span> <span class="self">self</span>
+			.<span class="ident">unix_millis</span>
+			.<span class="ident">fetch_add</span>(<span class="self">self</span>.<span class="ident">slot_duration</span>.<span class="ident">as_millis</span>() <span class="kw">as</span> <span class="ident">u64</span>, <span class="ident">atomic::Ordering::SeqCst</span>)
+			.<span class="ident">into</span>();
 		<span class="ident">inherent_data</span>.<span class="ident">put_data</span>(<span class="ident">INHERENT_IDENTIFIER</span>, <span class="kw-2">&amp;</span><span class="ident">new_time</span>)<span class="question-mark">?</span>;
 		<span class="prelude-val">Ok</span>(())
 	}

@@ -327,12 +327,6 @@
 <span id="327">327</span>
 <span id="328">328</span>
 <span id="329">329</span>
-<span id="330">330</span>
-<span id="331">331</span>
-<span id="332">332</span>
-<span id="333">333</span>
-<span id="334">334</span>
-<span id="335">335</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -661,12 +655,6 @@
 	<span class="kw">fn</span> <span class="ident">can_author_with</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="ident">BlockId</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
 		<span class="prelude-val">Err</span>(<span class="string">&quot;Authoring is always disabled.&quot;</span>.<span class="ident">to_string</span>())
 	}
-}
-
-<span class="doccomment">/// A type from which a slot duration can be obtained.</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">SlotData</span> {
-	<span class="doccomment">/// Gets the slot duration.</span>
-	<span class="kw">fn</span> <span class="ident">slot_duration</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">sp_std::time::Duration</span>;
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="sp_consensus" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>

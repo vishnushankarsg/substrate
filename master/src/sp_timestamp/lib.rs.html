@@ -266,6 +266,12 @@
 <span id="266">266</span>
 <span id="267">267</span>
 <span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -310,8 +316,14 @@
 	}
 
 	<span class="doccomment">/// Returns `self` as [`Duration`].</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_duration</span>(<span class="self">self</span>) -&gt; <span class="ident">Duration</span> {
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">as_duration</span>(<span class="self">self</span>) -&gt; <span class="ident">Duration</span> {
 		<span class="ident">Duration::from_millis</span>(<span class="self">self</span>.<span class="number">0</span>)
+	}
+
+	<span class="doccomment">/// Returns `self` as a `u64` representing the elapsed time since the UNIX_EPOCH in</span>
+	<span class="doccomment">/// milliseconds.</span>
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">as_millis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u64</span> {
+		<span class="self">self</span>.<span class="number">0</span>
 	}
 
 	<span class="doccomment">/// Checked subtraction that returns `None` on an underflow.</span>
