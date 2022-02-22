@@ -3379,7 +3379,7 @@
 	<span class="doccomment">/// capacity, it will simply saturate. We can&#39;t just iterate over `SignedSubmissionsMap`,</span>
 	<span class="doccomment">/// because iteration is slow. Instead, we store the value here.</span>
 	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type</span> <span class="ident">SignedSubmissionNextIndex</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageValue</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">u32</span>, <span class="ident">ValueQuery</span><span class="op">&gt;</span>;
+	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">SignedSubmissionNextIndex</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageValue</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">u32</span>, <span class="ident">ValueQuery</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// A sorted, bounded set of `(score, index)`, where each `index` points to a value in</span>
 	<span class="doccomment">/// `SignedSubmissions`.</span>
@@ -3388,7 +3388,7 @@
 	<span class="doccomment">/// can be quite large, so we&#39;re willing to pay the cost of multiple database accesses to access</span>
 	<span class="doccomment">/// them one at a time instead of reading and decoding all of them at once.</span>
 	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type</span> <span class="ident">SignedSubmissionIndices</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span>
+	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">SignedSubmissionIndices</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span>
 		<span class="ident">StorageValue</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">SubmissionIndicesOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">ValueQuery</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Unchecked, signed solutions.</span>
@@ -3399,7 +3399,7 @@
 	<span class="doccomment">/// Twox note: the key of the map is an auto-incrementing index which users cannot inspect or</span>
 	<span class="doccomment">/// affect; we shouldn&#39;t need a cryptographically secure hasher.</span>
 	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type</span> <span class="ident">SignedSubmissionsMap</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span>
+	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">SignedSubmissionsMap</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span>
 		<span class="ident">StorageMap</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">Twox64Concat</span>, <span class="ident">u32</span>, <span class="ident">SignedSubmissionOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">OptionQuery</span><span class="op">&gt;</span>;
 
 	<span class="comment">// `SignedSubmissions` items end here.</span>
