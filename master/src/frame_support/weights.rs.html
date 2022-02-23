@@ -984,10 +984,6 @@
 <span id="984">984</span>
 <span id="985">985</span>
 <span id="986">986</span>
-<span id="987">987</span>
-<span id="988">988</span>
-<span id="989">989</span>
-<span id="990">990</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -1117,6 +1113,9 @@
 <span class="doccomment">//! - Ubuntu 19.10 (GNU/Linux 5.3.0-18-generic x86_64)</span>
 <span class="doccomment">//! - rustc 1.42.0 (b8cedc004 2020-03-09)</span>
 
+<span class="kw">mod</span> <span class="ident">paritydb_weights</span>;
+<span class="kw">mod</span> <span class="ident">rocksdb_weights</span>;
+
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dispatch</span>::{<span class="ident">DispatchError</span>, <span class="ident">DispatchErrorWithPostInfo</span>, <span class="ident">DispatchResultWithPostInfo</span>};
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
 <span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
@@ -1142,7 +1141,7 @@
 <span class="doccomment">/// These constants are specific to FRAME, and the current implementation of its various components.</span>
 <span class="doccomment">/// For example: FRAME System, FRAME Executive, our FRAME support libraries, etc...</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">constants</span> {
-	<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">RuntimeDbWeight</span>, <span class="ident">Weight</span>};
+	<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::Weight</span>;
 	<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::parameter_types</span>;
 
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">WEIGHT_PER_SECOND</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="number">1_000_000_000_000</span>;
@@ -1155,19 +1154,12 @@
 		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BlockExecutionWeight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="number">5</span> <span class="op">*</span> <span class="ident">WEIGHT_PER_MILLIS</span>;
 		<span class="doccomment">/// Executing 10,000 System remarks (no-op) txs takes ~1.26 seconds -&gt; ~125 µs per tx</span>
 		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ExtrinsicBaseWeight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="number">125</span> <span class="op">*</span> <span class="ident">WEIGHT_PER_MICROS</span>;
-		<span class="doccomment">/// By default, Substrate uses RocksDB, so this will be the weight used throughout</span>
-		<span class="doccomment">/// the runtime.</span>
-		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">RocksDbWeight</span>: <span class="ident">RuntimeDbWeight</span> <span class="op">=</span> <span class="ident">RuntimeDbWeight</span> {
-			<span class="ident">read</span>: <span class="number">25</span> <span class="op">*</span> <span class="ident">WEIGHT_PER_MICROS</span>,   <span class="comment">// ~25 µs @ 200,000 items</span>
-			<span class="ident">write</span>: <span class="number">100</span> <span class="op">*</span> <span class="ident">WEIGHT_PER_MICROS</span>, <span class="comment">// ~100 µs @ 200,000 items</span>
-		};
-		<span class="doccomment">/// ParityDB can be enabled with a feature flag, but is still experimental. These weights</span>
-		<span class="doccomment">/// are available for brave runtime engineers who may want to try this out as default.</span>
-		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ParityDbWeight</span>: <span class="ident">RuntimeDbWeight</span> <span class="op">=</span> <span class="ident">RuntimeDbWeight</span> {
-			<span class="ident">read</span>: <span class="number">8</span> <span class="op">*</span> <span class="ident">WEIGHT_PER_MICROS</span>,   <span class="comment">// ~8 µs @ 200,000 items</span>
-			<span class="ident">write</span>: <span class="number">50</span> <span class="op">*</span> <span class="ident">WEIGHT_PER_MICROS</span>, <span class="comment">// ~50 µs @ 200,000 items</span>
-		};
 	}
+
+	<span class="comment">// Expose the DB weights.</span>
+	<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">super</span>::{
+		<span class="ident">paritydb_weights::constants::ParityDbWeight</span>, <span class="ident">rocksdb_weights::constants::RocksDbWeight</span>,
+	};
 }
 
 <span class="doccomment">/// Means of weighing some particular kind of data (`T`).</span>
