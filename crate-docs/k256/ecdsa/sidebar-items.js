@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["recoverable","Ethereum-style “recoverable signatures”."]],"struct":[["Error","Signature errors."]],"type":[["DerSignature","ECDSA/secp256k1 signature (ASN.1 DER encoded)"],["Signature","ECDSA/secp256k1 signature (fixed-size)"]]});
