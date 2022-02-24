@@ -160,22 +160,6 @@
 <span id="160">160</span>
 <span id="161">161</span>
 <span id="162">162</span>
-<span id="163">163</span>
-<span id="164">164</span>
-<span id="165">165</span>
-<span id="166">166</span>
-<span id="167">167</span>
-<span id="168">168</span>
-<span id="169">169</span>
-<span id="170">170</span>
-<span id="171">171</span>
-<span id="172">172</span>
-<span id="173">173</span>
-<span id="174">174</span>
-<span id="175">175</span>
-<span id="176">176</span>
-<span id="177">177</span>
-<span id="178">178</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -193,7 +177,6 @@
 <span class="comment">// See the License for the specific language governing permissions and</span>
 <span class="comment">// limitations under the License.</span>
 
-<span class="kw">use</span> <span class="ident">futures_util::future::Future</span>;
 <span class="kw">use</span> <span class="ident">hyper</span>::{
 	<span class="ident">http::StatusCode</span>,
 	<span class="ident">server::Server</span>,
@@ -212,7 +195,6 @@
 <span class="kw">use</span> <span class="ident">prometheus</span>::{<span class="ident">core::Collector</span>, <span class="ident">Encoder</span>, <span class="ident">TextEncoder</span>};
 <span class="kw">use</span> <span class="ident">std::net::SocketAddr</span>;
 
-<span class="kw">mod</span> <span class="ident">networking</span>;
 <span class="kw">mod</span> <span class="ident">sourced</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sourced</span>::{<span class="ident">MetricSource</span>, <span class="ident">SourcedCounter</span>, <span class="ident">SourcedGauge</span>, <span class="ident">SourcedMetric</span>};
@@ -263,23 +245,10 @@
 	}
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Executor</span>;
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">hyper::rt::Executor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Executor</span>
-<span class="kw">where</span>
-	<span class="ident">T</span>: <span class="ident">Future</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-	<span class="ident">T::Output</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-{
-	<span class="kw">fn</span> <span class="ident">execute</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">future</span>: <span class="ident">T</span>) {
-		<span class="ident">async_std::task::spawn</span>(<span class="ident">future</span>);
-	}
-}
-
 <span class="doccomment">/// Initializes the metrics context, and starts an HTTP server</span>
 <span class="doccomment">/// to serve metrics.</span>
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">init_prometheus</span>(<span class="ident">prometheus_addr</span>: <span class="ident">SocketAddr</span>, <span class="ident">registry</span>: <span class="ident">Registry</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-	<span class="kw">let</span> <span class="ident">listener</span> <span class="op">=</span> <span class="ident">async_std::net::TcpListener::bind</span>(<span class="kw-2">&amp;</span><span class="ident">prometheus_addr</span>)
+	<span class="kw">let</span> <span class="ident">listener</span> <span class="op">=</span> <span class="ident">tokio::net::TcpListener::bind</span>(<span class="kw-2">&amp;</span><span class="ident">prometheus_addr</span>)
 		.<span class="kw">await</span>
 		.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">Error::PortInUse</span>(<span class="ident">prometheus_addr</span>))<span class="question-mark">?</span>;
 
@@ -288,12 +257,11 @@
 
 <span class="doccomment">/// Init prometheus using the given listener.</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">init_prometheus_with_listener</span>(
-	<span class="ident">listener</span>: <span class="ident">async_std::net::TcpListener</span>,
+	<span class="ident">listener</span>: <span class="ident">tokio::net::TcpListener</span>,
 	<span class="ident">registry</span>: <span class="ident">Registry</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-	<span class="kw">use</span> <span class="ident">networking::Incoming</span>;
-
-	<span class="macro">log::info!</span>(<span class="string">&quot;〽️ Prometheus exporter started at {}&quot;</span>, <span class="ident">listener</span>.<span class="ident">local_addr</span>()<span class="question-mark">?</span>);
+	<span class="kw">let</span> <span class="ident">listener</span> <span class="op">=</span> <span class="ident">hyper::server::conn::AddrIncoming::from_listener</span>(<span class="ident">listener</span>)<span class="question-mark">?</span>;
+	<span class="macro">log::info!</span>(<span class="string">&quot;〽️ Prometheus exporter started at {}&quot;</span>, <span class="ident">listener</span>.<span class="ident">local_addr</span>());
 
 	<span class="kw">let</span> <span class="ident">service</span> <span class="op">=</span> <span class="ident">make_service_fn</span>(<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
 		<span class="kw">let</span> <span class="ident">registry</span> <span class="op">=</span> <span class="ident">registry</span>.<span class="ident">clone</span>();
@@ -305,7 +273,7 @@
 		}
 	});
 
-	<span class="kw">let</span> <span class="ident">server</span> <span class="op">=</span> <span class="ident">Server::builder</span>(<span class="ident">Incoming</span>(<span class="ident">listener</span>.<span class="ident">incoming</span>())).<span class="ident">executor</span>(<span class="ident">Executor</span>).<span class="ident">serve</span>(<span class="ident">service</span>);
+	<span class="kw">let</span> <span class="ident">server</span> <span class="op">=</span> <span class="ident">Server::builder</span>(<span class="ident">listener</span>).<span class="ident">serve</span>(<span class="ident">service</span>);
 
 	<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">server</span>.<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="ident">Into::into</span>);
 
@@ -325,7 +293,7 @@
 		<span class="kw">let</span> <span class="ident">runtime</span> <span class="op">=</span> <span class="ident">tokio::runtime::Runtime::new</span>().<span class="ident">expect</span>(<span class="string">&quot;Creates the runtime&quot;</span>);
 
 		<span class="kw">let</span> <span class="ident">listener</span> <span class="op">=</span> <span class="ident">runtime</span>
-			.<span class="ident">block_on</span>(<span class="ident">async_std::net::TcpListener::bind</span>(<span class="string">&quot;127.0.0.1:0&quot;</span>))
+			.<span class="ident">block_on</span>(<span class="ident">tokio::net::TcpListener::bind</span>(<span class="string">&quot;127.0.0.1:0&quot;</span>))
 			.<span class="ident">expect</span>(<span class="string">&quot;Creates listener&quot;</span>);
 
 		<span class="kw">let</span> <span class="ident">local_addr</span> <span class="op">=</span> <span class="ident">listener</span>.<span class="ident">local_addr</span>().<span class="ident">expect</span>(<span class="string">&quot;Returns the local addr&quot;</span>);
