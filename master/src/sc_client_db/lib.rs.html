@@ -3349,6 +3349,24 @@
 <span id="3349">3349</span>
 <span id="3350">3350</span>
 <span id="3351">3351</span>
+<span id="3352">3352</span>
+<span id="3353">3353</span>
+<span id="3354">3354</span>
+<span id="3355">3355</span>
+<span id="3356">3356</span>
+<span id="3357">3357</span>
+<span id="3358">3358</span>
+<span id="3359">3359</span>
+<span id="3360">3360</span>
+<span id="3361">3361</span>
+<span id="3362">3362</span>
+<span id="3363">3363</span>
+<span id="3364">3364</span>
+<span id="3365">3365</span>
+<span id="3366">3366</span>
+<span id="3367">3367</span>
+<span id="3368">3368</span>
+<span id="3369">3369</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -3457,7 +3475,8 @@
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">DbState</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">=</span>
 	<span class="ident">sp_state_machine::TrieBackend</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">sp_state_machine::Storage</span><span class="op">&lt;</span><span class="ident">HashFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">HashFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
-<span class="kw">const</span> <span class="ident">DB_HASH_LEN</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">32</span>;
+<span class="doccomment">/// Length of a [`DbHash`].</span>
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DB_HASH_LEN</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">32</span>;
 <span class="doccomment">/// Hash type that this backend uses for the database.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">DbHash</span> <span class="op">=</span> <span class="ident">sp_core::H256</span>;
 
@@ -4399,6 +4418,23 @@
 		};
 
 		<span class="ident"><span class="self">Self</span>::new</span>(<span class="ident">db_setting</span>, <span class="ident">canonicalization_delay</span>).<span class="ident">expect</span>(<span class="string">&quot;failed to create test-db&quot;</span>)
+	}
+
+	<span class="doccomment">/// Expose the Database that is used by this backend.</span>
+	<span class="doccomment">/// The second argument is the Column that stores the State.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Should only be needed for benchmarking.</span>
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>))]</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">expose_db</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (<span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">sp_database::Database</span><span class="op">&lt;</span><span class="ident">DbHash</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">sp_database::ColumnId</span>) {
+		(<span class="self">self</span>.<span class="ident">storage</span>.<span class="ident">db</span>.<span class="ident">clone</span>(), <span class="ident">columns::STATE</span>)
+	}
+
+	<span class="doccomment">/// Expose the Storage that is used by this backend.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Should only be needed for benchmarking.</span>
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>))]</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">expose_storage</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">sp_state_machine::Storage</span><span class="op">&lt;</span><span class="ident">HashFor</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="ident">storage</span>.<span class="ident">clone</span>()
 	}
 
 	<span class="kw">fn</span> <span class="ident">from_database</span>(

@@ -148,6 +148,9 @@
 <span id="148">148</span>
 <span id="149">149</span>
 <span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -166,10 +169,13 @@
 <span class="comment">// limitations under the License.</span>
 
 <span class="kw">mod</span> <span class="ident">command</span>;
+<span class="kw">mod</span> <span class="ident">storage</span>;
 <span class="kw">mod</span> <span class="ident">writer</span>;
 
 <span class="kw">use</span> <span class="ident">sc_cli</span>::{<span class="ident">ExecutionStrategy</span>, <span class="ident">WasmExecutionMethod</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">path::PathBuf</span>};
+
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">storage::StorageCmd</span>;
 
 <span class="comment">// Add a more relaxed parsing for pallet names by allowing pallet directory names with `-` to be</span>
 <span class="comment">// used like crate names with `_`</span>

@@ -158,7 +158,7 @@
 <span class="kw">use</span> <span class="ident">std::path::PathBuf</span>;
 
 <span class="doccomment">/// Shared parameters used by all `CoreParams`.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Args</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Args</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SharedParams</span> {
 	<span class="doccomment">/// Specify the chain specification.</span>
 	<span class="doccomment">///</span>
