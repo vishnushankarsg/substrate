@@ -1137,7 +1137,7 @@
 <span class="doccomment">/// assert_eq!(addr.peer_id.to_base58(), &quot;QmSk5HQbn6LhUwDiNMseVUjuRYhEtYj4aUZ6WfWoGURpdV&quot;);</span>
 <span class="doccomment">/// assert_eq!(addr.multiaddr.to_string(), &quot;/ip4/198.51.100.19/tcp/30333&quot;);</span>
 <span class="doccomment">/// ```</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">serde::Serialize</span>, <span class="ident">serde::Deserialize</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">serde::Serialize</span>, <span class="ident">serde::Deserialize</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">try_from</span> <span class="op">=</span> <span class="string">&quot;String&quot;</span>, <span class="ident">into</span> <span class="op">=</span> <span class="string">&quot;String&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MultiaddrWithPeerId</span> {
 	<span class="doccomment">/// Address of the node.</span>

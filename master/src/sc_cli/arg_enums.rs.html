@@ -268,6 +268,18 @@
 <span id="268">268</span>
 <span id="269">269</span>
 <span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -285,8 +297,8 @@
 
 <span class="comment">// You should have received a copy of the GNU General Public License</span>
 <span class="comment">// along with this program. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
-<span class="comment">// NOTE: we allow missing docs here because arg_enum! creates the function variants without doc</span>
-<span class="attribute">#![<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
+
+<span class="doccomment">//! Definitions of [`ArgEnum`] types.</span>
 
 <span class="kw">use</span> <span class="ident">clap::ArgEnum</span>;
 
@@ -360,6 +372,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">ArgEnum</span>)]</span>
 <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;PascalCase&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">TracingReceiver</span> {
+	<span class="doccomment">/// Output the tracing records using the log.</span>
 	<span class="ident">Log</span>,
 }
 
@@ -371,25 +384,33 @@
 	}
 }
 
-<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
+<span class="doccomment">/// The type of the node key.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">ArgEnum</span>)]</span>
 <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;PascalCase&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">NodeKeyType</span> {
+	<span class="doccomment">/// Use ed25519.</span>
 	<span class="ident">Ed25519</span>,
 }
 
+<span class="doccomment">/// The crypto scheme to use.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">ArgEnum</span>)]</span>
 <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;PascalCase&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">CryptoScheme</span> {
+	<span class="doccomment">/// Use ed25519.</span>
 	<span class="ident">Ed25519</span>,
+	<span class="doccomment">/// Use sr25519.</span>
 	<span class="ident">Sr25519</span>,
+	<span class="doccomment">/// Use</span>
 	<span class="ident">Ecdsa</span>,
 }
 
+<span class="doccomment">/// The type of the output format.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">ArgEnum</span>)]</span>
 <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;PascalCase&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">OutputType</span> {
+	<span class="doccomment">/// Output as json.</span>
 	<span class="ident">Json</span>,
+	<span class="doccomment">/// Output as text.</span>
 	<span class="ident">Text</span>,
 }
 
@@ -397,13 +418,13 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">ArgEnum</span>)]</span>
 <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;PascalCase&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ExecutionStrategy</span> {
-	<span class="comment">// Execute with native build (if available, WebAssembly otherwise).</span>
+	<span class="doccomment">/// Execute with native build (if available, WebAssembly otherwise).</span>
 	<span class="ident">Native</span>,
-	<span class="comment">// Only execute with the WebAssembly build.</span>
+	<span class="doccomment">/// Only execute with the WebAssembly build.</span>
 	<span class="ident">Wasm</span>,
-	<span class="comment">// Execute with both native (where available) and WebAssembly builds.</span>
+	<span class="doccomment">/// Execute with both native (where available) and WebAssembly builds.</span>
 	<span class="ident">Both</span>,
-	<span class="comment">// Execute with the native build if possible; if it fails, then execute with WebAssembly.</span>
+	<span class="doccomment">/// Execute with the native build if possible; if it fails, then execute with WebAssembly.</span>
 	<span class="ident">NativeElseWasm</span>,
 }
 
@@ -435,12 +456,12 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">ArgEnum</span>)]</span>
 <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;PascalCase&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">RpcMethods</span> {
-	<span class="comment">// Expose every RPC method only when RPC is listening on `localhost`,</span>
-	<span class="comment">// otherwise serve only safe RPC methods.</span>
+	<span class="doccomment">/// Expose every RPC method only when RPC is listening on `localhost`,</span>
+	<span class="doccomment">/// otherwise serve only safe RPC methods.</span>
 	<span class="ident">Auto</span>,
-	<span class="comment">// Allow only a safe subset of RPC methods.</span>
+	<span class="doccomment">/// Allow only a safe subset of RPC methods.</span>
 	<span class="ident">Safe</span>,
-	<span class="comment">// Expose every RPC method (even potentially unsafe ones).</span>
+	<span class="doccomment">/// Expose every RPC method (even potentially unsafe ones).</span>
 	<span class="ident">Unsafe</span>,
 }
 
@@ -494,22 +515,25 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">ArgEnum</span>)]</span>
 <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;PascalCase&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">OffchainWorkerEnabled</span> {
+	<span class="doccomment">/// Always have offchain worker enabled.</span>
 	<span class="ident">Always</span>,
+	<span class="doccomment">/// Never enable the offchain worker.</span>
 	<span class="ident">Never</span>,
+	<span class="doccomment">/// Only enable the offchain worker when running as validator.</span>
 	<span class="ident">WhenValidating</span>,
 }
 
 <span class="doccomment">/// Syncing mode.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">ArgEnum</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">ArgEnum</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;PascalCase&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">SyncMode</span> {
-	<span class="comment">// Full sync. Donwnload end verify all blocks.</span>
+	<span class="doccomment">/// Full sync. Download end verify all blocks.</span>
 	<span class="ident">Full</span>,
-	<span class="comment">// Download blocks without executing them. Download latest state with proofs.</span>
+	<span class="doccomment">/// Download blocks without executing them. Download latest state with proofs.</span>
 	<span class="ident">Fast</span>,
-	<span class="comment">// Download blocks without executing them. Download latest state without proofs.</span>
+	<span class="doccomment">/// Download blocks without executing them. Download latest state without proofs.</span>
 	<span class="ident">FastUnsafe</span>,
-	<span class="comment">// Prove finality and download the latest state.</span>
+	<span class="doccomment">/// Prove finality and download the latest state.</span>
 	<span class="ident">Warp</span>,
 }
 

@@ -182,7 +182,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Log levels (least to most verbose) are error, warn, info, debug, and trace.</span>
 	<span class="doccomment">/// By default, all targets log `info`. The global log level can be set with -l&lt;level&gt;.</span>
-	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">short</span> <span class="op">=</span> <span class="string">&#39;l&#39;</span>, <span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;LOG_PATTERN&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">short</span> <span class="op">=</span> <span class="string">&#39;l&#39;</span>, <span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;LOG_PATTERN&quot;</span>, <span class="ident">multiple_values</span>(<span class="bool-val">true</span>))]</span>
 	<span class="kw">pub</span> <span class="ident">log</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Enable detailed log output.</span>
