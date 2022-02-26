@@ -1931,7 +1931,7 @@
 					<span class="kw">let</span> <span class="ident">new_pos</span> <span class="op">=</span> <span class="ident">queue</span>.<span class="ident">binary_search_by_key</span>(<span class="kw-2">&amp;</span><span class="ident">ayes</span>, <span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="number">1</span>).<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>);
 					<span class="ident">branch</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">maybe_old_pos</span>.<span class="ident">is_none</span>() <span class="op">&amp;&amp;</span> <span class="ident">new_pos</span> <span class="op">&gt;</span> <span class="number">0</span> {
 						<span class="comment">// Just insert.</span>
-						<span class="ident">queue</span>.<span class="ident">force_insert_keep_right</span>(<span class="ident">new_pos</span>, (<span class="ident">index</span>, <span class="ident">ayes</span>));
+						<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">queue</span>.<span class="ident">force_insert_keep_right</span>(<span class="ident">new_pos</span>, (<span class="ident">index</span>, <span class="ident">ayes</span>));
 						<span class="ident">ServiceBranch::RequeuedInsertion</span>
 					} <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">old_pos</span>) <span class="op">=</span> <span class="ident">maybe_old_pos</span> {
 						<span class="comment">// We were in the queue - slide into the correct position.</span>
