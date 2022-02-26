@@ -1898,6 +1898,17 @@
 <span id="1898">1898</span>
 <span id="1899">1899</span>
 <span id="1900">1900</span>
+<span id="1901">1901</span>
+<span id="1902">1902</span>
+<span id="1903">1903</span>
+<span id="1904">1904</span>
+<span id="1905">1905</span>
+<span id="1906">1906</span>
+<span id="1907">1907</span>
+<span id="1908">1908</span>
+<span id="1909">1909</span>
+<span id="1910">1910</span>
+<span id="1911">1911</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1965,6 +1976,12 @@
 };
 
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
+<span class="kw">use</span> <span class="ident">secp256k1</span>::{
+	<span class="ident">ecdsa</span>::{<span class="ident">RecoverableSignature</span>, <span class="ident">RecoveryId</span>},
+	<span class="ident">Message</span>, <span class="ident">SECP256K1</span>,
+};
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">sp_externalities</span>::{<span class="ident">Externalities</span>, <span class="ident">ExternalitiesExt</span>};
@@ -2547,7 +2564,7 @@
 		<span class="ident">SyncCryptoStore::sign_with</span>(<span class="ident">keystore</span>, <span class="ident">id</span>, <span class="kw-2">&amp;</span><span class="ident">pub_key</span>.<span class="ident">into</span>(), <span class="ident">msg</span>)
 			.<span class="ident">ok</span>()
 			.<span class="ident">flatten</span>()
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">sig</span><span class="op">|</span> <span class="ident">ed25519::Signature::from_slice</span>(<span class="ident">sig</span>.<span class="ident">as_slice</span>()))
+			.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">sig</span><span class="op">|</span> <span class="ident">ed25519::Signature::from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">sig</span>))
 	}
 
 	<span class="doccomment">/// Verify `ed25519` signature.</span>
@@ -2671,7 +2688,7 @@
 		<span class="ident">SyncCryptoStore::sign_with</span>(<span class="ident">keystore</span>, <span class="ident">id</span>, <span class="kw-2">&amp;</span><span class="ident">pub_key</span>.<span class="ident">into</span>(), <span class="ident">msg</span>)
 			.<span class="ident">ok</span>()
 			.<span class="ident">flatten</span>()
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">sig</span><span class="op">|</span> <span class="ident">sr25519::Signature::from_slice</span>(<span class="ident">sig</span>.<span class="ident">as_slice</span>()))
+			.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">sig</span><span class="op">|</span> <span class="ident">sr25519::Signature::from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">sig</span>))
 	}
 
 	<span class="doccomment">/// Verify an `sr25519` signature.</span>
@@ -2720,7 +2737,7 @@
 		<span class="ident">SyncCryptoStore::sign_with</span>(<span class="ident">keystore</span>, <span class="ident">id</span>, <span class="kw-2">&amp;</span><span class="ident">pub_key</span>.<span class="ident">into</span>(), <span class="ident">msg</span>)
 			.<span class="ident">ok</span>()
 			.<span class="ident">flatten</span>()
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">sig</span><span class="op">|</span> <span class="ident">ecdsa::Signature::from_slice</span>(<span class="ident">sig</span>.<span class="ident">as_slice</span>()))
+			.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">sig</span><span class="op">|</span> <span class="ident">ecdsa::Signature::from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">sig</span>))
 	}
 
 	<span class="doccomment">/// Sign the given a pre-hashed `msg` with the `ecdsa` key that corresponds to the given public</span>
@@ -2742,7 +2759,9 @@
 	<span class="doccomment">/// Verify `ecdsa` signature.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Returns `true` when the verification was successful.</span>
+	<span class="doccomment">/// This version is able to handle, non-standard, overflowing signatures.</span>
 	<span class="kw">fn</span> <span class="ident">ecdsa_verify</span>(<span class="ident">sig</span>: <span class="kw-2">&amp;</span><span class="ident">ecdsa::Signature</span>, <span class="ident">msg</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">pub_key</span>: <span class="kw-2">&amp;</span><span class="ident">ecdsa::Public</span>) -&gt; <span class="ident">bool</span> {
+		<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">deprecated</span>)]</span>
 		<span class="ident">ecdsa::Pair::verify_deprecated</span>(<span class="ident">sig</span>, <span class="ident">msg</span>, <span class="ident">pub_key</span>)
 	}
 
@@ -2791,18 +2810,20 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Returns `Err` if the signature is bad, otherwise the 64-byte pubkey</span>
 	<span class="doccomment">/// (doesn&#39;t include the 0x04 prefix).</span>
+	<span class="doccomment">/// This version is able to handle, non-standard, overflowing signatures.</span>
 	<span class="kw">fn</span> <span class="ident">secp256k1_ecdsa_recover</span>(
 		<span class="ident">sig</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>; <span class="number">65</span>],
 		<span class="ident">msg</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>; <span class="number">32</span>],
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">64</span>], <span class="ident">EcdsaVerifyError</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">rs</span> <span class="op">=</span> <span class="ident">libsecp256k1::Signature::parse_overflowing_slice</span>(<span class="kw-2">&amp;</span><span class="ident">sig</span>[<span class="number">0</span>..<span class="number">64</span>])
-			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">EcdsaVerifyError::BadRS</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">libsecp256k1::RecoveryId::parse</span>(
-			<span class="kw">if</span> <span class="ident">sig</span>[<span class="number">64</span>] <span class="op">&gt;</span> <span class="number">26</span> { <span class="ident">sig</span>[<span class="number">64</span>] <span class="op">-</span> <span class="number">27</span> } <span class="kw">else</span> { <span class="ident">sig</span>[<span class="number">64</span>] } <span class="kw">as</span> <span class="ident">u8</span>
+		<span class="kw">let</span> <span class="ident">rid</span> <span class="op">=</span> <span class="ident">libsecp256k1::RecoveryId::parse</span>(
+			<span class="kw">if</span> <span class="ident">sig</span>[<span class="number">64</span>] <span class="op">&gt;</span> <span class="number">26</span> { <span class="ident">sig</span>[<span class="number">64</span>] <span class="op">-</span> <span class="number">27</span> } <span class="kw">else</span> { <span class="ident">sig</span>[<span class="number">64</span>] } <span class="kw">as</span> <span class="ident">u8</span>,
 		)
 		.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">EcdsaVerifyError::BadV</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">pubkey</span> <span class="op">=</span> <span class="ident">libsecp256k1::recover</span>(<span class="kw-2">&amp;</span><span class="ident">libsecp256k1::Message::parse</span>(<span class="ident">msg</span>), <span class="kw-2">&amp;</span><span class="ident">rs</span>, <span class="kw-2">&amp;</span><span class="ident">v</span>)
-			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">EcdsaVerifyError::BadSignature</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">sig</span> <span class="op">=</span> <span class="ident">libsecp256k1::Signature::parse_overflowing_slice</span>(<span class="kw-2">&amp;</span><span class="ident">sig</span>[..<span class="number">64</span>])
+			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">EcdsaVerifyError::BadRS</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">libsecp256k1::Message::parse</span>(<span class="ident">msg</span>);
+		<span class="kw">let</span> <span class="ident">pubkey</span> <span class="op">=</span>
+			<span class="ident">libsecp256k1::recover</span>(<span class="kw-2">&amp;</span><span class="ident">msg</span>, <span class="kw-2">&amp;</span><span class="ident">sig</span>, <span class="kw-2">&amp;</span><span class="ident">rid</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">EcdsaVerifyError::BadSignature</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> [<span class="number">0u8</span>; <span class="number">64</span>];
 		<span class="ident">res</span>.<span class="ident">copy_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">pubkey</span>.<span class="ident">serialize</span>()[<span class="number">1</span>..<span class="number">65</span>]);
 		<span class="prelude-val">Ok</span>(<span class="ident">res</span>)
@@ -2820,16 +2841,16 @@
 		<span class="ident">sig</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>; <span class="number">65</span>],
 		<span class="ident">msg</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>; <span class="number">32</span>],
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">64</span>], <span class="ident">EcdsaVerifyError</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">rs</span> <span class="op">=</span> <span class="ident">libsecp256k1::Signature::parse_standard_slice</span>(<span class="kw-2">&amp;</span><span class="ident">sig</span>[<span class="number">0</span>..<span class="number">64</span>])
+		<span class="kw">let</span> <span class="ident">rid</span> <span class="op">=</span> <span class="ident">RecoveryId::from_i32</span>(<span class="kw">if</span> <span class="ident">sig</span>[<span class="number">64</span>] <span class="op">&gt;</span> <span class="number">26</span> { <span class="ident">sig</span>[<span class="number">64</span>] <span class="op">-</span> <span class="number">27</span> } <span class="kw">else</span> { <span class="ident">sig</span>[<span class="number">64</span>] } <span class="kw">as</span> <span class="ident">i32</span>)
+			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">EcdsaVerifyError::BadV</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">sig</span> <span class="op">=</span> <span class="ident">RecoverableSignature::from_compact</span>(<span class="kw-2">&amp;</span><span class="ident">sig</span>[..<span class="number">64</span>], <span class="ident">rid</span>)
 			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">EcdsaVerifyError::BadRS</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">libsecp256k1::RecoveryId::parse</span>(
-			<span class="kw">if</span> <span class="ident">sig</span>[<span class="number">64</span>] <span class="op">&gt;</span> <span class="number">26</span> { <span class="ident">sig</span>[<span class="number">64</span>] <span class="op">-</span> <span class="number">27</span> } <span class="kw">else</span> { <span class="ident">sig</span>[<span class="number">64</span>] } <span class="kw">as</span> <span class="ident">u8</span>
-		)
-		.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">EcdsaVerifyError::BadV</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">pubkey</span> <span class="op">=</span> <span class="ident">libsecp256k1::recover</span>(<span class="kw-2">&amp;</span><span class="ident">libsecp256k1::Message::parse</span>(<span class="ident">msg</span>), <span class="kw-2">&amp;</span><span class="ident">rs</span>, <span class="kw-2">&amp;</span><span class="ident">v</span>)
+		<span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">Message::from_slice</span>(<span class="ident">msg</span>).<span class="ident">expect</span>(<span class="string">&quot;Message is 32 bytes; qed&quot;</span>);
+		<span class="kw">let</span> <span class="ident">pubkey</span> <span class="op">=</span> <span class="ident">SECP256K1</span>
+			.<span class="ident">recover_ecdsa</span>(<span class="kw-2">&amp;</span><span class="ident">msg</span>, <span class="kw-2">&amp;</span><span class="ident">sig</span>)
 			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">EcdsaVerifyError::BadSignature</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> [<span class="number">0u8</span>; <span class="number">64</span>];
-		<span class="ident">res</span>.<span class="ident">copy_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">pubkey</span>.<span class="ident">serialize</span>()[<span class="number">1</span>..<span class="number">65</span>]);
+		<span class="ident">res</span>.<span class="ident">copy_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">pubkey</span>.<span class="ident">serialize_uncompressed</span>()[<span class="number">1</span>..]);
 		<span class="prelude-val">Ok</span>(<span class="ident">res</span>)
 	}
 
@@ -2843,14 +2864,15 @@
 		<span class="ident">sig</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>; <span class="number">65</span>],
 		<span class="ident">msg</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>; <span class="number">32</span>],
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">33</span>], <span class="ident">EcdsaVerifyError</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">rs</span> <span class="op">=</span> <span class="ident">libsecp256k1::Signature::parse_overflowing_slice</span>(<span class="kw-2">&amp;</span><span class="ident">sig</span>[<span class="number">0</span>..<span class="number">64</span>])
-			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">EcdsaVerifyError::BadRS</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">libsecp256k1::RecoveryId::parse</span>(
-			<span class="kw">if</span> <span class="ident">sig</span>[<span class="number">64</span>] <span class="op">&gt;</span> <span class="number">26</span> { <span class="ident">sig</span>[<span class="number">64</span>] <span class="op">-</span> <span class="number">27</span> } <span class="kw">else</span> { <span class="ident">sig</span>[<span class="number">64</span>] } <span class="kw">as</span> <span class="ident">u8</span>
+		<span class="kw">let</span> <span class="ident">rid</span> <span class="op">=</span> <span class="ident">libsecp256k1::RecoveryId::parse</span>(
+			<span class="kw">if</span> <span class="ident">sig</span>[<span class="number">64</span>] <span class="op">&gt;</span> <span class="number">26</span> { <span class="ident">sig</span>[<span class="number">64</span>] <span class="op">-</span> <span class="number">27</span> } <span class="kw">else</span> { <span class="ident">sig</span>[<span class="number">64</span>] } <span class="kw">as</span> <span class="ident">u8</span>,
 		)
 		.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">EcdsaVerifyError::BadV</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">pubkey</span> <span class="op">=</span> <span class="ident">libsecp256k1::recover</span>(<span class="kw-2">&amp;</span><span class="ident">libsecp256k1::Message::parse</span>(<span class="ident">msg</span>), <span class="kw-2">&amp;</span><span class="ident">rs</span>, <span class="kw-2">&amp;</span><span class="ident">v</span>)
-			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">EcdsaVerifyError::BadSignature</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">sig</span> <span class="op">=</span> <span class="ident">libsecp256k1::Signature::parse_overflowing_slice</span>(<span class="kw-2">&amp;</span><span class="ident">sig</span>[<span class="number">0</span>..<span class="number">64</span>])
+			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">EcdsaVerifyError::BadRS</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">libsecp256k1::Message::parse</span>(<span class="ident">msg</span>);
+		<span class="kw">let</span> <span class="ident">pubkey</span> <span class="op">=</span>
+			<span class="ident">libsecp256k1::recover</span>(<span class="kw-2">&amp;</span><span class="ident">msg</span>, <span class="kw-2">&amp;</span><span class="ident">sig</span>, <span class="kw-2">&amp;</span><span class="ident">rid</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">EcdsaVerifyError::BadSignature</span>)<span class="question-mark">?</span>;
 		<span class="prelude-val">Ok</span>(<span class="ident">pubkey</span>.<span class="ident">serialize_compressed</span>())
 	}
 
@@ -2865,15 +2887,15 @@
 		<span class="ident">sig</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>; <span class="number">65</span>],
 		<span class="ident">msg</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>; <span class="number">32</span>],
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">33</span>], <span class="ident">EcdsaVerifyError</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">rs</span> <span class="op">=</span> <span class="ident">libsecp256k1::Signature::parse_standard_slice</span>(<span class="kw-2">&amp;</span><span class="ident">sig</span>[<span class="number">0</span>..<span class="number">64</span>])
+		<span class="kw">let</span> <span class="ident">rid</span> <span class="op">=</span> <span class="ident">RecoveryId::from_i32</span>(<span class="kw">if</span> <span class="ident">sig</span>[<span class="number">64</span>] <span class="op">&gt;</span> <span class="number">26</span> { <span class="ident">sig</span>[<span class="number">64</span>] <span class="op">-</span> <span class="number">27</span> } <span class="kw">else</span> { <span class="ident">sig</span>[<span class="number">64</span>] } <span class="kw">as</span> <span class="ident">i32</span>)
+			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">EcdsaVerifyError::BadV</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">sig</span> <span class="op">=</span> <span class="ident">RecoverableSignature::from_compact</span>(<span class="kw-2">&amp;</span><span class="ident">sig</span>[..<span class="number">64</span>], <span class="ident">rid</span>)
 			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">EcdsaVerifyError::BadRS</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">libsecp256k1::RecoveryId::parse</span>(
-			<span class="kw">if</span> <span class="ident">sig</span>[<span class="number">64</span>] <span class="op">&gt;</span> <span class="number">26</span> { <span class="ident">sig</span>[<span class="number">64</span>] <span class="op">-</span> <span class="number">27</span> } <span class="kw">else</span> { <span class="ident">sig</span>[<span class="number">64</span>] } <span class="kw">as</span> <span class="ident">u8</span>
-		)
-		.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">EcdsaVerifyError::BadV</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">pubkey</span> <span class="op">=</span> <span class="ident">libsecp256k1::recover</span>(<span class="kw-2">&amp;</span><span class="ident">libsecp256k1::Message::parse</span>(<span class="ident">msg</span>), <span class="kw-2">&amp;</span><span class="ident">rs</span>, <span class="kw-2">&amp;</span><span class="ident">v</span>)
+		<span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">Message::from_slice</span>(<span class="ident">msg</span>).<span class="ident">expect</span>(<span class="string">&quot;Message is 32 bytes; qed&quot;</span>);
+		<span class="kw">let</span> <span class="ident">pubkey</span> <span class="op">=</span> <span class="ident">SECP256K1</span>
+			.<span class="ident">recover_ecdsa</span>(<span class="kw-2">&amp;</span><span class="ident">msg</span>, <span class="kw-2">&amp;</span><span class="ident">sig</span>)
 			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">EcdsaVerifyError::BadSignature</span>)<span class="question-mark">?</span>;
-		<span class="prelude-val">Ok</span>(<span class="ident">pubkey</span>.<span class="ident">serialize_compressed</span>())
+		<span class="prelude-val">Ok</span>(<span class="ident">pubkey</span>.<span class="ident">serialize</span>())
 	}
 }
 

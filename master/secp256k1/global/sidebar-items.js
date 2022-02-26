@@ -1,0 +1,1 @@
+initSidebarItems({"static":[["SECP256K1","A global, static context to avoid repeatedly creating contexts where one can’t be passed"]],"struct":[["GlobalContext","Proxy struct for global `SECP256K1` context"]]});
