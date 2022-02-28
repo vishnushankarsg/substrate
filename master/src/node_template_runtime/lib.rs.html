@@ -516,6 +516,21 @@
 <span id="516">516</span>
 <span id="517">517</span>
 <span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>), <span class="ident">no_std</span>)]</span>
 <span class="comment">// `construct_runtime!` does a lot of recursion and requires us to increase the limit to 256.</span>
 <span class="attribute">#![<span class="ident">recursion_limit</span> <span class="op">=</span> <span class="string">&quot;256&quot;</span>]</span>
@@ -1031,6 +1046,21 @@
 			<span class="macro">add_benchmarks!</span>(<span class="ident">params</span>, <span class="ident">batches</span>);
 
 			<span class="prelude-val">Ok</span>(<span class="ident">batches</span>)
+		}
+	}
+
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;try-runtime&quot;</span>)]</span>
+	<span class="kw">impl</span> <span class="ident">frame_try_runtime::TryRuntime</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
+		<span class="kw">fn</span> <span class="ident">on_runtime_upgrade</span>() -&gt; (<span class="ident">Weight</span>, <span class="ident">Weight</span>) {
+			<span class="comment">// NOTE: intentional unwrap: we don&#39;t want to propagate the error backwards, and want to</span>
+			<span class="comment">// have a backtrace here. If any of the pre/post migration checks fail, we shall stop</span>
+			<span class="comment">// right here and right now.</span>
+			<span class="kw">let</span> <span class="ident">weight</span> <span class="op">=</span> <span class="ident">Executive::try_runtime_upgrade</span>().<span class="ident">unwrap</span>();
+			(<span class="ident">weight</span>, <span class="ident">BlockWeights::get</span>().<span class="ident">max_block</span>)
+		}
+
+		<span class="kw">fn</span> <span class="ident">execute_block_no_check</span>(<span class="ident">block</span>: <span class="ident">Block</span>) -&gt; <span class="ident">Weight</span> {
+			<span class="ident">Executive::execute_block_no_check</span>(<span class="ident">block</span>)
 		}
 	}
 }

@@ -40,6 +40,14 @@
 <span id="40">40</span>
 <span id="41">41</span>
 <span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">sc_cli::RunCmd</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">clap::Parser</span>)]</span>
@@ -81,6 +89,14 @@
 	<span class="doccomment">/// The custom benchmark subcommand benchmarking runtime pallets.</span>
 	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;benchmark&quot;</span>, <span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Benchmark runtime pallets.&quot;</span>)]</span>
 	<span class="ident">Benchmark</span>(<span class="ident">frame_benchmarking_cli::BenchmarkCmd</span>),
+
+	<span class="doccomment">/// Try some command against runtime state.</span>
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;try-runtime&quot;</span>)]</span>
+	<span class="ident">TryRuntime</span>(<span class="ident">try_runtime_cli::TryRuntimeCmd</span>),
+
+	<span class="doccomment">/// Try some command against runtime state. Note: `try-runtime` feature must be enabled.</span>
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;try-runtime&quot;</span>))]</span>
+	<span class="ident">TryRuntime</span>,
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="node_template" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
