@@ -746,7 +746,7 @@
 };
 <span class="kw">use</span> <span class="ident">sc_client_api</span>::{
 	<span class="ident">Backend</span>, <span class="ident">BlockBackend</span>, <span class="ident">BlockchainEvents</span>, <span class="ident">CallExecutor</span>, <span class="ident">ExecutorProvider</span>, <span class="ident">ProofProvider</span>,
-	<span class="ident">StorageProvider</span>,
+	<span class="ident">StorageNotification</span>, <span class="ident">StorageProvider</span>,
 };
 <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
 
@@ -1161,7 +1161,7 @@
 		);
 
 		<span class="self">self</span>.<span class="ident">subscriptions</span>.<span class="ident">add</span>(<span class="ident">subscriber</span>, <span class="op">|</span><span class="ident">sink</span><span class="op">|</span> {
-			<span class="kw">let</span> <span class="ident">stream</span> <span class="op">=</span> <span class="ident">stream</span>.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">block</span>, <span class="ident">changes</span>)<span class="op">|</span> {
+			<span class="kw">let</span> <span class="ident">stream</span> <span class="op">=</span> <span class="ident">stream</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">StorageNotification</span> { <span class="ident">block</span>, <span class="ident">changes</span> }<span class="op">|</span> {
 				<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">rpc::Error</span><span class="op">&gt;</span>(<span class="ident">StorageChangeSet</span> {
 					<span class="ident">block</span>,
 					<span class="ident">changes</span>: <span class="ident">changes</span>

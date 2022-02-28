@@ -655,7 +655,7 @@
 		<span class="doccomment">/// Hash of just finalized block.</span>
 		<span class="ident">hash</span>: <span class="ident">B::Hash</span>,
 		<span class="doccomment">/// Path from old finalized to new finalized parent.</span>
-		<span class="ident">tree_route</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">B::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+		<span class="ident">tree_route</span>: <span class="ident">Arc</span><span class="op">&lt;</span>[<span class="ident">B::Hash</span>]<span class="op">&gt;</span>,
 	},
 }
 
