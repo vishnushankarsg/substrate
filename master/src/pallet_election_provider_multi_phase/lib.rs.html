@@ -2249,7 +2249,7 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Validators will only submit solutions if the one that they have computed is sufficiently better</span>
 <span class="doccomment">//! than the best queued one (see [`pallet::Config::SolutionImprovementThreshold`]) and will limit</span>
-<span class="doccomment">//! the weigh of the solution to [`pallet::Config::MinerMaxWeight`].</span>
+<span class="doccomment">//! the weight of the solution to [`pallet::Config::MinerMaxWeight`].</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! The unsigned phase can be made passive depending on how the previous signed phase went, by</span>
 <span class="doccomment">//! setting the first inner value of [`Phase`] to `false`. For now, the signed phase is always</span>
@@ -2293,13 +2293,13 @@
 <span class="doccomment">//! which is capable of connecting to a live network, and generating appropriate `supports` using a</span>
 <span class="doccomment">//! standard algorithm, and outputting the `supports` in hex format, ready for submission. Note that</span>
 <span class="doccomment">//! while this binary lives in the Polkadot repository, this particular subcommand of it can work</span>
-<span class="doccomment">//! against any substrate based-chain.</span>
+<span class="doccomment">//! against any substrate-based chain.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! See the `staking-miner` documentation in the Polkadot repository for more information.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## Feasible Solution (correct solution)</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! All submissions must undergo a feasibility check. Signed solutions are checked on by one at the</span>
+<span class="doccomment">//! All submissions must undergo a feasibility check. Signed solutions are checked one by one at the</span>
 <span class="doccomment">//! end of the signed phase, and the unsigned solutions are checked on the spot. A feasible solution</span>
 <span class="doccomment">//! is as follows:</span>
 <span class="doccomment">//!</span>

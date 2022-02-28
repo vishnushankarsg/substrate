@@ -69,7 +69,7 @@ unsigned transaction, thus the name <em>unsigned</em> phase. This unsigned trans
 valid if propagated, and it acts similar to an inherent.</p>
 <p>Validators will only submit solutions if the one that they have computed is sufficiently better
 than the best queued one (see <a href="pallet/trait.Config.html#associatedtype.SolutionImprovementThreshold" title="pallet::Config::SolutionImprovementThreshold"><code>pallet::Config::SolutionImprovementThreshold</code></a>) and will limit
-the weigh of the solution to <a href="pallet/trait.Config.html#associatedtype.MinerMaxWeight" title="pallet::Config::MinerMaxWeight"><code>pallet::Config::MinerMaxWeight</code></a>.</p>
+the weight of the solution to <a href="pallet/trait.Config.html#associatedtype.MinerMaxWeight" title="pallet::Config::MinerMaxWeight"><code>pallet::Config::MinerMaxWeight</code></a>.</p>
 <p>The unsigned phase can be made passive depending on how the previous signed phase went, by
 setting the first inner value of <a href="enum.Phase.html" title="Phase"><code>Phase</code></a> to <code>false</code>. For now, the signed phase is always
 active.</p>
@@ -106,10 +106,10 @@ provided in the Polkadot repository. This binary has a subcommand named <code>em
 which is capable of connecting to a live network, and generating appropriate <code>supports</code> using a
 standard algorithm, and outputting the <code>supports</code> in hex format, ready for submission. Note that
 while this binary lives in the Polkadot repository, this particular subcommand of it can work
-against any substrate based-chain.</p>
+against any substrate-based chain.</p>
 <p>See the <code>staking-miner</code> documentation in the Polkadot repository for more information.</p>
 <h3 id="feasible-solution-correct-solution" class="section-header"><a href="#feasible-solution-correct-solution">Feasible Solution (correct solution)</a></h3>
-<p>All submissions must undergo a feasibility check. Signed solutions are checked on by one at the
+<p>All submissions must undergo a feasibility check. Signed solutions are checked one by one at the
 end of the signed phase, and the unsigned solutions are checked on the spot. A feasible solution
 is as follows:</p>
 <ol start="0">
