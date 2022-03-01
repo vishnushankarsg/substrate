@@ -375,7 +375,7 @@
 <span class="kw">use</span> <span class="ident">hash_db::Hasher</span>;
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">borrow::Borrow</span>, <span class="ident">marker::PhantomData</span>, <span class="ident">ops::Range</span>, <span class="ident">vec::Vec</span>};
 <span class="kw">use</span> <span class="ident">trie_db</span>::{
-	<span class="self">self</span>, <span class="ident">nibble_ops</span>,
+	<span class="ident">nibble_ops</span>,
 	<span class="ident">node</span>::{<span class="ident">NibbleSlicePlan</span>, <span class="ident">NodeHandlePlan</span>, <span class="ident">NodePlan</span>, <span class="ident">Value</span>, <span class="ident">ValuePlan</span>},
 	<span class="ident">ChildReference</span>, <span class="ident">NodeCodec</span> <span class="kw">as</span> <span class="ident">NodeCodecT</span>, <span class="ident">Partial</span>,
 };
@@ -406,9 +406,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Input</span> <span class="kw">for</span> <span class="ident">ByteSliceInput</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">remaining_len</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>, <span class="ident">codec::Error</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">remaining</span> <span class="op">=</span>
-			<span class="kw">if</span> <span class="self">self</span>.<span class="ident">offset</span> <span class="op">&lt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">len</span>() { <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">data</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="self">self</span>.<span class="ident">offset</span>) } <span class="kw">else</span> { <span class="prelude-val">None</span> };
-		<span class="prelude-val">Ok</span>(<span class="ident">remaining</span>)
+		<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">data</span>.<span class="ident">len</span>().<span class="ident">saturating_sub</span>(<span class="self">self</span>.<span class="ident">offset</span>)))
 	}
 
 	<span class="kw">fn</span> <span class="ident">read</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">into</span>: <span class="kw-2">&amp;mut</span> [<span class="ident">u8</span>]) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">codec::Error</span><span class="op">&gt;</span> {
@@ -428,7 +426,9 @@
 	}
 }
 
-<span class="doccomment">/// Concrete implementation of a `NodeCodec` with Parity Codec encoding, generic over the `Hasher`</span>
+<span class="doccomment">/// Concrete implementation of a [`NodeCodecT`] with SCALE encoding.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// It is generic over `H` the [`Hasher`].</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NodeCodec</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span>(<span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span>);
 

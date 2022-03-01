@@ -205,49 +205,6 @@
 <span id="205">205</span>
 <span id="206">206</span>
 <span id="207">207</span>
-<span id="208">208</span>
-<span id="209">209</span>
-<span id="210">210</span>
-<span id="211">211</span>
-<span id="212">212</span>
-<span id="213">213</span>
-<span id="214">214</span>
-<span id="215">215</span>
-<span id="216">216</span>
-<span id="217">217</span>
-<span id="218">218</span>
-<span id="219">219</span>
-<span id="220">220</span>
-<span id="221">221</span>
-<span id="222">222</span>
-<span id="223">223</span>
-<span id="224">224</span>
-<span id="225">225</span>
-<span id="226">226</span>
-<span id="227">227</span>
-<span id="228">228</span>
-<span id="229">229</span>
-<span id="230">230</span>
-<span id="231">231</span>
-<span id="232">232</span>
-<span id="233">233</span>
-<span id="234">234</span>
-<span id="235">235</span>
-<span id="236">236</span>
-<span id="237">237</span>
-<span id="238">238</span>
-<span id="239">239</span>
-<span id="240">240</span>
-<span id="241">241</span>
-<span id="242">242</span>
-<span id="243">243</span>
-<span id="244">244</span>
-<span id="245">245</span>
-<span id="246">246</span>
-<span id="247">247</span>
-<span id="248">248</span>
-<span id="249">249</span>
-<span id="250">250</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -270,77 +227,31 @@
 <span class="doccomment">//! This uses compact proof from trie crate and extends</span>
 <span class="doccomment">//! it to substrate specific layout and child trie system.</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::{
-	<span class="ident">CompactProof</span>, <span class="ident">HashDBT</span>, <span class="ident">StorageProof</span>, <span class="ident">TrieConfiguration</span>, <span class="ident">TrieError</span>, <span class="ident">TrieHash</span>, <span class="ident">EMPTY_PREFIX</span>,
-};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">CompactProof</span>, <span class="ident">HashDBT</span>, <span class="ident">StorageProof</span>, <span class="ident">TrieConfiguration</span>, <span class="ident">TrieHash</span>, <span class="ident">EMPTY_PREFIX</span>};
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">boxed::Box</span>, <span class="ident">vec::Vec</span>};
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">std::error::Error</span> <span class="kw">as</span> <span class="ident">StdError</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">std::fmt</span>;
-<span class="kw">use</span> <span class="ident">trie_db::Trie</span>;
+<span class="kw">use</span> <span class="ident">trie_db</span>::{<span class="ident">CError</span>, <span class="ident">Trie</span>};
 
 <span class="doccomment">/// Error for trie node decoding.</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">L</span>: <span class="ident">TrieConfiguration</span><span class="op">&gt;</span> {
-	<span class="doccomment">/// Verification failed due to root mismatch.</span>
-	<span class="ident">RootMismatch</span>(<span class="ident">TrieHash</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span>, <span class="ident">TrieHash</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span>),
-	<span class="doccomment">/// Missing nodes in proof.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">derive</span>(<span class="ident">thiserror::Error</span>))]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">CodecError</span><span class="op">&gt;</span> {
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">error</span>(<span class="string">&quot;Invalid root {0:x?}, expected {1:x?}&quot;</span>))]</span>
+	<span class="ident">RootMismatch</span>(<span class="ident">H</span>, <span class="ident">H</span>),
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">error</span>(<span class="string">&quot;Missing nodes in the proof&quot;</span>))]</span>
 	<span class="ident">IncompleteProof</span>,
-	<span class="doccomment">/// Compact node is not needed.</span>
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">error</span>(<span class="string">&quot;Child node content with no root in proof&quot;</span>))]</span>
 	<span class="ident">ExtraneousChildNode</span>,
-	<span class="doccomment">/// Child content with root not in proof.</span>
-	<span class="ident">ExtraneousChildProof</span>(<span class="ident">TrieHash</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span>),
-	<span class="doccomment">/// Bad child trie root.</span>
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">error</span>(<span class="string">&quot;Proof of child trie {0:x?} not in parent proof&quot;</span>))]</span>
+	<span class="ident">ExtraneousChildProof</span>(<span class="ident">H</span>),
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">error</span>(<span class="string">&quot;Invalid root {0:x?}, expected {1:x?}&quot;</span>))]</span>
 	<span class="ident">InvalidChildRoot</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>),
-	<span class="doccomment">/// Errors from trie crate.</span>
-	<span class="ident">TrieError</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="ident">TrieError</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span><span class="op">&gt;</span>),
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">error</span>(<span class="string">&quot;Trie error: {0:?}&quot;</span>))]</span>
+	<span class="ident">TrieError</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="ident">trie_db::TrieError</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">CodecError</span><span class="op">&gt;</span><span class="op">&gt;</span>),
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">L</span>: <span class="ident">TrieConfiguration</span><span class="op">&gt;</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">TrieError</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">error</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">TrieError</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">CodecError</span><span class="op">&gt;</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">trie_db::TrieError</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">CodecError</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">CodecError</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">error</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">trie_db::TrieError</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">CodecError</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
 		<span class="ident">Error::TrieError</span>(<span class="ident">error</span>)
-	}
-}
-
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">L</span>: <span class="ident">TrieConfiguration</span><span class="op">&gt;</span> <span class="ident">StdError</span> <span class="kw">for</span> <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">description</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">str</span> {
-		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident">Error::InvalidChildRoot</span>(..) =&gt; <span class="string">&quot;Invalid child root error&quot;</span>,
-			<span class="ident">Error::TrieError</span>(..) =&gt; <span class="string">&quot;Trie db error&quot;</span>,
-			<span class="ident">Error::RootMismatch</span>(..) =&gt; <span class="string">&quot;Trie db error&quot;</span>,
-			<span class="ident">Error::IncompleteProof</span> =&gt; <span class="string">&quot;Incomplete proof&quot;</span>,
-			<span class="ident">Error::ExtraneousChildNode</span> =&gt; <span class="string">&quot;Extraneous child node&quot;</span>,
-			<span class="ident">Error::ExtraneousChildProof</span>(..) =&gt; <span class="string">&quot;Extraneous child proof&quot;</span>,
-		}
-	}
-}
-
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">L</span>: <span class="ident">TrieConfiguration</span><span class="op">&gt;</span> <span class="ident">fmt::Debug</span> <span class="kw">for</span> <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span>) -&gt; <span class="ident">fmt::Result</span> {
-		<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">fmt::Display</span><span class="op">&gt;</span><span class="ident">::fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>)
-	}
-}
-
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">L</span>: <span class="ident">TrieConfiguration</span><span class="op">&gt;</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span>) -&gt; <span class="ident">fmt::Result</span> {
-		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident">Error::InvalidChildRoot</span>(<span class="ident">k</span>, <span class="ident">v</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;InvalidChildRoot at {:x?}: {:x?}&quot;</span>, <span class="ident">k</span>, <span class="ident">v</span>),
-			<span class="ident">Error::TrieError</span>(<span class="ident">e</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Trie error: {}&quot;</span>, <span class="ident">e</span>),
-			<span class="ident">Error::IncompleteProof</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Incomplete proof&quot;</span>),
-			<span class="ident">Error::ExtraneousChildNode</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Child node content with no root in proof&quot;</span>),
-			<span class="ident">Error::ExtraneousChildProof</span>(<span class="ident">root</span>) =&gt; {
-				<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Proof of child trie {:x?} not in parent proof&quot;</span>, <span class="ident">root</span>.<span class="ident">as_ref</span>())
-			},
-			<span class="ident">Error::RootMismatch</span>(<span class="ident">root</span>, <span class="ident">expected</span>) =&gt; <span class="macro">write!</span>(
-				<span class="ident">f</span>,
-				<span class="string">&quot;Verification error, root is {:x?}, expected: {:x?}&quot;</span>,
-				<span class="ident">root</span>.<span class="ident">as_ref</span>(),
-				<span class="ident">expected</span>.<span class="ident">as_ref</span>(),
-			),
-		}
 	}
 }
 
@@ -355,7 +266,7 @@
 	<span class="ident">db</span>: <span class="kw-2">&amp;mut</span> <span class="ident">DB</span>,
 	<span class="ident">encoded</span>: <span class="ident">I</span>,
 	<span class="ident">expected_root</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">TrieHash</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">TrieHash</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span><span class="op">&gt;</span>
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">TrieHash</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">TrieHash</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span>, <span class="ident">CError</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">L</span>: <span class="ident">TrieConfiguration</span>,
 	<span class="ident">DB</span>: <span class="ident">HashDBT</span><span class="op">&lt;</span><span class="ident">L::Hash</span>, <span class="ident">trie_db::DBValue</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">hash_db::HashDBRef</span><span class="op">&lt;</span><span class="ident">L::Hash</span>, <span class="ident">trie_db::DBValue</span><span class="op">&gt;</span>,
@@ -445,7 +356,10 @@
 <span class="doccomment">/// Then parse all child trie root and compress main trie content first</span>
 <span class="doccomment">/// then all child trie contents.</span>
 <span class="doccomment">/// Child trie are ordered by the order of their roots in the top trie.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">encode_compact</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span>(<span class="ident">proof</span>: <span class="ident">StorageProof</span>, <span class="ident">root</span>: <span class="ident">TrieHash</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">CompactProof</span>, <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span><span class="op">&gt;</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">encode_compact</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span>(
+	<span class="ident">proof</span>: <span class="ident">StorageProof</span>,
+	<span class="ident">root</span>: <span class="ident">TrieHash</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span>,
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">CompactProof</span>, <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">TrieHash</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span>, <span class="ident">CError</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">L</span>: <span class="ident">TrieConfiguration</span>,
 {
