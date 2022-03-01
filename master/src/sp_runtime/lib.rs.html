@@ -1577,7 +1577,7 @@
 
 <span class="doccomment">/// Result of a `Dispatchable` which contains the `DispatchResult` and additional information about</span>
 <span class="doccomment">/// the `Dispatchable` that is only known post dispatch.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">RuntimeDebug</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">DispatchErrorWithPostInfo</span><span class="op">&lt;</span><span class="ident">Info</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">Info</span>: <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Encode</span> <span class="op">+</span> <span class="ident">Decode</span> <span class="op">+</span> <span class="ident">traits::Printable</span>,

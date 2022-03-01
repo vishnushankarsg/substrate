@@ -415,6 +415,7 @@ sourcesIndex["pallet_treasury"] = {"name":"","files":["benchmarking.rs","lib.rs"
 sourcesIndex["pallet_uniques"] = {"name":"","files":["benchmarking.rs","functions.rs","impl_nonfungibles.rs","lib.rs","migration.rs","types.rs","weights.rs"]};
 sourcesIndex["pallet_utility"] = {"name":"","files":["benchmarking.rs","lib.rs","weights.rs"]};
 sourcesIndex["pallet_vesting"] = {"name":"","files":["benchmarking.rs","lib.rs","migrations.rs","vesting_info.rs","weights.rs"]};
+sourcesIndex["pallet_whitelist"] = {"name":"","files":["benchmarking.rs","lib.rs","weights.rs"]};
 sourcesIndex["parity_db"] = {"name":"","files":["column.rs","compress.rs","db.rs","display.rs","error.rs","index.rs","lib.rs","log.rs","migration.rs","options.rs","stats.rs","table.rs"]};
 sourcesIndex["parity_scale_codec"] = {"name":"","files":["codec.rs","compact.rs","decode_all.rs","depth_limit.rs","encode_append.rs","encode_like.rs","error.rs","joiner.rs","keyedvec.rs","lib.rs","max_encoded_len.rs"]};
 sourcesIndex["parity_scale_codec_derive"] = {"name":"","files":["decode.rs","encode.rs","lib.rs","max_encoded_len.rs","trait_bounds.rs","utils.rs"]};

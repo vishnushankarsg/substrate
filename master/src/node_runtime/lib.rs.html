@@ -1892,6 +1892,17 @@
 <span id="1892">1892</span>
 <span id="1893">1893</span>
 <span id="1894">1894</span>
+<span id="1895">1895</span>
+<span id="1896">1896</span>
+<span id="1897">1897</span>
+<span id="1898">1898</span>
+<span id="1899">1899</span>
+<span id="1900">1900</span>
+<span id="1901">1901</span>
+<span id="1902">1902</span>
+<span id="1903">1903</span>
+<span id="1904">1904</span>
+<span id="1905">1905</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -3251,6 +3262,15 @@
 	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">pallet_transaction_storage::weights::SubstrateWeight</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
 
+<span class="kw">impl</span> <span class="ident">pallet_whitelist::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
+	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
+	<span class="kw">type</span> <span class="ident">Call</span> <span class="op">=</span> <span class="ident">Call</span>;
+	<span class="kw">type</span> <span class="ident">WhitelistOrigin</span> <span class="op">=</span> <span class="ident">EnsureRoot</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">DispatchWhitelistedOrigin</span> <span class="op">=</span> <span class="ident">EnsureRoot</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">PreimageProvider</span> <span class="op">=</span> <span class="ident">Preimage</span>;
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">pallet_whitelist::weights::SubstrateWeight</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
+}
+
 <span class="macro">construct_runtime!</span>(
 	<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Runtime</span> <span class="kw">where</span>
 		<span class="ident">Block</span> <span class="op">=</span> <span class="ident">Block</span>,
@@ -3305,6 +3325,7 @@
 		<span class="ident">ChildBounties</span>: <span class="ident">pallet_child_bounties</span>,
 		<span class="ident">Referenda</span>: <span class="ident">pallet_referenda</span>,
 		<span class="ident">ConvictionVoting</span>: <span class="ident">pallet_conviction_voting</span>,
+		<span class="ident">Whitelist</span>: <span class="ident">pallet_whitelist</span>,
 	}
 );
 
@@ -3403,6 +3424,7 @@
 		[<span class="ident">pallet_uniques</span>, <span class="ident">Uniques</span>]
 		[<span class="ident">pallet_utility</span>, <span class="ident">Utility</span>]
 		[<span class="ident">pallet_vesting</span>, <span class="ident">Vesting</span>]
+		[<span class="ident">pallet_whitelist</span>, <span class="ident">Whitelist</span>]
 	);
 }
 
