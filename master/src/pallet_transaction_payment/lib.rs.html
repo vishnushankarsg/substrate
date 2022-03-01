@@ -1614,7 +1614,6 @@
 <span id="1614">1614</span>
 <span id="1615">1615</span>
 <span id="1616">1616</span>
-<span id="1617">1617</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -1914,10 +1913,9 @@
 
 	<span class="attribute">#[<span class="ident">pallet::extra_constants</span>]</span>
 	<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-		<span class="comment">// TODO: rename to snake case after https://github.com/paritytech/substrate/issues/8826 fixed.</span>
-		<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
+		<span class="attribute">#[<span class="ident">pallet::constant_name</span>(<span class="ident">WeightToFee</span>)]</span>
 		<span class="doccomment">/// The polynomial that is applied in order to derive fee from weight.</span>
-		<span class="kw">fn</span> <span class="ident">WeightToFee</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">WeightToFeeCoefficient</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="kw">fn</span> <span class="ident">weight_to_fee_polynomial</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">WeightToFeeCoefficient</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 			<span class="ident">T::WeightToFee::polynomial</span>().<span class="ident">to_vec</span>()
 		}
 	}
