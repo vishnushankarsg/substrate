@@ -1903,6 +1903,7 @@
 <span id="1903">1903</span>
 <span id="1904">1904</span>
 <span id="1905">1905</span>
+<span id="1906">1906</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -2463,6 +2464,7 @@
 	<span class="comment">// Alternatively, use pallet_staking::UseNominatorsMap&lt;Runtime&gt; to just use the nominators map.</span>
 	<span class="comment">// Note that the aforementioned does not scale to a very large number of nominators.</span>
 	<span class="kw">type</span> <span class="ident">SortedListProvider</span> <span class="op">=</span> <span class="ident">BagsList</span>;
+	<span class="kw">type</span> <span class="ident">MaxUnlockingChunks</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">32</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">pallet_staking::weights::SubstrateWeight</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">BenchmarkingConfig</span> <span class="op">=</span> <span class="ident">StakingBenchmarkingConfig</span>;
 }

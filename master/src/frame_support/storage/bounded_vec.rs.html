@@ -875,6 +875,19 @@
 <span id="875">875</span>
 <span id="876">876</span>
 <span id="877">877</span>
+<span id="878">878</span>
+<span id="879">879</span>
+<span id="880">880</span>
+<span id="881">881</span>
+<span id="882">882</span>
+<span id="883">883</span>
+<span id="884">884</span>
+<span id="885">885</span>
+<span id="886">886</span>
+<span id="887">887</span>
+<span id="888">888</span>
+<span id="889">889</span>
+<span id="890">890</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -902,7 +915,7 @@
 };
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">EncodeLike</span>, <span class="ident">MaxEncodedLen</span>};
 <span class="kw">use</span> <span class="ident">core</span>::{
-	<span class="ident">ops</span>::{<span class="ident">Deref</span>, <span class="ident">Index</span>, <span class="ident">IndexMut</span>},
+	<span class="ident">ops</span>::{<span class="ident">Deref</span>, <span class="ident">Index</span>, <span class="ident">IndexMut</span>, <span class="ident">RangeBounds</span>},
 	<span class="ident">slice::SliceIndex</span>,
 };
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">marker::PhantomData</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>};
@@ -1054,6 +1067,19 @@
 	<span class="doccomment">/// Exactly the same semantics as [`slice::iter_mut`].</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter_mut</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">core::slice::IterMut</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">T</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">iter_mut</span>()
+	}
+
+	<span class="doccomment">/// Exactly the same semantics as [`slice::last_mut`].</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">last_mut</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="ident">T</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">last_mut</span>()
+	}
+
+	<span class="doccomment">/// Exact same semantics as [`Vec::drain`].</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">drain</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">range</span>: <span class="ident">R</span>) -&gt; <span class="ident">sp_std::vec::Drain</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">T</span><span class="op">&gt;</span>
+	<span class="kw">where</span>
+		<span class="ident">R</span>: <span class="ident">RangeBounds</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+	{
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">drain</span>(<span class="ident">range</span>)
 	}
 }
 
