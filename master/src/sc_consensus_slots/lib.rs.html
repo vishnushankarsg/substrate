@@ -1217,6 +1217,13 @@
 <span id="1217">1217</span>
 <span id="1218">1218</span>
 <span id="1219">1219</span>
+<span id="1220">1220</span>
+<span id="1221">1221</span>
+<span id="1222">1222</span>
+<span id="1223">1223</span>
+<span id="1224">1224</span>
+<span id="1225">1225</span>
+<span id="1226">1226</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -1620,15 +1627,22 @@
 	}
 }
 
+<span class="doccomment">/// A type that implements [`SlotWorker`] for a type that implements [`SimpleSlotWorker`].</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// This is basically a workaround for Rust not supporting specialization. Otherwise we could</span>
+<span class="doccomment">/// implement [`SlotWorker`] for any `T` that implements [`SimpleSlotWorker`], but currently</span>
+<span class="doccomment">/// that would prevent downstream users to implement [`SlotWorker`] for their own types.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SimpleSlotWorkerToSlotWorker</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw">pub</span> <span class="ident">T</span>);
+
 <span class="attribute">#[<span class="ident">async_trait::async_trait</span>]</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span>, <span class="ident">T</span>: <span class="ident">SimpleSlotWorker</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span>
-	<span class="ident">SlotWorker</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="op">&lt;</span><span class="ident">T::Proposer</span> <span class="kw">as</span> <span class="ident">Proposer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Proof</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">T</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">SimpleSlotWorker</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>, <span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span>
+	<span class="ident">SlotWorker</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="op">&lt;</span><span class="ident">T::Proposer</span> <span class="kw">as</span> <span class="ident">Proposer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Proof</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">SimpleSlotWorkerToSlotWorker</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
 {
 	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">on_slot</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">slot_info</span>: <span class="ident">SlotInfo</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 	) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SlotResult</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="op">&lt;</span><span class="ident">T::Proposer</span> <span class="kw">as</span> <span class="ident">Proposer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Proof</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-		<span class="ident">SimpleSlotWorker::on_slot</span>(<span class="self">self</span>, <span class="ident">slot_info</span>).<span class="kw">await</span>
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">on_slot</span>(<span class="ident">slot_info</span>).<span class="kw">await</span>
 	}
 }
 

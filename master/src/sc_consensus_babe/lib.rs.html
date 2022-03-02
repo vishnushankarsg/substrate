@@ -2350,7 +2350,7 @@
 	<span class="kw">let</span> <span class="ident">slot_worker</span> <span class="op">=</span> <span class="ident">sc_consensus_slots::start_slot_worker</span>(
 		<span class="ident">babe_link</span>.<span class="ident">config</span>.<span class="ident">slot_duration</span>(),
 		<span class="ident">select_chain</span>,
-		<span class="ident">worker</span>,
+		<span class="ident">sc_consensus_slots::SimpleSlotWorkerToSlotWorker</span>(<span class="ident">worker</span>),
 		<span class="ident">sync_oracle</span>,
 		<span class="ident">create_inherent_data_providers</span>,
 		<span class="ident">can_author_with</span>,
