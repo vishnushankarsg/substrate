@@ -520,6 +520,8 @@
 <span id="520">520</span>
 <span id="521">521</span>
 <span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -832,7 +834,6 @@
 	}
 
 	<span class="ident">submit</span> {
-		<span class="kw">let</span> <span class="ident">c</span> <span class="kw">in</span> <span class="number">1</span> .. (<span class="ident">T::SignedMaxSubmissions::get</span>() <span class="op">-</span> <span class="number">1</span>);
 
 		<span class="comment">// the solution will be worse than all of them meaning the score need to be checked against</span>
 		<span class="comment">// ~ log2(c)</span>
@@ -846,7 +847,10 @@
 		<span class="op">&lt;</span><span class="ident">Round</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="number">1</span>);
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">signed_submissions</span> <span class="op">=</span> <span class="ident">SignedSubmissions</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>();
-		<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">c</span> {
+
+		<span class="comment">// Insert `max - 1` submissions because the call to `submit` will insert another</span>
+		<span class="comment">// submission and the score is worse then the previous scores.</span>
+		<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..(<span class="ident">T::SignedMaxSubmissions::get</span>() <span class="op">-</span> <span class="number">1</span>) {
 			<span class="kw">let</span> <span class="ident">raw_solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> {
 				<span class="ident">score</span>: <span class="ident">ElectionScore</span> { <span class="ident">minimal_stake</span>: <span class="number">10_000_000u128</span> <span class="op">+</span> (<span class="ident">i</span> <span class="kw">as</span> <span class="ident">u128</span>), ..<span class="ident">Default::default</span>() },
 				..<span class="ident">Default::default</span>()
@@ -864,9 +868,9 @@
 		<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">frame_benchmarking::whitelisted_caller</span>();
 		<span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>,  <span class="ident">T::Currency::minimum_balance</span>() <span class="op">*</span> <span class="number">10u32</span>.<span class="ident">into</span>());
 
-	}: <span class="kw">_</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">Box::new</span>(<span class="ident">solution</span>), <span class="ident">c</span>)
+	}: <span class="kw">_</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">Box::new</span>(<span class="ident">solution</span>))
 	<span class="ident">verify</span> {
-		<span class="macro">assert!</span>(<span class="op">&lt;</span><span class="ident">MultiPhase</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::signed_submissions</span>().<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span> <span class="op">==</span> <span class="ident">c</span> <span class="op">+</span> <span class="number">1</span>);
+		<span class="macro">assert!</span>(<span class="op">&lt;</span><span class="ident">MultiPhase</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::signed_submissions</span>().<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span> <span class="op">==</span> <span class="ident">T::SignedMaxSubmissions::get</span>());
 	}
 
 	<span class="ident">submit_unsigned</span> {
