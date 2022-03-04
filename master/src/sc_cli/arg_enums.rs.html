@@ -280,6 +280,10 @@
 <span id="280">280</span>
 <span id="281">281</span>
 <span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -483,8 +487,10 @@
 	<span class="doccomment">/// ParityDb. &lt;https://github.com/paritytech/parity-db/&gt;</span>
 	<span class="ident">ParityDb</span>,
 	<span class="doccomment">/// Detect whether there is an existing database. Use it, if there is, if not, create new</span>
-	<span class="doccomment">/// instance of paritydb</span>
+	<span class="doccomment">/// instance of ParityDb</span>
 	<span class="ident">Auto</span>,
+	<span class="doccomment">/// ParityDb. &lt;https://github.com/paritytech/parity-db/&gt;</span>
+	<span class="ident">ParityDbDeprecated</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">std::str::FromStr</span> <span class="kw">for</span> <span class="ident">Database</span> {
@@ -494,6 +500,8 @@
 		<span class="kw">if</span> <span class="ident">s</span>.<span class="ident">eq_ignore_ascii_case</span>(<span class="string">&quot;rocksdb&quot;</span>) {
 			<span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::RocksDb</span>)
 		} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">s</span>.<span class="ident">eq_ignore_ascii_case</span>(<span class="string">&quot;paritydb-experimental&quot;</span>) {
+			<span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::ParityDbDeprecated</span>)
+		} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">s</span>.<span class="ident">eq_ignore_ascii_case</span>(<span class="string">&quot;paritydb&quot;</span>) {
 			<span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::ParityDb</span>)
 		} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">s</span>.<span class="ident">eq_ignore_ascii_case</span>(<span class="string">&quot;auto&quot;</span>) {
 			<span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::Auto</span>)
@@ -506,7 +514,7 @@
 <span class="kw">impl</span> <span class="ident">Database</span> {
 	<span class="doccomment">/// Returns all the variants of this enum to be shown in the cli.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">variants</span>() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>] {
-		<span class="kw-2">&amp;</span>[<span class="string">&quot;rocksdb&quot;</span>, <span class="string">&quot;paritydb-experimental&quot;</span>, <span class="string">&quot;auto&quot;</span>]
+		<span class="kw-2">&amp;</span>[<span class="string">&quot;rocksdb&quot;</span>, <span class="string">&quot;paritydb&quot;</span>, <span class="string">&quot;paritydb-experimental&quot;</span>, <span class="string">&quot;auto&quot;</span>]
 	}
 }
 

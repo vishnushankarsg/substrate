@@ -653,6 +653,13 @@
 <span id="653">653</span>
 <span id="654">654</span>
 <span id="655">655</span>
+<span id="656">656</span>
+<span id="657">657</span>
+<span id="658">658</span>
+<span id="659">659</span>
+<span id="660">660</span>
+<span id="661">661</span>
+<span id="662">662</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -877,6 +884,13 @@
 		<span class="prelude-val">Ok</span>(<span class="kw">match</span> <span class="ident">database</span> {
 			<span class="ident">Database::RocksDb</span> =&gt; <span class="ident">DatabaseSource::RocksDb</span> { <span class="ident">path</span>: <span class="ident">rocksdb_path</span>, <span class="ident">cache_size</span> },
 			<span class="ident">Database::ParityDb</span> =&gt; <span class="ident">DatabaseSource::ParityDb</span> { <span class="ident">path</span>: <span class="ident">paritydb_path</span> },
+			<span class="ident">Database::ParityDbDeprecated</span> =&gt; {
+				<span class="macro">eprintln!</span>(
+					<span class="string">&quot;WARNING: \&quot;paritydb-experimental\&quot; database setting is deprecated and will be removed in future releases. \
+				Please update your setup to use the new value: \&quot;paritydb\&quot;.&quot;</span>
+				);
+				<span class="ident">DatabaseSource::ParityDb</span> { <span class="ident">path</span>: <span class="ident">paritydb_path</span> }
+			},
 			<span class="ident">Database::Auto</span> =&gt; <span class="ident">DatabaseSource::Auto</span> { <span class="ident">paritydb_path</span>, <span class="ident">rocksdb_path</span>, <span class="ident">cache_size</span> },
 		})
 	}
