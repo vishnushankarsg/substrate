@@ -62,7 +62,6 @@
 <span id="62">62</span>
 <span id="63">63</span>
 <span id="64">64</span>
-<span id="65">65</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -99,8 +98,7 @@
 		.<span class="ident">mode</span>(<span class="ident">Mode::Online</span>(<span class="ident">OnlineConfig</span> {
 			<span class="ident">transport</span>: <span class="ident">ws_url</span>.<span class="ident">to_string</span>().<span class="ident">into</span>(),
 			<span class="ident">pallets</span>: <span class="macro">vec!</span>[<span class="ident">pallet_staking::Pallet</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::name</span>().<span class="ident">to_string</span>()],
-			<span class="ident">at</span>: <span class="prelude-val">None</span>,
-			<span class="ident">state_snapshot</span>: <span class="prelude-val">None</span>,
+			..<span class="ident">Default::default</span>()
 		}))
 		.<span class="ident">build</span>()
 		.<span class="kw">await</span>

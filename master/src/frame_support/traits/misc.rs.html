@@ -1036,18 +1036,18 @@
 		<span class="macro">frame_support::log::error!</span>(
 			<span class="ident">target</span>: <span class="string">&quot;runtime&quot;</span>,
 			<span class="string">&quot;{}&quot;</span>,
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::traits::misc::DEFENSIVE_OP_PUBLIC_ERROR</span>
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::traits::DEFENSIVE_OP_PUBLIC_ERROR</span>
 		);
-		<span class="macro">debug_assert!</span>(<span class="bool-val">false</span>, <span class="string">&quot;{}&quot;</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::traits::misc::DEFENSIVE_OP_INTERNAL_ERROR</span>);
+		<span class="macro">debug_assert!</span>(<span class="bool-val">false</span>, <span class="string">&quot;{}&quot;</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::traits::DEFENSIVE_OP_INTERNAL_ERROR</span>);
 	};
 	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">error</span>:<span class="ident">tt</span>) =&gt; {
 		<span class="macro">frame_support::log::error!</span>(
 			<span class="ident">target</span>: <span class="string">&quot;runtime&quot;</span>,
 			<span class="string">&quot;{}: {:?}&quot;</span>,
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::traits::misc::DEFENSIVE_OP_PUBLIC_ERROR</span>,
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::traits::DEFENSIVE_OP_PUBLIC_ERROR</span>,
 			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">error</span>
 		);
-		<span class="macro">debug_assert!</span>(<span class="bool-val">false</span>, <span class="string">&quot;{}: {:?}&quot;</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::traits::misc::DEFENSIVE_OP_INTERNAL_ERROR</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">error</span>);
+		<span class="macro">debug_assert!</span>(<span class="bool-val">false</span>, <span class="string">&quot;{}: {:?}&quot;</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::traits::DEFENSIVE_OP_INTERNAL_ERROR</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">error</span>);
 	}
 }
 

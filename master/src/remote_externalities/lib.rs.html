@@ -1166,6 +1166,48 @@
 <span id="1166">1166</span>
 <span id="1167">1167</span>
 <span id="1168">1168</span>
+<span id="1169">1169</span>
+<span id="1170">1170</span>
+<span id="1171">1171</span>
+<span id="1172">1172</span>
+<span id="1173">1173</span>
+<span id="1174">1174</span>
+<span id="1175">1175</span>
+<span id="1176">1176</span>
+<span id="1177">1177</span>
+<span id="1178">1178</span>
+<span id="1179">1179</span>
+<span id="1180">1180</span>
+<span id="1181">1181</span>
+<span id="1182">1182</span>
+<span id="1183">1183</span>
+<span id="1184">1184</span>
+<span id="1185">1185</span>
+<span id="1186">1186</span>
+<span id="1187">1187</span>
+<span id="1188">1188</span>
+<span id="1189">1189</span>
+<span id="1190">1190</span>
+<span id="1191">1191</span>
+<span id="1192">1192</span>
+<span id="1193">1193</span>
+<span id="1194">1194</span>
+<span id="1195">1195</span>
+<span id="1196">1196</span>
+<span id="1197">1197</span>
+<span id="1198">1198</span>
+<span id="1199">1199</span>
+<span id="1200">1200</span>
+<span id="1201">1201</span>
+<span id="1202">1202</span>
+<span id="1203">1203</span>
+<span id="1204">1204</span>
+<span id="1205">1205</span>
+<span id="1206">1206</span>
+<span id="1207">1207</span>
+<span id="1208">1208</span>
+<span id="1209">1209</span>
+<span id="1210">1210</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -1208,7 +1250,7 @@
 	},
 };
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_io::TestExternalities</span>;
-<span class="kw">use</span> <span class="ident">sp_runtime::traits::Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>;
+<span class="kw">use</span> <span class="ident">sp_runtime</span>::{<span class="ident">traits::Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>, <span class="ident">StateVersion</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{
 	<span class="ident">fs</span>,
 	<span class="ident">path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>},
@@ -1224,6 +1266,7 @@
 <span class="kw">const</span> <span class="ident">LOG_TARGET</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;remote-ext&quot;</span>;
 <span class="kw">const</span> <span class="ident">DEFAULT_TARGET</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;wss://rpc.polkadot.io:443&quot;</span>;
 <span class="kw">const</span> <span class="ident">BATCH_SIZE</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">1000</span>;
+<span class="kw">const</span> <span class="ident">PAGE</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">512</span>;
 
 <span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">client</span>)]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">RpcApi</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span> {
@@ -1283,12 +1326,6 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OfflineConfig</span> {
 	<span class="doccomment">/// The configuration of the state snapshot file to use. It must be present.</span>
 	<span class="kw">pub</span> <span class="ident">state_snapshot</span>: <span class="ident">SnapshotConfig</span>,
-}
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">SnapshotConfig</span> {
-	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">p</span>: <span class="ident">P</span>) -&gt; <span class="self">Self</span> {
-		<span class="self">Self</span> { <span class="ident">path</span>: <span class="ident">p</span>.<span class="ident">into</span>() }
-	}
 }
 
 <span class="doccomment">/// Description of the transport protocol (for online execution).</span>
@@ -1355,6 +1392,8 @@
 	<span class="kw">pub</span> <span class="ident">pallets</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Transport config.</span>
 	<span class="kw">pub</span> <span class="ident">transport</span>: <span class="ident">Transport</span>,
+	<span class="doccomment">/// Lookout for child-keys, and scrape them as well if set to true.</span>
+	<span class="kw">pub</span> <span class="ident">scrape_children</span>: <span class="ident">bool</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> <span class="ident">OnlineConfig</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
@@ -1373,7 +1412,14 @@
 			<span class="ident">at</span>: <span class="prelude-val">None</span>,
 			<span class="ident">state_snapshot</span>: <span class="prelude-val">None</span>,
 			<span class="ident">pallets</span>: <span class="macro">vec!</span>[],
+			<span class="ident">scrape_children</span>: <span class="bool-val">true</span>,
 		}
+	}
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">OnlineConfig</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">s</span>: <span class="ident">String</span>) -&gt; <span class="self">Self</span> {
+		<span class="self">Self</span> { <span class="ident">transport</span>: <span class="ident">s</span>.<span class="ident">into</span>(), ..<span class="ident">Default::default</span>() }
 	}
 }
 
@@ -1387,6 +1433,12 @@
 <span class="kw">impl</span> <span class="ident">SnapshotConfig</span> {
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">path</span>: <span class="ident">P</span>) -&gt; <span class="self">Self</span> {
 		<span class="self">Self</span> { <span class="ident">path</span>: <span class="ident">path</span>.<span class="ident">into</span>() }
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">SnapshotConfig</span> {
+	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">s</span>: <span class="ident">String</span>) -&gt; <span class="self">Self</span> {
+		<span class="ident"><span class="self">Self</span>::new</span>(<span class="ident">s</span>)
 	}
 }
 
@@ -1410,6 +1462,8 @@
 	<span class="ident">hashed_blacklist</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// connectivity mode, online or offline.</span>
 	<span class="ident">mode</span>: <span class="ident">Mode</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+	<span class="doccomment">/// The state version being used.</span>
+	<span class="ident">state_version</span>: <span class="ident">StateVersion</span>,
 }
 
 <span class="comment">// NOTE: ideally we would use `DefaultNoBound` here, but not worth bringing in frame-support for</span>
@@ -1422,6 +1476,7 @@
 			<span class="ident">hashed_prefixes</span>: <span class="ident">Default::default</span>(),
 			<span class="ident">hashed_keys</span>: <span class="ident">Default::default</span>(),
 			<span class="ident">hashed_blacklist</span>: <span class="ident">Default::default</span>(),
+			<span class="ident">state_version</span>: <span class="ident">StateVersion::V1</span>,
 		}
 	}
 }
@@ -1474,7 +1529,6 @@
 		<span class="ident">prefix</span>: <span class="ident">StorageKey</span>,
 		<span class="ident">at</span>: <span class="ident">B::Hash</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StorageKey</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
-		<span class="kw">const</span> <span class="ident">PAGE</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">512</span>;
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">last_key</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StorageKey</span><span class="op">&gt;</span> <span class="op">=</span> <span class="prelude-val">None</span>;
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">all_keys</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StorageKey</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[];
 		<span class="kw">let</span> <span class="ident">keys</span> <span class="op">=</span> <span class="kw">loop</span> {
@@ -1488,6 +1542,7 @@
 					<span class="string">&quot;rpc get_keys failed&quot;</span>
 				})<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">page_len</span> <span class="op">=</span> <span class="ident">page</span>.<span class="ident">len</span>();
+
 			<span class="ident">all_keys</span>.<span class="ident">extend</span>(<span class="ident">page</span>);
 
 			<span class="kw">if</span> <span class="ident">page_len</span> <span class="op">&lt;</span> <span class="ident">PAGE</span> <span class="kw">as</span> <span class="ident">usize</span> {
@@ -1530,11 +1585,12 @@
 				.<span class="ident">cloned</span>()
 				.<span class="ident">map</span>(<span class="op">|</span><span class="ident">key</span><span class="op">|</span> (<span class="string">&quot;state_getStorage&quot;</span>, <span class="macro">rpc_params!</span>[<span class="ident">key</span>, <span class="ident">at</span>]))
 				.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+
 			<span class="kw">let</span> <span class="ident">values</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">batch_request</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StorageData</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">batch</span>).<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
 				<span class="macro">log::error!</span>(
 					<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
 					<span class="string">&quot;failed to execute batch: {:?}. Error: {:?}&quot;</span>,
-					<span class="ident">chunk_keys</span>,
+					<span class="ident">chunk_keys</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">HexDisplay::from</span>(<span class="ident">k</span>)).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
 					<span class="ident">e</span>
 				);
 				<span class="string">&quot;batch failed.&quot;</span>
@@ -1861,7 +1917,7 @@
 
 		<span class="comment">// inject manual key values.</span>
 		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">hashed_key_values</span>.<span class="ident">is_empty</span>() {
-			<span class="macro">log::debug!</span>(
+			<span class="macro">log::info!</span>(
 				<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
 				<span class="string">&quot;extending externalities with {} manually injected key-values&quot;</span>,
 				<span class="self">self</span>.<span class="ident">hashed_key_values</span>.<span class="ident">len</span>()
@@ -1871,7 +1927,7 @@
 
 		<span class="comment">// exclude manual key values.</span>
 		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">hashed_blacklist</span>.<span class="ident">is_empty</span>() {
-			<span class="macro">log::debug!</span>(
+			<span class="macro">log::info!</span>(
 				<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
 				<span class="string">&quot;excluding externalities from {} keys&quot;</span>,
 				<span class="self">self</span>.<span class="ident">hashed_blacklist</span>.<span class="ident">len</span>()
@@ -1963,6 +2019,12 @@
 		<span class="self">self</span>
 	}
 
+	<span class="doccomment">/// The state version to use.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">state_version</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">version</span>: <span class="ident">StateVersion</span>) -&gt; <span class="self">Self</span> {
+		<span class="self">self</span>.<span class="ident">state_version</span> <span class="op">=</span> <span class="ident">version</span>;
+		<span class="self">self</span>
+	}
+
 	<span class="doccomment">/// overwrite the `at` value, if `mode` is set to [`Mode::Online`].</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// noop if `mode` is [`Mode::Offline`]</span>
@@ -1976,8 +2038,13 @@
 
 	<span class="doccomment">/// Build the test externalities.</span>
 	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">TestExternalities</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">state_version</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">state_version</span>;
 		<span class="kw">let</span> (<span class="ident">top_kv</span>, <span class="ident">child_kv</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">pre_build</span>().<span class="kw">await</span><span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ext</span> <span class="op">=</span> <span class="ident">TestExternalities::new_with_code</span>(<span class="ident">Default::default</span>(), <span class="ident">Default::default</span>());
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ext</span> <span class="op">=</span> <span class="ident">TestExternalities::new_with_code_and_state</span>(
+			<span class="ident">Default::default</span>(),
+			<span class="ident">Default::default</span>(),
+			<span class="ident">state_version</span>,
+		);
 
 		<span class="macro">info!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="string">&quot;injecting a total of {} top keys&quot;</span>, <span class="ident">top_kv</span>.<span class="ident">len</span>());
 		<span class="kw">for</span> (<span class="ident">k</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">top_kv</span> {
@@ -2332,6 +2399,23 @@
 			}
 			<span class="ident">std::fs::remove_file</span>(<span class="ident">d</span>.<span class="ident">path</span>()).<span class="ident">unwrap</span>();
 		}
+	}
+
+	<span class="attribute">#[<span class="ident">tokio::test</span>]</span>
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">can_build_child_tree</span>() {
+		<span class="ident">init_logger</span>();
+		<span class="ident">Builder</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::new</span>()
+			.<span class="ident">mode</span>(<span class="ident">Mode::Online</span>(<span class="ident">OnlineConfig</span> {
+				<span class="comment">// transport: &quot;wss://kusama-rpc.polkadot.io&quot;.to_owned().into(),</span>
+				<span class="ident">transport</span>: <span class="string">&quot;ws://kianenigma-archive:9924&quot;</span>.<span class="ident">to_owned</span>().<span class="ident">into</span>(),
+				<span class="comment">// transport: &quot;ws://localhost:9999&quot;.to_owned().into(),</span>
+				<span class="ident">pallets</span>: <span class="macro">vec!</span>[<span class="string">&quot;Crowdloan&quot;</span>.<span class="ident">to_owned</span>()],
+				..<span class="ident">Default::default</span>()
+			}))
+			.<span class="ident">build</span>()
+			.<span class="kw">await</span>
+			.<span class="ident">expect</span>(<span class="ident">REMOTE_INACCESSIBLE</span>)
+			.<span class="ident">execute_with</span>(<span class="op">|</span><span class="op">|</span> {});
 	}
 }
 </code></pre></div>

@@ -459,11 +459,6 @@
 <span id="459">459</span>
 <span id="460">460</span>
 <span id="461">461</span>
-<span id="462">462</span>
-<span id="463">463</span>
-<span id="464">464</span>
-<span id="465">465</span>
-<span id="466">466</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -585,8 +580,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">PrefixedStorageKey</span> {
-	<span class="doccomment">/// Create a prefixed storage key from its byte array</span>
-	<span class="doccomment">/// representation.</span>
+	<span class="doccomment">/// Create a prefixed storage key from its byte array representation.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">inner</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
 		<span class="ident">PrefixedStorageKey</span>(<span class="ident">inner</span>)
 	}
@@ -596,9 +590,7 @@
 		<span class="ident">PrefixedStorageKey::ref_cast</span>(<span class="ident">inner</span>)
 	}
 
-	<span class="doccomment">/// Get inner key, this should</span>
-	<span class="doccomment">/// only be needed when writing</span>
-	<span class="doccomment">/// into parent trie to avoid an</span>
+	<span class="doccomment">/// Get inner key, this should only be needed when writing into parent trie to avoid an</span>
 	<span class="doccomment">/// allocation.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_inner</span>(<span class="self">self</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="number">0</span>
@@ -637,10 +629,8 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Storage</span> {
 	<span class="doccomment">/// Top trie storage data.</span>
 	<span class="kw">pub</span> <span class="ident">top</span>: <span class="ident">StorageMap</span>,
-	<span class="doccomment">/// Children trie storage data.</span>
-	<span class="doccomment">/// The key does not including prefix, for the `default`</span>
-	<span class="doccomment">/// trie kind, so this is exclusively for the `ChildType::ParentKeyId`</span>
-	<span class="doccomment">/// tries.</span>
+	<span class="doccomment">/// Children trie storage data. Key does not include prefix, only for the `default` trie kind,</span>
+	<span class="doccomment">/// of `ChildType::ParentKeyId` type.</span>
 	<span class="kw">pub</span> <span class="ident">children_default</span>: <span class="ident">std::collections::HashMap</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">StorageChild</span><span class="op">&gt;</span>,
 }
 

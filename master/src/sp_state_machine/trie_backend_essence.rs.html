@@ -760,6 +760,74 @@
 <span id="760">760</span>
 <span id="761">761</span>
 <span id="762">762</span>
+<span id="763">763</span>
+<span id="764">764</span>
+<span id="765">765</span>
+<span id="766">766</span>
+<span id="767">767</span>
+<span id="768">768</span>
+<span id="769">769</span>
+<span id="770">770</span>
+<span id="771">771</span>
+<span id="772">772</span>
+<span id="773">773</span>
+<span id="774">774</span>
+<span id="775">775</span>
+<span id="776">776</span>
+<span id="777">777</span>
+<span id="778">778</span>
+<span id="779">779</span>
+<span id="780">780</span>
+<span id="781">781</span>
+<span id="782">782</span>
+<span id="783">783</span>
+<span id="784">784</span>
+<span id="785">785</span>
+<span id="786">786</span>
+<span id="787">787</span>
+<span id="788">788</span>
+<span id="789">789</span>
+<span id="790">790</span>
+<span id="791">791</span>
+<span id="792">792</span>
+<span id="793">793</span>
+<span id="794">794</span>
+<span id="795">795</span>
+<span id="796">796</span>
+<span id="797">797</span>
+<span id="798">798</span>
+<span id="799">799</span>
+<span id="800">800</span>
+<span id="801">801</span>
+<span id="802">802</span>
+<span id="803">803</span>
+<span id="804">804</span>
+<span id="805">805</span>
+<span id="806">806</span>
+<span id="807">807</span>
+<span id="808">808</span>
+<span id="809">809</span>
+<span id="810">810</span>
+<span id="811">811</span>
+<span id="812">812</span>
+<span id="813">813</span>
+<span id="814">814</span>
+<span id="815">815</span>
+<span id="816">816</span>
+<span id="817">817</span>
+<span id="818">818</span>
+<span id="819">819</span>
+<span id="820">820</span>
+<span id="821">821</span>
+<span id="822">822</span>
+<span id="823">823</span>
+<span id="824">824</span>
+<span id="825">825</span>
+<span id="826">826</span>
+<span id="827">827</span>
+<span id="828">828</span>
+<span id="829">829</span>
+<span id="830">830</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -785,21 +853,23 @@
 <span class="kw">use</span> <span class="ident">hash_db</span>::{<span class="self">self</span>, <span class="ident">AsHashDB</span>, <span class="ident">HashDB</span>, <span class="ident">HashDBRef</span>, <span class="ident">Hasher</span>, <span class="ident">Prefix</span>};
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">parking_lot::RwLock</span>;
-<span class="kw">use</span> <span class="ident">sp_core::storage</span>::{<span class="ident">ChildInfo</span>, <span class="ident">ChildType</span>, <span class="ident">StateVersion</span>};
+<span class="kw">use</span> <span class="ident">sp_core::storage</span>::{<span class="ident">ChildInfo</span>, <span class="ident">ChildType</span>, <span class="ident">PrefixedStorageKey</span>, <span class="ident">StateVersion</span>};
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">boxed::Box</span>, <span class="ident">vec::Vec</span>};
 <span class="kw">use</span> <span class="ident">sp_trie</span>::{
 	<span class="ident">child_delta_trie_root</span>, <span class="ident">delta_trie_root</span>, <span class="ident">empty_child_trie_root</span>, <span class="ident">read_child_trie_value</span>,
 	<span class="ident">read_trie_value</span>,
 	<span class="ident">trie_types</span>::{<span class="ident">TrieDB</span>, <span class="ident">TrieError</span>},
-	<span class="ident">DBValue</span>, <span class="ident">KeySpacedDB</span>, <span class="ident">PrefixedMemoryDB</span>, <span class="ident">Trie</span>, <span class="ident">TrieDBIterator</span>, <span class="ident">TrieDBKeyIterator</span>,
+	<span class="ident">DBValue</span>, <span class="ident">KeySpacedDB</span>, <span class="ident">LayoutV1</span> <span class="kw">as</span> <span class="ident">Layout</span>, <span class="ident">PrefixedMemoryDB</span>, <span class="ident">Trie</span>, <span class="ident">TrieDBIterator</span>,
+	<span class="ident">TrieDBKeyIterator</span>,
 };
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">std::collections::HashMap</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
-<span class="comment">// In this module, we only use layout for read operation and empty root,</span>
-<span class="comment">// where V1 and V0 are equivalent.</span>
-<span class="kw">use</span> <span class="ident">sp_trie::LayoutV1</span> <span class="kw">as</span> <span class="ident">Layout</span>;
+<span class="kw">use</span> <span class="ident">trie_db</span>::{
+	<span class="ident">node</span>::{<span class="ident">NodePlan</span>, <span class="ident">ValuePlan</span>},
+	<span class="ident">TrieDBNodeIterator</span>,
+};
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>))]</span>
 <span class="macro">macro_rules!</span> <span class="ident">format</span> {
@@ -1191,6 +1261,72 @@
 			<span class="prelude-val">None</span>,
 			<span class="bool-val">false</span>,
 		);
+	}
+
+	<span class="doccomment">/// Check remaining state item to migrate. Note this function should be remove when all state</span>
+	<span class="doccomment">/// migration did finished as it is only an utility.</span>
+	<span class="comment">// original author: @cheme</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check_migration_state</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">u64</span>, <span class="ident">u64</span>)<span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">threshold</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="ident">sp_core::storage::TRIE_VALUE_NODE_THRESHOLD</span>;
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">nb_to_migrate</span> <span class="op">=</span> <span class="number">0</span>;
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">nb_to_migrate_child</span> <span class="op">=</span> <span class="number">0</span>;
+
+		<span class="kw">let</span> <span class="ident">trie</span> <span class="op">=</span> <span class="ident">sp_trie::trie_types::TrieDB::new</span>(<span class="self">self</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">root</span>)
+			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;TrieDB creation error: {}&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">iter_node</span> <span class="op">=</span> <span class="ident">TrieDBNodeIterator::new</span>(<span class="kw-2">&amp;</span><span class="ident">trie</span>)
+			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;TrieDB node iterator error: {}&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span>;
+		<span class="kw">for</span> <span class="ident">node</span> <span class="kw">in</span> <span class="ident">iter_node</span> {
+			<span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">node</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;TrieDB node iterator error: {}&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span>;
+			<span class="kw">match</span> <span class="ident">node</span>.<span class="number">2</span>.<span class="ident">node_plan</span>() {
+				<span class="ident">NodePlan::Leaf</span> { <span class="ident">value</span>, .. } <span class="op">|</span>
+				<span class="ident">NodePlan::NibbledBranch</span> { <span class="ident">value</span>: <span class="prelude-val">Some</span>(<span class="ident">value</span>), .. } =&gt;
+					<span class="kw">if</span> <span class="kw">let</span> <span class="ident">ValuePlan::Inline</span>(<span class="ident">range</span>) <span class="op">=</span> <span class="ident">value</span> {
+						<span class="kw">if</span> (<span class="ident">range</span>.<span class="ident">end</span> <span class="op">-</span> <span class="ident">range</span>.<span class="ident">start</span>) <span class="kw">as</span> <span class="ident">u32</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">threshold</span> {
+							<span class="ident">nb_to_migrate</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+						}
+					},
+				<span class="kw">_</span> =&gt; (),
+			}
+		}
+
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">child_roots</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">ChildInfo</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>)<span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
+		<span class="comment">// get all child trie roots</span>
+		<span class="kw">for</span> <span class="ident">key_value</span> <span class="kw">in</span> <span class="ident">trie</span>.<span class="ident">iter</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;TrieDB node iterator error: {}&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span> {
+			<span class="kw">let</span> (<span class="ident">key</span>, <span class="ident">value</span>) <span class="op">=</span>
+				<span class="ident">key_value</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;TrieDB node iterator error: {}&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span>;
+			<span class="kw">if</span> <span class="ident">key</span>[..]
+				.<span class="ident">starts_with</span>(<span class="ident">sp_core::storage::well_known_keys::DEFAULT_CHILD_STORAGE_KEY_PREFIX</span>)
+			{
+				<span class="kw">let</span> <span class="ident">prefixed_key</span> <span class="op">=</span> <span class="ident">PrefixedStorageKey::new</span>(<span class="ident">key</span>);
+				<span class="kw">let</span> (<span class="ident">_type</span>, <span class="ident">unprefixed</span>) <span class="op">=</span> <span class="ident">ChildType::from_prefixed_key</span>(<span class="kw-2">&amp;</span><span class="ident">prefixed_key</span>).<span class="ident">unwrap</span>();
+				<span class="ident">child_roots</span>.<span class="ident">push</span>((<span class="ident">ChildInfo::new_default</span>(<span class="ident">unprefixed</span>), <span class="ident">value</span>));
+			}
+		}
+		<span class="kw">for</span> (<span class="ident">child_info</span>, <span class="ident">root</span>) <span class="kw">in</span> <span class="ident">child_roots</span> {
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">child_root</span> <span class="op">=</span> <span class="ident">H::Out::default</span>();
+			<span class="kw">let</span> <span class="ident">storage</span> <span class="op">=</span> <span class="ident">KeySpacedDB::new</span>(<span class="self">self</span>, <span class="ident">child_info</span>.<span class="ident">keyspace</span>());
+
+			<span class="ident">child_root</span>.<span class="ident">as_mut</span>()[..].<span class="ident">copy_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">root</span>[..]);
+			<span class="kw">let</span> <span class="ident">trie</span> <span class="op">=</span> <span class="ident">sp_trie::trie_types::TrieDB::new</span>(<span class="kw-2">&amp;</span><span class="ident">storage</span>, <span class="kw-2">&amp;</span><span class="ident">child_root</span>)
+				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;New child TrieDB error: {}&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="ident">iter_node</span> <span class="op">=</span> <span class="ident">TrieDBNodeIterator::new</span>(<span class="kw-2">&amp;</span><span class="ident">trie</span>)
+				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;TrieDB node iterator error: {}&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span>;
+			<span class="kw">for</span> <span class="ident">node</span> <span class="kw">in</span> <span class="ident">iter_node</span> {
+				<span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">node</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;Child TrieDB node iterator error: {}&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span>;
+				<span class="kw">match</span> <span class="ident">node</span>.<span class="number">2</span>.<span class="ident">node_plan</span>() {
+					<span class="ident">NodePlan::Leaf</span> { <span class="ident">value</span>, .. } <span class="op">|</span>
+					<span class="ident">NodePlan::NibbledBranch</span> { <span class="ident">value</span>: <span class="prelude-val">Some</span>(<span class="ident">value</span>), .. } =&gt;
+						<span class="kw">if</span> <span class="kw">let</span> <span class="ident">ValuePlan::Inline</span>(<span class="ident">range</span>) <span class="op">=</span> <span class="ident">value</span> {
+							<span class="kw">if</span> (<span class="ident">range</span>.<span class="ident">end</span> <span class="op">-</span> <span class="ident">range</span>.<span class="ident">start</span>) <span class="kw">as</span> <span class="ident">u32</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">threshold</span> {
+								<span class="ident">nb_to_migrate_child</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+							}
+						},
+					<span class="kw">_</span> =&gt; (),
+				}
+			}
+		}
+
+		<span class="prelude-val">Ok</span>((<span class="ident">nb_to_migrate</span>, <span class="ident">nb_to_migrate_child</span>))
 	}
 
 	<span class="doccomment">/// Returns all `(key, value)` pairs in the trie.</span>

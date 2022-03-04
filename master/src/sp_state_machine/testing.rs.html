@@ -406,7 +406,6 @@
 <span id="406">406</span>
 <span id="407">407</span>
 <span id="408">408</span>
-<span id="409">409</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -432,8 +431,8 @@
 };
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-	<span class="ident">backend::Backend</span>, <span class="ident">ext::Ext</span>, <span class="ident">InMemoryBackend</span>, <span class="ident">InMemoryProvingBackend</span>, <span class="ident">OverlayedChanges</span>,
-	<span class="ident">StorageKey</span>, <span class="ident">StorageTransactionCache</span>, <span class="ident">StorageValue</span>,
+	<span class="ident">backend::Backend</span>, <span class="ident">ext::Ext</span>, <span class="ident">InMemoryBackend</span>, <span class="ident">OverlayedChanges</span>, <span class="ident">StorageKey</span>,
+	<span class="ident">StorageTransactionCache</span>, <span class="ident">StorageValue</span>,
 };
 
 <span class="kw">use</span> <span class="ident">hash_db::Hasher</span>;
@@ -509,7 +508,6 @@
 		<span class="ident">state_version</span>: <span class="ident">StateVersion</span>,
 	) -&gt; <span class="self">Self</span> {
 		<span class="macro">assert!</span>(<span class="ident">storage</span>.<span class="ident">top</span>.<span class="ident">keys</span>().<span class="ident">all</span>(<span class="op">|</span><span class="ident">key</span><span class="op">|</span> <span class="op">!</span><span class="ident">is_child_storage_key</span>(<span class="ident">key</span>)));
-		<span class="macro">assert!</span>(<span class="ident">storage</span>.<span class="ident">children_default</span>.<span class="ident">keys</span>().<span class="ident">all</span>(<span class="op">|</span><span class="ident">key</span><span class="op">|</span> <span class="ident">is_child_storage_key</span>(<span class="ident">key</span>)));
 
 		<span class="ident">storage</span>.<span class="ident">top</span>.<span class="ident">insert</span>(<span class="ident">CODE</span>.<span class="ident">to_vec</span>(), <span class="ident">code</span>.<span class="ident">to_vec</span>());
 
@@ -613,7 +611,7 @@
 	<span class="doccomment">/// This implementation will wipe the proof recorded in between calls. Consecutive calls will</span>
 	<span class="doccomment">/// get their own proof from scratch.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">execute_and_prove</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">execute</span>: <span class="kw">impl</span> <span class="ident">FnOnce</span>() -&gt; <span class="ident">R</span>) -&gt; (<span class="ident">R</span>, <span class="ident">StorageProof</span>) {
-		<span class="kw">let</span> <span class="ident">proving_backend</span> <span class="op">=</span> <span class="ident">InMemoryProvingBackend::new</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">backend</span>);
+		<span class="kw">let</span> <span class="ident">proving_backend</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::InMemoryProvingBackend::new</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">backend</span>);
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">proving_ext</span> <span class="op">=</span> <span class="ident">Ext::new</span>(
 			<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">overlay</span>,
 			<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">storage_transaction_cache</span>,

@@ -119,7 +119,7 @@
 			<span class="comment">// is bags-list.</span>
 			<span class="ident">pallets</span>: <span class="macro">vec!</span>[<span class="ident">pallet_bags_list::Pallet</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::name</span>().<span class="ident">to_string</span>()],
 			<span class="ident">at</span>: <span class="prelude-val">None</span>,
-			<span class="ident">state_snapshot</span>: <span class="prelude-val">None</span>,
+			..<span class="ident">Default::default</span>()
 		}))
 		.<span class="ident">inject_hashed_prefix</span>(<span class="kw-2">&amp;</span><span class="op">&lt;</span><span class="ident">pallet_staking::Bonded</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::prefix_hash</span>())
 		.<span class="ident">inject_hashed_prefix</span>(<span class="kw-2">&amp;</span><span class="op">&lt;</span><span class="ident">pallet_staking::Ledger</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::prefix_hash</span>())

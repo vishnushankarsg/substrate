@@ -2010,10 +2010,6 @@
 <span id="2010">2010</span>
 <span id="2011">2011</span>
 <span id="2012">2012</span>
-<span id="2013">2013</span>
-<span id="2014">2014</span>
-<span id="2015">2015</span>
-<span id="2016">2016</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -2159,10 +2155,8 @@
 	<span class="doccomment">/// Weight of calling `seal_caller`.</span>
 	<span class="ident">Caller</span>,
 	<span class="doccomment">/// Weight of calling `seal_is_contract`.</span>
-	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unstable-interface&quot;</span>)]</span>
 	<span class="ident">IsContract</span>,
 	<span class="doccomment">/// Weight of calling `seal_caller_is_origin`.</span>
-	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unstable-interface&quot;</span>)]</span>
 	<span class="ident">CallerIsOrigin</span>,
 	<span class="doccomment">/// Weight of calling `seal_address`.</span>
 	<span class="ident">Address</span>,
@@ -2252,9 +2246,7 @@
 			<span class="ident">CopyFromContract</span>(<span class="ident">len</span>) =&gt; <span class="ident">s</span>.<span class="ident">return_per_byte</span>.<span class="ident">saturating_mul</span>(<span class="ident">len</span>.<span class="ident">into</span>()),
 			<span class="ident">CopyToContract</span>(<span class="ident">len</span>) =&gt; <span class="ident">s</span>.<span class="ident">input_per_byte</span>.<span class="ident">saturating_mul</span>(<span class="ident">len</span>.<span class="ident">into</span>()),
 			<span class="ident">Caller</span> =&gt; <span class="ident">s</span>.<span class="ident">caller</span>,
-			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unstable-interface&quot;</span>)]</span>
 			<span class="ident">IsContract</span> =&gt; <span class="ident">s</span>.<span class="ident">is_contract</span>,
-			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unstable-interface&quot;</span>)]</span>
 			<span class="ident">CallerIsOrigin</span> =&gt; <span class="ident">s</span>.<span class="ident">caller_is_origin</span>,
 			<span class="ident">Address</span> =&gt; <span class="ident">s</span>.<span class="ident">address</span>,
 			<span class="ident">GasLeft</span> =&gt; <span class="ident">s</span>.<span class="ident">gas_left</span>,
@@ -3388,7 +3380,7 @@
 	<span class="comment">//   Should be decodable as an `T::AccountId`. Traps otherwise.</span>
 	<span class="comment">//</span>
 	<span class="comment">// Returned value is a u32-encoded boolean: (0 = false, 1 = true).</span>
-	[<span class="ident">__unstable__</span>] <span class="ident">seal_is_contract</span>(<span class="ident">ctx</span>, <span class="ident">account_ptr</span>: <span class="ident">u32</span>) -&gt; <span class="ident">u32</span> =&gt; {
+	[<span class="ident">seal0</span>] <span class="ident">seal_is_contract</span>(<span class="ident">ctx</span>, <span class="ident">account_ptr</span>: <span class="ident">u32</span>) -&gt; <span class="ident">u32</span> =&gt; {
 		<span class="ident">ctx</span>.<span class="ident">charge_gas</span>(<span class="ident">RuntimeCosts::IsContract</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">address</span>: <span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">E</span> <span class="kw">as</span> <span class="ident">Ext</span><span class="op">&gt;</span><span class="ident">::T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span> <span class="op">=</span>
 			<span class="ident">ctx</span>.<span class="ident">read_sandbox_memory_as</span>(<span class="ident">account_ptr</span>)<span class="question-mark">?</span>;
@@ -3406,7 +3398,7 @@
 	<span class="comment">// and `false` indicates that the caller is another contract.</span>
 	<span class="comment">//</span>
 	<span class="comment">// Returned value is a u32-encoded boolean: (0 = false, 1 = true).</span>
-	[<span class="ident">__unstable__</span>] <span class="ident">seal_caller_is_origin</span>(<span class="ident">ctx</span>) -&gt; <span class="ident">u32</span> =&gt; {
+	[<span class="ident">seal0</span>] <span class="ident">seal_caller_is_origin</span>(<span class="ident">ctx</span>) -&gt; <span class="ident">u32</span> =&gt; {
 		<span class="ident">ctx</span>.<span class="ident">charge_gas</span>(<span class="ident">RuntimeCosts::CallerIsOrigin</span>)<span class="question-mark">?</span>;
 		<span class="prelude-val">Ok</span>(<span class="ident">ctx</span>.<span class="ident">ext</span>.<span class="ident">caller_is_origin</span>() <span class="kw">as</span> <span class="ident">u32</span>)
 	},
