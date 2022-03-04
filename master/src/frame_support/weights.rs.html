@@ -1113,6 +1113,8 @@
 <span class="doccomment">//! - Ubuntu 19.10 (GNU/Linux 5.3.0-18-generic x86_64)</span>
 <span class="doccomment">//! - rustc 1.42.0 (b8cedc004 2020-03-09)</span>
 
+<span class="kw">mod</span> <span class="ident">block_weights</span>;
+<span class="kw">mod</span> <span class="ident">extrinsic_weights</span>;
 <span class="kw">mod</span> <span class="ident">paritydb_weights</span>;
 <span class="kw">mod</span> <span class="ident">rocksdb_weights</span>;
 
@@ -1142,19 +1144,17 @@
 <span class="doccomment">/// For example: FRAME System, FRAME Executive, our FRAME support libraries, etc...</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">constants</span> {
 	<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::Weight</span>;
-	<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::parameter_types</span>;
 
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">WEIGHT_PER_SECOND</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="number">1_000_000_000_000</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">WEIGHT_PER_MILLIS</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">WEIGHT_PER_SECOND</span> <span class="op">/</span> <span class="number">1000</span>; <span class="comment">// 1_000_000_000</span>
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">WEIGHT_PER_MICROS</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">WEIGHT_PER_MILLIS</span> <span class="op">/</span> <span class="number">1000</span>; <span class="comment">// 1_000_000</span>
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">WEIGHT_PER_NANOS</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">WEIGHT_PER_MICROS</span> <span class="op">/</span> <span class="number">1000</span>; <span class="comment">// 1_000</span>
 
-	<span class="macro">parameter_types!</span> {
-		<span class="doccomment">/// Importing a block with 0 txs takes ~5 ms</span>
-		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BlockExecutionWeight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="number">5</span> <span class="op">*</span> <span class="ident">WEIGHT_PER_MILLIS</span>;
-		<span class="doccomment">/// Executing 10,000 System remarks (no-op) txs takes ~1.26 seconds -&gt; ~125 µs per tx</span>
-		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ExtrinsicBaseWeight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="number">125</span> <span class="op">*</span> <span class="ident">WEIGHT_PER_MICROS</span>;
-	}
+	<span class="comment">// Expose the Block and Extrinsic base weights.</span>
+	<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">super</span>::{
+		<span class="ident">block_weights::constants::BlockExecutionWeight</span>,
+		<span class="ident">extrinsic_weights::constants::ExtrinsicBaseWeight</span>,
+	};
 
 	<span class="comment">// Expose the DB weights.</span>
 	<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">super</span>::{
