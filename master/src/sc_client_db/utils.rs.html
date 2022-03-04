@@ -819,6 +819,11 @@
 <span id="819">819</span>
 <span id="820">820</span>
 <span id="821">821</span>
+<span id="822">822</span>
+<span id="823">823</span>
+<span id="824">824</span>
+<span id="825">825</span>
+<span id="826">826</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -861,7 +866,7 @@
 	<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;test-helpers&quot;</span>,
 	<span class="ident">test</span>
 ))]</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">NUM_COLUMNS</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">12</span>;
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">NUM_COLUMNS</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">13</span>;
 <span class="doccomment">/// Meta column. The set of keys in the column is shared by full &amp;&amp; light storages.</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">COLUMN_META</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
 
@@ -1073,7 +1078,7 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;with-parity-db&quot;</span>)]</span>
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">parity_db::Error</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">OpenDbError</span> {
 	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">err</span>: <span class="ident">parity_db::Error</span>) -&gt; <span class="self">Self</span> {
-		<span class="kw">if</span> <span class="ident">err</span>.<span class="ident">to_string</span>().<span class="ident">contains</span>(<span class="string">&quot;use open_or_create&quot;</span>) {
+		<span class="kw">if</span> <span class="macro">matches!</span>(<span class="ident">err</span>, <span class="ident">parity_db::Error::DatabaseNotFound</span>) {
 			<span class="ident">OpenDbError::DoesNotExist</span>
 		} <span class="kw">else</span> {
 			<span class="ident">OpenDbError::Internal</span>(<span class="ident">err</span>.<span class="ident">to_string</span>())
@@ -1093,8 +1098,14 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;with-parity-db&quot;</span>)]</span>
 <span class="kw">fn</span> <span class="ident">open_parity_db</span><span class="op">&lt;</span><span class="ident">Block</span>: <span class="ident">BlockT</span><span class="op">&gt;</span>(<span class="ident">path</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>, <span class="ident">db_type</span>: <span class="ident">DatabaseType</span>, <span class="ident">create</span>: <span class="ident">bool</span>) -&gt; <span class="ident">OpenDbResult</span> {
-	<span class="kw">let</span> <span class="ident">db</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::parity_db::open</span>(<span class="ident">path</span>, <span class="ident">db_type</span>, <span class="ident">create</span>)<span class="question-mark">?</span>;
-	<span class="prelude-val">Ok</span>(<span class="ident">db</span>)
+	<span class="kw">match</span> <span class="ident"><span class="kw">crate</span>::parity_db::open</span>(<span class="ident">path</span>, <span class="ident">db_type</span>, <span class="ident">create</span>, <span class="bool-val">false</span>) {
+		<span class="prelude-val">Ok</span>(<span class="ident">db</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">db</span>),
+		<span class="prelude-val">Err</span>(<span class="ident">parity_db::Error::InvalidConfiguration</span>(<span class="kw">_</span>)) =&gt; {
+			<span class="comment">// Try to update the database with the new config</span>
+			<span class="prelude-val">Ok</span>(<span class="ident"><span class="kw">crate</span>::parity_db::open</span>(<span class="ident">path</span>, <span class="ident">db_type</span>, <span class="ident">create</span>, <span class="bool-val">true</span>)<span class="question-mark">?</span>)
+		},
+		<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">e</span>.<span class="ident">into</span>()),
+	}
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;with-parity-db&quot;</span>))]</span>
@@ -1394,7 +1405,7 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-	<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">KeepBlocks</span>, <span class="ident">TransactionStorageMode</span>};
+	<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::KeepBlocks</span>;
 	<span class="kw">use</span> <span class="ident">codec::Input</span>;
 	<span class="kw">use</span> <span class="ident">sc_state_db::PruningMode</span>;
 	<span class="kw">use</span> <span class="ident">sp_runtime::testing</span>::{<span class="ident">Block</span> <span class="kw">as</span> <span class="ident">RawBlock</span>, <span class="ident">ExtrinsicWrapper</span>};
@@ -1510,7 +1521,6 @@
 			<span class="ident">state_pruning</span>: <span class="ident">PruningMode::ArchiveAll</span>,
 			<span class="ident">source</span>,
 			<span class="ident">keep_blocks</span>: <span class="ident">KeepBlocks::All</span>,
-			<span class="ident">transaction_storage</span>: <span class="ident">TransactionStorageMode::BlockBody</span>,
 		}
 	}
 

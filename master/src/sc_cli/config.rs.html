@@ -653,15 +653,6 @@
 <span id="653">653</span>
 <span id="654">654</span>
 <span id="655">655</span>
-<span id="656">656</span>
-<span id="657">657</span>
-<span id="658">658</span>
-<span id="659">659</span>
-<span id="660">660</span>
-<span id="661">661</span>
-<span id="662">662</span>
-<span id="663">663</span>
-<span id="664">664</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -695,7 +686,7 @@
 		<span class="ident">NodeKeyConfig</span>, <span class="ident">OffchainWorkerConfig</span>, <span class="ident">PrometheusConfig</span>, <span class="ident">PruningMode</span>, <span class="ident">Role</span>, <span class="ident">RpcMethods</span>,
 		<span class="ident">TelemetryEndpoints</span>, <span class="ident">TransactionPoolOptions</span>, <span class="ident">WasmExecutionMethod</span>,
 	},
-	<span class="ident">ChainSpec</span>, <span class="ident">KeepBlocks</span>, <span class="ident">TracingReceiver</span>, <span class="ident">TransactionStorageMode</span>,
+	<span class="ident">ChainSpec</span>, <span class="ident">KeepBlocks</span>, <span class="ident">TracingReceiver</span>,
 };
 <span class="kw">use</span> <span class="ident">sc_tracing::logging::LoggerBuilder</span>;
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">net::SocketAddr</span>, <span class="ident">path::PathBuf</span>};
@@ -860,14 +851,6 @@
 	<span class="doccomment">/// By default this is retrieved from `DatabaseParams` if it is available. Otherwise its `None`.</span>
 	<span class="kw">fn</span> <span class="ident">database_cache_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="ident">database_params</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">database_cache_size</span>()).<span class="ident">unwrap_or_default</span>())
-	}
-
-	<span class="doccomment">/// Get the database transaction storage scheme.</span>
-	<span class="kw">fn</span> <span class="ident">database_transaction_storage</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">TransactionStorageMode</span><span class="op">&gt;</span> {
-		<span class="prelude-val">Ok</span>(<span class="self">self</span>
-			.<span class="ident">database_params</span>()
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">transaction_storage</span>())
-			.<span class="ident">unwrap_or</span>(<span class="ident">TransactionStorageMode::BlockBody</span>))
 	}
 
 	<span class="doccomment">/// Get the database backend variant.</span>
@@ -1183,7 +1166,6 @@
 			<span class="ident">state_cache_child_ratio</span>: <span class="self">self</span>.<span class="ident">state_cache_child_ratio</span>()<span class="question-mark">?</span>,
 			<span class="ident">state_pruning</span>: <span class="self">self</span>.<span class="ident">state_pruning</span>(<span class="ident">unsafe_pruning</span>, <span class="kw-2">&amp;</span><span class="ident">role</span>)<span class="question-mark">?</span>,
 			<span class="ident">keep_blocks</span>: <span class="self">self</span>.<span class="ident">keep_blocks</span>()<span class="question-mark">?</span>,
-			<span class="ident">transaction_storage</span>: <span class="self">self</span>.<span class="ident">database_transaction_storage</span>()<span class="question-mark">?</span>,
 			<span class="ident">wasm_method</span>: <span class="self">self</span>.<span class="ident">wasm_method</span>()<span class="question-mark">?</span>,
 			<span class="ident">wasm_runtime_overrides</span>: <span class="self">self</span>.<span class="ident">wasm_runtime_overrides</span>(),
 			<span class="ident">execution_strategies</span>: <span class="self">self</span>.<span class="ident">execution_strategies</span>(<span class="ident">is_dev</span>, <span class="ident">is_validator</span>)<span class="question-mark">?</span>,
