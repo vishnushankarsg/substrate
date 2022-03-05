@@ -690,6 +690,7 @@
 <span id="690">690</span>
 <span id="691">691</span>
 <span id="692">692</span>
+<span id="693">693</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1154,8 +1155,9 @@
 					<span class="comment">// https://github.com/paritytech/substrate/issues/7354</span>
 					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">instance</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">module</span>.<span class="ident">new_instance</span>() {
 						<span class="prelude-val">Ok</span>(<span class="ident">instance</span>) =&gt; <span class="ident">instance</span>,
-						<span class="prelude-val">Err</span>(<span class="ident">error</span>) =&gt;
-							<span class="macro">panic!</span>(<span class="string">&quot;failed to create new instance from module: {}&quot;</span>, <span class="ident">error</span>),
+						<span class="prelude-val">Err</span>(<span class="ident">error</span>) =&gt; {
+							<span class="macro">panic!</span>(<span class="string">&quot;failed to create new instance from module: {}&quot;</span>, <span class="ident">error</span>)
+						},
 					};
 
 					<span class="kw">match</span> <span class="ident">instance</span>

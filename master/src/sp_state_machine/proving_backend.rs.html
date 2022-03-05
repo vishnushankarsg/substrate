@@ -583,6 +583,35 @@
 <span id="583">583</span>
 <span id="584">584</span>
 <span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -743,15 +772,13 @@
 
 	<span class="doccomment">/// Convert into a [`StorageProof`].</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_storage_proof</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">StorageProof</span> {
-		<span class="kw">let</span> <span class="ident">trie_nodes</span> <span class="op">=</span> <span class="self">self</span>
-			.<span class="ident">inner</span>
-			.<span class="ident">read</span>()
-			.<span class="ident">records</span>
-			.<span class="ident">iter</span>()
-			.<span class="ident">filter_map</span>(<span class="op">|</span>(<span class="ident">_k</span>, <span class="ident">v</span>)<span class="op">|</span> <span class="ident">v</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">to_vec</span>()))
-			.<span class="ident">collect</span>();
-
-		<span class="ident">StorageProof::new</span>(<span class="ident">trie_nodes</span>)
+		<span class="ident">StorageProof::new</span>(
+			<span class="self">self</span>.<span class="ident">inner</span>
+				.<span class="ident">read</span>()
+				.<span class="ident">records</span>
+				.<span class="ident">iter</span>()
+				.<span class="ident">filter_map</span>(<span class="op">|</span>(<span class="ident">_k</span>, <span class="ident">v</span>)<span class="op">|</span> <span class="ident">v</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">to_vec</span>())),
+		)
 	}
 
 	<span class="doccomment">/// Reset the internal state.</span>
@@ -978,6 +1005,7 @@
 		<span class="ident">proving_backend::create_proof_check_backend</span>, <span class="ident">trie_backend::tests::test_trie</span>,
 		<span class="ident">InMemoryBackend</span>,
 	};
+	<span class="kw">use</span> <span class="ident">sp_core::H256</span>;
 	<span class="kw">use</span> <span class="ident">sp_runtime::traits::BlakeTwo256</span>;
 	<span class="kw">use</span> <span class="ident">sp_trie::PrefixedMemoryDB</span>;
 
@@ -1011,7 +1039,6 @@
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">proof_is_invalid_when_does_not_contains_root</span>() {
-		<span class="kw">use</span> <span class="ident">sp_core::H256</span>;
 		<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">create_proof_check_backend</span>::<span class="op">&lt;</span><span class="ident">BlakeTwo256</span><span class="op">&gt;</span>(
 			<span class="ident">H256::from_low_u64_be</span>(<span class="number">1</span>),
 			<span class="ident">StorageProof::empty</span>(),
@@ -1166,6 +1193,37 @@
 
 		<span class="macro">assert!</span>(<span class="ident">backend</span>.<span class="ident">storage</span>(<span class="string">b&quot;doesnotexist2&quot;</span>).<span class="ident">unwrap</span>().<span class="ident">is_none</span>());
 		<span class="ident">check_estimation</span>(<span class="kw-2">&amp;</span><span class="ident">backend</span>);
+	}
+
+	<span class="attribute">#[<span class="ident">test</span>]</span>
+	<span class="kw">fn</span> <span class="ident">proof_recorded_for_same_execution_should_be_deterministic</span>() {
+		<span class="kw">let</span> <span class="ident">storage_changes</span> <span class="op">=</span> <span class="macro">vec!</span>[
+			(<span class="ident">H256::random</span>(), <span class="prelude-val">Some</span>(<span class="string">b&quot;value1&quot;</span>.<span class="ident">to_vec</span>())),
+			(<span class="ident">H256::random</span>(), <span class="prelude-val">Some</span>(<span class="string">b&quot;value2&quot;</span>.<span class="ident">to_vec</span>())),
+			(<span class="ident">H256::random</span>(), <span class="prelude-val">Some</span>(<span class="string">b&quot;value3&quot;</span>.<span class="ident">to_vec</span>())),
+			(<span class="ident">H256::random</span>(), <span class="prelude-val">Some</span>(<span class="string">b&quot;value4&quot;</span>.<span class="ident">to_vec</span>())),
+			(<span class="ident">H256::random</span>(), <span class="prelude-val">Some</span>(<span class="string">b&quot;value5&quot;</span>.<span class="ident">to_vec</span>())),
+			(<span class="ident">H256::random</span>(), <span class="prelude-val">Some</span>(<span class="string">b&quot;value6&quot;</span>.<span class="ident">to_vec</span>())),
+			(<span class="ident">H256::random</span>(), <span class="prelude-val">Some</span>(<span class="string">b&quot;value7&quot;</span>.<span class="ident">to_vec</span>())),
+			(<span class="ident">H256::random</span>(), <span class="prelude-val">Some</span>(<span class="string">b&quot;value8&quot;</span>.<span class="ident">to_vec</span>())),
+		];
+
+		<span class="kw">let</span> <span class="ident">proof_recorder</span> <span class="op">=</span>
+			<span class="ident">ProofRecorder</span>::<span class="op">&lt;</span><span class="ident">H256</span><span class="op">&gt;</span> { <span class="ident">inner</span>: <span class="ident">Arc::new</span>(<span class="ident">RwLock::new</span>(<span class="ident">ProofRecorderInner::default</span>())) };
+		<span class="ident">storage_changes</span>
+			.<span class="ident">clone</span>()
+			.<span class="ident">into_iter</span>()
+			.<span class="ident">for_each</span>(<span class="op">|</span>(<span class="ident">key</span>, <span class="ident">val</span>)<span class="op">|</span> <span class="ident">proof_recorder</span>.<span class="ident">record</span>(<span class="ident">key</span>, <span class="ident">val</span>));
+		<span class="kw">let</span> <span class="ident">proof1</span> <span class="op">=</span> <span class="ident">proof_recorder</span>.<span class="ident">to_storage_proof</span>();
+
+		<span class="kw">let</span> <span class="ident">proof_recorder</span> <span class="op">=</span>
+			<span class="ident">ProofRecorder</span>::<span class="op">&lt;</span><span class="ident">H256</span><span class="op">&gt;</span> { <span class="ident">inner</span>: <span class="ident">Arc::new</span>(<span class="ident">RwLock::new</span>(<span class="ident">ProofRecorderInner::default</span>())) };
+		<span class="ident">storage_changes</span>
+			.<span class="ident">into_iter</span>()
+			.<span class="ident">for_each</span>(<span class="op">|</span>(<span class="ident">key</span>, <span class="ident">val</span>)<span class="op">|</span> <span class="ident">proof_recorder</span>.<span class="ident">record</span>(<span class="ident">key</span>, <span class="ident">val</span>));
+		<span class="kw">let</span> <span class="ident">proof2</span> <span class="op">=</span> <span class="ident">proof_recorder</span>.<span class="ident">to_storage_proof</span>();
+
+		<span class="macro">assert_eq!</span>(<span class="ident">proof1</span>, <span class="ident">proof2</span>);
 	}
 }
 </code></pre></div>

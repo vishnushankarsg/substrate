@@ -187,6 +187,7 @@
 <span id="187">187</span>
 <span id="188">188</span>
 <span id="189">189</span>
+<span id="190">190</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -207,7 +208,7 @@
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
 <span class="kw">use</span> <span class="ident">hash_db</span>::{<span class="ident">HashDB</span>, <span class="ident">Hasher</span>};
 <span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
-<span class="kw">use</span> <span class="ident">sp_std::vec::Vec</span>;
+<span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">collections::btree_set::BTreeSet</span>, <span class="ident">iter::IntoIterator</span>, <span class="ident">vec::Vec</span>};
 <span class="comment">// Note that `LayoutV1` usage here (proof compaction) is compatible</span>
 <span class="comment">// with `LayoutV0`.</span>
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::LayoutV1</span> <span class="kw">as</span> <span class="ident">Layout</span>;
@@ -221,13 +222,13 @@
 <span class="doccomment">/// the serialized nodes and performing the key lookups.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">TypeInfo</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StorageProof</span> {
-	<span class="ident">trie_nodes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="ident">trie_nodes</span>: <span class="ident">BTreeSet</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">StorageProof</span> {
 	<span class="doccomment">/// Constructs a storage proof from a subset of encoded trie nodes in a storage backend.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">trie_nodes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
-		<span class="ident">StorageProof</span> { <span class="ident">trie_nodes</span> }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">trie_nodes</span>: <span class="kw">impl</span> <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
+		<span class="ident">StorageProof</span> { <span class="ident">trie_nodes</span>: <span class="ident">BTreeSet::from_iter</span>(<span class="ident">trie_nodes</span>) }
 	}
 
 	<span class="doccomment">/// Returns a new empty proof.</span>
@@ -235,7 +236,7 @@
 	<span class="doccomment">/// An empty proof is capable of only proving trivial statements (ie. that an empty set of</span>
 	<span class="doccomment">/// key-value pairs exist in storage).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">empty</span>() -&gt; <span class="self">Self</span> {
-		<span class="ident">StorageProof</span> { <span class="ident">trie_nodes</span>: <span class="ident">Vec::new</span>() }
+		<span class="ident">StorageProof</span> { <span class="ident">trie_nodes</span>: <span class="ident">BTreeSet::new</span>() }
 	}
 
 	<span class="doccomment">/// Returns whether this is an empty proof.</span>
@@ -243,14 +244,14 @@
 		<span class="self">self</span>.<span class="ident">trie_nodes</span>.<span class="ident">is_empty</span>()
 	}
 
-	<span class="doccomment">/// Create an iterator over trie nodes constructed from the proof. The nodes are not guaranteed</span>
-	<span class="doccomment">/// to be traversed in any particular order.</span>
+	<span class="doccomment">/// Create an iterator over encoded trie nodes in lexicographical order constructed</span>
+	<span class="doccomment">/// from the proof.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter_nodes</span>(<span class="self">self</span>) -&gt; <span class="ident">StorageProofNodeIterator</span> {
 		<span class="ident">StorageProofNodeIterator::new</span>(<span class="self">self</span>)
 	}
 
 	<span class="doccomment">/// Convert into plain node vector.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_nodes</span>(<span class="self">self</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_nodes</span>(<span class="self">self</span>) -&gt; <span class="ident">BTreeSet</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">trie_nodes</span>
 	}
 
@@ -327,12 +328,13 @@
 			<span class="ident">expected_root</span>,
 		)<span class="question-mark">?</span>;
 		<span class="prelude-val">Ok</span>((
-			<span class="ident">StorageProof::new</span>(
-				<span class="ident">db</span>.<span class="ident">drain</span>()
-					.<span class="ident">into_iter</span>()
-					.<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">kv</span><span class="op">|</span> <span class="kw">if</span> (<span class="ident">kv</span>.<span class="number">1</span>).<span class="number">1</span> <span class="op">&gt;</span> <span class="number">0</span> { <span class="prelude-val">Some</span>((<span class="ident">kv</span>.<span class="number">1</span>).<span class="number">0</span>) } <span class="kw">else</span> { <span class="prelude-val">None</span> })
-					.<span class="ident">collect</span>(),
-			),
+			<span class="ident">StorageProof::new</span>(<span class="ident">db</span>.<span class="ident">drain</span>().<span class="ident">into_iter</span>().<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">kv</span><span class="op">|</span> {
+				<span class="kw">if</span> (<span class="ident">kv</span>.<span class="number">1</span>).<span class="number">1</span> <span class="op">&gt;</span> <span class="number">0</span> {
+					<span class="prelude-val">Some</span>((<span class="ident">kv</span>.<span class="number">1</span>).<span class="number">0</span>)
+				} <span class="kw">else</span> {
+					<span class="prelude-val">None</span>
+				}
+			})),
 			<span class="ident">root</span>,
 		))
 	}
@@ -360,7 +362,7 @@
 <span class="doccomment">/// An iterator over trie nodes constructed from a storage proof. The nodes are not guaranteed to</span>
 <span class="doccomment">/// be traversed in any particular order.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StorageProofNodeIterator</span> {
-	<span class="ident">inner</span>: <span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">IntoIterator</span><span class="op">&gt;</span><span class="ident">::IntoIter</span>,
+	<span class="ident">inner</span>: <span class="op">&lt;</span><span class="ident">BTreeSet</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">IntoIterator</span><span class="op">&gt;</span><span class="ident">::IntoIter</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">StorageProofNodeIterator</span> {

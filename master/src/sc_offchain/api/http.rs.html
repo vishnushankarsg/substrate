@@ -1121,6 +1121,8 @@
 <span id="1121">1121</span>
 <span id="1122">1122</span>
 <span id="1123">1123</span>
+<span id="1124">1124</span>
+<span id="1125">1125</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -1555,8 +1557,9 @@
 							);
 						},
 						<span class="prelude-val">None</span> =&gt; {}, <span class="comment">// can happen if we detected an IO error when sending the body</span>
-						<span class="kw">_</span> =&gt;
-							<span class="macro">tracing::error!</span>(<span class="ident">target</span>: <span class="string">&quot;offchain-worker::http&quot;</span>, <span class="string">&quot;State mismatch between the API and worker&quot;</span>),
+						<span class="kw">_</span> =&gt; {
+							<span class="macro">tracing::error!</span>(<span class="ident">target</span>: <span class="string">&quot;offchain-worker::http&quot;</span>, <span class="string">&quot;State mismatch between the API and worker&quot;</span>)
+						},
 					}
 				},
 
@@ -1566,8 +1569,9 @@
 						<span class="self">self</span>.<span class="ident">requests</span>.<span class="ident">insert</span>(<span class="ident">id</span>, <span class="ident">HttpApiRequest::Fail</span>(<span class="ident">error</span>));
 					},
 					<span class="prelude-val">None</span> =&gt; {}, <span class="comment">// can happen if we detected an IO error when sending the body</span>
-					<span class="kw">_</span> =&gt;
-						<span class="macro">tracing::error!</span>(<span class="ident">target</span>: <span class="string">&quot;offchain-worker::http&quot;</span>, <span class="string">&quot;State mismatch between the API and worker&quot;</span>),
+					<span class="kw">_</span> =&gt; {
+						<span class="macro">tracing::error!</span>(<span class="ident">target</span>: <span class="string">&quot;offchain-worker::http&quot;</span>, <span class="string">&quot;State mismatch between the API and worker&quot;</span>)
+					},
 				},
 
 				<span class="prelude-val">None</span> =&gt; {
