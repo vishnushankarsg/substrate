@@ -1267,6 +1267,74 @@
 <span id="1267">1267</span>
 <span id="1268">1268</span>
 <span id="1269">1269</span>
+<span id="1270">1270</span>
+<span id="1271">1271</span>
+<span id="1272">1272</span>
+<span id="1273">1273</span>
+<span id="1274">1274</span>
+<span id="1275">1275</span>
+<span id="1276">1276</span>
+<span id="1277">1277</span>
+<span id="1278">1278</span>
+<span id="1279">1279</span>
+<span id="1280">1280</span>
+<span id="1281">1281</span>
+<span id="1282">1282</span>
+<span id="1283">1283</span>
+<span id="1284">1284</span>
+<span id="1285">1285</span>
+<span id="1286">1286</span>
+<span id="1287">1287</span>
+<span id="1288">1288</span>
+<span id="1289">1289</span>
+<span id="1290">1290</span>
+<span id="1291">1291</span>
+<span id="1292">1292</span>
+<span id="1293">1293</span>
+<span id="1294">1294</span>
+<span id="1295">1295</span>
+<span id="1296">1296</span>
+<span id="1297">1297</span>
+<span id="1298">1298</span>
+<span id="1299">1299</span>
+<span id="1300">1300</span>
+<span id="1301">1301</span>
+<span id="1302">1302</span>
+<span id="1303">1303</span>
+<span id="1304">1304</span>
+<span id="1305">1305</span>
+<span id="1306">1306</span>
+<span id="1307">1307</span>
+<span id="1308">1308</span>
+<span id="1309">1309</span>
+<span id="1310">1310</span>
+<span id="1311">1311</span>
+<span id="1312">1312</span>
+<span id="1313">1313</span>
+<span id="1314">1314</span>
+<span id="1315">1315</span>
+<span id="1316">1316</span>
+<span id="1317">1317</span>
+<span id="1318">1318</span>
+<span id="1319">1319</span>
+<span id="1320">1320</span>
+<span id="1321">1321</span>
+<span id="1322">1322</span>
+<span id="1323">1323</span>
+<span id="1324">1324</span>
+<span id="1325">1325</span>
+<span id="1326">1326</span>
+<span id="1327">1327</span>
+<span id="1328">1328</span>
+<span id="1329">1329</span>
+<span id="1330">1330</span>
+<span id="1331">1331</span>
+<span id="1332">1332</span>
+<span id="1333">1333</span>
+<span id="1334">1334</span>
+<span id="1335">1335</span>
+<span id="1336">1336</span>
+<span id="1337">1337</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1310,8 +1378,10 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">migration</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">weights</span>;
 
-<span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">HasCompact</span>};
-<span class="kw">use</span> <span class="ident">frame_support::traits</span>::{<span class="ident">BalanceStatus::Reserved</span>, <span class="ident">Currency</span>, <span class="ident">ReservableCurrency</span>};
+<span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
+<span class="kw">use</span> <span class="ident">frame_support::traits</span>::{
+	<span class="ident">BalanceStatus::Reserved</span>, <span class="ident">Currency</span>, <span class="ident">EnsureOriginWithArg</span>, <span class="ident">ReservableCurrency</span>,
+};
 <span class="kw">use</span> <span class="ident">frame_system::Config</span> <span class="kw">as</span> <span class="ident">SystemConfig</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
 	<span class="ident">traits</span>::{<span class="ident">Saturating</span>, <span class="ident">StaticLookup</span>, <span class="ident">Zero</span>},
@@ -1333,6 +1403,21 @@
 	<span class="attribute">#[<span class="ident">pallet::generate_store</span>(<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">trait</span> <span class="ident">Store</span>)]</span>
 	<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span> <span class="op">=</span> ()<span class="op">&gt;</span>(<span class="kw">_</span>);
 
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>)]</span>
+	<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">BenchmarkHelper</span><span class="op">&lt;</span><span class="ident">ClassId</span>, <span class="ident">InstanceId</span><span class="op">&gt;</span> {
+		<span class="kw">fn</span> <span class="ident">class</span>(<span class="ident">i</span>: <span class="ident">u16</span>) -&gt; <span class="ident">ClassId</span>;
+		<span class="kw">fn</span> <span class="ident">instance</span>(<span class="ident">i</span>: <span class="ident">u16</span>) -&gt; <span class="ident">InstanceId</span>;
+	}
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>)]</span>
+	<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">ClassId</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span>, <span class="ident">InstanceId</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">BenchmarkHelper</span><span class="op">&lt;</span><span class="ident">ClassId</span>, <span class="ident">InstanceId</span><span class="op">&gt;</span> <span class="kw">for</span> () {
+		<span class="kw">fn</span> <span class="ident">class</span>(<span class="ident">i</span>: <span class="ident">u16</span>) -&gt; <span class="ident">ClassId</span> {
+			<span class="ident">i</span>.<span class="ident">into</span>()
+		}
+		<span class="kw">fn</span> <span class="ident">instance</span>(<span class="ident">i</span>: <span class="ident">u16</span>) -&gt; <span class="ident">InstanceId</span> {
+			<span class="ident">i</span>.<span class="ident">into</span>()
+		}
+	}
+
 	<span class="attribute">#[<span class="ident">pallet::config</span>]</span>
 	<span class="doccomment">/// The module configuration trait.</span>
 	<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span>: <span class="lifetime">&#39;static</span> <span class="op">=</span> ()<span class="op">&gt;</span>: <span class="ident">frame_system::Config</span> {
@@ -1340,16 +1425,10 @@
 		<span class="kw">type</span> <span class="ident">Event</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Event</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">IsType</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::Event</span><span class="op">&gt;</span>;
 
 		<span class="doccomment">/// Identifier for the class of asset.</span>
-		<span class="kw">type</span> <span class="ident">ClassId</span>: <span class="ident">Member</span> <span class="op">+</span> <span class="ident">Parameter</span> <span class="op">+</span> <span class="ident">Default</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">HasCompact</span> <span class="op">+</span> <span class="ident">MaxEncodedLen</span>;
+		<span class="kw">type</span> <span class="ident">ClassId</span>: <span class="ident">Member</span> <span class="op">+</span> <span class="ident">Parameter</span> <span class="op">+</span> <span class="ident">MaxEncodedLen</span> <span class="op">+</span> <span class="ident">Copy</span>;
 
 		<span class="doccomment">/// The type used to identify a unique asset within an asset class.</span>
-		<span class="kw">type</span> <span class="ident">InstanceId</span>: <span class="ident">Member</span>
-			<span class="op">+</span> <span class="ident">Parameter</span>
-			<span class="op">+</span> <span class="ident">Default</span>
-			<span class="op">+</span> <span class="ident">Copy</span>
-			<span class="op">+</span> <span class="ident">HasCompact</span>
-			<span class="op">+</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span>
-			<span class="op">+</span> <span class="ident">MaxEncodedLen</span>;
+		<span class="kw">type</span> <span class="ident">InstanceId</span>: <span class="ident">Member</span> <span class="op">+</span> <span class="ident">Parameter</span> <span class="op">+</span> <span class="ident">MaxEncodedLen</span> <span class="op">+</span> <span class="ident">Copy</span>;
 
 		<span class="doccomment">/// The currency mechanism, used for paying for reserves.</span>
 		<span class="kw">type</span> <span class="ident">Currency</span>: <span class="ident">ReservableCurrency</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>;
@@ -1357,6 +1436,14 @@
 		<span class="doccomment">/// The origin which may forcibly create or destroy an asset or otherwise alter privileged</span>
 		<span class="doccomment">/// attributes.</span>
 		<span class="kw">type</span> <span class="ident">ForceOrigin</span>: <span class="ident">EnsureOrigin</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Origin</span><span class="op">&gt;</span>;
+
+		<span class="doccomment">/// Standard class creation is only allowed if the origin attempting it and the class are</span>
+		<span class="doccomment">/// in this set.</span>
+		<span class="kw">type</span> <span class="ident">CreateOrigin</span>: <span class="ident">EnsureOriginWithArg</span><span class="op">&lt;</span>
+			<span class="ident">Success</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::AccountId</span>,
+			<span class="ident"><span class="self">Self</span>::Origin</span>,
+			<span class="ident"><span class="self">Self</span>::ClassId</span>,
+		<span class="op">&gt;</span>;
 
 		<span class="doccomment">/// The basic amount of funds that must be reserved for an asset class.</span>
 		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
@@ -1391,6 +1478,10 @@
 		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
 		<span class="kw">type</span> <span class="ident">ValueLimit</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>;
 
+		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>)]</span>
+		<span class="doccomment">/// A set of helper functions for benchmarking.</span>
+		<span class="kw">type</span> <span class="ident">Helper</span>: <span class="ident">BenchmarkHelper</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::ClassId</span>, <span class="ident"><span class="self">Self</span>::InstanceId</span><span class="op">&gt;</span>;
+
 		<span class="doccomment">/// Weight information for extrinsics in this pallet.</span>
 		<span class="kw">type</span> <span class="ident">WeightInfo</span>: <span class="ident">WeightInfo</span>;
 	}
@@ -1403,6 +1494,11 @@
 		<span class="ident">T::ClassId</span>,
 		<span class="ident">ClassDetails</span><span class="op">&lt;</span><span class="ident">T::AccountId</span>, <span class="ident">DepositBalanceOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="op">&gt;</span>;
+
+	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
+	<span class="doccomment">/// The class, if any, of which an account is willing to take ownership.</span>
+	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">type</span> <span class="ident">OwnershipAcceptance</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">=</span>
+		<span class="ident">StorageMap</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">Blake2_128Concat</span>, <span class="ident">T::AccountId</span>, <span class="ident">T::ClassId</span><span class="op">&gt;</span>;
 
 	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
 	<span class="doccomment">/// The assets held by any given account; set out this way so that assets owned by a single</span>
@@ -1565,6 +1661,8 @@
 			<span class="ident">maybe_instance</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T::InstanceId</span><span class="op">&gt;</span>,
 			<span class="ident">key</span>: <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u8</span>, <span class="ident">T::KeyLimit</span><span class="op">&gt;</span>,
 		},
+		<span class="doccomment">/// Ownership acceptance has changed for an account.</span>
+		<span class="ident">OwnershipAcceptanceChanged</span> { <span class="ident">who</span>: <span class="ident">T::AccountId</span>, <span class="ident">maybe_class</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T::ClassId</span><span class="op">&gt;</span> },
 	}
 
 	<span class="attribute">#[<span class="ident">pallet::error</span>]</span>
@@ -1589,12 +1687,19 @@
 		<span class="ident">NoDelegate</span>,
 		<span class="doccomment">/// No approval exists that would allow the transfer.</span>
 		<span class="ident">Unapproved</span>,
+		<span class="doccomment">/// The named owner has not signed ownership of the class is acceptable.</span>
+		<span class="ident">Unaccepted</span>,
 	}
 
 	<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span> {
 		<span class="doccomment">/// Get the owner of the asset instance, if the asset exists.</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">owner</span>(<span class="ident">class</span>: <span class="ident">T::ClassId</span>, <span class="ident">instance</span>: <span class="ident">T::InstanceId</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span> {
 			<span class="ident">Asset</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">class</span>, <span class="ident">instance</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">i</span>.<span class="ident">owner</span>)
+		}
+
+		<span class="doccomment">/// Get the owner of the asset instance, if the asset exists.</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">class_owner</span>(<span class="ident">class</span>: <span class="ident">T::ClassId</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span> {
+			<span class="ident">Class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">class</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">i</span>.<span class="ident">owner</span>)
 		}
 	}
 
@@ -1619,10 +1724,10 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::create</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">class</span>: <span class="ident">T::ClassId</span>,
+			<span class="ident">class</span>: <span class="ident">T::ClassId</span>,
 			<span class="ident">admin</span>: <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>,
 		) -&gt; <span class="ident">DispatchResult</span> {
-			<span class="kw">let</span> <span class="ident">owner</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="ident">owner</span> <span class="op">=</span> <span class="ident">T::CreateOrigin::ensure_origin</span>(<span class="ident">origin</span>, <span class="kw-2">&amp;</span><span class="ident">class</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">admin</span> <span class="op">=</span> <span class="ident">T::Lookup::lookup</span>(<span class="ident">admin</span>)<span class="question-mark">?</span>;
 
 			<span class="ident"><span class="self">Self</span>::do_create_class</span>(
@@ -1654,7 +1759,7 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::force_create</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">force_create</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">class</span>: <span class="ident">T::ClassId</span>,
+			<span class="ident">class</span>: <span class="ident">T::ClassId</span>,
 			<span class="ident">owner</span>: <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>,
 			<span class="ident">free_holding</span>: <span class="ident">bool</span>,
 		) -&gt; <span class="ident">DispatchResult</span> {
@@ -1693,7 +1798,7 @@
  		))]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">destroy</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">class</span>: <span class="ident">T::ClassId</span>,
+			<span class="ident">class</span>: <span class="ident">T::ClassId</span>,
 			<span class="ident">witness</span>: <span class="ident">DestroyWitness</span>,
 		) -&gt; <span class="ident">DispatchResultWithPostInfo</span> {
 			<span class="kw">let</span> <span class="ident">maybe_check_owner</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">T::ForceOrigin::try_origin</span>(<span class="ident">origin</span>) {
@@ -1724,8 +1829,8 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::mint</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mint</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">class</span>: <span class="ident">T::ClassId</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">instance</span>: <span class="ident">T::InstanceId</span>,
+			<span class="ident">class</span>: <span class="ident">T::ClassId</span>,
+			<span class="ident">instance</span>: <span class="ident">T::InstanceId</span>,
 			<span class="ident">owner</span>: <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>,
 		) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
@@ -1753,8 +1858,8 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::burn</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">burn</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">class</span>: <span class="ident">T::ClassId</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">instance</span>: <span class="ident">T::InstanceId</span>,
+			<span class="ident">class</span>: <span class="ident">T::ClassId</span>,
+			<span class="ident">instance</span>: <span class="ident">T::InstanceId</span>,
 			<span class="ident">check_owner</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span><span class="op">&gt;</span>,
 		) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
@@ -1789,8 +1894,8 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::transfer</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">transfer</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">class</span>: <span class="ident">T::ClassId</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">instance</span>: <span class="ident">T::InstanceId</span>,
+			<span class="ident">class</span>: <span class="ident">T::ClassId</span>,
+			<span class="ident">instance</span>: <span class="ident">T::InstanceId</span>,
 			<span class="ident">dest</span>: <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>,
 		) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
@@ -1825,7 +1930,7 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::redeposit</span>(<span class="ident">instances</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>))]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">redeposit</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">class</span>: <span class="ident">T::ClassId</span>,
+			<span class="ident">class</span>: <span class="ident">T::ClassId</span>,
 			<span class="ident">instances</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T::InstanceId</span><span class="op">&gt;</span>,
 		) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
@@ -1885,8 +1990,8 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::freeze</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">freeze</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">class</span>: <span class="ident">T::ClassId</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">instance</span>: <span class="ident">T::InstanceId</span>,
+			<span class="ident">class</span>: <span class="ident">T::ClassId</span>,
+			<span class="ident">instance</span>: <span class="ident">T::InstanceId</span>,
 		) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 
@@ -1915,8 +2020,8 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::thaw</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">thaw</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">class</span>: <span class="ident">T::ClassId</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">instance</span>: <span class="ident">T::InstanceId</span>,
+			<span class="ident">class</span>: <span class="ident">T::ClassId</span>,
+			<span class="ident">instance</span>: <span class="ident">T::InstanceId</span>,
 		) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 
@@ -1942,10 +2047,7 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Weight: `O(1)`</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::freeze_class</span>())]</span>
-		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">freeze_class</span>(
-			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">class</span>: <span class="ident">T::ClassId</span>,
-		) -&gt; <span class="ident">DispatchResult</span> {
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">freeze_class</span>(<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">class</span>: <span class="ident">T::ClassId</span>) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 
 			<span class="ident">Class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::try_mutate</span>(<span class="ident">class</span>, <span class="op">|</span><span class="ident">maybe_details</span><span class="op">|</span> {
@@ -1969,10 +2071,7 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Weight: `O(1)`</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::thaw_class</span>())]</span>
-		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">thaw_class</span>(
-			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">class</span>: <span class="ident">T::ClassId</span>,
-		) -&gt; <span class="ident">DispatchResult</span> {
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">thaw_class</span>(<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">class</span>: <span class="ident">T::ClassId</span>) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 
 			<span class="ident">Class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::try_mutate</span>(<span class="ident">class</span>, <span class="op">|</span><span class="ident">maybe_details</span><span class="op">|</span> {
@@ -1991,7 +2090,8 @@
 		<span class="doccomment">/// Origin must be Signed and the sender should be the Owner of the asset `class`.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// - `class`: The asset class whose owner should be changed.</span>
-		<span class="doccomment">/// - `owner`: The new Owner of this asset class.</span>
+		<span class="doccomment">/// - `owner`: The new Owner of this asset class. They must have called</span>
+		<span class="doccomment">///   `set_accept_ownership` with `class` in order for this operation to succeed.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Emits `OwnerChanged`.</span>
 		<span class="doccomment">///</span>
@@ -1999,11 +2099,14 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::transfer_ownership</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">transfer_ownership</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">class</span>: <span class="ident">T::ClassId</span>,
+			<span class="ident">class</span>: <span class="ident">T::ClassId</span>,
 			<span class="ident">owner</span>: <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>,
 		) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">owner</span> <span class="op">=</span> <span class="ident">T::Lookup::lookup</span>(<span class="ident">owner</span>)<span class="question-mark">?</span>;
+
+			<span class="kw">let</span> <span class="ident">acceptable_class</span> <span class="op">=</span> <span class="ident">OwnershipAcceptance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">owner</span>);
+			<span class="macro">ensure!</span>(<span class="ident">acceptable_class</span>.<span class="ident">as_ref</span>() <span class="op">==</span> <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">class</span>), <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::Unaccepted</span>);
 
 			<span class="ident">Class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::try_mutate</span>(<span class="ident">class</span>, <span class="op">|</span><span class="ident">maybe_details</span><span class="op">|</span> {
 				<span class="kw">let</span> <span class="ident">details</span> <span class="op">=</span> <span class="ident">maybe_details</span>.<span class="ident">as_mut</span>().<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::UnknownClass</span>)<span class="question-mark">?</span>;
@@ -2022,6 +2125,7 @@
 				<span class="ident">ClassAccount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::remove</span>(<span class="kw-2">&amp;</span><span class="ident">details</span>.<span class="ident">owner</span>, <span class="kw-2">&amp;</span><span class="ident">class</span>);
 				<span class="ident">ClassAccount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="ident">owner</span>, <span class="kw-2">&amp;</span><span class="ident">class</span>, ());
 				<span class="ident">details</span>.<span class="ident">owner</span> <span class="op">=</span> <span class="ident">owner</span>.<span class="ident">clone</span>();
+				<span class="ident">OwnershipAcceptance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::remove</span>(<span class="kw-2">&amp;</span><span class="ident">owner</span>);
 
 				<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::OwnerChanged</span> { <span class="ident">class</span>, <span class="ident">new_owner</span>: <span class="ident">owner</span> });
 				<span class="prelude-val">Ok</span>(())
@@ -2043,7 +2147,7 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::set_team</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_team</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">class</span>: <span class="ident">T::ClassId</span>,
+			<span class="ident">class</span>: <span class="ident">T::ClassId</span>,
 			<span class="ident">issuer</span>: <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>,
 			<span class="ident">admin</span>: <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>,
 			<span class="ident">freezer</span>: <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>,
@@ -2080,8 +2184,8 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::approve_transfer</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">approve_transfer</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">class</span>: <span class="ident">T::ClassId</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">instance</span>: <span class="ident">T::InstanceId</span>,
+			<span class="ident">class</span>: <span class="ident">T::ClassId</span>,
+			<span class="ident">instance</span>: <span class="ident">T::InstanceId</span>,
 			<span class="ident">delegate</span>: <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>,
 		) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">maybe_check</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">T::ForceOrigin::try_origin</span>(<span class="ident">origin</span>)
@@ -2132,8 +2236,8 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::cancel_approval</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cancel_approval</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">class</span>: <span class="ident">T::ClassId</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">instance</span>: <span class="ident">T::InstanceId</span>,
+			<span class="ident">class</span>: <span class="ident">T::ClassId</span>,
+			<span class="ident">instance</span>: <span class="ident">T::InstanceId</span>,
 			<span class="ident">maybe_check_delegate</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span><span class="op">&gt;</span>,
 		) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">maybe_check</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">T::ForceOrigin::try_origin</span>(<span class="ident">origin</span>)
@@ -2184,7 +2288,7 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::force_asset_status</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">force_asset_status</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">class</span>: <span class="ident">T::ClassId</span>,
+			<span class="ident">class</span>: <span class="ident">T::ClassId</span>,
 			<span class="ident">owner</span>: <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>,
 			<span class="ident">issuer</span>: <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>,
 			<span class="ident">admin</span>: <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>,
@@ -2233,7 +2337,7 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::set_attribute</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_attribute</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">class</span>: <span class="ident">T::ClassId</span>,
+			<span class="ident">class</span>: <span class="ident">T::ClassId</span>,
 			<span class="ident">maybe_instance</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T::InstanceId</span><span class="op">&gt;</span>,
 			<span class="ident">key</span>: <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u8</span>, <span class="ident">T::KeyLimit</span><span class="op">&gt;</span>,
 			<span class="ident">value</span>: <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u8</span>, <span class="ident">T::ValueLimit</span><span class="op">&gt;</span>,
@@ -2296,7 +2400,7 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::clear_attribute</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">clear_attribute</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">class</span>: <span class="ident">T::ClassId</span>,
+			<span class="ident">class</span>: <span class="ident">T::ClassId</span>,
 			<span class="ident">maybe_instance</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T::InstanceId</span><span class="op">&gt;</span>,
 			<span class="ident">key</span>: <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u8</span>, <span class="ident">T::KeyLimit</span><span class="op">&gt;</span>,
 		) -&gt; <span class="ident">DispatchResult</span> {
@@ -2346,8 +2450,8 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::set_metadata</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_metadata</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">class</span>: <span class="ident">T::ClassId</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">instance</span>: <span class="ident">T::InstanceId</span>,
+			<span class="ident">class</span>: <span class="ident">T::ClassId</span>,
+			<span class="ident">instance</span>: <span class="ident">T::InstanceId</span>,
 			<span class="ident">data</span>: <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u8</span>, <span class="ident">T::StringLimit</span><span class="op">&gt;</span>,
 			<span class="ident">is_frozen</span>: <span class="ident">bool</span>,
 		) -&gt; <span class="ident">DispatchResult</span> {
@@ -2408,8 +2512,8 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::clear_metadata</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">clear_metadata</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">class</span>: <span class="ident">T::ClassId</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">instance</span>: <span class="ident">T::InstanceId</span>,
+			<span class="ident">class</span>: <span class="ident">T::ClassId</span>,
+			<span class="ident">instance</span>: <span class="ident">T::InstanceId</span>,
 		) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">maybe_check_owner</span> <span class="op">=</span> <span class="ident">T::ForceOrigin::try_origin</span>(<span class="ident">origin</span>)
 				.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">None</span>)
@@ -2457,7 +2561,7 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::set_class_metadata</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_class_metadata</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">class</span>: <span class="ident">T::ClassId</span>,
+			<span class="ident">class</span>: <span class="ident">T::ClassId</span>,
 			<span class="ident">data</span>: <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u8</span>, <span class="ident">T::StringLimit</span><span class="op">&gt;</span>,
 			<span class="ident">is_frozen</span>: <span class="ident">bool</span>,
 		) -&gt; <span class="ident">DispatchResult</span> {
@@ -2511,10 +2615,7 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Weight: `O(1)`</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::clear_class_metadata</span>())]</span>
-		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">clear_class_metadata</span>(
-			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">class</span>: <span class="ident">T::ClassId</span>,
-		) -&gt; <span class="ident">DispatchResult</span> {
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">clear_class_metadata</span>(<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">class</span>: <span class="ident">T::ClassId</span>) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">maybe_check_owner</span> <span class="op">=</span> <span class="ident">T::ForceOrigin::try_origin</span>(<span class="ident">origin</span>)
 				.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">None</span>)
 				.<span class="ident">or_else</span>(<span class="op">|</span><span class="ident">origin</span><span class="op">|</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>).<span class="ident">map</span>(<span class="prelude-val">Some</span>))<span class="question-mark">?</span>;
@@ -2533,6 +2634,41 @@
 				<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::ClassMetadataCleared</span> { <span class="ident">class</span> });
 				<span class="prelude-val">Ok</span>(())
 			})
+		}
+
+		<span class="doccomment">/// Set (or reset) the acceptance of ownership for a particular account.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// Origin must be `Signed` and if `maybe_class` is `Some`, then the signer must have a</span>
+		<span class="doccomment">/// provider reference.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// - `maybe_class`: The identifier of the asset class whose ownership the signer is willing</span>
+		<span class="doccomment">///   to accept, or if `None`, an indication that the signer is willing to accept no</span>
+		<span class="doccomment">///   ownership transferal.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// Emits `OwnershipAcceptanceChanged`.</span>
+		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::set_accept_ownership</span>())]</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_accept_ownership</span>(
+			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+			<span class="ident">maybe_class</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T::ClassId</span><span class="op">&gt;</span>,
+		) -&gt; <span class="ident">DispatchResult</span> {
+			<span class="kw">let</span> <span class="ident">who</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="ident">old</span> <span class="op">=</span> <span class="ident">OwnershipAcceptance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>);
+			<span class="kw">match</span> (<span class="ident">old</span>.<span class="ident">is_some</span>(), <span class="ident">maybe_class</span>.<span class="ident">is_some</span>()) {
+				(<span class="bool-val">false</span>, <span class="bool-val">true</span>) =&gt; {
+					<span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::inc_consumers</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>)<span class="question-mark">?</span>;
+				},
+				(<span class="bool-val">true</span>, <span class="bool-val">false</span>) =&gt; {
+					<span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::dec_consumers</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>);
+				},
+				<span class="kw">_</span> =&gt; {},
+			}
+			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">class</span>) <span class="op">=</span> <span class="ident">maybe_class</span>.<span class="ident">as_ref</span>() {
+				<span class="ident">OwnershipAcceptance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">class</span>);
+			} <span class="kw">else</span> {
+				<span class="ident">OwnershipAcceptance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::remove</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>);
+			}
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::OwnershipAcceptanceChanged</span> { <span class="ident">who</span>, <span class="ident">maybe_class</span> });
+			<span class="prelude-val">Ok</span>(())
 		}
 	}
 }

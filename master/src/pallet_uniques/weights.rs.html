@@ -430,6 +430,21 @@
 <span id="430">430</span>
 <span id="431">431</span>
 <span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2022 Parity Technologies (UK) Ltd.</span>
@@ -500,6 +515,7 @@
 	<span class="kw">fn</span> <span class="ident">clear_class_metadata</span>() -&gt; <span class="ident">Weight</span>;
 	<span class="kw">fn</span> <span class="ident">approve_transfer</span>() -&gt; <span class="ident">Weight</span>;
 	<span class="kw">fn</span> <span class="ident">cancel_approval</span>() -&gt; <span class="ident">Weight</span>;
+	<span class="kw">fn</span> <span class="ident">set_accept_ownership</span>() -&gt; <span class="ident">Weight</span>;
 }
 
 <span class="doccomment">/// Weights for pallet_uniques using the Substrate node and recommended hardware.</span>
@@ -681,6 +697,13 @@
 			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">2</span> <span class="kw">as</span> <span class="ident">Weight</span>))
 			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">Weight</span>))
 	}
+	<span class="comment">// Storage: Uniques Class (r:1 w:0)</span>
+	<span class="comment">// Storage: Uniques Asset (r:1 w:1)</span>
+	<span class="kw">fn</span> <span class="ident">set_accept_ownership</span>() -&gt; <span class="ident">Weight</span> {
+		(<span class="number">19_417_000</span> <span class="kw">as</span> <span class="ident">Weight</span>)
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">Weight</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">Weight</span>))
+	}
 }
 
 <span class="comment">// For backwards compatibility and tests</span>
@@ -859,6 +882,13 @@
 	<span class="kw">fn</span> <span class="ident">cancel_approval</span>() -&gt; <span class="ident">Weight</span> {
 		(<span class="number">19_417_000</span> <span class="kw">as</span> <span class="ident">Weight</span>)
 			.<span class="ident">saturating_add</span>(<span class="ident">RocksDbWeight::get</span>().<span class="ident">reads</span>(<span class="number">2</span> <span class="kw">as</span> <span class="ident">Weight</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">RocksDbWeight::get</span>().<span class="ident">writes</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">Weight</span>))
+	}
+	<span class="comment">// Storage: Uniques Class (r:1 w:0)</span>
+	<span class="comment">// Storage: Uniques Asset (r:1 w:1)</span>
+	<span class="kw">fn</span> <span class="ident">set_accept_ownership</span>() -&gt; <span class="ident">Weight</span> {
+		(<span class="number">19_417_000</span> <span class="kw">as</span> <span class="ident">Weight</span>)
+			.<span class="ident">saturating_add</span>(<span class="ident">RocksDbWeight::get</span>().<span class="ident">reads</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">Weight</span>))
 			.<span class="ident">saturating_add</span>(<span class="ident">RocksDbWeight::get</span>().<span class="ident">writes</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">Weight</span>))
 	}
 }

@@ -175,6 +175,17 @@
 <span id="175">175</span>
 <span id="176">176</span>
 <span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -305,8 +316,19 @@
 		<span class="ident"><span class="self">Self</span>::do_mint</span>(<span class="ident">class</span>.<span class="ident">clone</span>(), <span class="ident">instance</span>.<span class="ident">clone</span>(), <span class="ident">who</span>.<span class="ident">clone</span>(), <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Ok</span>(()))
 	}
 
-	<span class="kw">fn</span> <span class="ident">burn_from</span>(<span class="ident">class</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::ClassId</span>, <span class="ident">instance</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::InstanceId</span>) -&gt; <span class="ident">DispatchResult</span> {
-		<span class="ident"><span class="self">Self</span>::do_burn</span>(<span class="ident">class</span>.<span class="ident">clone</span>(), <span class="ident">instance</span>.<span class="ident">clone</span>(), <span class="op">|</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Ok</span>(()))
+	<span class="kw">fn</span> <span class="ident">burn</span>(
+		<span class="ident">class</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::ClassId</span>,
+		<span class="ident">instance</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::InstanceId</span>,
+		<span class="ident">maybe_check_owner</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>,
+	) -&gt; <span class="ident">DispatchResult</span> {
+		<span class="ident"><span class="self">Self</span>::do_burn</span>(<span class="ident">class</span>.<span class="ident">clone</span>(), <span class="ident">instance</span>.<span class="ident">clone</span>(), <span class="op">|</span><span class="kw">_</span>, <span class="ident">d</span><span class="op">|</span> {
+			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">check_owner</span>) <span class="op">=</span> <span class="ident">maybe_check_owner</span> {
+				<span class="kw">if</span> <span class="kw-2">&amp;</span><span class="ident">d</span>.<span class="ident">owner</span> <span class="op">!</span><span class="op">=</span> <span class="ident">check_owner</span> {
+					<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::NoPermission</span>)<span class="question-mark">?</span>;
+				}
+			}
+			<span class="prelude-val">Ok</span>(())
+		})
 	}
 }
 
