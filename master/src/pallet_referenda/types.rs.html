@@ -336,26 +336,6 @@
 <span id="336">336</span>
 <span id="337">337</span>
 <span id="338">338</span>
-<span id="339">339</span>
-<span id="340">340</span>
-<span id="341">341</span>
-<span id="342">342</span>
-<span id="343">343</span>
-<span id="344">344</span>
-<span id="345">345</span>
-<span id="346">346</span>
-<span id="347">347</span>
-<span id="348">348</span>
-<span id="349">349</span>
-<span id="350">350</span>
-<span id="351">351</span>
-<span id="352">352</span>
-<span id="353">353</span>
-<span id="354">354</span>
-<span id="355">355</span>
-<span id="356">356</span>
-<span id="357">357</span>
-<span id="358">358</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -543,26 +523,6 @@
 	}
 }
 
-<span class="doccomment">/// Indication of either a specific moment or a delay from a implicitly defined moment.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>, <span class="ident">MaxEncodedLen</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">AtOrAfter</span><span class="op">&lt;</span><span class="ident">Moment</span>: <span class="ident">Parameter</span><span class="op">&gt;</span> {
-	<span class="doccomment">/// Indiciates that the event should occur at the moment given.</span>
-	<span class="ident">At</span>(<span class="ident">Moment</span>),
-	<span class="doccomment">/// Indiciates that the event should occur some period of time (defined by the parameter) after</span>
-	<span class="doccomment">/// a prior event. The prior event is defined by the context, but for the purposes of</span>
-	<span class="doccomment">/// referendum proposals, the &quot;prior event&quot; is the passing of the referendum.</span>
-	<span class="ident">After</span>(<span class="ident">Moment</span>),
-}
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Moment</span>: <span class="ident">AtLeast32BitUnsigned</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Parameter</span><span class="op">&gt;</span> <span class="ident">AtOrAfter</span><span class="op">&lt;</span><span class="ident">Moment</span><span class="op">&gt;</span> {
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">evaluate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">since</span>: <span class="ident">Moment</span>) -&gt; <span class="ident">Moment</span> {
-		<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::At</span>(<span class="ident">m</span>) =&gt; <span class="kw-2">*</span><span class="ident">m</span>,
-			<span class="ident"><span class="self">Self</span>::After</span>(<span class="ident">m</span>) =&gt; <span class="ident">m</span>.<span class="ident">saturating_add</span>(<span class="ident">since</span>),
-		}
-	}
-}
-
 <span class="doccomment">/// Info regarding an ongoing referendum.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>, <span class="ident">MaxEncodedLen</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ReferendumStatus</span><span class="op">&lt;</span>
@@ -582,7 +542,7 @@
 	<span class="doccomment">/// The hash of the proposal up for referendum.</span>
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">proposal_hash</span>: <span class="ident">Hash</span>,
 	<span class="doccomment">/// The time the proposal should be scheduled for enactment.</span>
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">enactment</span>: <span class="ident">AtOrAfter</span><span class="op">&lt;</span><span class="ident">Moment</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">enactment</span>: <span class="ident">DispatchTime</span><span class="op">&lt;</span><span class="ident">Moment</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// The time of submission. Once `UndecidingTimeout` passes, it may be closed by anyone if it</span>
 	<span class="doccomment">/// `deciding` is `None`.</span>
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">submitted</span>: <span class="ident">Moment</span>,

@@ -369,6 +369,15 @@
 <span id="369">369</span>
 <span id="370">370</span>
 <span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
+<span id="378">378</span>
+<span id="379">379</span>
+<span id="380">380</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -390,7 +399,7 @@
 
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Codec</span>, <span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">EncodeLike</span>, <span class="ident">MaxEncodedLen</span>};
 <span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
-<span class="kw">use</span> <span class="ident">sp_runtime</span>::{<span class="ident">DispatchError</span>, <span class="ident">RuntimeDebug</span>};
+<span class="kw">use</span> <span class="ident">sp_runtime</span>::{<span class="ident">traits::Saturating</span>, <span class="ident">DispatchError</span>, <span class="ident">RuntimeDebug</span>};
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>, <span class="ident">result::Result</span>};
 
 <span class="doccomment">/// Information relating to the period of a scheduled task. First item is the length of the</span>
@@ -403,12 +412,21 @@
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Priority</span> <span class="op">=</span> <span class="ident">u8</span>;
 
 <span class="doccomment">/// The dispatch time of a scheduled task.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>, <span class="ident">MaxEncodedLen</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">DispatchTime</span><span class="op">&lt;</span><span class="ident">BlockNumber</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// At specified block.</span>
 	<span class="ident">At</span>(<span class="ident">BlockNumber</span>),
 	<span class="doccomment">/// After specified number of blocks.</span>
 	<span class="ident">After</span>(<span class="ident">BlockNumber</span>),
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">BlockNumber</span>: <span class="ident">Saturating</span> <span class="op">+</span> <span class="ident">Copy</span><span class="op">&gt;</span> <span class="ident">DispatchTime</span><span class="op">&lt;</span><span class="ident">BlockNumber</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">evaluate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">since</span>: <span class="ident">BlockNumber</span>) -&gt; <span class="ident">BlockNumber</span> {
+		<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span> {
+			<span class="ident"><span class="self">Self</span>::At</span>(<span class="ident">m</span>) =&gt; <span class="kw-2">*</span><span class="ident">m</span>,
+			<span class="ident"><span class="self">Self</span>::After</span>(<span class="ident">m</span>) =&gt; <span class="ident">m</span>.<span class="ident">saturating_add</span>(<span class="ident">since</span>),
+		}
+	}
 }
 
 <span class="doccomment">/// The highest priority. We invert the value so that normal sorting will place the highest</span>
