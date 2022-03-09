@@ -181,6 +181,7 @@
 <span id="181">181</span>
 <span id="182">182</span>
 <span id="183">183</span>
+<span id="184">184</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -203,9 +204,10 @@
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::list::List</span>;
 <span class="kw">use</span> <span class="ident">frame_benchmarking</span>::{<span class="ident">account</span>, <span class="ident">whitelist_account</span>, <span class="ident">whitelisted_caller</span>};
-<span class="kw">use</span> <span class="ident">frame_election_provider_support::VoteWeightProvider</span>;
+<span class="kw">use</span> <span class="ident">frame_election_provider_support::ScoreProvider</span>;
 <span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">assert_ok</span>, <span class="ident">traits::Get</span>};
 <span class="kw">use</span> <span class="ident">frame_system::RawOrigin</span> <span class="kw">as</span> <span class="ident">SystemOrigin</span>;
+<span class="kw">use</span> <span class="ident">sp_runtime::traits::One</span>;
 
 <span class="macro">frame_benchmarking::benchmarks!</span> {
 	<span class="ident">rebag_non_terminal</span> {
@@ -219,7 +221,7 @@
 
 		<span class="comment">// clear any pre-existing storage.</span>
 		<span class="comment">// NOTE: safe to call outside block production</span>
-		<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::unsafe_clear</span>();
+		<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::unsafe_clear</span>();
 
 		<span class="comment">// define our origin and destination thresholds.</span>
 		<span class="kw">let</span> <span class="ident">origin_bag_thresh</span> <span class="op">=</span> <span class="ident">T::BagThresholds::get</span>()[<span class="number">0</span>];
@@ -227,21 +229,21 @@
 
 		<span class="comment">// seed items in the origin bag.</span>
 		<span class="kw">let</span> <span class="ident">origin_head</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;origin_head&quot;</span>, <span class="number">0</span>, <span class="number">0</span>);
-		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">origin_head</span>.<span class="ident">clone</span>(), <span class="ident">origin_bag_thresh</span>));
+		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">origin_head</span>.<span class="ident">clone</span>(), <span class="ident">origin_bag_thresh</span>));
 
 		<span class="kw">let</span> <span class="ident">origin_middle</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;origin_middle&quot;</span>, <span class="number">0</span>, <span class="number">0</span>); <span class="comment">// the node we rebag (_R_)</span>
-		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">origin_middle</span>.<span class="ident">clone</span>(), <span class="ident">origin_bag_thresh</span>));
+		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">origin_middle</span>.<span class="ident">clone</span>(), <span class="ident">origin_bag_thresh</span>));
 
 		<span class="kw">let</span> <span class="ident">origin_tail</span>: <span class="ident">T::AccountId</span>  <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;origin_tail&quot;</span>, <span class="number">0</span>, <span class="number">0</span>);
-		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">origin_tail</span>.<span class="ident">clone</span>(), <span class="ident">origin_bag_thresh</span>));
+		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">origin_tail</span>.<span class="ident">clone</span>(), <span class="ident">origin_bag_thresh</span>));
 
 		<span class="comment">// seed items in the destination bag.</span>
 		<span class="kw">let</span> <span class="ident">dest_head</span>: <span class="ident">T::AccountId</span>  <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;dest_head&quot;</span>, <span class="number">0</span>, <span class="number">0</span>);
-		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">dest_head</span>.<span class="ident">clone</span>(), <span class="ident">dest_bag_thresh</span>));
+		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">dest_head</span>.<span class="ident">clone</span>(), <span class="ident">dest_bag_thresh</span>));
 
 		<span class="comment">// the bags are in the expected state after initial setup.</span>
 		<span class="macro">assert_eq!</span>(
-			<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get_bags</span>(),
+			<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::get_bags</span>(),
 			<span class="macro">vec!</span>[
 				(<span class="ident">origin_bag_thresh</span>, <span class="macro">vec!</span>[<span class="ident">origin_head</span>.<span class="ident">clone</span>(), <span class="ident">origin_middle</span>.<span class="ident">clone</span>(), <span class="ident">origin_tail</span>.<span class="ident">clone</span>()]),
 				(<span class="ident">dest_bag_thresh</span>, <span class="macro">vec!</span>[<span class="ident">dest_head</span>.<span class="ident">clone</span>()])
@@ -250,12 +252,12 @@
 
 		<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">whitelisted_caller</span>();
 		<span class="comment">// update the weight of `origin_middle` to guarantee it will be rebagged into the destination.</span>
-		<span class="ident">T::VoteWeightProvider::set_vote_weight_of</span>(<span class="kw-2">&amp;</span><span class="ident">origin_middle</span>, <span class="ident">dest_bag_thresh</span>);
+		<span class="ident">T::ScoreProvider::set_score_of</span>(<span class="kw-2">&amp;</span><span class="ident">origin_middle</span>, <span class="ident">dest_bag_thresh</span>);
 	}: <span class="ident">rebag</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">origin_middle</span>.<span class="ident">clone</span>())
 	<span class="ident">verify</span> {
 		<span class="comment">// check the bags have updated as expected.</span>
 		<span class="macro">assert_eq!</span>(
-			<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get_bags</span>(),
+			<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::get_bags</span>(),
 			<span class="macro">vec!</span>[
 				(
 					<span class="ident">origin_bag_thresh</span>,
@@ -287,18 +289,18 @@
 
 		<span class="comment">// seed items in the origin bag.</span>
 		<span class="kw">let</span> <span class="ident">origin_head</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;origin_head&quot;</span>, <span class="number">0</span>, <span class="number">0</span>);
-		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">origin_head</span>.<span class="ident">clone</span>(), <span class="ident">origin_bag_thresh</span>));
+		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">origin_head</span>.<span class="ident">clone</span>(), <span class="ident">origin_bag_thresh</span>));
 
 		<span class="kw">let</span> <span class="ident">origin_tail</span>: <span class="ident">T::AccountId</span>  <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;origin_tail&quot;</span>, <span class="number">0</span>, <span class="number">0</span>); <span class="comment">// the node we rebag (_R_)</span>
-		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">origin_tail</span>.<span class="ident">clone</span>(), <span class="ident">origin_bag_thresh</span>));
+		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">origin_tail</span>.<span class="ident">clone</span>(), <span class="ident">origin_bag_thresh</span>));
 
 		<span class="comment">// seed items in the destination bag.</span>
 		<span class="kw">let</span> <span class="ident">dest_head</span>: <span class="ident">T::AccountId</span>  <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;dest_head&quot;</span>, <span class="number">0</span>, <span class="number">0</span>);
-		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">dest_head</span>.<span class="ident">clone</span>(), <span class="ident">dest_bag_thresh</span>));
+		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">dest_head</span>.<span class="ident">clone</span>(), <span class="ident">dest_bag_thresh</span>));
 
 		<span class="comment">// the bags are in the expected state after initial setup.</span>
 		<span class="macro">assert_eq!</span>(
-			<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get_bags</span>(),
+			<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::get_bags</span>(),
 			<span class="macro">vec!</span>[
 				(<span class="ident">origin_bag_thresh</span>, <span class="macro">vec!</span>[<span class="ident">origin_head</span>.<span class="ident">clone</span>(), <span class="ident">origin_tail</span>.<span class="ident">clone</span>()]),
 				(<span class="ident">dest_bag_thresh</span>, <span class="macro">vec!</span>[<span class="ident">dest_head</span>.<span class="ident">clone</span>()])
@@ -307,12 +309,12 @@
 
 		<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">whitelisted_caller</span>();
 		<span class="comment">// update the weight of `origin_tail` to guarantee it will be rebagged into the destination.</span>
-		<span class="ident">T::VoteWeightProvider::set_vote_weight_of</span>(<span class="kw-2">&amp;</span><span class="ident">origin_tail</span>, <span class="ident">dest_bag_thresh</span>);
+		<span class="ident">T::ScoreProvider::set_score_of</span>(<span class="kw-2">&amp;</span><span class="ident">origin_tail</span>, <span class="ident">dest_bag_thresh</span>);
 	}: <span class="ident">rebag</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">origin_tail</span>.<span class="ident">clone</span>())
 	<span class="ident">verify</span> {
 		<span class="comment">// check the bags have updated as expected.</span>
 		<span class="macro">assert_eq!</span>(
-			<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get_bags</span>(),
+			<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::get_bags</span>(),
 			<span class="macro">vec!</span>[
 				(<span class="ident">origin_bag_thresh</span>, <span class="macro">vec!</span>[<span class="ident">origin_head</span>.<span class="ident">clone</span>()]),
 				(<span class="ident">dest_bag_thresh</span>, <span class="macro">vec!</span>[<span class="ident">dest_head</span>.<span class="ident">clone</span>(), <span class="ident">origin_tail</span>.<span class="ident">clone</span>()])
@@ -330,22 +332,22 @@
 
 		<span class="comment">// insert the nodes in order</span>
 		<span class="kw">let</span> <span class="ident">lighter</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;lighter&quot;</span>, <span class="number">0</span>, <span class="number">0</span>);
-		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">lighter</span>.<span class="ident">clone</span>(), <span class="ident">bag_thresh</span>));
+		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">lighter</span>.<span class="ident">clone</span>(), <span class="ident">bag_thresh</span>));
 
 		<span class="kw">let</span> <span class="ident">heavier_prev</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;heavier_prev&quot;</span>, <span class="number">0</span>, <span class="number">0</span>);
-		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">heavier_prev</span>.<span class="ident">clone</span>(), <span class="ident">bag_thresh</span>));
+		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">heavier_prev</span>.<span class="ident">clone</span>(), <span class="ident">bag_thresh</span>));
 
 		<span class="kw">let</span> <span class="ident">heavier</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;heavier&quot;</span>, <span class="number">0</span>, <span class="number">0</span>);
-		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">heavier</span>.<span class="ident">clone</span>(), <span class="ident">bag_thresh</span>));
+		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">heavier</span>.<span class="ident">clone</span>(), <span class="ident">bag_thresh</span>));
 
 		<span class="kw">let</span> <span class="ident">heavier_next</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;heavier_next&quot;</span>, <span class="number">0</span>, <span class="number">0</span>);
-		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">heavier_next</span>.<span class="ident">clone</span>(), <span class="ident">bag_thresh</span>));
+		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">heavier_next</span>.<span class="ident">clone</span>(), <span class="ident">bag_thresh</span>));
 
-		<span class="ident">T::VoteWeightProvider::set_vote_weight_of</span>(<span class="kw-2">&amp;</span><span class="ident">lighter</span>, <span class="ident">bag_thresh</span> <span class="op">-</span> <span class="number">1</span>);
-		<span class="ident">T::VoteWeightProvider::set_vote_weight_of</span>(<span class="kw-2">&amp;</span><span class="ident">heavier</span>, <span class="ident">bag_thresh</span>);
+		<span class="ident">T::ScoreProvider::set_score_of</span>(<span class="kw-2">&amp;</span><span class="ident">lighter</span>, <span class="ident">bag_thresh</span> <span class="op">-</span> <span class="ident">One::one</span>());
+		<span class="ident">T::ScoreProvider::set_score_of</span>(<span class="kw-2">&amp;</span><span class="ident">heavier</span>, <span class="ident">bag_thresh</span>);
 
 		<span class="macro">assert_eq!</span>(
-			<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">n</span><span class="op">|</span> <span class="ident">n</span>.<span class="ident">id</span>().<span class="ident">clone</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
+			<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">n</span><span class="op">|</span> <span class="ident">n</span>.<span class="ident">id</span>().<span class="ident">clone</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
 			<span class="macro">vec!</span>[<span class="ident">lighter</span>.<span class="ident">clone</span>(), <span class="ident">heavier_prev</span>.<span class="ident">clone</span>(), <span class="ident">heavier</span>.<span class="ident">clone</span>(), <span class="ident">heavier_next</span>.<span class="ident">clone</span>()]
 		);
 
@@ -353,7 +355,7 @@
 	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">heavier</span>.<span class="ident">clone</span>()), <span class="ident">lighter</span>.<span class="ident">clone</span>())
 	<span class="ident">verify</span> {
 		<span class="macro">assert_eq!</span>(
-			<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">n</span><span class="op">|</span> <span class="ident">n</span>.<span class="ident">id</span>().<span class="ident">clone</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
+			<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">n</span><span class="op">|</span> <span class="ident">n</span>.<span class="ident">id</span>().<span class="ident">clone</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
 			<span class="macro">vec!</span>[<span class="ident">heavier</span>, <span class="ident">lighter</span>, <span class="ident">heavier_prev</span>, <span class="ident">heavier_next</span>]
 		)
 	}

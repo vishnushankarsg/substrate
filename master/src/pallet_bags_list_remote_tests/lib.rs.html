@@ -132,6 +132,19 @@
 <span id="132">132</span>
 <span id="133">133</span>
 <span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -151,6 +164,7 @@
 
 <span class="doccomment">//! Utilities for remote-testing pallet-bags-list.</span>
 
+<span class="kw">use</span> <span class="ident">frame_election_provider_support::ScoreProvider</span>;
 <span class="kw">use</span> <span class="ident">sp_std::prelude</span>::<span class="kw-2">*</span>;
 
 <span class="doccomment">/// A common log target to use.</span>
@@ -189,8 +203,12 @@
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rebaggable</span> <span class="op">=</span> <span class="number">0</span>;
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">active_bags</span> <span class="op">=</span> <span class="number">0</span>;
 	<span class="kw">for</span> <span class="ident">vote_weight_thresh</span> <span class="kw">in</span> <span class="op">&lt;</span><span class="ident">Runtime</span> <span class="kw">as</span> <span class="ident">pallet_bags_list::Config</span><span class="op">&gt;</span><span class="ident">::BagThresholds::get</span>() {
+		<span class="kw">let</span> <span class="ident">vote_weight_thresh_u64</span>: <span class="ident">u64</span> <span class="op">=</span> (<span class="kw-2">*</span><span class="ident">vote_weight_thresh</span>)
+			.<span class="ident">try_into</span>()
+			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;runtime must configure score to at most u64 to use this test&quot;</span>)
+			.<span class="ident">unwrap</span>();
 		<span class="comment">// threshold in terms of UNITS (e.g. KSM, DOT etc)</span>
-		<span class="kw">let</span> <span class="ident">vote_weight_thresh_as_unit</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">vote_weight_thresh</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">/</span> <span class="ident">currency_unit</span> <span class="kw">as</span> <span class="ident">f64</span>;
+		<span class="kw">let</span> <span class="ident">vote_weight_thresh_as_unit</span> <span class="op">=</span> <span class="ident">vote_weight_thresh_u64</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">/</span> <span class="ident">currency_unit</span> <span class="kw">as</span> <span class="ident">f64</span>;
 		<span class="kw">let</span> <span class="ident">pretty_thresh</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;Threshold: {}. {}&quot;</span>, <span class="ident">vote_weight_thresh_as_unit</span>, <span class="ident">currency_name</span>);
 
 		<span class="kw">let</span> <span class="ident">bag</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">pallet_bags_list::Pallet</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::list_bags_get</span>(<span class="kw-2">*</span><span class="ident">vote_weight_thresh</span>) {
@@ -204,9 +222,13 @@
 		<span class="ident">active_bags</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
 
 		<span class="kw">for</span> <span class="ident">id</span> <span class="kw">in</span> <span class="ident">bag</span>.<span class="ident">std_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">node</span><span class="op">|</span> <span class="ident">node</span>.<span class="ident">std_id</span>().<span class="ident">clone</span>()) {
-			<span class="kw">let</span> <span class="ident">vote_weight</span> <span class="op">=</span> <span class="ident">pallet_staking::Pallet</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::weight_of</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>);
+			<span class="kw">let</span> <span class="ident">vote_weight</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Runtime</span> <span class="kw">as</span> <span class="ident">pallet_bags_list::Config</span><span class="op">&gt;</span><span class="ident">::ScoreProvider::score</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>);
+			<span class="kw">let</span> <span class="ident">vote_weight_thresh_u64</span>: <span class="ident">u64</span> <span class="op">=</span> (<span class="kw-2">*</span><span class="ident">vote_weight_thresh</span>)
+				.<span class="ident">try_into</span>()
+				.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;runtime must configure score to at most u64 to use this test&quot;</span>)
+				.<span class="ident">unwrap</span>();
 			<span class="kw">let</span> <span class="ident">vote_weight_as_balance</span>: <span class="ident">pallet_staking::BalanceOf</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span> <span class="op">=</span>
-				<span class="ident">vote_weight</span>.<span class="ident">try_into</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;can&#39;t convert&quot;</span>).<span class="ident">unwrap</span>();
+				<span class="ident">vote_weight_thresh_u64</span>.<span class="ident">try_into</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;can&#39;t convert&quot;</span>).<span class="ident">unwrap</span>();
 
 			<span class="kw">if</span> <span class="ident">vote_weight_as_balance</span> <span class="op">&lt;</span> <span class="ident">min_nominator_bond</span> {
 				<span class="macro">log::trace!</span>(
@@ -221,13 +243,17 @@
 				<span class="ident">pallet_bags_list::Node</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>).<span class="ident">expect</span>(<span class="string">&quot;node in bag must exist.&quot;</span>);
 			<span class="kw">if</span> <span class="ident">node</span>.<span class="ident">is_misplaced</span>(<span class="ident">vote_weight</span>) {
 				<span class="ident">rebaggable</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+				<span class="kw">let</span> <span class="ident">notional_bag</span> <span class="op">=</span> <span class="ident">pallet_bags_list::notional_bag_for</span>::<span class="op">&lt;</span><span class="ident">Runtime</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">vote_weight</span>);
+				<span class="kw">let</span> <span class="ident">notional_bag_as_u64</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="ident">notional_bag</span>
+					.<span class="ident">try_into</span>()
+					.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;runtime must configure score to at most u64 to use this test&quot;</span>)
+					.<span class="ident">unwrap</span>();
 				<span class="macro">log::trace!</span>(
 					<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
 					<span class="string">&quot;Account {:?} can be rebagged from {:?} to {:?}&quot;</span>,
 					<span class="ident">id</span>,
 					<span class="ident">vote_weight_thresh_as_unit</span>,
-					<span class="ident">pallet_bags_list::notional_bag_for</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>(<span class="ident">vote_weight</span>) <span class="kw">as</span> <span class="ident">f64</span> <span class="op">/</span>
-						<span class="ident">currency_unit</span> <span class="kw">as</span> <span class="ident">f64</span>
+					<span class="ident">notional_bag_as_u64</span> <span class="kw">as</span> <span class="ident">f64</span> <span class="op">/</span> <span class="ident">currency_unit</span> <span class="kw">as</span> <span class="ident">f64</span>
 				);
 			}
 		}

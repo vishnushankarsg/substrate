@@ -1693,6 +1693,9 @@
 <span id="1693">1693</span>
 <span id="1694">1694</span>
 <span id="1695">1695</span>
+<span id="1696">1696</span>
+<span id="1697">1697</span>
+<span id="1698">1698</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1861,7 +1864,10 @@
 		<span class="doccomment">/// Something that can provide a sorted list of voters in a somewhat sorted way. The</span>
 		<span class="doccomment">/// original use case for this was designed with `pallet_bags_list::Pallet` in mind. If</span>
 		<span class="doccomment">/// the bags-list is not desired, [`impls::UseNominatorsMap`] is likely the desired option.</span>
-		<span class="kw">type</span> <span class="ident">SortedListProvider</span>: <span class="ident">SortedListProvider</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>;
+		<span class="kw">type</span> <span class="ident">SortedListProvider</span>: <span class="ident">SortedListProvider</span><span class="op">&lt;</span>
+			<span class="ident"><span class="self">Self</span>::AccountId</span>,
+			<span class="ident">Score</span> <span class="op">=</span> <span class="ident">frame_election_provider_support::VoteWeight</span>,
+		<span class="op">&gt;</span>;
 
 		<span class="doccomment">/// The maximum number of `unlocking` chunks a [`StakingLedger`] can have. Effectively</span>
 		<span class="doccomment">/// determines how many unique eras a staker may be unbonding in.</span>

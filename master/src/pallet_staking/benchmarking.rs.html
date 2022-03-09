@@ -1257,7 +1257,7 @@
 
 		<span class="comment">// find a destination weight that will trigger the worst case scenario</span>
 		<span class="kw">let</span> <span class="ident">dest_weight_as_vote</span> <span class="op">=</span>
-			<span class="ident">T::SortedListProvider::weight_update_worst_case</span>(<span class="kw-2">&amp;</span><span class="ident">origin_stash1</span>, <span class="ident">is_increase</span>);
+			<span class="ident">T::SortedListProvider::score_update_worst_case</span>(<span class="kw-2">&amp;</span><span class="ident">origin_stash1</span>, <span class="ident">is_increase</span>);
 
 		<span class="kw">let</span> <span class="ident">total_issuance</span> <span class="op">=</span> <span class="ident">T::Currency::total_issuance</span>();
 
