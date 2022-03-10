@@ -2140,7 +2140,7 @@
 			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">2</span> <span class="kw">as</span> <span class="ident">Weight</span>))
 	}
 	<span class="comment">// Storage: Contracts CodeStorage (r:1 w:1)</span>
-	<span class="comment">// Storage: Contracts AccountCounter (r:1 w:1)</span>
+	<span class="comment">// Storage: Contracts Nonce (r:1 w:1)</span>
 	<span class="comment">// Storage: Contracts ContractInfoOf (r:1 w:1)</span>
 	<span class="comment">// Storage: Timestamp Now (r:1 w:0)</span>
 	<span class="comment">// Storage: System Account (r:1 w:1)</span>
@@ -2156,7 +2156,7 @@
 			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">6</span> <span class="kw">as</span> <span class="ident">Weight</span>))
 	}
 	<span class="comment">// Storage: Contracts CodeStorage (r:1 w:1)</span>
-	<span class="comment">// Storage: Contracts AccountCounter (r:1 w:1)</span>
+	<span class="comment">// Storage: Contracts Nonce (r:1 w:1)</span>
 	<span class="comment">// Storage: Contracts ContractInfoOf (r:1 w:1)</span>
 	<span class="comment">// Storage: Timestamp Now (r:1 w:0)</span>
 	<span class="comment">// Storage: System Account (r:1 w:1)</span>
@@ -2590,7 +2590,7 @@
 	<span class="comment">// Storage: Contracts ContractInfoOf (r:1 w:1)</span>
 	<span class="comment">// Storage: Contracts CodeStorage (r:1 w:0)</span>
 	<span class="comment">// Storage: Timestamp Now (r:1 w:0)</span>
-	<span class="comment">// Storage: Contracts AccountCounter (r:1 w:1)</span>
+	<span class="comment">// Storage: Contracts Nonce (r:1 w:1)</span>
 	<span class="comment">// Storage: Contracts OwnerInfoOf (r:100 w:100)</span>
 	<span class="kw">fn</span> <span class="ident">seal_instantiate</span>(<span class="ident">r</span>: <span class="ident">u32</span>, ) -&gt; <span class="ident">Weight</span> {
 		(<span class="number">0</span> <span class="kw">as</span> <span class="ident">Weight</span>)
@@ -2605,7 +2605,7 @@
 	<span class="comment">// Storage: Contracts ContractInfoOf (r:101 w:101)</span>
 	<span class="comment">// Storage: Contracts CodeStorage (r:2 w:1)</span>
 	<span class="comment">// Storage: Timestamp Now (r:1 w:0)</span>
-	<span class="comment">// Storage: Contracts AccountCounter (r:1 w:1)</span>
+	<span class="comment">// Storage: Contracts Nonce (r:1 w:1)</span>
 	<span class="comment">// Storage: Contracts OwnerInfoOf (r:1 w:1)</span>
 	<span class="kw">fn</span> <span class="ident">seal_instantiate_per_transfer_salt_kb</span>(<span class="ident">t</span>: <span class="ident">u32</span>, <span class="ident">s</span>: <span class="ident">u32</span>, ) -&gt; <span class="ident">Weight</span> {
 		(<span class="number">14_790_752_000</span> <span class="kw">as</span> <span class="ident">Weight</span>)
@@ -3031,7 +3031,7 @@
 			.<span class="ident">saturating_add</span>(<span class="ident">RocksDbWeight::get</span>().<span class="ident">writes</span>(<span class="number">2</span> <span class="kw">as</span> <span class="ident">Weight</span>))
 	}
 	<span class="comment">// Storage: Contracts CodeStorage (r:1 w:1)</span>
-	<span class="comment">// Storage: Contracts AccountCounter (r:1 w:1)</span>
+	<span class="comment">// Storage: Contracts Nonce (r:1 w:1)</span>
 	<span class="comment">// Storage: Contracts ContractInfoOf (r:1 w:1)</span>
 	<span class="comment">// Storage: Timestamp Now (r:1 w:0)</span>
 	<span class="comment">// Storage: System Account (r:1 w:1)</span>
@@ -3047,7 +3047,7 @@
 			.<span class="ident">saturating_add</span>(<span class="ident">RocksDbWeight::get</span>().<span class="ident">writes</span>(<span class="number">6</span> <span class="kw">as</span> <span class="ident">Weight</span>))
 	}
 	<span class="comment">// Storage: Contracts CodeStorage (r:1 w:1)</span>
-	<span class="comment">// Storage: Contracts AccountCounter (r:1 w:1)</span>
+	<span class="comment">// Storage: Contracts Nonce (r:1 w:1)</span>
 	<span class="comment">// Storage: Contracts ContractInfoOf (r:1 w:1)</span>
 	<span class="comment">// Storage: Timestamp Now (r:1 w:0)</span>
 	<span class="comment">// Storage: System Account (r:1 w:1)</span>
@@ -3481,7 +3481,7 @@
 	<span class="comment">// Storage: Contracts ContractInfoOf (r:1 w:1)</span>
 	<span class="comment">// Storage: Contracts CodeStorage (r:1 w:0)</span>
 	<span class="comment">// Storage: Timestamp Now (r:1 w:0)</span>
-	<span class="comment">// Storage: Contracts AccountCounter (r:1 w:1)</span>
+	<span class="comment">// Storage: Contracts Nonce (r:1 w:1)</span>
 	<span class="comment">// Storage: Contracts OwnerInfoOf (r:100 w:100)</span>
 	<span class="kw">fn</span> <span class="ident">seal_instantiate</span>(<span class="ident">r</span>: <span class="ident">u32</span>, ) -&gt; <span class="ident">Weight</span> {
 		(<span class="number">0</span> <span class="kw">as</span> <span class="ident">Weight</span>)
@@ -3496,7 +3496,7 @@
 	<span class="comment">// Storage: Contracts ContractInfoOf (r:101 w:101)</span>
 	<span class="comment">// Storage: Contracts CodeStorage (r:2 w:1)</span>
 	<span class="comment">// Storage: Timestamp Now (r:1 w:0)</span>
-	<span class="comment">// Storage: Contracts AccountCounter (r:1 w:1)</span>
+	<span class="comment">// Storage: Contracts Nonce (r:1 w:1)</span>
 	<span class="comment">// Storage: Contracts OwnerInfoOf (r:1 w:1)</span>
 	<span class="kw">fn</span> <span class="ident">seal_instantiate_per_transfer_salt_kb</span>(<span class="ident">t</span>: <span class="ident">u32</span>, <span class="ident">s</span>: <span class="ident">u32</span>, ) -&gt; <span class="ident">Weight</span> {
 		(<span class="number">14_790_752_000</span> <span class="kw">as</span> <span class="ident">Weight</span>)
