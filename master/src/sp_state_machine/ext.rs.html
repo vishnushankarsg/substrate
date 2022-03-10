@@ -1116,12 +1116,6 @@
 <span id="1116">1116</span>
 <span id="1117">1117</span>
 <span id="1118">1118</span>
-<span id="1119">1119</span>
-<span id="1120">1120</span>
-<span id="1121">1121</span>
-<span id="1122">1122</span>
-<span id="1123">1123</span>
-<span id="1124">1124</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1784,7 +1778,6 @@
 		<span class="self">self</span>.<span class="ident">overlay</span>
 			.<span class="ident">drain_storage_changes</span>(
 				<span class="self">self</span>.<span class="ident">backend</span>,
-				<span class="ident">Default::default</span>(),
 				<span class="self">self</span>.<span class="ident">storage_transaction_cache</span>,
 				<span class="ident">Default::default</span>(), <span class="comment">// using any state</span>
 			)
@@ -1804,12 +1797,7 @@
 		}
 		<span class="kw">let</span> <span class="ident">changes</span> <span class="op">=</span> <span class="self">self</span>
 			.<span class="ident">overlay</span>
-			.<span class="ident">drain_storage_changes</span>(
-				<span class="self">self</span>.<span class="ident">backend</span>,
-				<span class="ident">Default::default</span>(),
-				<span class="self">self</span>.<span class="ident">storage_transaction_cache</span>,
-				<span class="ident">state_version</span>,
-			)
+			.<span class="ident">drain_storage_changes</span>(<span class="self">self</span>.<span class="ident">backend</span>, <span class="self">self</span>.<span class="ident">storage_transaction_cache</span>, <span class="ident">state_version</span>)
 			.<span class="ident">expect</span>(<span class="ident">EXT_NOT_ALLOWED_TO_FAIL</span>);
 		<span class="self">self</span>.<span class="ident">backend</span>
 			.<span class="ident">commit</span>(

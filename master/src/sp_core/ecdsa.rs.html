@@ -844,6 +844,26 @@
 <span id="844">844</span>
 <span id="845">845</span>
 <span id="846">846</span>
+<span id="847">847</span>
+<span id="848">848</span>
+<span id="849">849</span>
+<span id="850">850</span>
+<span id="851">851</span>
+<span id="852">852</span>
+<span id="853">853</span>
+<span id="854">854</span>
+<span id="855">855</span>
+<span id="856">856</span>
+<span id="857">857</span>
+<span id="858">858</span>
+<span id="859">859</span>
+<span id="860">860</span>
+<span id="861">861</span>
+<span id="862">862</span>
+<span id="863">863</span>
+<span id="864">864</span>
+<span id="865">865</span>
+<span id="866">866</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -880,12 +900,14 @@
 };
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">bip39</span>::{<span class="ident">Language</span>, <span class="ident">Mnemonic</span>, <span class="ident">MnemonicType</span>};
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;full_crypto&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">core::convert::TryFrom</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;full_crypto&quot;</span>, <span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)))]</span>
+<span class="kw">use</span> <span class="ident">secp256k1::Secp256k1</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
+<span class="kw">use</span> <span class="ident">secp256k1::SECP256K1</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;full_crypto&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">secp256k1</span>::{
 	<span class="ident">ecdsa</span>::{<span class="ident">RecoverableSignature</span>, <span class="ident">RecoveryId</span>},
-	<span class="ident">Message</span>, <span class="ident">PublicKey</span>, <span class="ident">SecretKey</span>, <span class="ident">SECP256K1</span>,
+	<span class="ident">Message</span>, <span class="ident">PublicKey</span>, <span class="ident">SecretKey</span>,
 };
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">de</span>, <span class="ident">Deserialize</span>, <span class="ident">Deserializer</span>, <span class="ident">Serialize</span>, <span class="ident">Serializer</span>};
@@ -1180,7 +1202,13 @@
 		<span class="kw">let</span> <span class="ident">rid</span> <span class="op">=</span> <span class="ident">RecoveryId::from_i32</span>(<span class="self">self</span>.<span class="number">0</span>[<span class="number">64</span>] <span class="kw">as</span> <span class="ident">i32</span>).<span class="ident">ok</span>()<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">sig</span> <span class="op">=</span> <span class="ident">RecoverableSignature::from_compact</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>[..<span class="number">64</span>], <span class="ident">rid</span>).<span class="ident">ok</span>()<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="ident">Message::from_slice</span>(<span class="ident">message</span>).<span class="ident">expect</span>(<span class="string">&quot;Message is 32 bytes; qed&quot;</span>);
-		<span class="ident">SECP256K1</span>
+
+		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
+		<span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">SECP256K1</span>;
+		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>))]</span>
+		<span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Secp256k1::verification_only</span>();
+
+		<span class="ident">context</span>
 			.<span class="ident">recover_ecdsa</span>(<span class="kw-2">&amp;</span><span class="ident">message</span>, <span class="kw-2">&amp;</span><span class="ident">sig</span>)
 			.<span class="ident">ok</span>()
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">pubkey</span><span class="op">|</span> <span class="ident">Public</span>(<span class="ident">pubkey</span>.<span class="ident">serialize</span>()))
@@ -1271,7 +1299,13 @@
 	<span class="kw">fn</span> <span class="ident">from_seed_slice</span>(<span class="ident">seed_slice</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Pair</span>, <span class="ident">SecretStringError</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">secret</span> <span class="op">=</span>
 			<span class="ident">SecretKey::from_slice</span>(<span class="ident">seed_slice</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">SecretStringError::InvalidSeedLength</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">public</span> <span class="op">=</span> <span class="ident">PublicKey::from_secret_key</span>(<span class="ident">SECP256K1</span>, <span class="kw-2">&amp;</span><span class="ident">secret</span>);
+
+		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
+		<span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">SECP256K1</span>;
+		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>))]</span>
+		<span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Secp256k1::signing_only</span>();
+
+		<span class="kw">let</span> <span class="ident">public</span> <span class="op">=</span> <span class="ident">PublicKey::from_secret_key</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="kw-2">&amp;</span><span class="ident">secret</span>);
 		<span class="kw">let</span> <span class="ident">public</span> <span class="op">=</span> <span class="ident">Public</span>(<span class="ident">public</span>.<span class="ident">serialize</span>());
 		<span class="prelude-val">Ok</span>(<span class="ident">Pair</span> { <span class="ident">public</span>, <span class="ident">secret</span> })
 	}
@@ -1349,7 +1383,13 @@
 	<span class="doccomment">/// Sign a pre-hashed message</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sign_prehashed</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">message</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>; <span class="number">32</span>]) -&gt; <span class="ident">Signature</span> {
 		<span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="ident">Message::from_slice</span>(<span class="ident">message</span>).<span class="ident">expect</span>(<span class="string">&quot;Message is 32 bytes; qed&quot;</span>);
-		<span class="ident">SECP256K1</span>.<span class="ident">sign_ecdsa_recoverable</span>(<span class="kw-2">&amp;</span><span class="ident">message</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">secret</span>).<span class="ident">into</span>()
+
+		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
+		<span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">SECP256K1</span>;
+		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>))]</span>
+		<span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Secp256k1::signing_only</span>();
+
+		<span class="ident">context</span>.<span class="ident">sign_ecdsa_recoverable</span>(<span class="kw-2">&amp;</span><span class="ident">message</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">secret</span>).<span class="ident">into</span>()
 	}
 
 	<span class="doccomment">/// Verify a signature on a pre-hashed message. Return `true` if the signature is valid</span>
