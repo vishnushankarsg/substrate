@@ -1162,18 +1162,6 @@
 <span id="1162">1162</span>
 <span id="1163">1163</span>
 <span id="1164">1164</span>
-<span id="1165">1165</span>
-<span id="1166">1166</span>
-<span id="1167">1167</span>
-<span id="1168">1168</span>
-<span id="1169">1169</span>
-<span id="1170">1170</span>
-<span id="1171">1171</span>
-<span id="1172">1172</span>
-<span id="1173">1173</span>
-<span id="1174">1174</span>
-<span id="1175">1175</span>
-<span id="1176">1176</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -1455,7 +1443,7 @@
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span> {
 	<span class="doccomment">/// An error within grandpa.</span>
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;grandpa error: {0}&quot;</span>)]</span>
-	<span class="ident">Grandpa</span>(<span class="ident">GrandpaError</span>),
+	<span class="ident">Grandpa</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">GrandpaError</span>),
 
 	<span class="doccomment">/// A network error.</span>
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;network error: {0}&quot;</span>)]</span>
@@ -1467,7 +1455,7 @@
 
 	<span class="doccomment">/// Could not complete a round on disk.</span>
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;could not complete a round on disk: {0}&quot;</span>)]</span>
-	<span class="ident">Client</span>(<span class="ident">ClientError</span>),
+	<span class="ident">Client</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">ClientError</span>),
 
 	<span class="doccomment">/// Could not sign outgoing message</span>
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;could not sign outgoing message: {0}&quot;</span>)]</span>
@@ -1484,18 +1472,6 @@
 	<span class="doccomment">/// A runtime api request failed.</span>
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;runtime API request failed: {0}&quot;</span>)]</span>
 	<span class="ident">RuntimeApi</span>(<span class="ident">sp_api::ApiError</span>),
-}
-
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">GrandpaError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Error</span> {
-	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">e</span>: <span class="ident">GrandpaError</span>) -&gt; <span class="self">Self</span> {
-		<span class="ident">Error::Grandpa</span>(<span class="ident">e</span>)
-	}
-}
-
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ClientError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Error</span> {
-	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">e</span>: <span class="ident">ClientError</span>) -&gt; <span class="self">Self</span> {
-		<span class="ident">Error::Client</span>(<span class="ident">e</span>)
-	}
 }
 
 <span class="doccomment">/// Something which can determine if a block is known.</span>
