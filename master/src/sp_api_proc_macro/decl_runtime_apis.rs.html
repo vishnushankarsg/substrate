@@ -1366,21 +1366,21 @@
 			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">test</span>))]</span>
 			<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::too_many_arguments</span>)]</span>
 			<span class="kw">pub</span> <span class="kw">fn</span> #<span class="ident">fn_name</span><span class="op">&lt;</span>
-				<span class="ident">R</span>: #<span class="ident">crate_::Encode</span> <span class="op">+</span> #<span class="ident">crate_::Decode</span> <span class="op">+</span> <span class="ident">PartialEq</span>,
+				<span class="ident">R</span>: #<span class="ident">crate_::Encode</span> <span class="op">+</span> #<span class="ident">crate_::Decode</span> <span class="op">+</span> <span class="ident">std::cmp::PartialEq</span>,
 				<span class="ident">NC</span>: <span class="ident">FnOnce</span>() -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">R</span>, #<span class="ident">crate_::ApiError</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">std::panic::UnwindSafe</span>,
 				<span class="ident">Block</span>: #<span class="ident">crate_::BlockT</span>,
 				<span class="ident">T</span>: #<span class="ident">crate_::CallApiAt</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
 			<span class="op">&gt;</span>(
 				<span class="ident">call_runtime_at</span>: <span class="kw-2">&amp;</span><span class="ident">T</span>,
 				<span class="ident">at</span>: <span class="kw-2">&amp;</span>#<span class="ident">crate_::BlockId</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
-				<span class="ident">args</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+				<span class="ident">args</span>: <span class="ident">std::vec::Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
 				<span class="ident">changes</span>: <span class="kw-2">&amp;</span><span class="ident">std::cell::RefCell</span><span class="op">&lt;</span>#<span class="ident">crate_::OverlayedChanges</span><span class="op">&gt;</span>,
 				<span class="ident">storage_transaction_cache</span>: <span class="kw-2">&amp;</span><span class="ident">std::cell::RefCell</span><span class="op">&lt;</span>
 					#<span class="ident">crate_::StorageTransactionCache</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">T::StateBackend</span><span class="op">&gt;</span>
 				<span class="op">&gt;</span>,
-				<span class="ident">native_call</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">NC</span><span class="op">&gt;</span>,
+				<span class="ident">native_call</span>: <span class="ident">std::option::Option</span><span class="op">&lt;</span><span class="ident">NC</span><span class="op">&gt;</span>,
 				<span class="ident">context</span>: #<span class="ident">crate_::ExecutionContext</span>,
-				<span class="ident">recorder</span>: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span>#<span class="ident">crate_::ProofRecorder</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+				<span class="ident">recorder</span>: <span class="kw-2">&amp;</span><span class="ident">std::option::Option</span><span class="op">&lt;</span>#<span class="ident">crate_::ProofRecorder</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 			) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>#<span class="ident">crate_::NativeOrEncoded</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>, #<span class="ident">crate_::ApiError</span><span class="op">&gt;</span> {
 				<span class="kw">let</span> <span class="ident">version</span> <span class="op">=</span> <span class="ident">call_runtime_at</span>.<span class="ident">runtime_version_at</span>(<span class="ident">at</span>)<span class="question-mark">?</span>;
 
@@ -1400,7 +1400,7 @@
 							<span class="ident">recorder</span>,
 						};
 
-						<span class="kw">let</span> <span class="ident">ret</span> <span class="op">=</span> <span class="ident">call_runtime_at</span>.<span class="ident">call_api_at</span>(<span class="ident">params</span>)<span class="question-mark">?</span>;
+						<span class="kw">let</span> <span class="ident">ret</span> <span class="op">=</span> #<span class="ident">crate_::CallApiAt</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::call_api_at</span>(<span class="ident">call_runtime_at</span>, <span class="ident">params</span>)<span class="question-mark">?</span>;
 
 						<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">ret</span>)
 					}
@@ -1417,7 +1417,7 @@
 					<span class="ident">recorder</span>,
 				};
 
-				<span class="ident">call_runtime_at</span>.<span class="ident">call_api_at</span>(<span class="ident">params</span>)
+				#<span class="ident">crate_::CallApiAt</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::call_api_at</span>(<span class="ident">call_runtime_at</span>, <span class="ident">params</span>)
 			}
 		));
 	}
@@ -1665,13 +1665,13 @@
 							#<span class="ident">native_handling</span>
 						},
 						#<span class="ident">crate_::NativeOrEncoded::Encoded</span>(<span class="ident">r</span>) =&gt; {
-							<span class="op">&lt;</span>#<span class="ident">ret_type</span> <span class="kw">as</span> #<span class="ident">crate_::Decode</span><span class="op">&gt;</span><span class="ident">::decode</span>(<span class="kw-2">&amp;mut</span> <span class="kw-2">&amp;</span><span class="ident">r</span>[..])
-								.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span>
-									#<span class="ident">crate_::ApiError::FailedToDecodeReturnValue</span> {
-										<span class="ident">function</span>: #<span class="ident">function_name</span>,
-										<span class="ident">error</span>: <span class="ident">err</span>,
-									}
-								)
+							<span class="ident">std::result::Result::map_err</span>(
+								<span class="op">&lt;</span>#<span class="ident">ret_type</span> <span class="kw">as</span> #<span class="ident">crate_::Decode</span><span class="op">&gt;</span><span class="ident">::decode</span>(<span class="kw-2">&amp;mut</span> <span class="kw-2">&amp;</span><span class="ident">r</span>[..]),
+								<span class="op">|</span><span class="ident">err</span><span class="op">|</span> #<span class="ident">crate_::ApiError::FailedToDecodeReturnValue</span> {
+									<span class="ident">function</span>: #<span class="ident">function_name</span>,
+									<span class="ident">error</span>: <span class="ident">err</span>,
+								}
+							)
 						}
 					}
 				)

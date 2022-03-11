@@ -745,6 +745,10 @@
 <span id="745">745</span>
 <span id="746">746</span>
 <span id="747">747</span>
+<span id="748">748</span>
+<span id="749">749</span>
+<span id="750">750</span>
+<span id="751">751</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -954,7 +958,7 @@
 			<span class="ident">storage_transaction_cache</span>: <span class="ident">std::cell::RefCell</span><span class="op">&lt;</span>
 				#<span class="ident">crate_::StorageTransactionCache</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">C::StateBackend</span><span class="op">&gt;</span>
 			<span class="op">&gt;</span>,
-			<span class="ident">recorder</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span>#<span class="ident">crate_::ProofRecorder</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+			<span class="ident">recorder</span>: <span class="ident">std::option::Option</span><span class="op">&lt;</span>#<span class="ident">crate_::ProofRecorder</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 		}
 
 		<span class="comment">// `RuntimeApi` itself is not threadsafe. However, an instance is only available in a</span>
@@ -980,12 +984,12 @@
 				<span class="kw-2">&amp;</span><span class="self">self</span>,
 				<span class="ident">call</span>: <span class="ident">F</span>,
 			) -&gt; <span class="ident">R</span> <span class="kw">where</span> <span class="self">Self</span>: <span class="ident">Sized</span> {
-				<span class="self">self</span>.<span class="ident">changes</span>.<span class="ident">borrow_mut</span>().<span class="ident">start_transaction</span>();
-				<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">commit_on_success</span>.<span class="ident">borrow_mut</span>() <span class="op">=</span> <span class="bool-val">false</span>;
+				#<span class="ident">crate_::OverlayedChanges::start_transaction</span>(<span class="kw-2">&amp;mut</span> <span class="ident">std::cell::RefCell::borrow_mut</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">changes</span>));
+				<span class="kw-2">*</span><span class="ident">std::cell::RefCell::borrow_mut</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">commit_on_success</span>) <span class="op">=</span> <span class="bool-val">false</span>;
 				<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">call</span>(<span class="self">self</span>);
-				<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">commit_on_success</span>.<span class="ident">borrow_mut</span>() <span class="op">=</span> <span class="bool-val">true</span>;
+				<span class="kw-2">*</span><span class="ident">std::cell::RefCell::borrow_mut</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">commit_on_success</span>) <span class="op">=</span> <span class="bool-val">true</span>;
 
-				<span class="self">self</span>.<span class="ident">commit_or_rollback</span>(<span class="macro">matches!</span>(<span class="ident">res</span>, #<span class="ident">crate_::TransactionOutcome::Commit</span>(<span class="kw">_</span>)));
+				<span class="self">self</span>.<span class="ident">commit_or_rollback</span>(<span class="macro">std::matches!</span>(<span class="ident">res</span>, #<span class="ident">crate_::TransactionOutcome::Commit</span>(<span class="kw">_</span>)));
 
 				<span class="ident">res</span>.<span class="ident">into_inner</span>()
 			}
@@ -994,9 +998,8 @@
 				<span class="kw-2">&amp;</span><span class="self">self</span>,
 				<span class="ident">at</span>: <span class="kw-2">&amp;</span>#<span class="ident">crate_::BlockId</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
 			) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">bool</span>, #<span class="ident">crate_::ApiError</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="self">Self</span>: <span class="ident">Sized</span> {
-				<span class="self">self</span>.<span class="ident">call</span>
-					.<span class="ident">runtime_version_at</span>(<span class="ident">at</span>)
-					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">has_api_with</span>(<span class="kw-2">&amp;</span><span class="ident">A::ID</span>, <span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span> <span class="op">==</span> <span class="ident">A::VERSION</span>))
+				#<span class="ident">crate_::CallApiAt</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::runtime_version_at</span>(<span class="self">self</span>.<span class="ident">call</span>, <span class="ident">at</span>)
+					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> #<span class="ident">crate_::RuntimeVersion::has_api_with</span>(<span class="kw-2">&amp;</span><span class="ident">v</span>, <span class="kw-2">&amp;</span><span class="ident">A::ID</span>, <span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span> <span class="op">==</span> <span class="ident">A::VERSION</span>))
 			}
 
 			<span class="kw">fn</span> <span class="ident">has_api_with</span><span class="op">&lt;</span><span class="ident">A</span>: #<span class="ident">crate_::RuntimeApiInfo</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span>, <span class="ident">P</span>: <span class="ident">Fn</span>(<span class="ident">u32</span>) -&gt; <span class="ident">bool</span><span class="op">&gt;</span>(
@@ -1004,51 +1007,48 @@
 				<span class="ident">at</span>: <span class="kw-2">&amp;</span>#<span class="ident">crate_::BlockId</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
 				<span class="ident">pred</span>: <span class="ident">P</span>,
 			) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">bool</span>, #<span class="ident">crate_::ApiError</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="self">Self</span>: <span class="ident">Sized</span> {
-				<span class="self">self</span>.<span class="ident">call</span>
-					.<span class="ident">runtime_version_at</span>(<span class="ident">at</span>)
-					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">has_api_with</span>(<span class="kw-2">&amp;</span><span class="ident">A::ID</span>, <span class="ident">pred</span>))
+				#<span class="ident">crate_::CallApiAt</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::runtime_version_at</span>(<span class="self">self</span>.<span class="ident">call</span>, <span class="ident">at</span>)
+					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> #<span class="ident">crate_::RuntimeVersion::has_api_with</span>(<span class="kw-2">&amp;</span><span class="ident">v</span>, <span class="kw-2">&amp;</span><span class="ident">A::ID</span>, <span class="ident">pred</span>))
 			}
 
 			<span class="kw">fn</span> <span class="ident">api_version</span><span class="op">&lt;</span><span class="ident">A</span>: #<span class="ident">crate_::RuntimeApiInfo</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span>(
 				<span class="kw-2">&amp;</span><span class="self">self</span>,
 				<span class="ident">at</span>: <span class="kw-2">&amp;</span>#<span class="ident">crate_::BlockId</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
 			) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>, #<span class="ident">crate_::ApiError</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="self">Self</span>: <span class="ident">Sized</span> {
-				<span class="self">self</span>.<span class="ident">call</span>
-					.<span class="ident">runtime_version_at</span>(<span class="ident">at</span>)
-					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">api_version</span>(<span class="kw-2">&amp;</span><span class="ident">A::ID</span>))
+				#<span class="ident">crate_::CallApiAt</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::runtime_version_at</span>(<span class="self">self</span>.<span class="ident">call</span>, <span class="ident">at</span>)
+					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> #<span class="ident">crate_::RuntimeVersion::api_version</span>(<span class="kw-2">&amp;</span><span class="ident">v</span>, <span class="kw-2">&amp;</span><span class="ident">A::ID</span>))
 			}
 
 			<span class="kw">fn</span> <span class="ident">record_proof</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-				<span class="self">self</span>.<span class="ident">recorder</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">Default::default</span>());
+				<span class="self">self</span>.<span class="ident">recorder</span> <span class="op">=</span> <span class="ident">std::option::Option::Some</span>(<span class="ident">std::default::Default::default</span>());
 			}
 
-			<span class="kw">fn</span> <span class="ident">proof_recorder</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>#<span class="ident">crate_::ProofRecorder</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-				<span class="self">self</span>.<span class="ident">recorder</span>.<span class="ident">clone</span>()
+			<span class="kw">fn</span> <span class="ident">proof_recorder</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">std::option::Option</span><span class="op">&lt;</span>#<span class="ident">crate_::ProofRecorder</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+				<span class="ident">std::clone::Clone::clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">recorder</span>)
 			}
 
-			<span class="kw">fn</span> <span class="ident">extract_proof</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>#<span class="ident">crate_::StorageProof</span><span class="op">&gt;</span> {
-				<span class="self">self</span>.<span class="ident">recorder</span>
-					.<span class="ident">take</span>()
-					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">recorder</span><span class="op">|</span> <span class="ident">recorder</span>.<span class="ident">to_storage_proof</span>())
+			<span class="kw">fn</span> <span class="ident">extract_proof</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">std::option::Option</span><span class="op">&lt;</span>#<span class="ident">crate_::StorageProof</span><span class="op">&gt;</span> {
+				<span class="ident">std::option::Option::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">recorder</span>)
+					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">recorder</span><span class="op">|</span> #<span class="ident">crate_::ProofRecorder</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::to_storage_proof</span>(<span class="kw-2">&amp;</span><span class="ident">recorder</span>))
 			}
 
 			<span class="kw">fn</span> <span class="ident">into_storage_changes</span>(
 				<span class="kw-2">&amp;</span><span class="self">self</span>,
 				<span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::StateBackend</span>,
 				<span class="ident">parent_hash</span>: <span class="ident">Block::Hash</span>,
-			) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>
+			) -&gt; <span class="ident">core::result::Result</span><span class="op">&lt;</span>
 				#<span class="ident">crate_::StorageChanges</span><span class="op">&lt;</span><span class="ident">C::StateBackend</span>, <span class="ident">Block</span><span class="op">&gt;</span>,
 				<span class="ident">String</span>
 			<span class="op">&gt;</span> <span class="kw">where</span> <span class="self">Self</span>: <span class="ident">Sized</span> {
-				<span class="kw">let</span> <span class="ident">at</span> <span class="op">=</span> #<span class="ident">crate_::BlockId::Hash</span>(<span class="ident">parent_hash</span>.<span class="ident">clone</span>());
-				<span class="kw">let</span> <span class="ident">state_version</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">call</span>
-					.<span class="ident">runtime_version_at</span>(<span class="kw-2">&amp;</span><span class="ident">at</span>)
-					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">state_version</span>())
+				<span class="kw">let</span> <span class="ident">at</span> <span class="op">=</span> #<span class="ident">crate_::BlockId::Hash</span>(<span class="ident">std::clone::Clone::clone</span>(<span class="kw-2">&amp;</span><span class="ident">parent_hash</span>));
+				<span class="kw">let</span> <span class="ident">state_version</span> <span class="op">=</span> #<span class="ident">crate_::CallApiAt</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::runtime_version_at</span>(<span class="self">self</span>.<span class="ident">call</span>, <span class="kw-2">&amp;</span><span class="ident">at</span>)
+					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> #<span class="ident">crate_::RuntimeVersion::state_version</span>(<span class="kw-2">&amp;</span><span class="ident">v</span>))
 					.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;Failed to get state version: {}&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span>;
 
-				<span class="self">self</span>.<span class="ident">changes</span>.<span class="ident">replace</span>(<span class="ident">Default::default</span>()).<span class="ident">into_storage_changes</span>(
+				#<span class="ident">crate_::OverlayedChanges::into_storage_changes</span>(
+					<span class="ident">std::cell::RefCell::take</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">changes</span>),
 					<span class="ident">backend</span>,
-					<span class="self">self</span>.<span class="ident">storage_transaction_cache</span>.<span class="ident">replace</span>(<span class="ident">Default::default</span>()),
+					<span class="ident">core::cell::RefCell::take</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">storage_transaction_cache</span>),
 					<span class="ident">state_version</span>,
 				)
 			}
@@ -1068,9 +1068,9 @@
 				<span class="ident">RuntimeApiImpl</span> {
 					<span class="ident">call</span>: <span class="kw">unsafe</span> { <span class="ident">std::mem::transmute</span>(<span class="ident">call</span>) },
 					<span class="ident">commit_on_success</span>: <span class="bool-val">true</span>.<span class="ident">into</span>(),
-					<span class="ident">changes</span>: <span class="ident">Default::default</span>(),
-					<span class="ident">recorder</span>: <span class="ident">Default::default</span>(),
-					<span class="ident">storage_transaction_cache</span>: <span class="ident">Default::default</span>(),
+					<span class="ident">changes</span>: <span class="ident">std::default::Default::default</span>(),
+					<span class="ident">recorder</span>: <span class="ident">std::default::Default::default</span>(),
+					<span class="ident">storage_transaction_cache</span>: <span class="ident">std::default::Default::default</span>(),
 				}.<span class="ident">into</span>()
 			}
 		}
@@ -1078,20 +1078,22 @@
 		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">test</span>))]</span>
 		<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Block</span>: #<span class="ident">crate_::BlockT</span>, <span class="ident">C</span>: #<span class="ident">crate_::CallApiAt</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">RuntimeApiImpl</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">C</span><span class="op">&gt;</span> {
 			<span class="kw">fn</span> <span class="ident">call_api_at</span><span class="op">&lt;</span>
-				<span class="ident">R</span>: #<span class="ident">crate_::Encode</span> <span class="op">+</span> #<span class="ident">crate_::Decode</span> <span class="op">+</span> <span class="ident">PartialEq</span>,
+				<span class="ident">R</span>: #<span class="ident">crate_::Encode</span> <span class="op">+</span> #<span class="ident">crate_::Decode</span> <span class="op">+</span> <span class="ident">std::cmp::PartialEq</span>,
 				<span class="ident">F</span>: <span class="ident">FnOnce</span>(
 					<span class="kw-2">&amp;</span><span class="ident">C</span>,
 					<span class="kw-2">&amp;</span><span class="ident">std::cell::RefCell</span><span class="op">&lt;</span>#<span class="ident">crate_::OverlayedChanges</span><span class="op">&gt;</span>,
 					<span class="kw-2">&amp;</span><span class="ident">std::cell::RefCell</span><span class="op">&lt;</span>#<span class="ident">crate_::StorageTransactionCache</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">C::StateBackend</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-					<span class="kw-2">&amp;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span>#<span class="ident">crate_::ProofRecorder</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+					<span class="kw-2">&amp;</span><span class="ident">std::option::Option</span><span class="op">&lt;</span>#<span class="ident">crate_::ProofRecorder</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 				) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>#<span class="ident">crate_::NativeOrEncoded</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>, <span class="ident">E</span><span class="op">&gt;</span>,
 				<span class="ident">E</span>,
 			<span class="op">&gt;</span>(
 				<span class="kw-2">&amp;</span><span class="self">self</span>,
 				<span class="ident">call_api_at</span>: <span class="ident">F</span>,
 			) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>#<span class="ident">crate_::NativeOrEncoded</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>, <span class="ident">E</span><span class="op">&gt;</span> {
-				<span class="kw">if</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">commit_on_success</span>.<span class="ident">borrow</span>() {
-					<span class="self">self</span>.<span class="ident">changes</span>.<span class="ident">borrow_mut</span>().<span class="ident">start_transaction</span>();
+				<span class="kw">if</span> <span class="kw-2">*</span><span class="ident">std::cell::RefCell::borrow</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">commit_on_success</span>) {
+					#<span class="ident">crate_::OverlayedChanges::start_transaction</span>(
+						<span class="kw-2">&amp;mut</span> <span class="ident">std::cell::RefCell::borrow_mut</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">changes</span>)
+					);
 				}
 				<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">call_api_at</span>(
 					<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">call</span>,
@@ -1100,7 +1102,7 @@
 					<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">recorder</span>,
 				);
 
-				<span class="self">self</span>.<span class="ident">commit_or_rollback</span>(<span class="ident">res</span>.<span class="ident">is_ok</span>());
+				<span class="self">self</span>.<span class="ident">commit_or_rollback</span>(<span class="ident">std::result::Result::is_ok</span>(<span class="kw-2">&amp;</span><span class="ident">res</span>));
 				<span class="ident">res</span>
 			}
 
@@ -1109,13 +1111,19 @@
 					We only close a transaction when we opened one ourself.
 					Other parts of the runtime that make use of transactions (state-machine)
 					also balance their transactions. The runtime cannot close client initiated
-					transactions. qed&quot;</span>;
-				<span class="kw">if</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">commit_on_success</span>.<span class="ident">borrow</span>() {
-					<span class="kw">if</span> <span class="ident">commit</span> {
-						<span class="self">self</span>.<span class="ident">changes</span>.<span class="ident">borrow_mut</span>().<span class="ident">commit_transaction</span>().<span class="ident">expect</span>(<span class="ident">proof</span>);
+					transactions; qed&quot;</span>;
+				<span class="kw">if</span> <span class="kw-2">*</span><span class="ident">std::cell::RefCell::borrow</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">commit_on_success</span>) {
+					<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">commit</span> {
+						#<span class="ident">crate_::OverlayedChanges::commit_transaction</span>(
+							<span class="kw-2">&amp;mut</span> <span class="ident">std::cell::RefCell::borrow_mut</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">changes</span>)
+						)
 					} <span class="kw">else</span> {
-						<span class="self">self</span>.<span class="ident">changes</span>.<span class="ident">borrow_mut</span>().<span class="ident">rollback_transaction</span>().<span class="ident">expect</span>(<span class="ident">proof</span>);
-					}
+						#<span class="ident">crate_::OverlayedChanges::rollback_transaction</span>(
+							<span class="kw-2">&amp;mut</span> <span class="ident">std::cell::RefCell::borrow_mut</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">changes</span>)
+						)
+					};
+
+					<span class="ident">std::result::Result::expect</span>(<span class="ident">res</span>, <span class="ident">proof</span>);
 				}
 			}
 		}
