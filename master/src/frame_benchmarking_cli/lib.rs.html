@@ -172,7 +172,7 @@
 <span class="kw">mod</span> <span class="ident">storage</span>;
 <span class="kw">mod</span> <span class="ident">writer</span>;
 
-<span class="kw">use</span> <span class="ident">sc_cli</span>::{<span class="ident">ExecutionStrategy</span>, <span class="ident">WasmExecutionMethod</span>};
+<span class="kw">use</span> <span class="ident">sc_cli</span>::{<span class="ident">ExecutionStrategy</span>, <span class="ident">WasmExecutionMethod</span>, <span class="ident">DEFAULT_WASM_EXECUTION_METHOD</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">path::PathBuf</span>};
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">storage::StorageCmd</span>;
@@ -199,11 +199,11 @@
 	<span class="kw">pub</span> <span class="ident">steps</span>: <span class="ident">u32</span>,
 
 	<span class="doccomment">/// Indicates lowest values for each of the component ranges.</span>
-	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;low&quot;</span>, <span class="ident">use_delimiter</span> <span class="op">=</span> <span class="bool-val">true</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;low&quot;</span>, <span class="ident">use_value_delimiter</span> <span class="op">=</span> <span class="bool-val">true</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">lowest_range_values</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Indicates highest values for each of the component ranges.</span>
-	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;high&quot;</span>, <span class="ident">use_delimiter</span> <span class="op">=</span> <span class="bool-val">true</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;high&quot;</span>, <span class="ident">use_value_delimiter</span> <span class="op">=</span> <span class="bool-val">true</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">highest_range_values</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Select how many repetitions of this benchmark should run from within the wasm.</span>
@@ -283,7 +283,7 @@
 		<span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;METHOD&quot;</span>,
 		<span class="ident">possible_values</span> <span class="op">=</span> <span class="ident">WasmExecutionMethod::variants</span>(),
 		<span class="ident">ignore_case</span> <span class="op">=</span> <span class="bool-val">true</span>,
-		<span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;compiled&quot;</span>
+		<span class="ident">default_value</span> <span class="op">=</span> <span class="ident">DEFAULT_WASM_EXECUTION_METHOD</span>,
 	)]</span>
 	<span class="kw">pub</span> <span class="ident">wasm_method</span>: <span class="ident">WasmExecutionMethod</span>,
 

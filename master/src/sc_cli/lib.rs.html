@@ -240,10 +240,6 @@
 <span id="240">240</span>
 <span id="241">241</span>
 <span id="242">242</span>
-<span id="243">243</span>
-<span id="244">244</span>
-<span id="245">245</span>
-<span id="246">246</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -268,6 +264,9 @@
 <span class="attribute">#![<span class="ident">warn</span>(<span class="ident">unused_extern_crates</span>)]</span>
 <span class="attribute">#![<span class="ident">warn</span>(<span class="ident">unused_imports</span>)]</span>
 
+<span class="kw">use</span> <span class="ident">clap</span>::{<span class="ident">CommandFactory</span>, <span class="ident">FromArgMatches</span>, <span class="ident">Parser</span>};
+<span class="kw">use</span> <span class="ident">sc_service::Configuration</span>;
+
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">arg_enums</span>;
 <span class="kw">mod</span> <span class="ident">commands</span>;
 <span class="kw">mod</span> <span class="ident">config</span>;
@@ -277,33 +276,31 @@
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">arg_enums</span>::<span class="kw-2">*</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">clap</span>;
-<span class="kw">use</span> <span class="ident">clap</span>::{<span class="ident">AppSettings</span>, <span class="ident">FromArgMatches</span>, <span class="ident">IntoApp</span>, <span class="ident">Parser</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">commands</span>::<span class="kw-2">*</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">config</span>::<span class="kw-2">*</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">error</span>::<span class="kw-2">*</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">params</span>::<span class="kw-2">*</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">runner</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">sc_service::Configuration</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_service</span>::{<span class="ident">ChainSpec</span>, <span class="ident">Role</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_tracing::logging::LoggerBuilder</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_version::RuntimeVersion</span>;
 
 <span class="doccomment">/// Substrate client CLI</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// This trait needs to be defined on the root structopt of the application. It will provide the</span>
-<span class="doccomment">/// implementation name, version, executable name, description, author, support_url, copyright start</span>
-<span class="doccomment">/// year and most importantly: how to load the chain spec.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// StructOpt must not be in scope to use from_args (or the similar methods). This trait provides</span>
-<span class="doccomment">/// its own implementation that will fill the necessary field based on the trait&#39;s functions.</span>
+<span class="doccomment">/// This trait needs to be implemented on the root CLI struct of the application. It will provide</span>
+<span class="doccomment">/// the implementation `name`, `version`, `executable name`, `description`, `author`, `support_url`,</span>
+<span class="doccomment">/// `copyright start year` and most importantly: how to load the chain spec.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">SubstrateCli</span>: <span class="ident">Sized</span> {
 	<span class="doccomment">/// Implementation name.</span>
 	<span class="kw">fn</span> <span class="ident">impl_name</span>() -&gt; <span class="ident">String</span>;
 
 	<span class="doccomment">/// Implementation version.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// By default this will look like this: 2.0.0-b950f731c-x86_64-linux-gnu where the hash is the</span>
-	<span class="doccomment">/// short commit hash of the commit of in the Git repository.</span>
+	<span class="doccomment">/// By default this will look like this:</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// `2.0.0-b950f731c-x86_64-linux-gnu`</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Where the hash is the short commit hash of the commit of in the Git repository.</span>
 	<span class="kw">fn</span> <span class="ident">impl_version</span>() -&gt; <span class="ident">String</span>;
 
 	<span class="doccomment">/// Executable file name.</span>
@@ -334,14 +331,13 @@
 	<span class="kw">fn</span> <span class="ident">load_spec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ChainSpec</span><span class="op">&gt;</span>, <span class="ident">String</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Helper function used to parse the command line arguments. This is the equivalent of</span>
-	<span class="doccomment">/// `structopt`&#39;s `from_iter()` except that it takes a `VersionInfo` argument to provide the</span>
-	<span class="doccomment">/// name of the application, author, &quot;about&quot; and version. It will also set</span>
-	<span class="doccomment">/// `AppSettings::GlobalVersion`.</span>
+	<span class="doccomment">/// [`clap::Parser::parse()`].</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// To allow running the node without subcommand, tt also sets a few more settings:</span>
-	<span class="doccomment">/// `AppSettings::ArgsNegateSubcommands` and `AppSettings::SubcommandsNegateReqs`.</span>
+	<span class="doccomment">/// To allow running the node without subcommand, it also sets a few more settings:</span>
+	<span class="doccomment">/// [`clap::Command::propagate_version`], [`clap::Command::args_conflicts_with_subcommands`],</span>
+	<span class="doccomment">/// [`clap::Command::subcommand_negates_reqs`].</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Gets the struct from the command line arguments. Print the</span>
+	<span class="doccomment">/// Creates `Self` from the command line arguments. Print the</span>
 	<span class="doccomment">/// error message and quit the program in case of failure.</span>
 	<span class="kw">fn</span> <span class="ident">from_args</span>() -&gt; <span class="self">Self</span>
 	<span class="kw">where</span>
@@ -351,14 +347,13 @@
 	}
 
 	<span class="doccomment">/// Helper function used to parse the command line arguments. This is the equivalent of</span>
-	<span class="doccomment">/// `structopt`&#39;s `from_iter()` except that it takes a `VersionInfo` argument to provide the</span>
-	<span class="doccomment">/// name of the application, author, &quot;about&quot; and version. It will also set</span>
-	<span class="doccomment">/// `AppSettings::GlobalVersion`.</span>
+	<span class="doccomment">/// [`clap::Parser::parse_from`].</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// To allow running the node without subcommand, it also sets a few more settings:</span>
-	<span class="doccomment">/// `AppSettings::ArgsNegateSubcommands` and `AppSettings::SubcommandsNegateReqs`.</span>
+	<span class="doccomment">/// [`clap::Command::propagate_version`], [`clap::Command::args_conflicts_with_subcommands`],</span>
+	<span class="doccomment">/// [`clap::Command::subcommand_negates_reqs`].</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Gets the struct from any iterator such as a `Vec` of your making.</span>
+	<span class="doccomment">/// Creates `Self` from any iterator over arguments.</span>
 	<span class="doccomment">/// Print the error message and quit the program in case of failure.</span>
 	<span class="kw">fn</span> <span class="ident">from_iter</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">iter</span>: <span class="ident">I</span>) -&gt; <span class="self">Self</span>
 	<span class="kw">where</span>
@@ -366,7 +361,7 @@
 		<span class="ident">I</span>: <span class="ident">IntoIterator</span>,
 		<span class="ident">I::Item</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">std::ffi::OsString</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span>,
 	{
-		<span class="kw">let</span> <span class="ident">app</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">IntoApp</span><span class="op">&gt;</span><span class="ident">::into_app</span>();
+		<span class="kw">let</span> <span class="ident">app</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">CommandFactory</span><span class="op">&gt;</span><span class="ident">::command</span>();
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">full_version</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::impl_version</span>();
 		<span class="ident">full_version</span>.<span class="ident">push_str</span>(<span class="string">&quot;\n&quot;</span>);
@@ -379,11 +374,9 @@
 			.<span class="ident">author</span>(<span class="ident">author</span>.<span class="ident">as_str</span>())
 			.<span class="ident">about</span>(<span class="ident">about</span>.<span class="ident">as_str</span>())
 			.<span class="ident">version</span>(<span class="ident">full_version</span>.<span class="ident">as_str</span>())
-			.<span class="ident">setting</span>(
-				<span class="ident">AppSettings::PropagateVersion</span> <span class="op">|</span>
-					<span class="ident">AppSettings::ArgsNegateSubcommands</span> <span class="op">|</span>
-					<span class="ident">AppSettings::SubcommandsNegateReqs</span>,
-			);
+			.<span class="ident">propagate_version</span>(<span class="bool-val">true</span>)
+			.<span class="ident">args_conflicts_with_subcommands</span>(<span class="bool-val">true</span>)
+			.<span class="ident">subcommand_negates_reqs</span>(<span class="bool-val">true</span>);
 
 		<span class="kw">let</span> <span class="ident">matches</span> <span class="op">=</span> <span class="ident">app</span>.<span class="ident">try_get_matches_from</span>(<span class="ident">iter</span>).<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">exit</span>());
 
@@ -391,14 +384,13 @@
 	}
 
 	<span class="doccomment">/// Helper function used to parse the command line arguments. This is the equivalent of</span>
-	<span class="doccomment">/// `structopt`&#39;s `from_iter()` except that it takes a `VersionInfo` argument to provide the</span>
-	<span class="doccomment">/// name of the application, author, &quot;about&quot; and version. It will also set</span>
-	<span class="doccomment">/// `AppSettings::GlobalVersion`.</span>
+	<span class="doccomment">/// [`clap::Parser::try_parse_from`]</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// To allow running the node without subcommand, it also sets a few more settings:</span>
-	<span class="doccomment">/// `AppSettings::ArgsNegateSubcommands` and `AppSettings::SubcommandsNegateReqs`.</span>
+	<span class="doccomment">/// [`clap::Command::propagate_version`], [`clap::Command::args_conflicts_with_subcommands`],</span>
+	<span class="doccomment">/// [`clap::Command::subcommand_negates_reqs`].</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Gets the struct from any iterator such as a `Vec` of your making.</span>
+	<span class="doccomment">/// Creates `Self` from any iterator over arguments.</span>
 	<span class="doccomment">/// Print the error message and quit the program in case of failure.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// **NOTE:** This method WILL NOT exit when `--help` or `--version` (or short versions) are</span>
@@ -411,7 +403,7 @@
 		<span class="ident">I</span>: <span class="ident">IntoIterator</span>,
 		<span class="ident">I::Item</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">std::ffi::OsString</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span>,
 	{
-		<span class="kw">let</span> <span class="ident">app</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">IntoApp</span><span class="op">&gt;</span><span class="ident">::into_app</span>();
+		<span class="kw">let</span> <span class="ident">app</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">CommandFactory</span><span class="op">&gt;</span><span class="ident">::command</span>();
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">full_version</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::impl_version</span>();
 		<span class="ident">full_version</span>.<span class="ident">push_str</span>(<span class="string">&quot;\n&quot;</span>);
