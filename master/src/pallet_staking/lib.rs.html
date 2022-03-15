@@ -1168,7 +1168,7 @@
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">HasCompact</span>};
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">parameter_types</span>,
-	<span class="ident">traits</span>::{<span class="ident">ConstU32</span>, <span class="ident">Currency</span>, <span class="ident">Get</span>},
+	<span class="ident">traits</span>::{<span class="ident">Currency</span>, <span class="ident">Get</span>},
 	<span class="ident">weights::Weight</span>,
 	<span class="ident">BoundedVec</span>, <span class="ident">EqNoBound</span>, <span class="ident">PartialEqNoBound</span>, <span class="ident">RuntimeDebugNoBound</span>,
 };
@@ -1727,8 +1727,8 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">impl</span> <span class="ident">BenchmarkingConfig</span> <span class="kw">for</span> <span class="ident">TestBenchmarkingConfig</span> {
-	<span class="kw">type</span> <span class="ident">MaxValidators</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">100</span><span class="op">&gt;</span>;
-	<span class="kw">type</span> <span class="ident">MaxNominators</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">100</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">MaxValidators</span> <span class="op">=</span> <span class="ident">frame_support::traits::ConstU32</span><span class="op">&lt;</span><span class="number">100</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">MaxNominators</span> <span class="op">=</span> <span class="ident">frame_support::traits::ConstU32</span><span class="op">&lt;</span><span class="number">100</span><span class="op">&gt;</span>;
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pallet_staking" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>

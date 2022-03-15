@@ -575,7 +575,6 @@
 <span id="575">575</span>
 <span id="576">576</span>
 <span id="577">577</span>
-<span id="578">578</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd. SPDX-License-Identifier: Apache-2.0</span>
@@ -655,7 +654,9 @@
 <span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
 <span class="kw">use</span> <span class="ident">sp_arithmetic</span>::{<span class="ident">traits::Zero</span>, <span class="ident">Normalizable</span>, <span class="ident">PerThing</span>, <span class="ident">Rational128</span>, <span class="ident">ThresholdOrd</span>};
 <span class="kw">use</span> <span class="ident">sp_core::RuntimeDebug</span>;
-<span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">cell::RefCell</span>, <span class="ident">cmp::Ordering</span>, <span class="ident">collections::btree_map::BTreeMap</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>, <span class="ident">rc::Rc</span>};
+<span class="kw">use</span> <span class="ident">sp_std</span>::{
+	<span class="ident">cell::RefCell</span>, <span class="ident">cmp::Ordering</span>, <span class="ident">collections::btree_map::BTreeMap</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>, <span class="ident">rc::Rc</span>, <span class="ident">vec</span>,
+};
 
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">MaxEncodedLen</span>};
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
@@ -694,9 +695,6 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_arithmetic</span>;
 <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_std</span>;
-
-<span class="comment">// re-export the solution type macro.</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_npos_elections_solution_type::generate_solution_type</span>;
 
 <span class="doccomment">/// The errors that might occur in the this crate and solution-type.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">RuntimeDebug</span>)]</span>
