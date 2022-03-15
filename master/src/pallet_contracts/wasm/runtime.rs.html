@@ -2005,11 +2005,6 @@
 <span id="2005">2005</span>
 <span id="2006">2006</span>
 <span id="2007">2007</span>
-<span id="2008">2008</span>
-<span id="2009">2009</span>
-<span id="2010">2010</span>
-<span id="2011">2011</span>
-<span id="2012">2012</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -2203,7 +2198,6 @@
 	<span class="doccomment">/// Base weight of calling `seal_call`.</span>
 	<span class="ident">CallBase</span>,
 	<span class="doccomment">/// Weight of calling `seal_delegate_call` for the given input size.</span>
-	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unstable-interface&quot;</span>)]</span>
 	<span class="ident">DelegateCallBase</span>,
 	<span class="doccomment">/// Weight of the transfer performed during a call.</span>
 	<span class="ident">CallSurchargeTransfer</span>,
@@ -2284,7 +2278,6 @@
 				.<span class="ident">saturating_add</span>(<span class="ident">s</span>.<span class="ident">take_storage_per_byte</span>.<span class="ident">saturating_mul</span>(<span class="ident">len</span>.<span class="ident">into</span>())),
 			<span class="ident">Transfer</span> =&gt; <span class="ident">s</span>.<span class="ident">transfer</span>,
 			<span class="ident">CallBase</span> =&gt; <span class="ident">s</span>.<span class="ident">call</span>,
-			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unstable-interface&quot;</span>)]</span>
 			<span class="ident">DelegateCallBase</span> =&gt; <span class="ident">s</span>.<span class="ident">delegate_call</span>,
 			<span class="ident">CallSurchargeTransfer</span> =&gt; <span class="ident">s</span>.<span class="ident">call_transfer_surcharge</span>,
 			<span class="ident">CallInputCloned</span>(<span class="ident">len</span>) =&gt; <span class="ident">s</span>.<span class="ident">call_per_cloned_byte</span>.<span class="ident">saturating_mul</span>(<span class="ident">len</span>.<span class="ident">into</span>()),
@@ -2401,7 +2394,6 @@
 <span class="kw">enum</span> <span class="ident">CallType</span> {
 	<span class="doccomment">/// Execute another instantiated contract</span>
 	<span class="ident">Call</span> { <span class="ident">callee_ptr</span>: <span class="ident">u32</span>, <span class="ident">value_ptr</span>: <span class="ident">u32</span>, <span class="ident">gas</span>: <span class="ident">u64</span> },
-	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unstable-interface&quot;</span>)]</span>
 	<span class="doccomment">/// Execute deployed code in the context (storage, account ID, value) of the caller contract</span>
 	<span class="ident">DelegateCall</span> { <span class="ident">code_hash_ptr</span>: <span class="ident">u32</span> },
 }
@@ -2410,7 +2402,6 @@
 	<span class="kw">fn</span> <span class="ident">cost</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">RuntimeCosts</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident">CallType::Call</span> { .. } =&gt; <span class="ident">RuntimeCosts::CallBase</span>,
-			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unstable-interface&quot;</span>)]</span>
 			<span class="ident">CallType::DelegateCall</span> { .. } =&gt; <span class="ident">RuntimeCosts::DelegateCallBase</span>,
 		}
 	}
@@ -2775,7 +2766,6 @@
 					<span class="ident">flags</span>.<span class="ident">contains</span>(<span class="ident">CallFlags::ALLOW_REENTRY</span>),
 				)
 			},
-			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unstable-interface&quot;</span>)]</span>
 			<span class="ident">CallType::DelegateCall</span> { <span class="ident">code_hash_ptr</span> } =&gt; {
 				<span class="kw">if</span> <span class="ident">flags</span>.<span class="ident">contains</span>(<span class="ident">CallFlags::ALLOW_REENTRY</span>) {
 					<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::InvalidCallFlags</span>.<span class="ident">into</span>())
@@ -3141,7 +3131,7 @@
 	<span class="comment">// `ReturnCode::CalleeReverted`: Output buffer is returned.</span>
 	<span class="comment">// `ReturnCode::CalleeTrapped`</span>
 	<span class="comment">// `ReturnCode::CodeNotFound`</span>
-	[<span class="ident">__unstable__</span>] <span class="ident">seal_delegate_call</span>(
+	[<span class="ident">seal0</span>] <span class="ident">seal_delegate_call</span>(
 		<span class="ident">ctx</span>,
 		<span class="ident">flags</span>: <span class="ident">u32</span>,
 		<span class="ident">code_hash_ptr</span>: <span class="ident">u32</span>,

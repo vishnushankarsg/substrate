@@ -263,6 +263,13 @@
 <span id="263">263</span>
 <span id="264">264</span>
 <span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -432,6 +439,13 @@
 <span class="doccomment">/// // As we don&#39;t know the order of the threads, we need to check for both combinations</span>
 <span class="doccomment">/// assert!(*data == &quot;hello world321&quot; || *data == &quot;hello world312&quot;);</span>
 <span class="doccomment">/// ```</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Deadlock</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Be aware that this data structure doesn&#39;t give you any guarantees that you can not create a</span>
+<span class="doccomment">/// deadlock. If you use [`release_mutex`](SharedDataLocked::release_mutex) followed by a call</span>
+<span class="doccomment">/// to [`shared_data`](Self::shared_data) in the same thread will make your program dead lock.</span>
+<span class="doccomment">/// The same applies when you are using a single threaded executor.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SharedData</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 	<span class="ident">inner</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">SharedDataInner</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="ident">cond_var</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Condvar</span><span class="op">&gt;</span>,
