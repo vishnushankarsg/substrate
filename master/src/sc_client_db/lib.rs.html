@@ -3408,8 +3408,6 @@
 <span id="3408">3408</span>
 <span id="3409">3409</span>
 <span id="3410">3410</span>
-<span id="3411">3411</span>
-<span id="3412">3412</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -3519,7 +3517,8 @@
 	<span class="ident">sp_state_machine::TrieBackend</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">sp_state_machine::Storage</span><span class="op">&lt;</span><span class="ident">HashFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">HashFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 <span class="doccomment">/// Length of a [`DbHash`].</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DB_HASH_LEN</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">32</span>;
+<span class="kw">const</span> <span class="ident">DB_HASH_LEN</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">32</span>;
+
 <span class="doccomment">/// Hash type that this backend uses for the database.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">DbHash</span> <span class="op">=</span> <span class="ident">sp_core::H256</span>;
 
@@ -4763,10 +4762,7 @@
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">removal</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">0</span>;
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bytes_removal</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">0</span>;
 				<span class="kw">for</span> (<span class="kw-2">mut</span> <span class="ident">key</span>, (<span class="ident">val</span>, <span class="ident">rc</span>)) <span class="kw">in</span> <span class="ident">operation</span>.<span class="ident">db_updates</span>.<span class="ident">drain</span>() {
-					<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">storage</span>.<span class="ident">prefix_keys</span> {
-						<span class="comment">// Strip prefix</span>
-						<span class="ident">key</span>.<span class="ident">drain</span>(<span class="number">0</span>..<span class="ident">key</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="ident">DB_HASH_LEN</span>);
-					};
+					<span class="self">self</span>.<span class="ident">storage</span>.<span class="ident">db</span>.<span class="ident">sanitize_key</span>(<span class="kw-2">&amp;mut</span> <span class="ident">key</span>);
 					<span class="kw">if</span> <span class="ident">rc</span> <span class="op">&gt;</span> <span class="number">0</span> {
 						<span class="ident">ops</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
 						<span class="ident">bytes</span> <span class="op">+</span><span class="op">=</span> <span class="ident">key</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u64</span> <span class="op">+</span> <span class="ident">val</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u64</span>;

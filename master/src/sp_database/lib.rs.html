@@ -135,6 +135,11 @@
 <span id="135">135</span>
 <span id="136">136</span>
 <span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -247,6 +252,11 @@
 	<span class="kw">fn</span> <span class="ident">supports_ref_counting</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
 		<span class="bool-val">false</span>
 	}
+
+	<span class="doccomment">/// Remove a possible path-prefix from the key.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Not all database implementations use a prefix for keys, so this function may be a noop.</span>
+	<span class="kw">fn</span> <span class="ident">sanitize_key</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_key</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) {}
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span> <span class="ident">std::fmt::Debug</span> <span class="kw">for</span> <span class="kw">dyn</span> <span class="ident">Database</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span> {
