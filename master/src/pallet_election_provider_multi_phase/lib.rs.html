@@ -2126,7 +2126,6 @@
 <span id="2126">2126</span>
 <span id="2127">2127</span>
 <span id="2128">2128</span>
-<span id="2129">2129</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -2360,7 +2359,7 @@
 
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
 <span class="kw">use</span> <span class="ident">frame_election_provider_support</span>::{
-	<span class="ident">ElectionDataProvider</span>, <span class="ident">ElectionProvider</span>, <span class="ident">InstantElectionProvider</span>,
+	<span class="ident">ElectionDataProvider</span>, <span class="ident">ElectionProvider</span>, <span class="ident">InstantElectionProvider</span>, <span class="ident">NposSolution</span>,
 };
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">dispatch::DispatchResultWithPostInfo</span>,
@@ -2375,8 +2374,7 @@
 	<span class="ident">UpperOf</span>,
 };
 <span class="kw">use</span> <span class="ident">sp_npos_elections</span>::{
-	<span class="ident">assignment_ratio_to_staked_normalized</span>, <span class="ident">ElectionScore</span>, <span class="ident">EvaluateSupport</span>, <span class="ident">NposSolution</span>, <span class="ident">Supports</span>,
-	<span class="ident">VoteWeight</span>,
+	<span class="ident">assignment_ratio_to_staked_normalized</span>, <span class="ident">ElectionScore</span>, <span class="ident">EvaluateSupport</span>, <span class="ident">Supports</span>, <span class="ident">VoteWeight</span>,
 };
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
 	<span class="ident">traits::Bounded</span>,

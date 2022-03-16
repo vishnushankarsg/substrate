@@ -552,7 +552,6 @@
 <span class="kw">use</span> <span class="ident">frame_system::RawOrigin</span>;
 <span class="kw">use</span> <span class="ident">rand</span>::{<span class="ident">prelude::SliceRandom</span>, <span class="ident">rngs::SmallRng</span>, <span class="ident">SeedableRng</span>};
 <span class="kw">use</span> <span class="ident">sp_arithmetic</span>::{<span class="ident">per_things::Percent</span>, <span class="ident">traits::One</span>};
-<span class="kw">use</span> <span class="ident">sp_npos_elections::IndexAssignment</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime::InnerOf</span>;
 
 <span class="kw">const</span> <span class="ident">SEED</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">999</span>;
@@ -985,6 +984,7 @@
 			<span class="ident">T::BenchmarkingConfig::DESIRED_TARGETS</span>[<span class="number">1</span>];
 		<span class="comment">// Subtract this percentage from the actual encoded size</span>
 		<span class="kw">let</span> <span class="ident">f</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="number">95</span>;
+		<span class="kw">use</span> <span class="ident">frame_election_provider_support::IndexAssignment</span>;
 
 		<span class="comment">// Compute a random solution, then work backwards to get the lists of voters, targets, and</span>
 		<span class="comment">// assignments</span>

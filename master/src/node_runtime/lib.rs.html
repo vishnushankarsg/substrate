@@ -1957,9 +1957,11 @@
 <span class="attribute">#![<span class="ident">recursion_limit</span> <span class="op">=</span> <span class="string">&quot;256&quot;</span>]</span>
 
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">MaxEncodedLen</span>};
-<span class="kw">use</span> <span class="ident">frame_election_provider_support::onchain</span>;
+<span class="kw">use</span> <span class="ident">frame_election_provider_support</span>::{<span class="ident">onchain</span>, <span class="ident">ExtendedBalance</span>, <span class="ident">VoteWeight</span>};
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
-	<span class="ident">construct_runtime</span>, <span class="ident">parameter_types</span>,
+	<span class="ident">construct_runtime</span>,
+	<span class="ident">pallet_prelude::Get</span>,
+	<span class="ident">parameter_types</span>,
 	<span class="ident">traits</span>::{
 		<span class="ident">AsEnsureOriginWithArg</span>, <span class="ident">ConstU128</span>, <span class="ident">ConstU16</span>, <span class="ident">ConstU32</span>, <span class="ident">Currency</span>, <span class="ident">EnsureOneOf</span>,
 		<span class="ident">EqualPrivilegeOnly</span>, <span class="ident">Everything</span>, <span class="ident">Imbalance</span>, <span class="ident">InstanceFilter</span>, <span class="ident">KeyOwnerProofSystem</span>,
@@ -2532,7 +2534,7 @@
 );
 
 <span class="macro">parameter_types!</span> {
-	<span class="kw">pub</span> <span class="ident">MaxNominations</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">NposSolution16</span> <span class="kw">as</span> <span class="ident">sp_npos_elections::NposSolution</span><span class="op">&gt;</span><span class="ident">::LIMIT</span> <span class="kw">as</span> <span class="ident">u32</span>;
+	<span class="kw">pub</span> <span class="ident">MaxNominations</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">NposSolution16</span> <span class="kw">as</span> <span class="ident">frame_election_provider_support::NposSolution</span><span class="op">&gt;</span><span class="ident">::LIMIT</span> <span class="kw">as</span> <span class="ident">u32</span>;
 }
 
 <span class="doccomment">/// The numbers configured here could always be more than the the maximum limits of staking pallet</span>
@@ -2555,10 +2557,8 @@
 
 <span class="doccomment">/// A source of random balance for NposSolver, which is meant to be run by the OCW election miner.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OffchainRandomBalancing</span>;
-<span class="kw">impl</span> <span class="ident">frame_support::pallet_prelude::Get</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">sp_npos_elections::ExtendedBalance</span>)<span class="op">&gt;</span><span class="op">&gt;</span>
-	<span class="kw">for</span> <span class="ident">OffchainRandomBalancing</span>
-{
-	<span class="kw">fn</span> <span class="ident">get</span>() -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">sp_npos_elections::ExtendedBalance</span>)<span class="op">&gt;</span> {
+<span class="kw">impl</span> <span class="ident">Get</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">ExtendedBalance</span>)<span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">OffchainRandomBalancing</span> {
+	<span class="kw">fn</span> <span class="ident">get</span>() -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">ExtendedBalance</span>)<span class="op">&gt;</span> {
 		<span class="kw">use</span> <span class="ident">sp_runtime::traits::TrailingZeroInput</span>;
 		<span class="kw">let</span> <span class="ident">iters</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">MINER_MAX_ITERATIONS</span> {
 			<span class="number">0</span> =&gt; <span class="number">0</span>,
@@ -2627,7 +2627,7 @@
 	<span class="kw">type</span> <span class="ident">ScoreProvider</span> <span class="op">=</span> <span class="ident">Staking</span>;
 	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">pallet_bags_list::weights::SubstrateWeight</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">BagThresholds</span> <span class="op">=</span> <span class="ident">BagThresholds</span>;
-	<span class="kw">type</span> <span class="ident">Score</span> <span class="op">=</span> <span class="ident">sp_npos_elections::VoteWeight</span>;
+	<span class="kw">type</span> <span class="ident">Score</span> <span class="op">=</span> <span class="ident">VoteWeight</span>;
 }
 
 <span class="macro">parameter_types!</span> {

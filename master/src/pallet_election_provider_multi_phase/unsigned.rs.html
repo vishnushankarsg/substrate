@@ -1617,12 +1617,11 @@
 	<span class="ident">WeightInfo</span>,
 };
 <span class="kw">use</span> <span class="ident">codec::Encode</span>;
-<span class="kw">use</span> <span class="ident">frame_election_provider_support</span>::{<span class="ident">NposSolver</span>, <span class="ident">PerThing128</span>};
+<span class="kw">use</span> <span class="ident">frame_election_provider_support</span>::{<span class="ident">NposSolution</span>, <span class="ident">NposSolver</span>, <span class="ident">PerThing128</span>};
 <span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">dispatch::DispatchResult</span>, <span class="ident">ensure</span>, <span class="ident">traits::Get</span>};
 <span class="kw">use</span> <span class="ident">frame_system::offchain::SubmitTransaction</span>;
 <span class="kw">use</span> <span class="ident">sp_npos_elections</span>::{
 	<span class="ident">assignment_ratio_to_staked_normalized</span>, <span class="ident">assignment_staked_to_ratio_normalized</span>, <span class="ident">ElectionResult</span>,
-	<span class="ident">NposSolution</span>,
 };
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
 	<span class="ident">offchain::storage</span>::{<span class="ident">MutateStorageError</span>, <span class="ident">StorageValueRef</span>},
@@ -1646,9 +1645,9 @@
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Assignment</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span>
 	<span class="ident">sp_npos_elections::Assignment</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span>, <span class="ident">SolutionAccuracyOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
-<span class="doccomment">/// The [`IndexAssignment`][sp_npos_elections::IndexAssignment] type specialized for a particular</span>
-<span class="doccomment">/// runtime `T`.</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">IndexAssignmentOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">sp_npos_elections::IndexAssignmentOf</span><span class="op">&lt;</span><span class="ident">SolutionOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+<span class="doccomment">/// The [`IndexAssignment`][frame_election_provider_support::IndexAssignment] type specialized for a</span>
+<span class="doccomment">/// particular runtime `T`.</span>
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">IndexAssignmentOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">frame_election_provider_support::IndexAssignmentOf</span><span class="op">&lt;</span><span class="ident">SolutionOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 <span class="doccomment">/// Error type of the pallet&#39;s [`crate::Config::Solver`].</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">SolverErrorOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::Solver</span> <span class="kw">as</span> <span class="ident">NposSolver</span><span class="op">&gt;</span><span class="ident">::Error</span>;
@@ -2336,10 +2335,11 @@
 	};
 	<span class="kw">use</span> <span class="ident">codec::Decode</span>;
 	<span class="kw">use</span> <span class="ident">frame_benchmarking::Zero</span>;
+	<span class="kw">use</span> <span class="ident">frame_election_provider_support::IndexAssignment</span>;
 	<span class="kw">use</span> <span class="ident">frame_support</span>::{
 		<span class="ident">assert_noop</span>, <span class="ident">assert_ok</span>, <span class="ident">bounded_vec</span>, <span class="ident">dispatch::Dispatchable</span>, <span class="ident">traits::OffchainWorker</span>,
 	};
-	<span class="kw">use</span> <span class="ident">sp_npos_elections</span>::{<span class="ident">ElectionScore</span>, <span class="ident">IndexAssignment</span>};
+	<span class="kw">use</span> <span class="ident">sp_npos_elections::ElectionScore</span>;
 	<span class="kw">use</span> <span class="ident">sp_runtime</span>::{
 		<span class="ident">offchain::storage_lock</span>::{<span class="ident">BlockAndTime</span>, <span class="ident">StorageLock</span>},
 		<span class="ident">traits::ValidateUnsigned</span>,

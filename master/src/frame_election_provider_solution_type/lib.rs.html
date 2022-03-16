@@ -334,7 +334,7 @@
 <span class="doccomment">/// ```</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// The given struct provides function to convert from/to `Assignment` as part of</span>
-<span class="doccomment">/// `sp_npos_elections::Solution` trait:</span>
+<span class="doccomment">/// `frame_election_provider_support::NposSolution` trait:</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// - `fn from_assignment&lt;..&gt;(..)`</span>
 <span class="doccomment">/// - `fn into_assignment&lt;..&gt;(..)`</span>
@@ -347,7 +347,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// ```</span>
 <span class="doccomment">/// # use frame_election_provider_solution_type::generate_solution_type;</span>
-<span class="doccomment">/// # use sp_npos_elections::NposSolution;</span>
+<span class="doccomment">/// # use frame_election_provider_support::NposSolution;</span>
 <span class="doccomment">/// # use sp_arithmetic::per_things::Perbill;</span>
 <span class="doccomment">/// generate_solution_type!(</span>
 <span class="doccomment">///     #[compact]</span>
@@ -472,11 +472,11 @@
 }
 
 <span class="kw">fn</span> <span class="ident">imports</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">TokenStream2</span><span class="op">&gt;</span> {
-	<span class="kw">match</span> <span class="ident">crate_name</span>(<span class="string">&quot;sp-npos-elections&quot;</span>) {
-		<span class="prelude-val">Ok</span>(<span class="ident">FoundCrate::Itself</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="macro">quote!</span> { <span class="kw">use</span> <span class="kw">crate</span> <span class="kw">as</span> <span class="ident">_npos</span>; }),
-		<span class="prelude-val">Ok</span>(<span class="ident">FoundCrate::Name</span>(<span class="ident">sp_npos_elections</span>)) =&gt; {
-			<span class="kw">let</span> <span class="ident">ident</span> <span class="op">=</span> <span class="ident">syn::Ident::new</span>(<span class="kw-2">&amp;</span><span class="ident">sp_npos_elections</span>, <span class="ident">Span::call_site</span>());
-			<span class="prelude-val">Ok</span>(<span class="macro">quote!</span>( <span class="kw">extern</span> <span class="kw">crate</span> #<span class="ident">ident</span> <span class="kw">as</span> <span class="ident">_npos</span>; ))
+	<span class="kw">match</span> <span class="ident">crate_name</span>(<span class="string">&quot;frame-election-provider-support&quot;</span>) {
+		<span class="prelude-val">Ok</span>(<span class="ident">FoundCrate::Itself</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="macro">quote!</span> { <span class="kw">use</span> <span class="kw">crate</span> <span class="kw">as</span> <span class="ident">_feps</span>; }),
+		<span class="prelude-val">Ok</span>(<span class="ident">FoundCrate::Name</span>(<span class="ident">frame_election_provider_support</span>)) =&gt; {
+			<span class="kw">let</span> <span class="ident">ident</span> <span class="op">=</span> <span class="ident">syn::Ident::new</span>(<span class="kw-2">&amp;</span><span class="ident">frame_election_provider_support</span>, <span class="ident">Span::call_site</span>());
+			<span class="prelude-val">Ok</span>(<span class="macro">quote!</span>( <span class="kw">extern</span> <span class="kw">crate</span> #<span class="ident">ident</span> <span class="kw">as</span> <span class="ident">_feps</span>; ))
 		},
 		<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">syn::Error::new</span>(<span class="ident">Span::call_site</span>(), <span class="ident">e</span>)),
 	}

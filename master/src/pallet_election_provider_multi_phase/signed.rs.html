@@ -949,6 +949,7 @@
 <span id="949">949</span>
 <span id="950">950</span>
 <span id="951">951</span>
+<span id="952">952</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -974,12 +975,13 @@
 	<span class="ident">SolutionOrSnapshotSize</span>, <span class="ident">Weight</span>, <span class="ident">WeightInfo</span>,
 };
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">HasCompact</span>};
+<span class="kw">use</span> <span class="ident">frame_election_provider_support::NposSolution</span>;
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">storage::bounded_btree_map::BoundedBTreeMap</span>,
 	<span class="ident">traits</span>::{<span class="ident">defensive_prelude</span>::<span class="kw-2">*</span>, <span class="ident">Currency</span>, <span class="ident">Get</span>, <span class="ident">OnUnbalanced</span>, <span class="ident">ReservableCurrency</span>},
 };
 <span class="kw">use</span> <span class="ident">sp_arithmetic::traits::SaturatedConversion</span>;
-<span class="kw">use</span> <span class="ident">sp_npos_elections</span>::{<span class="ident">ElectionScore</span>, <span class="ident">NposSolution</span>};
+<span class="kw">use</span> <span class="ident">sp_npos_elections::ElectionScore</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
 	<span class="ident">traits</span>::{<span class="ident">Saturating</span>, <span class="ident">Zero</span>},
 	<span class="ident">RuntimeDebug</span>,

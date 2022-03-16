@@ -482,6 +482,75 @@
 <span id="482">482</span>
 <span id="483">483</span>
 <span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -651,17 +720,86 @@
 <span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>), <span class="ident">no_std</span>)]</span>
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">onchain</span>;
-<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">traits::Get</span>, <span class="ident">BoundedVec</span>};
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">traits</span>;
+<span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
+<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">traits::Get</span>, <span class="ident">BoundedVec</span>, <span class="ident">RuntimeDebug</span>};
 <span class="kw">use</span> <span class="ident">sp_runtime::traits::Bounded</span>;
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>};
 
-<span class="doccomment">/// Re-export some type as they are used in the interface.</span>
+<span class="doccomment">/// Re-export the solution generation macro.</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">frame_election_provider_solution_type::generate_solution_type</span>;
+<span class="doccomment">/// Re-export some type as they are used in the interface.</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_arithmetic::PerThing</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_npos_elections</span>::{
-	<span class="ident">Assignment</span>, <span class="ident">ElectionResult</span>, <span class="ident">ExtendedBalance</span>, <span class="ident">IdentifierT</span>, <span class="ident">PerThing128</span>, <span class="ident">Support</span>, <span class="ident">Supports</span>,
-	<span class="ident">VoteWeight</span>,
+	<span class="ident">Assignment</span>, <span class="ident">ElectionResult</span>, <span class="ident">Error</span>, <span class="ident">ExtendedBalance</span>, <span class="ident">IdentifierT</span>, <span class="ident">PerThing128</span>, <span class="ident">Support</span>,
+	<span class="ident">Supports</span>, <span class="ident">VoteWeight</span>,
 };
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">traits::NposSolution</span>;
+
+<span class="comment">// re-export for the solution macro, with the dependencies of the macro.</span>
+<span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">codec</span>;
+<span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">scale_info</span>;
+<span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_arithmetic</span>;
+<span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_std</span>;
+<span class="comment">// Simple Extension trait to easily convert `None` from index closures to `Err`.</span>
+<span class="comment">//</span>
+<span class="comment">// This is only generated and re-exported for the solution code to use.</span>
+<span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">__OrInvalidIndex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">or_invalid_index</span>(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Error</span><span class="op">&gt;</span>;
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">__OrInvalidIndex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">or_invalid_index</span>(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="ident">ok_or</span>(<span class="ident">Error::SolutionInvalidIndex</span>)
+	}
+}
+
+<span class="doccomment">/// The [`IndexAssignment`] type is an intermediate between the assignments list</span>
+<span class="doccomment">/// ([`&amp;[Assignment&lt;T&gt;]`][Assignment]) and `SolutionOf&lt;T&gt;`.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// The voter and target identifiers have already been replaced with appropriate indices,</span>
+<span class="doccomment">/// making it fast to repeatedly encode into a `SolutionOf&lt;T&gt;`. This property turns out</span>
+<span class="doccomment">/// to be important when trimming for solution length.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">RuntimeDebug</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>)]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">derive</span>(<span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>))]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IndexAssignment</span><span class="op">&lt;</span><span class="ident">VoterIndex</span>, <span class="ident">TargetIndex</span>, <span class="ident">P</span>: <span class="ident">PerThing</span><span class="op">&gt;</span> {
+	<span class="doccomment">/// Index of the voter among the voters list.</span>
+	<span class="kw">pub</span> <span class="ident">who</span>: <span class="ident">VoterIndex</span>,
+	<span class="doccomment">/// The distribution of the voter&#39;s stake among winning targets.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Targets are identified by their index in the canonical list.</span>
+	<span class="kw">pub</span> <span class="ident">distribution</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">TargetIndex</span>, <span class="ident">P</span>)<span class="op">&gt;</span>,
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">VoterIndex</span>, <span class="ident">TargetIndex</span>, <span class="ident">P</span>: <span class="ident">PerThing</span><span class="op">&gt;</span> <span class="ident">IndexAssignment</span><span class="op">&lt;</span><span class="ident">VoterIndex</span>, <span class="ident">TargetIndex</span>, <span class="ident">P</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">AccountId</span>: <span class="ident">IdentifierT</span><span class="op">&gt;</span>(
+		<span class="ident">assignment</span>: <span class="kw-2">&amp;</span><span class="ident">Assignment</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">P</span><span class="op">&gt;</span>,
+		<span class="ident">voter_index</span>: <span class="kw">impl</span> <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">AccountId</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">VoterIndex</span><span class="op">&gt;</span>,
+		<span class="ident">target_index</span>: <span class="kw">impl</span> <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">AccountId</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TargetIndex</span><span class="op">&gt;</span>,
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+		<span class="prelude-val">Ok</span>(<span class="self">Self</span> {
+			<span class="ident">who</span>: <span class="ident">voter_index</span>(<span class="kw-2">&amp;</span><span class="ident">assignment</span>.<span class="ident">who</span>).<span class="ident">or_invalid_index</span>()<span class="question-mark">?</span>,
+			<span class="ident">distribution</span>: <span class="ident">assignment</span>
+				.<span class="ident">distribution</span>
+				.<span class="ident">iter</span>()
+				.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">target</span>, <span class="ident">proportion</span>)<span class="op">|</span> <span class="prelude-val">Some</span>((<span class="ident">target_index</span>(<span class="ident">target</span>)<span class="question-mark">?</span>, <span class="ident">proportion</span>.<span class="ident">clone</span>())))
+				.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()
+				.<span class="ident">or_invalid_index</span>()<span class="question-mark">?</span>,
+		})
+	}
+}
+
+<span class="doccomment">/// A type alias for [`IndexAssignment`] made from [`NposSolution`].</span>
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">IndexAssignmentOf</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">IndexAssignment</span><span class="op">&lt;</span>
+	<span class="op">&lt;</span><span class="ident">C</span> <span class="kw">as</span> <span class="ident">NposSolution</span><span class="op">&gt;</span><span class="ident">::VoterIndex</span>,
+	<span class="op">&lt;</span><span class="ident">C</span> <span class="kw">as</span> <span class="ident">NposSolution</span><span class="op">&gt;</span><span class="ident">::TargetIndex</span>,
+	<span class="op">&lt;</span><span class="ident">C</span> <span class="kw">as</span> <span class="ident">NposSolution</span><span class="op">&gt;</span><span class="ident">::Accuracy</span>,
+<span class="op">&gt;</span>;
 
 <span class="doccomment">/// Types that are used by the data provider trait.</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">data_provider</span> {
