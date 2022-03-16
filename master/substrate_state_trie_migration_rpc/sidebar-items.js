@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["migration_status","Check trie migration status."]],"mod":[["gen_client","The generated client module."]],"struct":[["MigrationRpc","An implementation of state migration specific RPC methods."],["MigrationStatusResult",""],["StateMigrationApiClient","The Client."]],"trait":[["StateMigrationApi","Migration RPC methods."]]});

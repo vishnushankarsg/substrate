@@ -646,6 +646,7 @@ sourcesIndex["substrate_frame_cli"] = {"name":"","files":["lib.rs","pallet_id.rs
 sourcesIndex["substrate_frame_rpc_support"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["substrate_frame_rpc_system"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["substrate_prometheus_endpoint"] = {"name":"","files":["lib.rs","sourced.rs"]};
+sourcesIndex["substrate_state_trie_migration_rpc"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["substrate_test_client"] = {"name":"","files":["client_ext.rs","lib.rs"]};
 sourcesIndex["substrate_test_runtime"] = {"name":"","files":["genesismap.rs","lib.rs","system.rs"]};
 sourcesIndex["substrate_test_runtime_client"] = {"name":"","files":["block_builder_ext.rs","lib.rs","trait_tests.rs"]};

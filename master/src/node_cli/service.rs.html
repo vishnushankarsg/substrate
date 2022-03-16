@@ -786,6 +786,7 @@
 <span id="786">786</span>
 <span id="787">787</span>
 <span id="788">788</span>
+<span id="789">789</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -1040,6 +1041,7 @@
 		<span class="kw">let</span> <span class="ident">keystore</span> <span class="op">=</span> <span class="ident">keystore_container</span>.<span class="ident">sync_keystore</span>();
 		<span class="kw">let</span> <span class="ident">chain_spec</span> <span class="op">=</span> <span class="ident">config</span>.<span class="ident">chain_spec</span>.<span class="ident">cloned_box</span>();
 
+		<span class="kw">let</span> <span class="ident">rpc_backend</span> <span class="op">=</span> <span class="ident">backend</span>.<span class="ident">clone</span>();
 		<span class="kw">let</span> <span class="ident">rpc_extensions_builder</span> <span class="op">=</span> <span class="kw">move</span> <span class="op">|</span><span class="ident">deny_unsafe</span>, <span class="ident">subscription_executor</span><span class="op">|</span> {
 			<span class="kw">let</span> <span class="ident">deps</span> <span class="op">=</span> <span class="ident">node_rpc::FullDeps</span> {
 				<span class="ident">client</span>: <span class="ident">client</span>.<span class="ident">clone</span>(),
@@ -1061,7 +1063,7 @@
 				},
 			};
 
-			<span class="ident">node_rpc::create_full</span>(<span class="ident">deps</span>).<span class="ident">map_err</span>(<span class="ident">Into::into</span>)
+			<span class="ident">node_rpc::create_full</span>(<span class="ident">deps</span>, <span class="ident">rpc_backend</span>.<span class="ident">clone</span>()).<span class="ident">map_err</span>(<span class="ident">Into::into</span>)
 		};
 
 		(<span class="ident">rpc_extensions_builder</span>, <span class="ident">rpc_setup</span>)
