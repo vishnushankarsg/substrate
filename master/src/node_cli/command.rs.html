@@ -180,6 +180,17 @@
 <span id="180">180</span>
 <span id="181">181</span>
 <span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -200,9 +211,12 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">chain_spec</span>, <span class="ident">service</span>, <span class="ident">service::new_partial</span>, <span class="ident">Cli</span>, <span class="ident">Subcommand</span>};
 <span class="kw">use</span> <span class="ident">node_executor::ExecutorDispatch</span>;
-<span class="kw">use</span> <span class="ident">node_runtime</span>::{<span class="ident">Block</span>, <span class="ident">RuntimeApi</span>};
+<span class="kw">use</span> <span class="ident">node_primitives::Block</span>;
+<span class="kw">use</span> <span class="ident">node_runtime::RuntimeApi</span>;
 <span class="kw">use</span> <span class="ident">sc_cli</span>::{<span class="ident">ChainSpec</span>, <span class="prelude-ty">Result</span>, <span class="ident">RuntimeVersion</span>, <span class="ident">SubstrateCli</span>};
 <span class="kw">use</span> <span class="ident">sc_service::PartialComponents</span>;
+
+<span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 <span class="kw">impl</span> <span class="ident">SubstrateCli</span> <span class="kw">for</span> <span class="ident">Cli</span> {
 	<span class="kw">fn</span> <span class="ident">impl_name</span>() -&gt; <span class="ident">String</span> {
@@ -277,13 +291,21 @@
 				You can enable it with `--features runtime-benchmarks`.&quot;</span>
 					.<span class="ident">into</span>())
 			},
-		<span class="prelude-val">Some</span>(<span class="ident">Subcommand::BenchmarkStorage</span>(<span class="ident">cmd</span>)) =&gt; {
-			<span class="kw">if</span> <span class="op">!</span><span class="macro">cfg!</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>) {
-				<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Benchmarking wasn&#39;t enabled when building the node. \
-				You can enable it with `--features runtime-benchmarks`.&quot;</span>
-					.<span class="ident">into</span>())
-			}
+		<span class="prelude-val">Some</span>(<span class="ident">Subcommand::BenchmarkOverhead</span>(<span class="ident">cmd</span>)) =&gt; {
+			<span class="kw">let</span> <span class="ident">runner</span> <span class="op">=</span> <span class="ident">cli</span>.<span class="ident">create_runner</span>(<span class="ident">cmd</span>)<span class="question-mark">?</span>;
+			<span class="ident">runner</span>.<span class="ident">async_run</span>(<span class="op">|</span><span class="kw-2">mut</span> <span class="ident">config</span><span class="op">|</span> {
+				<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::command_helper</span>::{<span class="ident">inherent_data</span>, <span class="ident">ExtrinsicBuilder</span>};
+				<span class="comment">// We don&#39;t use the authority role since that would start producing blocks</span>
+				<span class="comment">// in the background which would mess with our benchmark.</span>
+				<span class="ident">config</span>.<span class="ident">role</span> <span class="op">=</span> <span class="ident">sc_service::Role::Full</span>;
 
+				<span class="kw">let</span> <span class="ident">PartialComponents</span> { <span class="ident">client</span>, <span class="ident">task_manager</span>, .. } <span class="op">=</span> <span class="ident">new_partial</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>)<span class="question-mark">?</span>;
+				<span class="kw">let</span> <span class="ident">ext_builder</span> <span class="op">=</span> <span class="ident">ExtrinsicBuilder::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>());
+
+				<span class="prelude-val">Ok</span>((<span class="ident">cmd</span>.<span class="ident">run</span>(<span class="ident">config</span>, <span class="ident">client</span>, <span class="ident">inherent_data</span>()<span class="question-mark">?</span>, <span class="ident">Arc::new</span>(<span class="ident">ext_builder</span>)), <span class="ident">task_manager</span>))
+			})
+		},
+		<span class="prelude-val">Some</span>(<span class="ident">Subcommand::BenchmarkStorage</span>(<span class="ident">cmd</span>)) =&gt; {
 			<span class="kw">let</span> <span class="ident">runner</span> <span class="op">=</span> <span class="ident">cli</span>.<span class="ident">create_runner</span>(<span class="ident">cmd</span>)<span class="question-mark">?</span>;
 			<span class="ident">runner</span>.<span class="ident">async_run</span>(<span class="op">|</span><span class="ident">config</span><span class="op">|</span> {
 				<span class="kw">let</span> <span class="ident">PartialComponents</span> { <span class="ident">client</span>, <span class="ident">task_manager</span>, <span class="ident">backend</span>, .. } <span class="op">=</span> <span class="ident">new_partial</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>)<span class="question-mark">?</span>;

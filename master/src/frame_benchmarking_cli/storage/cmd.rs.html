@@ -203,21 +203,6 @@
 <span id="203">203</span>
 <span id="204">204</span>
 <span id="205">205</span>
-<span id="206">206</span>
-<span id="207">207</span>
-<span id="208">208</span>
-<span id="209">209</span>
-<span id="210">210</span>
-<span id="211">211</span>
-<span id="212">212</span>
-<span id="213">213</span>
-<span id="214">214</span>
-<span id="215">215</span>
-<span id="216">216</span>
-<span id="217">217</span>
-<span id="218">218</span>
-<span id="219">219</span>
-<span id="220">220</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2022 Parity Technologies (UK) Ltd.</span>
@@ -253,8 +238,8 @@
 <span class="kw">use</span> <span class="ident">sp_runtime::generic::BlockId</span>;
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">path::PathBuf</span>, <span class="ident">sync::Arc</span>};
 
-<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">record::StatSelect</span>, <span class="ident">template::TemplateData</span>};
-
+<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::template::TemplateData</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::post_processing::WeightParams</span>;
 <span class="doccomment">/// Benchmark the storage of a Substrate node with a live chain snapshot.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Parser</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StorageCmd</span> {
@@ -278,24 +263,9 @@
 <span class="doccomment">/// Parameters for modifying the benchmark behaviour and the post processing of the results.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>, <span class="ident">Serialize</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Args</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StorageParams</span> {
-	<span class="doccomment">/// Path to write the *weight* file to. Can be a file or directory.</span>
-	<span class="doccomment">/// For substrate this should be `frame/support/src/weights`.</span>
-	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
-	<span class="kw">pub</span> <span class="ident">weight_path</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
-
-	<span class="doccomment">/// Select a specific metric to calculate the final weight output.</span>
-	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;metric&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;average&quot;</span>)]</span>
-	<span class="kw">pub</span> <span class="ident">weight_metric</span>: <span class="ident">StatSelect</span>,
-
-	<span class="doccomment">/// Multiply the resulting weight with the given factor. Must be positive.</span>
-	<span class="doccomment">/// Is calculated before `weight_add`.</span>
-	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;mul&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;1&quot;</span>)]</span>
-	<span class="kw">pub</span> <span class="ident">weight_mul</span>: <span class="ident">f64</span>,
-
-	<span class="doccomment">/// Add the given offset to the resulting weight.</span>
-	<span class="doccomment">/// Is calculated after `weight_mul`.</span>
-	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;add&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;0&quot;</span>)]</span>
-	<span class="kw">pub</span> <span class="ident">weight_add</span>: <span class="ident">u64</span>,
+	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
+	<span class="kw">pub</span> <span class="ident">weight_params</span>: <span class="ident">WeightParams</span>,
 
 	<span class="doccomment">/// Skip the `read` benchmark.</span>
 	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
@@ -373,7 +343,7 @@
 			<span class="ident">template</span>.<span class="ident">set_stats</span>(<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="ident">stats</span>))<span class="question-mark">?</span>;
 		}
 
-		<span class="ident">template</span>.<span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">params</span>.<span class="ident">weight_path</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">params</span>.<span class="ident">template_path</span>)
+		<span class="ident">template</span>.<span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">params</span>.<span class="ident">weight_params</span>.<span class="ident">weight_path</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">params</span>.<span class="ident">template_path</span>)
 	}
 
 	<span class="doccomment">/// Returns the specified state version.</span>
