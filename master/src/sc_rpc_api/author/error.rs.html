@@ -153,22 +153,6 @@
 <span id="153">153</span>
 <span id="154">154</span>
 <span id="155">155</span>
-<span id="156">156</span>
-<span id="157">157</span>
-<span id="158">158</span>
-<span id="159">159</span>
-<span id="160">160</span>
-<span id="161">161</span>
-<span id="162">162</span>
-<span id="163">163</span>
-<span id="164">164</span>
-<span id="165">165</span>
-<span id="166">166</span>
-<span id="167">167</span>
-<span id="168">168</span>
-<span id="169">169</span>
-<span id="170">170</span>
-<span id="171">171</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -214,15 +198,9 @@
 	<span class="doccomment">/// Incorrect extrinsic format.</span>
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Invalid extrinsic format: {}&quot;</span>, .<span class="number">0</span>)]</span>
 	<span class="ident">BadFormat</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">codec::Error</span>),
-	<span class="doccomment">/// Incorrect seed phrase.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Invalid seed phrase/SURI&quot;</span>)]</span>
-	<span class="ident">BadSeedPhrase</span>,
 	<span class="doccomment">/// Key type ID has an unknown format.</span>
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Invalid key type ID format (should be of length four)&quot;</span>)]</span>
 	<span class="ident">BadKeyType</span>,
-	<span class="doccomment">/// Key type ID has some unsupported crypto.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;The crypto of key type ID is unknown&quot;</span>)]</span>
-	<span class="ident">UnsupportedKeyType</span>,
 	<span class="doccomment">/// Some random issue with the key store. Shouldn&#39;t happen.</span>
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;The key store is unavailable&quot;</span>)]</span>
 	<span class="ident">KeyStoreUnavailable</span>,
@@ -255,8 +233,6 @@
 <span class="kw">const</span> <span class="ident">POOL_CYCLE_DETECTED</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="ident">POOL_INVALID_TX</span> <span class="op">+</span> <span class="number">5</span>;
 <span class="doccomment">/// The transaction was not included to the pool because of the limits.</span>
 <span class="kw">const</span> <span class="ident">POOL_IMMEDIATELY_DROPPED</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="ident">POOL_INVALID_TX</span> <span class="op">+</span> <span class="number">6</span>;
-<span class="doccomment">/// The key type crypto is not known.</span>
-<span class="kw">const</span> <span class="ident">UNSUPPORTED_KEY_TYPE</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="ident">POOL_INVALID_TX</span> <span class="op">+</span> <span class="number">7</span>;
 <span class="doccomment">/// The transaction was not included to the pool since it is unactionable,</span>
 <span class="doccomment">/// it is not propagable and the local node does not author blocks.</span>
 <span class="kw">const</span> <span class="ident">POOL_UNACTIONABLE</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="ident">POOL_INVALID_TX</span> <span class="op">+</span> <span class="number">8</span>;
@@ -325,14 +301,6 @@
 				<span class="ident">data</span>: <span class="prelude-val">Some</span>(
 					<span class="string">&quot;The transaction is unactionable since it is not propagable and \
 					 the local node does not author blocks&quot;</span>.<span class="ident">into</span>(),
-				),
-			},
-			<span class="ident">Error::UnsupportedKeyType</span> =&gt; <span class="ident">rpc::Error</span> {
-				<span class="ident">code</span>: <span class="ident">rpc::ErrorCode::ServerError</span>(<span class="ident">UNSUPPORTED_KEY_TYPE</span>),
-				<span class="ident">message</span>: <span class="string">&quot;Unknown key type crypto&quot;</span> .<span class="ident">into</span>(),
-				<span class="ident">data</span>: <span class="prelude-val">Some</span>(
-					<span class="string">&quot;The crypto for the given key type is unknown, please add the public key to the \
-					request to insert the key successfully.&quot;</span>.<span class="ident">into</span>()
 				),
 			},
 			<span class="ident">Error::UnsafeRpcCalled</span>(<span class="ident">e</span>) =&gt; <span class="ident">e</span>.<span class="ident">into</span>(),
