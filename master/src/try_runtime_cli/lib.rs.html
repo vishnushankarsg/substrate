@@ -1438,7 +1438,7 @@
 	{
 		<span class="prelude-val">Ok</span>((<span class="ident">name</span>, <span class="ident">version</span>)) =&gt; {
 			<span class="comment">// first, deal with spec name</span>
-			<span class="kw">if</span> <span class="ident">expected_spec_name</span> <span class="op">==</span> <span class="ident">name</span> {
+			<span class="kw">if</span> <span class="ident">expected_spec_name</span>.<span class="ident">to_lowercase</span>() <span class="op">==</span> <span class="ident">name</span> {
 				<span class="macro">log::info!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="string">&quot;found matching spec name: {:?}&quot;</span>, <span class="ident">name</span>);
 			} <span class="kw">else</span> {
 				<span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="macro">format!</span>(
