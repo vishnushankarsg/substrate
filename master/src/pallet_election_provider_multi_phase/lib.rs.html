@@ -2160,7 +2160,6 @@
 <span id="2160">2160</span>
 <span id="2161">2161</span>
 <span id="2162">2162</span>
-<span id="2163">2163</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -2232,7 +2231,7 @@
 <span class="doccomment">//! Upon the end of the signed phase, the solutions are examined from best to worse (i.e. `pop()`ed</span>
 <span class="doccomment">//! until drained). Each solution undergoes an expensive `Pallet::feasibility_check`, which ensures</span>
 <span class="doccomment">//! the score claimed by this score was correct, and it is valid based on the election data (i.e.</span>
-<span class="doccomment">//! votes and candidates). At each step, if the current best solution passes the feasibility check,</span>
+<span class="doccomment">//! votes and targets). At each step, if the current best solution passes the feasibility check,</span>
 <span class="doccomment">//! it is considered to be the best one. The sender of the origin is rewarded, and the rest of the</span>
 <span class="doccomment">//! queued solutions get their deposit back and are discarded, without being checked.</span>
 <span class="doccomment">//!</span>
@@ -2412,7 +2411,6 @@
 	<span class="ident">assignment_ratio_to_staked_normalized</span>, <span class="ident">ElectionScore</span>, <span class="ident">EvaluateSupport</span>, <span class="ident">Supports</span>, <span class="ident">VoteWeight</span>,
 };
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
-	<span class="ident">traits::Bounded</span>,
 	<span class="ident">transaction_validity</span>::{
 		<span class="ident">InvalidTransaction</span>, <span class="ident">TransactionPriority</span>, <span class="ident">TransactionSource</span>, <span class="ident">TransactionValidity</span>,
 		<span class="ident">TransactionValidityError</span>, <span class="ident">ValidTransaction</span>,
@@ -2806,14 +2804,15 @@
 		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
 		<span class="kw">type</span> <span class="ident">SignedDepositWeight</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
-		<span class="doccomment">/// The maximum number of voters to put in the snapshot. At the moment, snapshots are only</span>
-		<span class="doccomment">/// over a single block, but once multi-block elections are introduced they will take place</span>
-		<span class="doccomment">/// over multiple blocks.</span>
-		<span class="doccomment">///</span>
-		<span class="doccomment">/// Also, note the data type: If the voters are represented by a `u32` in `type</span>
-		<span class="doccomment">/// CompactSolution`, the same `u32` is used here to ensure bounds are respected.</span>
+		<span class="doccomment">/// The maximum number of electing voters to put in the snapshot. At the moment, snapshots</span>
+		<span class="doccomment">/// are only over a single block, but once multi-block elections are introduced they will</span>
+		<span class="doccomment">/// take place over multiple blocks.</span>
 		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
-		<span class="kw">type</span> <span class="ident">VoterSnapshotPerBlock</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">SolutionVoterIndexOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+		<span class="kw">type</span> <span class="ident">MaxElectingVoters</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">SolutionVoterIndexOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+
+		<span class="doccomment">/// The maximum number of electable targets to put in the snapshot.</span>
+		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
+		<span class="kw">type</span> <span class="ident">MaxElectableTargets</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">SolutionTargetIndexOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 		<span class="doccomment">/// Handler for the slashed deposits.</span>
 		<span class="kw">type</span> <span class="ident">SlashHandler</span>: <span class="ident">OnUnbalanced</span><span class="op">&lt;</span><span class="ident">NegativeImbalanceOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>;
@@ -2980,7 +2979,7 @@
 		<span class="kw">fn</span> <span class="ident">integrity_test</span>() {
 			<span class="kw">use</span> <span class="ident">sp_std::mem::size_of</span>;
 			<span class="comment">// The index type of both voters and targets need to be smaller than that of usize (very</span>
-			<span class="comment">// unlikely to be the case, but anyhow).</span>
+			<span class="comment">// unlikely to be the case, but anyhow)..</span>
 			<span class="macro">assert!</span>(<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">SolutionVoterIndexOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>());
 			<span class="macro">assert!</span>(<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">SolutionTargetIndexOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>());
 
@@ -3501,14 +3500,13 @@
 	<span class="doccomment">/// Extracted for easier weight calculation.</span>
 	<span class="kw">fn</span> <span class="ident">create_snapshot_external</span>(
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">VoterOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">u32</span>), <span class="ident">ElectionError</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">target_limit</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">SolutionTargetIndexOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::max_value</span>().<span class="ident">saturated_into</span>::<span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>();
-		<span class="comment">// for now we have just a single block snapshot.</span>
-		<span class="kw">let</span> <span class="ident">voter_limit</span> <span class="op">=</span> <span class="ident">T::VoterSnapshotPerBlock::get</span>().<span class="ident">saturated_into</span>::<span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> <span class="ident">target_limit</span> <span class="op">=</span> <span class="ident">T::MaxElectableTargets::get</span>().<span class="ident">saturated_into</span>::<span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> <span class="ident">voter_limit</span> <span class="op">=</span> <span class="ident">T::MaxElectingVoters::get</span>().<span class="ident">saturated_into</span>::<span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>();
 
-		<span class="kw">let</span> <span class="ident">targets</span> <span class="op">=</span>
-			<span class="ident">T::DataProvider::targets</span>(<span class="prelude-val">Some</span>(<span class="ident">target_limit</span>)).<span class="ident">map_err</span>(<span class="ident">ElectionError::DataProvider</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">voters</span> <span class="op">=</span>
-			<span class="ident">T::DataProvider::voters</span>(<span class="prelude-val">Some</span>(<span class="ident">voter_limit</span>)).<span class="ident">map_err</span>(<span class="ident">ElectionError::DataProvider</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">targets</span> <span class="op">=</span> <span class="ident">T::DataProvider::electable_targets</span>(<span class="prelude-val">Some</span>(<span class="ident">target_limit</span>))
+			.<span class="ident">map_err</span>(<span class="ident">ElectionError::DataProvider</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">voters</span> <span class="op">=</span> <span class="ident">T::DataProvider::electing_voters</span>(<span class="prelude-val">Some</span>(<span class="ident">voter_limit</span>))
+			.<span class="ident">map_err</span>(<span class="ident">ElectionError::DataProvider</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">desired_targets</span> <span class="op">=</span>
 			<span class="ident">T::DataProvider::desired_targets</span>().<span class="ident">map_err</span>(<span class="ident">ElectionError::DataProvider</span>)<span class="question-mark">?</span>;
 
@@ -4253,7 +4251,7 @@
 			<span class="comment">// we have 8 voters in total.</span>
 			<span class="macro">assert_eq!</span>(<span class="ident"><span class="kw">crate</span>::mock::Voters::get</span>().<span class="ident">len</span>(), <span class="number">8</span>);
 			<span class="comment">// but we want to take 2.</span>
-			<span class="ident"><span class="kw">crate</span>::mock::VoterSnapshotPerBlock::set</span>(<span class="number">2</span>);
+			<span class="ident"><span class="kw">crate</span>::mock::MaxElectingVoters::set</span>(<span class="number">2</span>);
 
 			<span class="comment">// Signed phase opens just fine.</span>
 			<span class="ident">roll_to</span>(<span class="number">15</span>);

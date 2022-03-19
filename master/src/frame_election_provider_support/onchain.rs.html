@@ -232,6 +232,7 @@
 <span id="232">232</span>
 <span id="233">233</span>
 <span id="234">234</span>
+<span id="235">235</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -313,10 +314,11 @@
 		<span class="ident">maybe_max_voters</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
 		<span class="ident">maybe_max_targets</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Supports</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">voters</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">ElectionProvider</span><span class="op">&gt;</span><span class="ident">::DataProvider::voters</span>(<span class="ident">maybe_max_voters</span>)
+		<span class="kw">let</span> <span class="ident">voters</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">ElectionProvider</span><span class="op">&gt;</span><span class="ident">::DataProvider::electing_voters</span>(<span class="ident">maybe_max_voters</span>)
 			.<span class="ident">map_err</span>(<span class="ident">Error::DataProvider</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">targets</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">ElectionProvider</span><span class="op">&gt;</span><span class="ident">::DataProvider::targets</span>(<span class="ident">maybe_max_targets</span>)
-			.<span class="ident">map_err</span>(<span class="ident">Error::DataProvider</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">targets</span> <span class="op">=</span>
+			<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">ElectionProvider</span><span class="op">&gt;</span><span class="ident">::DataProvider::electable_targets</span>(<span class="ident">maybe_max_targets</span>)
+				.<span class="ident">map_err</span>(<span class="ident">Error::DataProvider</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">desired_targets</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">ElectionProvider</span><span class="op">&gt;</span><span class="ident">::DataProvider::desired_targets</span>()
 			.<span class="ident">map_err</span>(<span class="ident">Error::DataProvider</span>)<span class="question-mark">?</span>;
 
@@ -431,7 +433,7 @@
 			<span class="kw">type</span> <span class="ident">AccountId</span> <span class="op">=</span> <span class="ident">AccountId</span>;
 			<span class="kw">type</span> <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="ident">BlockNumber</span>;
 			<span class="kw">type</span> <span class="ident">MaxVotesPerVoter</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">2</span><span class="op">&gt;</span>;
-			<span class="kw">fn</span> <span class="ident">voters</span>(<span class="kw">_</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="ident">data_provider::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">VoterOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+			<span class="kw">fn</span> <span class="ident">electing_voters</span>(<span class="kw">_</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="ident">data_provider::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">VoterOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 				<span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[
 					(<span class="number">1</span>, <span class="number">10</span>, <span class="macro">bounded_vec!</span>[<span class="number">10</span>, <span class="number">20</span>]),
 					(<span class="number">2</span>, <span class="number">20</span>, <span class="macro">bounded_vec!</span>[<span class="number">30</span>, <span class="number">20</span>]),
@@ -439,7 +441,7 @@
 				])
 			}
 
-			<span class="kw">fn</span> <span class="ident">targets</span>(<span class="kw">_</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="ident">data_provider::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+			<span class="kw">fn</span> <span class="ident">electable_targets</span>(<span class="kw">_</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="ident">data_provider::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 				<span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>])
 			}
 

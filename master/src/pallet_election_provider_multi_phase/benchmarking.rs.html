@@ -787,8 +787,8 @@
 
 		<span class="comment">// we don&#39;t directly need the data-provider to be populated, but it is just easy to use it.</span>
 		<span class="ident">set_up_data_provider</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">v</span>, <span class="ident">t</span>);
-		<span class="kw">let</span> <span class="ident">targets</span> <span class="op">=</span> <span class="ident">T::DataProvider::targets</span>(<span class="prelude-val">None</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">voters</span> <span class="op">=</span> <span class="ident">T::DataProvider::voters</span>(<span class="prelude-val">None</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">targets</span> <span class="op">=</span> <span class="ident">T::DataProvider::electable_targets</span>(<span class="prelude-val">None</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">voters</span> <span class="op">=</span> <span class="ident">T::DataProvider::electing_voters</span>(<span class="prelude-val">None</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">desired_targets</span> <span class="op">=</span> <span class="ident">T::DataProvider::desired_targets</span>()<span class="question-mark">?</span>;
 		<span class="macro">assert!</span>(<span class="op">&lt;</span><span class="ident">MultiPhase</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::snapshot</span>().<span class="ident">is_none</span>());
 	}: {

@@ -2182,7 +2182,7 @@
 		<span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::validator_count</span>())
 	}
 
-	<span class="kw">fn</span> <span class="ident">voters</span>(<span class="ident">maybe_max_len</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="ident">data_provider::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">VoterOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">electing_voters</span>(<span class="ident">maybe_max_len</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="ident">data_provider::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">VoterOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="comment">// This can never fail -- if `maybe_max_len` is `Some(_)` we handle it.</span>
 		<span class="kw">let</span> <span class="ident">voters</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::get_npos_voters</span>(<span class="ident">maybe_max_len</span>);
 		<span class="macro">debug_assert!</span>(<span class="ident">maybe_max_len</span>.<span class="ident">map_or</span>(<span class="bool-val">true</span>, <span class="op">|</span><span class="ident">max</span><span class="op">|</span> <span class="ident">voters</span>.<span class="ident">len</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">max</span>));
@@ -2190,7 +2190,7 @@
 		<span class="prelude-val">Ok</span>(<span class="ident">voters</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">targets</span>(<span class="ident">maybe_max_len</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="ident">data_provider::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">electable_targets</span>(<span class="ident">maybe_max_len</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="ident">data_provider::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">target_count</span> <span class="op">=</span> <span class="ident">Validators</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::count</span>();
 
 		<span class="comment">// We can&#39;t handle this case yet -- return an error.</span>
