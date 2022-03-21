@@ -255,6 +255,8 @@
 <span id="255">255</span>
 <span id="256">256</span>
 <span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -338,6 +340,7 @@
 		<span class="kw">let</span> <span class="ident">error_ident</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">error_def</span>.<span class="ident">error</span>;
 		<span class="macro">quote::quote_spanned!</span>(<span class="ident">def</span>.<span class="ident">pallet_struct</span>.<span class="ident">attr_span</span> =&gt;
 			<span class="kw">impl</span><span class="op">&lt;</span>#<span class="ident">type_impl_gen</span><span class="op">&gt;</span> #<span class="ident">pallet_ident</span><span class="op">&lt;</span>#<span class="ident">type_use_gen</span><span class="op">&gt;</span> #<span class="ident">config_where_clause</span> {
+				<span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
 				<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">error_metadata</span>() -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>#<span class="ident">frame_support::metadata::PalletErrorMetadata</span><span class="op">&gt;</span> {
 					<span class="prelude-val">Some</span>(#<span class="ident">frame_support::metadata::PalletErrorMetadata</span> {
 						<span class="ident">ty</span>: #<span class="ident">frame_support::scale_info::meta_type</span>::<span class="op">&lt;</span>#<span class="ident">error_ident</span><span class="op">&lt;</span>#<span class="ident">type_use_gen</span><span class="op">&gt;</span><span class="op">&gt;</span>()
@@ -348,6 +351,7 @@
 	} <span class="kw">else</span> {
 		<span class="macro">quote::quote_spanned!</span>(<span class="ident">def</span>.<span class="ident">pallet_struct</span>.<span class="ident">attr_span</span> =&gt;
 			<span class="kw">impl</span><span class="op">&lt;</span>#<span class="ident">type_impl_gen</span><span class="op">&gt;</span> #<span class="ident">pallet_ident</span><span class="op">&lt;</span>#<span class="ident">type_use_gen</span><span class="op">&gt;</span> #<span class="ident">config_where_clause</span> {
+				<span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
 				<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">error_metadata</span>() -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>#<span class="ident">frame_support::metadata::PalletErrorMetadata</span><span class="op">&gt;</span> {
 					<span class="prelude-val">None</span>
 				}

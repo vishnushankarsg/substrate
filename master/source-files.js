@@ -109,6 +109,7 @@ sourcesIndex["directories"] = {"name":"","files":["lib.rs","lin.rs"]};
 sourcesIndex["directories_next"] = {"name":"","files":["lib.rs","lin.rs"]};
 sourcesIndex["dirs_sys"] = {"name":"","files":["lib.rs","xdg_user_dirs.rs"]};
 sourcesIndex["dirs_sys_next"] = {"name":"","files":["lib.rs","xdg_user_dirs.rs"]};
+sourcesIndex["dissimilar"] = {"name":"","files":["find.rs","lib.rs","range.rs"]};
 sourcesIndex["dns_parser"] = {"name":"","dirs":[{"name":"rdata","files":["a.rs","aaaa.rs","all.rs","axfr.rs","cname.rs","hinfo.rs","maila.rs","mailb.rs","mb.rs","mf.rs","mg.rs","minfo.rs","mod.rs","mr.rs","mx.rs","ns.rs","nsec.rs","null.rs","opt.rs","ptr.rs","soa.rs","srv.rs","txt.rs","wks.rs"]}],"files":["builder.rs","enums.rs","error.rs","header.rs","lib.rs","name.rs","parser.rs","structs.rs"]};
 sourcesIndex["downcast_rs"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["dtoa"] = {"name":"","files":["diyfp.rs","dtoa.rs","lib.rs"]};
