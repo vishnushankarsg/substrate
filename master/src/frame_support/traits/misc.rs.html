@@ -1508,7 +1508,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">HandleLifetime</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> () {}
 
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Time</span> {
-	<span class="kw">type</span> <span class="ident">Moment</span>: <span class="ident">sp_arithmetic::traits::AtLeast32Bit</span> <span class="op">+</span> <span class="ident">Parameter</span> <span class="op">+</span> <span class="ident">Default</span> <span class="op">+</span> <span class="ident">Copy</span>;
+	<span class="kw">type</span> <span class="ident">Moment</span>: <span class="ident">sp_arithmetic::traits::AtLeast32Bit</span> <span class="op">+</span> <span class="ident">Parameter</span> <span class="op">+</span> <span class="ident">Default</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">MaxEncodedLen</span>;
 
 	<span class="kw">fn</span> <span class="ident">now</span>() -&gt; <span class="ident"><span class="self">Self</span>::Moment</span>;
 }

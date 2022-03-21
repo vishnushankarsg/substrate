@@ -118,6 +118,7 @@
 <span id="118">118</span>
 <span id="119">119</span>
 <span id="120">120</span>
+<span id="121">121</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021 Parity Technologies (UK) Ltd.</span>
@@ -140,10 +141,11 @@
 <span class="attribute">#![<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">core::convert::TryInto</span>;
 <span class="kw">use</span> <span class="ident">frame_benchmarking::benchmarks</span>;
-<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">ensure</span>, <span class="ident">traits::PreimageRecipient</span>};
-<span class="kw">use</span> <span class="ident">sp_runtime::traits::Hash</span>;
+<span class="kw">use</span> <span class="ident">frame_support</span>::{
+	<span class="ident">ensure</span>,
+	<span class="ident">traits</span>::{<span class="ident">EnsureOrigin</span>, <span class="ident">Get</span>, <span class="ident">PreimageRecipient</span>},
+};
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::Pallet</span> <span class="kw">as</span> <span class="ident">Whitelist</span>;
