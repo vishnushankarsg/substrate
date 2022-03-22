@@ -175,6 +175,7 @@
 <span id="175">175</span>
 <span id="176">176</span>
 <span id="177">177</span>
+<span id="178">178</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -280,6 +281,7 @@
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">jsonrpc_core::IoHandler</span><span class="op">&lt;</span><span class="ident">sc_rpc_api::Metadata</span><span class="op">&gt;</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">std::error::Error</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">C</span>: <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>
+		<span class="op">+</span> <span class="ident">sc_client_api::BlockBackend</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>
 		<span class="op">+</span> <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>
 		<span class="op">+</span> <span class="ident">AuxStore</span>
 		<span class="op">+</span> <span class="ident">HeaderMetadata</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Error</span> <span class="op">=</span> <span class="ident">BlockChainError</span><span class="op">&gt;</span>
@@ -300,6 +302,7 @@
 	<span class="kw">use</span> <span class="ident">pallet_contracts_rpc</span>::{<span class="ident">Contracts</span>, <span class="ident">ContractsApi</span>};
 	<span class="kw">use</span> <span class="ident">pallet_mmr_rpc</span>::{<span class="ident">Mmr</span>, <span class="ident">MmrApi</span>};
 	<span class="kw">use</span> <span class="ident">pallet_transaction_payment_rpc</span>::{<span class="ident">TransactionPayment</span>, <span class="ident">TransactionPaymentApi</span>};
+	<span class="kw">use</span> <span class="ident">sc_rpc::dev</span>::{<span class="ident">Dev</span>, <span class="ident">DevApi</span>};
 	<span class="kw">use</span> <span class="ident">substrate_frame_rpc_system</span>::{<span class="ident">FullSystem</span>, <span class="ident">SystemApi</span>};
 
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">io</span> <span class="op">=</span> <span class="ident">jsonrpc_core::IoHandler::default</span>();
@@ -336,19 +339,18 @@
 		<span class="ident">subscription_executor</span>,
 		<span class="ident">finality_provider</span>,
 	)));
-
 	<span class="ident">io</span>.<span class="ident">extend_with</span>(<span class="ident">substrate_state_trie_migration_rpc::StateMigrationApi::to_delegate</span>(
 		<span class="ident">substrate_state_trie_migration_rpc::MigrationRpc::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="ident">backend</span>, <span class="ident">deny_unsafe</span>),
 	));
-
 	<span class="ident">io</span>.<span class="ident">extend_with</span>(<span class="ident">sc_sync_state_rpc::SyncStateRpcApi::to_delegate</span>(
 		<span class="ident">sc_sync_state_rpc::SyncStateRpcHandler::new</span>(
 			<span class="ident">chain_spec</span>,
-			<span class="ident">client</span>,
+			<span class="ident">client</span>.<span class="ident">clone</span>(),
 			<span class="ident">shared_authority_set</span>,
 			<span class="ident">shared_epoch_changes</span>,
 		)<span class="question-mark">?</span>,
 	));
+	<span class="ident">io</span>.<span class="ident">extend_with</span>(<span class="ident">DevApi::to_delegate</span>(<span class="ident">Dev::new</span>(<span class="ident">client</span>, <span class="ident">deny_unsafe</span>)));
 
 	<span class="prelude-val">Ok</span>(<span class="ident">io</span>)
 }
