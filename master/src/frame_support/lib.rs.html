@@ -2475,6 +2475,20 @@
 <span id="2475">2475</span>
 <span id="2476">2476</span>
 <span id="2477">2477</span>
+<span id="2478">2478</span>
+<span id="2479">2479</span>
+<span id="2480">2480</span>
+<span id="2481">2481</span>
+<span id="2482">2482</span>
+<span id="2483">2483</span>
+<span id="2484">2484</span>
+<span id="2485">2485</span>
+<span id="2486">2486</span>
+<span id="2487">2487</span>
+<span id="2488">2488</span>
+<span id="2489">2489</span>
+<span id="2490">2490</span>
+<span id="2491">2491</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -2631,8 +2645,8 @@
 <span class="doccomment">/// // to `Vec&lt;u8&gt;`</span>
 <span class="doccomment">/// generate_storage_alias!(</span>
 <span class="doccomment">/// 	OtherPrefix, OtherStorageName =&gt; DoubleMap&lt;</span>
-<span class="doccomment">/// 		(u32, Twox64Concat),</span>
-<span class="doccomment">/// 		(u32, Twox64Concat),</span>
+<span class="doccomment">/// 		(Twox64Concat, u32),</span>
+<span class="doccomment">/// 		(Twox64Concat, u32),</span>
 <span class="doccomment">/// 		Vec&lt;u8&gt;</span>
 <span class="doccomment">/// 	&gt;</span>
 <span class="doccomment">/// );</span>
@@ -2642,8 +2656,8 @@
 <span class="doccomment">/// generate_storage_alias!(Prefix, ValueName =&gt; Value&lt;u32, OptionQuery&gt;);</span>
 <span class="doccomment">/// generate_storage_alias!(</span>
 <span class="doccomment">/// 	Prefix, SomeStorageName =&gt; DoubleMap&lt;</span>
-<span class="doccomment">/// 		(u32, Twox64Concat),</span>
-<span class="doccomment">/// 		(u32, Twox64Concat),</span>
+<span class="doccomment">/// 		(Twox64Concat, u32),</span>
+<span class="doccomment">/// 		(Twox64Concat, u32),</span>
 <span class="doccomment">/// 		Vec&lt;u8&gt;,</span>
 <span class="doccomment">/// 		ValueQuery</span>
 <span class="doccomment">/// 	&gt;</span>
@@ -2652,14 +2666,14 @@
 <span class="doccomment">/// // generate a map from `Config::AccountId` (with hasher `Twox64Concat`) to `Vec&lt;u8&gt;`</span>
 <span class="doccomment">/// trait Config { type AccountId: codec::FullCodec; }</span>
 <span class="doccomment">/// generate_storage_alias!(</span>
-<span class="doccomment">/// 	Prefix, GenericStorage&lt;T: Config&gt; =&gt; Map&lt;(T::AccountId, Twox64Concat), Vec&lt;u8&gt;&gt;</span>
+<span class="doccomment">/// 	Prefix, GenericStorage&lt;T: Config&gt; =&gt; Map&lt;(Twox64Concat, T::AccountId), Vec&lt;u8&gt;&gt;</span>
 <span class="doccomment">/// );</span>
 <span class="doccomment">/// # fn main() {}</span>
 <span class="doccomment">/// ```</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules!</span> <span class="ident">generate_storage_alias</span> {
 	<span class="comment">// without generic for $name.</span>
-	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pallet</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span> =&gt; <span class="ident">Map</span><span class="op">&lt;</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">key</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">hasher</span>:<span class="ident">ty</span>), <span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span>:<span class="ident">ty</span> $(, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">querytype</span>:<span class="ident">ty</span>)<span class="question-mark">?</span><span class="op">&gt;</span>) =&gt; {
+	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pallet</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span> =&gt; <span class="ident">Map</span><span class="op">&lt;</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">hasher</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">key</span>:<span class="ident">ty</span>), <span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span>:<span class="ident">ty</span> $(, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">querytype</span>:<span class="ident">ty</span>)<span class="question-mark">?</span><span class="op">&gt;</span>) =&gt; {
 		<span class="macro-nonterminal">$</span><span class="macro">crate::paste::paste!</span> {
 			<span class="macro-nonterminal">$</span><span class="macro">crate::generate_storage_alias!</span>(@<span class="macro-nonterminal">GENERATE_INSTANCE_STRUCT</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pallet</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>);
 			<span class="kw">type</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::storage::types::StorageMap</span><span class="op">&lt;</span>
@@ -2674,7 +2688,7 @@
 	(
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pallet</span>:<span class="ident">ident</span>,
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>
-		=&gt; <span class="ident">DoubleMap</span><span class="op">&lt;</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">key1</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">hasher1</span>:<span class="ident">ty</span>), (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">key2</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">hasher2</span>:<span class="ident">ty</span>), <span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span>:<span class="ident">ty</span> $(, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">querytype</span>:<span class="ident">ty</span>)<span class="question-mark">?</span><span class="op">&gt;</span>
+		=&gt; <span class="ident">DoubleMap</span><span class="op">&lt;</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">hasher1</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">key1</span>:<span class="ident">ty</span>), (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">hasher2</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">key2</span>:<span class="ident">ty</span>), <span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span>:<span class="ident">ty</span> $(, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">querytype</span>:<span class="ident">ty</span>)<span class="question-mark">?</span><span class="op">&gt;</span>
 	) =&gt; {
 		<span class="macro-nonterminal">$</span><span class="macro">crate::paste::paste!</span> {
 			<span class="macro-nonterminal">$</span><span class="macro">crate::generate_storage_alias!</span>(@<span class="macro-nonterminal">GENERATE_INSTANCE_STRUCT</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pallet</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>);
@@ -2692,7 +2706,7 @@
 	(
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pallet</span>:<span class="ident">ident</span>,
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>
-		=&gt; <span class="ident">NMap</span><span class="op">&lt;</span><span class="ident">Key</span><span class="op">&lt;</span>$((<span class="macro-nonterminal">$</span><span class="macro-nonterminal">key</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">hasher</span>:<span class="ident">ty</span>)),<span class="op">+</span><span class="op">&gt;</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span>:<span class="ident">ty</span> $(, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">querytype</span>:<span class="ident">ty</span>)<span class="question-mark">?</span><span class="op">&gt;</span>
+		=&gt; <span class="ident">NMap</span><span class="op">&lt;</span><span class="ident">Key</span><span class="op">&lt;</span>$((<span class="macro-nonterminal">$</span><span class="macro-nonterminal">hasher</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">key</span>:<span class="ident">ty</span>)),<span class="op">+</span><span class="op">&gt;</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span>:<span class="ident">ty</span> $(, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">querytype</span>:<span class="ident">ty</span>)<span class="question-mark">?</span><span class="op">&gt;</span>
 	) =&gt; {
 		<span class="macro-nonterminal">$</span><span class="macro">crate::paste::paste!</span> {
 			<span class="macro-nonterminal">$</span><span class="macro">crate::generate_storage_alias!</span>(@<span class="macro-nonterminal">GENERATE_INSTANCE_STRUCT</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pallet</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>);
@@ -2720,15 +2734,15 @@
 	(
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pallet</span>:<span class="ident">ident</span>,
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span> : <span class="macro-nonterminal">$</span><span class="macro-nonterminal">bounds</span>:<span class="ident">tt</span><span class="op">&gt;</span>
-		=&gt; <span class="ident">Map</span><span class="op">&lt;</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">key</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">hasher</span>:<span class="ident">ty</span>), <span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span>:<span class="ident">ty</span> $(, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">querytype</span>:<span class="ident">ty</span>)<span class="question-mark">?</span><span class="op">&gt;</span>
+		=&gt; <span class="ident">Map</span><span class="op">&lt;</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">hasher</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">key</span>:<span class="ident">ty</span>), <span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span>:<span class="ident">ty</span> $(, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">querytype</span>:<span class="ident">ty</span>)<span class="question-mark">?</span><span class="op">&gt;</span>
 	) =&gt; {
 		<span class="macro-nonterminal">$</span><span class="macro">crate::paste::paste!</span> {
 			<span class="macro-nonterminal">$</span><span class="macro">crate::generate_storage_alias!</span>(@<span class="macro-nonterminal">GENERATE_INSTANCE_STRUCT</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pallet</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>);
 			<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">type_alias_bounds</span>)]</span>
 			<span class="kw">type</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> : <span class="macro-nonterminal">$</span><span class="macro-nonterminal">bounds</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::storage::types::StorageMap</span><span class="op">&lt;</span>
 				[<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> <span class="ident">Instance</span><span class="op">&gt;</span>],
-				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">key</span>,
 				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">hasher</span>,
+				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">key</span>,
 				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span>,
 				$( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">querytype</span> )<span class="question-mark">?</span>
 			<span class="op">&gt;</span>;
@@ -2737,17 +2751,17 @@
 	(
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pallet</span>:<span class="ident">ident</span>,
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span> : <span class="macro-nonterminal">$</span><span class="macro-nonterminal">bounds</span>:<span class="ident">tt</span><span class="op">&gt;</span>
-		=&gt; <span class="ident">DoubleMap</span><span class="op">&lt;</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">key1</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">hasher1</span>:<span class="ident">ty</span>), (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">key2</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">hasher2</span>:<span class="ident">ty</span>), <span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span>:<span class="ident">ty</span> $(, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">querytype</span>:<span class="ident">ty</span>)<span class="question-mark">?</span><span class="op">&gt;</span>
+		=&gt; <span class="ident">DoubleMap</span><span class="op">&lt;</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">hasher1</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">key1</span>:<span class="ident">ty</span>), (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">hasher2</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">key2</span>:<span class="ident">ty</span>), <span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span>:<span class="ident">ty</span> $(, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">querytype</span>:<span class="ident">ty</span>)<span class="question-mark">?</span><span class="op">&gt;</span>
 	) =&gt; {
 		<span class="macro-nonterminal">$</span><span class="macro">crate::paste::paste!</span> {
 			<span class="macro-nonterminal">$</span><span class="macro">crate::generate_storage_alias!</span>(@<span class="macro-nonterminal">GENERATE_INSTANCE_STRUCT</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pallet</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>);
 			<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">type_alias_bounds</span>)]</span>
 			<span class="kw">type</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> : <span class="macro-nonterminal">$</span><span class="macro-nonterminal">bounds</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::storage::types::StorageDoubleMap</span><span class="op">&lt;</span>
 				[<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> <span class="ident">Instance</span><span class="op">&gt;</span>],
-				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">key1</span>,
 				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">hasher1</span>,
-				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">key2</span>,
+				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">key1</span>,
 				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">hasher2</span>,
+				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">key2</span>,
 				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span>,
 				$( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">querytype</span> )<span class="question-mark">?</span>
 			<span class="op">&gt;</span>;
@@ -2756,7 +2770,7 @@
 	(
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pallet</span>:<span class="ident">ident</span>,
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span> : <span class="macro-nonterminal">$</span><span class="macro-nonterminal">bounds</span>:<span class="ident">tt</span><span class="op">&gt;</span>
-		=&gt; <span class="ident">NMap</span><span class="op">&lt;</span>$((<span class="macro-nonterminal">$</span><span class="macro-nonterminal">key</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">hasher</span>:<span class="ident">ty</span>),)<span class="op">+</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span>:<span class="ident">ty</span> $(, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">querytype</span>:<span class="ident">ty</span>)<span class="question-mark">?</span><span class="op">&gt;</span>
+		=&gt; <span class="ident">NMap</span><span class="op">&lt;</span>$((<span class="macro-nonterminal">$</span><span class="macro-nonterminal">hasher</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">key</span>:<span class="ident">ty</span>),)<span class="op">+</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span>:<span class="ident">ty</span> $(, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">querytype</span>:<span class="ident">ty</span>)<span class="question-mark">?</span><span class="op">&gt;</span>
 	) =&gt; {
 		<span class="macro-nonterminal">$</span><span class="macro">crate::paste::paste!</span> {
 			<span class="macro-nonterminal">$</span><span class="macro">crate::generate_storage_alias!</span>(@<span class="macro-nonterminal">GENERATE_INSTANCE_STRUCT</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">pallet</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>);
@@ -3420,6 +3434,20 @@
 			<span class="self">self</span>.<span class="ident">sort</span>();
 			<span class="self">self</span>
 		}
+	}
+
+	<span class="attribute">#[<span class="ident">test</span>]</span>
+	<span class="kw">fn</span> <span class="ident">generate_storage_alias_works</span>() {
+		<span class="ident">new_test_ext</span>().<span class="ident">execute_with</span>(<span class="op">|</span><span class="op">|</span> {
+			<span class="macro">generate_storage_alias!</span>(
+				<span class="ident">Test</span>,
+				<span class="ident">GenericData2</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> =&gt; <span class="ident">Map</span><span class="op">&lt;</span>(<span class="ident">Blake2_128Concat</span>, <span class="ident">T::BlockNumber</span>), <span class="ident">T::BlockNumber</span><span class="op">&gt;</span>
+			);
+
+			<span class="macro">assert_eq!</span>(<span class="ident">Module</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::generic_data2</span>(<span class="number">5</span>), <span class="prelude-val">None</span>);
+			<span class="ident">GenericData2</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="number">5</span>, <span class="number">5</span>);
+			<span class="macro">assert_eq!</span>(<span class="ident">Module</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::generic_data2</span>(<span class="number">5</span>), <span class="prelude-val">Some</span>(<span class="number">5</span>));
+		});
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>

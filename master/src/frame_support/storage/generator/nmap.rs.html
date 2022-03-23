@@ -1107,7 +1107,7 @@
 			<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">hash::Identity</span>, <span class="ident">storage::Key</span> <span class="kw">as</span> <span class="ident">NMapKey</span>};
 			<span class="macro">crate::generate_storage_alias!</span>(
 				<span class="ident">MyModule</span>,
-				<span class="ident">MyNMap</span> =&gt; <span class="ident">NMap</span><span class="op">&lt;</span><span class="ident">Key</span><span class="op">&lt;</span>(<span class="ident">u64</span>, <span class="ident">Identity</span>), (<span class="ident">u64</span>, <span class="ident">Identity</span>), (<span class="ident">u64</span>, <span class="ident">Identity</span>)<span class="op">&gt;</span>, <span class="ident">u64</span><span class="op">&gt;</span>
+				<span class="ident">MyNMap</span> =&gt; <span class="ident">NMap</span><span class="op">&lt;</span><span class="ident">Key</span><span class="op">&lt;</span>(<span class="ident">Identity</span>, <span class="ident">u64</span>), (<span class="ident">Identity</span>, <span class="ident">u64</span>), (<span class="ident">Identity</span>, <span class="ident">u64</span>)<span class="op">&gt;</span>, <span class="ident">u64</span><span class="op">&gt;</span>
 			);
 
 			<span class="ident">MyNMap::insert</span>((<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>), <span class="number">11</span>);
@@ -1149,8 +1149,8 @@
 
 			{
 				<span class="macro">crate::generate_storage_alias!</span>(<span class="ident">Test</span>, <span class="ident">NMap</span> =&gt; <span class="ident">DoubleMap</span><span class="op">&lt;</span>
-					(<span class="ident">u16</span>, <span class="ident"><span class="kw">crate</span>::Blake2_128Concat</span>),
-					(<span class="ident">u32</span>, <span class="ident"><span class="kw">crate</span>::Twox64Concat</span>),
+					(<span class="ident"><span class="kw">crate</span>::Blake2_128Concat</span>, <span class="ident">u16</span>),
+					(<span class="ident"><span class="kw">crate</span>::Twox64Concat</span>, <span class="ident">u32</span>),
 					<span class="ident">u64</span>
 				<span class="op">&gt;</span>);
 

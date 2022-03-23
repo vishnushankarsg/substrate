@@ -836,7 +836,7 @@
 	<span class="kw">fn</span> <span class="ident">map_iter_from</span>() {
 		<span class="ident">sp_io::TestExternalities::default</span>().<span class="ident">execute_with</span>(<span class="op">|</span><span class="op">|</span> {
 			<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::hash::Identity</span>;
-			<span class="macro">crate::generate_storage_alias!</span>(<span class="ident">MyModule</span>, <span class="ident">MyMap</span> =&gt; <span class="ident">Map</span><span class="op">&lt;</span>(<span class="ident">u64</span>, <span class="ident">Identity</span>), <span class="ident">u64</span><span class="op">&gt;</span>);
+			<span class="macro">crate::generate_storage_alias!</span>(<span class="ident">MyModule</span>, <span class="ident">MyMap</span> =&gt; <span class="ident">Map</span><span class="op">&lt;</span>(<span class="ident">Identity</span>, <span class="ident">u64</span>), <span class="ident">u64</span><span class="op">&gt;</span>);
 
 			<span class="ident">MyMap::insert</span>(<span class="number">1</span>, <span class="number">10</span>);
 			<span class="ident">MyMap::insert</span>(<span class="number">2</span>, <span class="number">20</span>);

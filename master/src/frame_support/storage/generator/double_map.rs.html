@@ -1186,7 +1186,7 @@
 			<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::hash::Identity</span>;
 			<span class="macro">crate::generate_storage_alias!</span>(
 				<span class="ident">MyModule</span>,
-				<span class="ident">MyDoubleMap</span> =&gt; <span class="ident">DoubleMap</span><span class="op">&lt;</span>(<span class="ident">u64</span>, <span class="ident">Identity</span>), (<span class="ident">u64</span>, <span class="ident">Identity</span>), <span class="ident">u64</span><span class="op">&gt;</span>
+				<span class="ident">MyDoubleMap</span> =&gt; <span class="ident">DoubleMap</span><span class="op">&lt;</span>(<span class="ident">Identity</span>, <span class="ident">u64</span>), (<span class="ident">Identity</span>, <span class="ident">u64</span>), <span class="ident">u64</span><span class="op">&gt;</span>
 			);
 
 			<span class="ident">MyDoubleMap::insert</span>(<span class="number">1</span>, <span class="number">10</span>, <span class="number">100</span>);
