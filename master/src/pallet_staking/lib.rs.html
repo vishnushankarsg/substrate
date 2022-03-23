@@ -864,6 +864,7 @@
 <span id="864">864</span>
 <span id="865">865</span>
 <span id="866">866</span>
+<span id="867">867</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1646,7 +1647,8 @@
 	<span class="ident">V5_0_0</span>, <span class="comment">// blockable validators.</span>
 	<span class="ident">V6_0_0</span>, <span class="comment">// removal of all storage associated with offchain phragmen.</span>
 	<span class="ident">V7_0_0</span>, <span class="comment">// keep track of number of nominators / validators in map</span>
-	<span class="ident">V8_0_0</span>, <span class="comment">// populate `SortedListProvider`.</span>
+	<span class="ident">V8_0_0</span>, <span class="comment">// populate `VoterList`.</span>
+	<span class="ident">V9_0_0</span>, <span class="comment">// inject validators into `VoterList` as well.</span>
 }
 
 <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">Releases</span> {

@@ -1927,8 +1927,6 @@
 <span id="1927">1927</span>
 <span id="1928">1928</span>
 <span id="1929">1929</span>
-<span id="1930">1930</span>
-<span id="1931">1931</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -2489,9 +2487,7 @@
 	<span class="kw">type</span> <span class="ident">OffendingValidatorsThreshold</span> <span class="op">=</span> <span class="ident">OffendingValidatorsThreshold</span>;
 	<span class="kw">type</span> <span class="ident">ElectionProvider</span> <span class="op">=</span> <span class="ident">ElectionProviderMultiPhase</span>;
 	<span class="kw">type</span> <span class="ident">GenesisElectionProvider</span> <span class="op">=</span> <span class="ident">onchain::OnChainSequentialPhragmen</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
-	<span class="comment">// Alternatively, use pallet_staking::UseNominatorsMap&lt;Runtime&gt; to just use the nominators map.</span>
-	<span class="comment">// Note that the aforementioned does not scale to a very large number of nominators.</span>
-	<span class="kw">type</span> <span class="ident">SortedListProvider</span> <span class="op">=</span> <span class="ident">BagsList</span>;
+	<span class="kw">type</span> <span class="ident">VoterList</span> <span class="op">=</span> <span class="ident">BagsList</span>;
 	<span class="kw">type</span> <span class="ident">MaxUnlockingChunks</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">32</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">pallet_staking::weights::SubstrateWeight</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">BenchmarkingConfig</span> <span class="op">=</span> <span class="ident">StakingBenchmarkingConfig</span>;

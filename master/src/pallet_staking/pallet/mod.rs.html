@@ -1695,7 +1695,6 @@
 <span id="1695">1695</span>
 <span id="1696">1696</span>
 <span id="1697">1697</span>
-<span id="1698">1698</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1715,7 +1714,7 @@
 
 <span class="doccomment">//! Staking FRAME Pallet.</span>
 
-<span class="kw">use</span> <span class="ident">frame_election_provider_support::SortedListProvider</span>;
+<span class="kw">use</span> <span class="ident">frame_election_provider_support</span>::{<span class="ident">SortedListProvider</span>, <span class="ident">VoteWeight</span>};
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">dispatch::Codec</span>,
 	<span class="ident">pallet_prelude</span>::<span class="kw-2">*</span>,
@@ -1861,13 +1860,12 @@
 		<span class="doccomment">/// After the threshold is reached a new era will be forced.</span>
 		<span class="kw">type</span> <span class="ident">OffendingValidatorsThreshold</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">Perbill</span><span class="op">&gt;</span>;
 
-		<span class="doccomment">/// Something that can provide a sorted list of voters in a somewhat sorted way. The</span>
-		<span class="doccomment">/// original use case for this was designed with `pallet_bags_list::Pallet` in mind. If</span>
-		<span class="doccomment">/// the bags-list is not desired, [`impls::UseNominatorsMap`] is likely the desired option.</span>
-		<span class="kw">type</span> <span class="ident">SortedListProvider</span>: <span class="ident">SortedListProvider</span><span class="op">&lt;</span>
-			<span class="ident"><span class="self">Self</span>::AccountId</span>,
-			<span class="ident">Score</span> <span class="op">=</span> <span class="ident">frame_election_provider_support::VoteWeight</span>,
-		<span class="op">&gt;</span>;
+		<span class="doccomment">/// Something that provides a best-effort sorted list of voters aka electing nominators,</span>
+		<span class="doccomment">/// used for NPoS election.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// The changes to nominators are reported to this. Moreover, each validator&#39;s self-vote is</span>
+		<span class="doccomment">/// also reported as one independent vote.</span>
+		<span class="kw">type</span> <span class="ident">VoterList</span>: <span class="ident">SortedListProvider</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span>, <span class="ident">Score</span> <span class="op">=</span> <span class="ident">VoteWeight</span><span class="op">&gt;</span>;
 
 		<span class="doccomment">/// The maximum number of `unlocking` chunks a [`StakingLedger`] can have. Effectively</span>
 		<span class="doccomment">/// determines how many unique eras a staker may be unbonding in.</span>
@@ -2282,10 +2280,10 @@
 				});
 			}
 
-			<span class="comment">// all voters are reported to the `SortedListProvider`.</span>
+			<span class="comment">// all voters are reported to the `VoterList`.</span>
 			<span class="macro">assert_eq!</span>(
-				<span class="ident">T::SortedListProvider::count</span>(),
-				<span class="ident">Nominators</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::count</span>(),
+				<span class="ident">T::VoterList::count</span>(),
+				<span class="ident">Nominators</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::count</span>() <span class="op">+</span> <span class="ident">Validators</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::count</span>(),
 				<span class="string">&quot;not all genesis stakers were inserted into sorted list provider, something is wrong.&quot;</span>
 			);
 		}
@@ -2535,9 +2533,9 @@
 				<span class="comment">// NOTE: ledger must be updated prior to calling `Self::weight_of`.</span>
 				<span class="ident"><span class="self">Self</span>::update_ledger</span>(<span class="kw-2">&amp;</span><span class="ident">controller</span>, <span class="kw-2">&amp;</span><span class="ident">ledger</span>);
 				<span class="comment">// update this staker in the sorted list, if they exist in it.</span>
-				<span class="kw">if</span> <span class="ident">T::SortedListProvider::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>) {
-					<span class="ident">T::SortedListProvider::on_update</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>, <span class="ident"><span class="self">Self</span>::weight_of</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>));
-					<span class="macro">debug_assert_eq!</span>(<span class="ident">T::SortedListProvider::sanity_check</span>(), <span class="prelude-val">Ok</span>(()));
+				<span class="kw">if</span> <span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>) {
+					<span class="ident">T::VoterList::on_update</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>, <span class="ident"><span class="self">Self</span>::weight_of</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>));
+					<span class="macro">debug_assert_eq!</span>(<span class="ident">T::VoterList::sanity_check</span>(), <span class="prelude-val">Ok</span>(()));
 				}
 
 				<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Bonded</span>(<span class="ident">stash</span>.<span class="ident">clone</span>(), <span class="ident">extra</span>));
@@ -2618,8 +2616,8 @@
 				<span class="ident"><span class="self">Self</span>::update_ledger</span>(<span class="kw-2">&amp;</span><span class="ident">controller</span>, <span class="kw-2">&amp;</span><span class="ident">ledger</span>);
 
 				<span class="comment">// update this staker in the sorted list, if they exist in it.</span>
-				<span class="kw">if</span> <span class="ident">T::SortedListProvider::contains</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>) {
-					<span class="ident">T::SortedListProvider::on_update</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>, <span class="ident"><span class="self">Self</span>::weight_of</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>));
+				<span class="kw">if</span> <span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>) {
+					<span class="ident">T::VoterList::on_update</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>, <span class="ident"><span class="self">Self</span>::weight_of</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>));
 				}
 
 				<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Unbonded</span>(<span class="ident">ledger</span>.<span class="ident">stash</span>, <span class="ident">value</span>));
@@ -3101,8 +3099,8 @@
 
 			<span class="comment">// NOTE: ledger must be updated prior to calling `Self::weight_of`.</span>
 			<span class="ident"><span class="self">Self</span>::update_ledger</span>(<span class="kw-2">&amp;</span><span class="ident">controller</span>, <span class="kw-2">&amp;</span><span class="ident">ledger</span>);
-			<span class="kw">if</span> <span class="ident">T::SortedListProvider::contains</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>) {
-				<span class="ident">T::SortedListProvider::on_update</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>, <span class="ident"><span class="self">Self</span>::weight_of</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>));
+			<span class="kw">if</span> <span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>) {
+				<span class="ident">T::VoterList::on_update</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>, <span class="ident"><span class="self">Self</span>::weight_of</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>));
 			}
 
 			<span class="kw">let</span> <span class="ident">removed_chunks</span> <span class="op">=</span> <span class="number">1u32</span> <span class="comment">// for the case where the last iterated chunk is not removed</span>

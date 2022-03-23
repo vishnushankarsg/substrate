@@ -195,7 +195,7 @@
 	<span class="kw">let</span> <span class="ident">min_nominator_bond</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">pallet_staking::MinNominatorBond</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::get</span>();
 	<span class="macro">log::info!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="string">&quot;min nominator bond is {:?}&quot;</span>, <span class="ident">min_nominator_bond</span>);
 
-	<span class="kw">let</span> <span class="ident">voter_list_count</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Runtime</span> <span class="kw">as</span> <span class="ident">pallet_staking::Config</span><span class="op">&gt;</span><span class="ident">::SortedListProvider::count</span>();
+	<span class="kw">let</span> <span class="ident">voter_list_count</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Runtime</span> <span class="kw">as</span> <span class="ident">pallet_staking::Config</span><span class="op">&gt;</span><span class="ident">::VoterList::count</span>();
 
 	<span class="comment">// go through every bag to track the total number of voters within bags and log some info about</span>
 	<span class="comment">// how voters are distributed within the bags.</span>

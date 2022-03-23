@@ -1062,10 +1062,6 @@
 <span id="1062">1062</span>
 <span id="1063">1063</span>
 <span id="1064">1064</span>
-<span id="1065">1065</span>
-<span id="1066">1066</span>
-<span id="1067">1067</span>
-<span id="1068">1068</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -1223,8 +1219,8 @@
 	<span class="doccomment">/// - the destination bag has at least one node, which will need its next pointer updated.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// NOTE: while this scenario specifically targets a worst case for the bags-list, it should</span>
-	<span class="doccomment">/// also elicit a worst case for other known `SortedListProvider` implementations; although</span>
-	<span class="doccomment">/// this may not be true against unknown `SortedListProvider` implementations.</span>
+	<span class="doccomment">/// also elicit a worst case for other known `VoterList` implementations; although</span>
+	<span class="doccomment">/// this may not be true against unknown `VoterList` implementations.</span>
 	<span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">origin_weight</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">is_increase</span>: <span class="ident">bool</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
 		<span class="macro">ensure!</span>(<span class="op">!</span><span class="ident">origin_weight</span>.<span class="ident">is_zero</span>(), <span class="string">&quot;origin weight must be greater than 0&quot;</span>);
 
@@ -1257,7 +1253,7 @@
 
 		<span class="comment">// find a destination weight that will trigger the worst case scenario</span>
 		<span class="kw">let</span> <span class="ident">dest_weight_as_vote</span> <span class="op">=</span>
-			<span class="ident">T::SortedListProvider::score_update_worst_case</span>(<span class="kw-2">&amp;</span><span class="ident">origin_stash1</span>, <span class="ident">is_increase</span>);
+			<span class="ident">T::VoterList::score_update_worst_case</span>(<span class="kw-2">&amp;</span><span class="ident">origin_stash1</span>, <span class="ident">is_increase</span>);
 
 		<span class="kw">let</span> <span class="ident">total_issuance</span> <span class="op">=</span> <span class="ident">T::Currency::total_issuance</span>();
 
@@ -1384,7 +1380,7 @@
 		<span class="kw">let</span> <span class="ident">scenario</span> <span class="op">=</span> <span class="ident">ListScenario</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">origin_weight</span>, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">controller</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_controller1</span>.<span class="ident">clone</span>();
 		<span class="kw">let</span> <span class="ident">stash</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_stash1</span>.<span class="ident">clone</span>();
-		<span class="macro">assert!</span>(<span class="ident">T::SortedListProvider::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
+		<span class="macro">assert!</span>(<span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
 
 		<span class="kw">let</span> <span class="ident">ed</span> <span class="op">=</span> <span class="ident">T::Currency::minimum_balance</span>();
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ledger</span> <span class="op">=</span> <span class="ident">Ledger</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">controller</span>).<span class="ident">unwrap</span>();
@@ -1396,28 +1392,24 @@
 	}: <span class="ident">withdraw_unbonded</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">controller</span>.<span class="ident">clone</span>()), <span class="ident">s</span>)
 	<span class="ident">verify</span> {
 		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Ledger</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::contains_key</span>(<span class="ident">controller</span>));
-		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">T::SortedListProvider::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
+		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
 	}
 
 	<span class="ident">validate</span> {
-		<span class="comment">// clean up any existing state.</span>
-		<span class="ident">clear_validators_and_nominators</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-
-		<span class="kw">let</span> <span class="ident">origin_weight</span> <span class="op">=</span> <span class="ident">MinNominatorBond</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>().<span class="ident">max</span>(<span class="ident">T::Currency::minimum_balance</span>());
-
-		<span class="comment">// setup a worst case scenario where the user calling validate was formerly a nominator so</span>
-		<span class="comment">// they must be removed from the list.</span>
-		<span class="kw">let</span> <span class="ident">scenario</span> <span class="op">=</span> <span class="ident">ListScenario</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">origin_weight</span>, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">controller</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_controller1</span>.<span class="ident">clone</span>();
-		<span class="kw">let</span> <span class="ident">stash</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_stash1</span>.<span class="ident">clone</span>();
-		<span class="macro">assert!</span>(<span class="ident">T::SortedListProvider::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
+		<span class="kw">let</span> (<span class="ident">stash</span>, <span class="ident">controller</span>) <span class="op">=</span> <span class="ident">create_stash_controller</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
+			<span class="ident">T::MaxNominations::get</span>() <span class="op">-</span> <span class="number">1</span>,
+			<span class="number">100</span>,
+			<span class="ident">Default::default</span>(),
+		)<span class="question-mark">?</span>;
+		<span class="comment">// because it is chilled.</span>
+		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
 
 		<span class="kw">let</span> <span class="ident">prefs</span> <span class="op">=</span> <span class="ident">ValidatorPrefs::default</span>();
 		<span class="macro">whitelist_account!</span>(<span class="ident">controller</span>);
 	}: <span class="kw">_</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">controller</span>), <span class="ident">prefs</span>)
 	<span class="ident">verify</span> {
 		<span class="macro">assert!</span>(<span class="ident">Validators</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
-		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">T::SortedListProvider::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
+		<span class="macro">assert!</span>(<span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
 	}
 
 	<span class="ident">kick</span> {
@@ -1502,14 +1494,14 @@
 		).<span class="ident">unwrap</span>();
 
 		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Nominators</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
-		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">T::SortedListProvider::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
+		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
 
 		<span class="kw">let</span> <span class="ident">validators</span> <span class="op">=</span> <span class="ident">create_validators</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">n</span>, <span class="number">100</span>).<span class="ident">unwrap</span>();
 		<span class="macro">whitelist_account!</span>(<span class="ident">controller</span>);
 	}: <span class="kw">_</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">controller</span>), <span class="ident">validators</span>)
 	<span class="ident">verify</span> {
 		<span class="macro">assert!</span>(<span class="ident">Nominators</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
-		<span class="macro">assert!</span>(<span class="ident">T::SortedListProvider::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>))
+		<span class="macro">assert!</span>(<span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>))
 	}
 
 	<span class="ident">chill</span> {
@@ -1523,12 +1515,12 @@
 		<span class="kw">let</span> <span class="ident">scenario</span> <span class="op">=</span> <span class="ident">ListScenario</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">origin_weight</span>, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">controller</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_controller1</span>.<span class="ident">clone</span>();
 		<span class="kw">let</span> <span class="ident">stash</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_stash1</span>.<span class="ident">clone</span>();
-		<span class="macro">assert!</span>(<span class="ident">T::SortedListProvider::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
+		<span class="macro">assert!</span>(<span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
 
 		<span class="macro">whitelist_account!</span>(<span class="ident">controller</span>);
 	}: <span class="kw">_</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">controller</span>))
 	<span class="ident">verify</span> {
-		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">T::SortedListProvider::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
+		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
 	}
 
 	<span class="ident">set_payee</span> {
@@ -1591,13 +1583,13 @@
 		<span class="kw">let</span> <span class="ident">scenario</span> <span class="op">=</span> <span class="ident">ListScenario</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">origin_weight</span>, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">controller</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_controller1</span>.<span class="ident">clone</span>();
 		<span class="kw">let</span> <span class="ident">stash</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_stash1</span>.<span class="ident">clone</span>();
-		<span class="macro">assert!</span>(<span class="ident">T::SortedListProvider::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
+		<span class="macro">assert!</span>(<span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
 		<span class="ident">add_slashing_spans</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>, <span class="ident">s</span>);
 
 	}: <span class="kw">_</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">stash</span>.<span class="ident">clone</span>(), <span class="ident">s</span>)
 	<span class="ident">verify</span> {
 		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Ledger</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">controller</span>));
-		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">T::SortedListProvider::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
+		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
 	}
 
 	<span class="ident">cancel_deferred_slash</span> {
@@ -1776,13 +1768,13 @@
 		<span class="ident">Ledger</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="ident">controller</span>, <span class="ident">l</span>);
 
 		<span class="macro">assert!</span>(<span class="ident">Bonded</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
-		<span class="macro">assert!</span>(<span class="ident">T::SortedListProvider::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
+		<span class="macro">assert!</span>(<span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
 
 		<span class="macro">whitelist_account!</span>(<span class="ident">controller</span>);
 	}: <span class="kw">_</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">controller</span>), <span class="ident">stash</span>.<span class="ident">clone</span>(), <span class="ident">s</span>)
 	<span class="ident">verify</span> {
 		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Bonded</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
-		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">T::SortedListProvider::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
+		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
 	}
 
 	<span class="ident">new_era</span> {
@@ -1967,7 +1959,7 @@
 		<span class="kw">let</span> <span class="ident">scenario</span> <span class="op">=</span> <span class="ident">ListScenario</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">origin_weight</span>, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">controller</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_controller1</span>.<span class="ident">clone</span>();
 		<span class="kw">let</span> <span class="ident">stash</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_stash1</span>.<span class="ident">clone</span>();
-		<span class="macro">assert!</span>(<span class="ident">T::SortedListProvider::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
+		<span class="macro">assert!</span>(<span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
 
 		<span class="ident">Staking</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::set_staking_configs</span>(
 			<span class="ident">RawOrigin::Root</span>.<span class="ident">into</span>(),
@@ -1982,7 +1974,7 @@
 		<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">whitelisted_caller</span>();
 	}: <span class="kw">_</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">controller</span>.<span class="ident">clone</span>())
 	<span class="ident">verify</span> {
-		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">T::SortedListProvider::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
+		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
 	}
 
 	<span class="ident">force_apply_min_commission</span> {
