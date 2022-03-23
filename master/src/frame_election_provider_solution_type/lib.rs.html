@@ -244,6 +244,31 @@
 <span id="244">244</span>
 <span id="245">245</span>
 <span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -295,6 +320,12 @@
 <span class="doccomment">///   compact encoding.</span>
 <span class="doccomment">/// - The accuracy of the ratios. This must be one of the `PerThing` types defined in</span>
 <span class="doccomment">///   `sp-arithmetic`.</span>
+<span class="doccomment">/// - The maximum number of voters. This must be of type `Get&lt;u32&gt;`. Check &lt;https://github.com/paritytech/substrate/issues/10866&gt;</span>
+<span class="doccomment">///   for more details. This is used to bound the struct, by leveraging the fact that `votes1.len()</span>
+<span class="doccomment">///   &lt; votes2.len() &lt; ... &lt; votesn.len()` (the details of the struct is explained further below).</span>
+<span class="doccomment">///   We know that `sum_i votes_i.len() &lt;= MaxVoters`, and we know that the maximum size of the</span>
+<span class="doccomment">///   struct would be achieved if all voters fall in the last bucket. One can also check the tests</span>
+<span class="doccomment">///   and more specifically `max_encoded_len_exact` for a concrete example.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Moreover, the maximum number of edges per voter (distribution per assignment) also need to be</span>
 <span class="doccomment">/// specified. Attempting to convert from/to an assignment with more distributions will fail.</span>
@@ -305,10 +336,12 @@
 <span class="doccomment">/// ```</span>
 <span class="doccomment">/// # use frame_election_provider_solution_type::generate_solution_type;</span>
 <span class="doccomment">/// # use sp_arithmetic::per_things::Perbill;</span>
+<span class="doccomment">/// # use frame_support::traits::ConstU32;</span>
 <span class="doccomment">/// generate_solution_type!(pub struct TestSolution::&lt;</span>
 <span class="doccomment">///     VoterIndex = u16,</span>
 <span class="doccomment">///     TargetIndex = u8,</span>
 <span class="doccomment">///     Accuracy = Perbill,</span>
+<span class="doccomment">///     MaxVoters = ConstU32::&lt;10&gt;,</span>
 <span class="doccomment">/// &gt;(4));</span>
 <span class="doccomment">/// ```</span>
 <span class="doccomment">///</span>
@@ -349,9 +382,15 @@
 <span class="doccomment">/// # use frame_election_provider_solution_type::generate_solution_type;</span>
 <span class="doccomment">/// # use frame_election_provider_support::NposSolution;</span>
 <span class="doccomment">/// # use sp_arithmetic::per_things::Perbill;</span>
+<span class="doccomment">/// # use frame_support::traits::ConstU32;</span>
 <span class="doccomment">/// generate_solution_type!(</span>
 <span class="doccomment">///     #[compact]</span>
-<span class="doccomment">///     pub struct TestSolutionCompact::&lt;VoterIndex = u16, TargetIndex = u8, Accuracy = Perbill&gt;(8)</span>
+<span class="doccomment">///     pub struct TestSolutionCompact::&lt;</span>
+<span class="doccomment">///          VoterIndex = u16,</span>
+<span class="doccomment">///          TargetIndex = u8,</span>
+<span class="doccomment">///          Accuracy = Perbill,</span>
+<span class="doccomment">///          MaxVoters = ConstU32::&lt;10&gt;,</span>
+<span class="doccomment">///     &gt;(8)</span>
 <span class="doccomment">/// );</span>
 <span class="doccomment">/// ```</span>
 <span class="attribute">#[<span class="ident">proc_macro</span>]</span>
@@ -375,6 +414,7 @@
 	<span class="ident">voter_type</span>: <span class="ident">syn::Type</span>,
 	<span class="ident">target_type</span>: <span class="ident">syn::Type</span>,
 	<span class="ident">weight_type</span>: <span class="ident">syn::Type</span>,
+	<span class="ident">max_voters</span>: <span class="ident">syn::Type</span>,
 	<span class="ident">count</span>: <span class="ident">usize</span>,
 	<span class="ident">compact_encoding</span>: <span class="ident">bool</span>,
 }
@@ -413,11 +453,11 @@
 		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="op">&lt;</span><span class="macro">syn::Token!</span>[::]<span class="op">&gt;</span><span class="ident">::parse</span>(<span class="ident">input</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">generics</span>: <span class="ident">syn::AngleBracketedGenericArguments</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>;
 
-		<span class="kw">if</span> <span class="ident">generics</span>.<span class="ident">args</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="number">3</span> {
-			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">syn_err</span>(<span class="string">&quot;Must provide 3 generic args.&quot;</span>))
+		<span class="kw">if</span> <span class="ident">generics</span>.<span class="ident">args</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="number">4</span> {
+			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">syn_err</span>(<span class="string">&quot;Must provide 4 generic args.&quot;</span>))
 		}
 
-		<span class="kw">let</span> <span class="ident">expected_types</span> <span class="op">=</span> [<span class="string">&quot;VoterIndex&quot;</span>, <span class="string">&quot;TargetIndex&quot;</span>, <span class="string">&quot;Accuracy&quot;</span>];
+		<span class="kw">let</span> <span class="ident">expected_types</span> <span class="op">=</span> [<span class="string">&quot;VoterIndex&quot;</span>, <span class="string">&quot;TargetIndex&quot;</span>, <span class="string">&quot;Accuracy&quot;</span>, <span class="string">&quot;MaxVoters&quot;</span>];
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">types</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">syn::Type</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">generics</span>
 			.<span class="ident">args</span>
@@ -443,6 +483,7 @@
 			})
 			.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
 
+		<span class="kw">let</span> <span class="ident">max_voters</span> <span class="op">=</span> <span class="ident">types</span>.<span class="ident">pop</span>().<span class="ident">expect</span>(<span class="string">&quot;Vector of length 4 can be popped; qed&quot;</span>);
 		<span class="kw">let</span> <span class="ident">weight_type</span> <span class="op">=</span> <span class="ident">types</span>.<span class="ident">pop</span>().<span class="ident">expect</span>(<span class="string">&quot;Vector of length 3 can be popped; qed&quot;</span>);
 		<span class="kw">let</span> <span class="ident">target_type</span> <span class="op">=</span> <span class="ident">types</span>.<span class="ident">pop</span>().<span class="ident">expect</span>(<span class="string">&quot;Vector of length 2 can be popped; qed&quot;</span>);
 		<span class="kw">let</span> <span class="ident">voter_type</span> <span class="op">=</span> <span class="ident">types</span>.<span class="ident">pop</span>().<span class="ident">expect</span>(<span class="string">&quot;Vector of length 1 can be popped; qed&quot;</span>);
@@ -451,7 +492,16 @@
 		<span class="kw">let</span> <span class="ident">count_expr</span>: <span class="ident">syn::ExprParen</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">count</span> <span class="op">=</span> <span class="ident">parse_parenthesized_number</span>::<span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>(<span class="ident">count_expr</span>)<span class="question-mark">?</span>;
 
-		<span class="prelude-val">Ok</span>(<span class="self">Self</span> { <span class="ident">vis</span>, <span class="ident">ident</span>, <span class="ident">voter_type</span>, <span class="ident">target_type</span>, <span class="ident">weight_type</span>, <span class="ident">count</span>, <span class="ident">compact_encoding</span> })
+		<span class="prelude-val">Ok</span>(<span class="self">Self</span> {
+			<span class="ident">vis</span>,
+			<span class="ident">ident</span>,
+			<span class="ident">voter_type</span>,
+			<span class="ident">target_type</span>,
+			<span class="ident">weight_type</span>,
+			<span class="ident">max_voters</span>,
+			<span class="ident">count</span>,
+			<span class="ident">compact_encoding</span>,
+		})
 	}
 }
 

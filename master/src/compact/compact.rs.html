@@ -37,6 +37,7 @@
 <span id="37">37</span>
 <span id="38">38</span>
 <span id="39">39</span>
+<span id="40">40</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">frame_election_provider_solution_type::generate_solution_type</span>;
 <span class="kw">use</span> <span class="ident">honggfuzz::fuzz</span>;
 <span class="kw">use</span> <span class="ident">sp_arithmetic::Percent</span>;
@@ -47,6 +48,7 @@
 		<span class="ident">VoterIndex</span> <span class="op">=</span> <span class="ident">u32</span>,
 		<span class="ident">TargetIndex</span> <span class="op">=</span> <span class="ident">u32</span>,
 		<span class="ident">Accuracy</span> <span class="op">=</span> <span class="ident">Percent</span>,
+		<span class="ident">MaxVoters</span> <span class="op">=</span> <span class="ident">frame_support::traits::ConstU32</span>::<span class="op">&lt;</span><span class="number">100_000</span><span class="op">&gt;</span>,
 	<span class="op">&gt;</span>(<span class="number">16</span>));
 	<span class="kw">loop</span> {
 		<span class="macro">fuzz!</span>(<span class="op">|</span><span class="ident">fuzzer_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]<span class="op">|</span> {
