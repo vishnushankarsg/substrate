@@ -1459,6 +1459,94 @@
 <span id="1459">1459</span>
 <span id="1460">1460</span>
 <span id="1461">1461</span>
+<span id="1462">1462</span>
+<span id="1463">1463</span>
+<span id="1464">1464</span>
+<span id="1465">1465</span>
+<span id="1466">1466</span>
+<span id="1467">1467</span>
+<span id="1468">1468</span>
+<span id="1469">1469</span>
+<span id="1470">1470</span>
+<span id="1471">1471</span>
+<span id="1472">1472</span>
+<span id="1473">1473</span>
+<span id="1474">1474</span>
+<span id="1475">1475</span>
+<span id="1476">1476</span>
+<span id="1477">1477</span>
+<span id="1478">1478</span>
+<span id="1479">1479</span>
+<span id="1480">1480</span>
+<span id="1481">1481</span>
+<span id="1482">1482</span>
+<span id="1483">1483</span>
+<span id="1484">1484</span>
+<span id="1485">1485</span>
+<span id="1486">1486</span>
+<span id="1487">1487</span>
+<span id="1488">1488</span>
+<span id="1489">1489</span>
+<span id="1490">1490</span>
+<span id="1491">1491</span>
+<span id="1492">1492</span>
+<span id="1493">1493</span>
+<span id="1494">1494</span>
+<span id="1495">1495</span>
+<span id="1496">1496</span>
+<span id="1497">1497</span>
+<span id="1498">1498</span>
+<span id="1499">1499</span>
+<span id="1500">1500</span>
+<span id="1501">1501</span>
+<span id="1502">1502</span>
+<span id="1503">1503</span>
+<span id="1504">1504</span>
+<span id="1505">1505</span>
+<span id="1506">1506</span>
+<span id="1507">1507</span>
+<span id="1508">1508</span>
+<span id="1509">1509</span>
+<span id="1510">1510</span>
+<span id="1511">1511</span>
+<span id="1512">1512</span>
+<span id="1513">1513</span>
+<span id="1514">1514</span>
+<span id="1515">1515</span>
+<span id="1516">1516</span>
+<span id="1517">1517</span>
+<span id="1518">1518</span>
+<span id="1519">1519</span>
+<span id="1520">1520</span>
+<span id="1521">1521</span>
+<span id="1522">1522</span>
+<span id="1523">1523</span>
+<span id="1524">1524</span>
+<span id="1525">1525</span>
+<span id="1526">1526</span>
+<span id="1527">1527</span>
+<span id="1528">1528</span>
+<span id="1529">1529</span>
+<span id="1530">1530</span>
+<span id="1531">1531</span>
+<span id="1532">1532</span>
+<span id="1533">1533</span>
+<span id="1534">1534</span>
+<span id="1535">1535</span>
+<span id="1536">1536</span>
+<span id="1537">1537</span>
+<span id="1538">1538</span>
+<span id="1539">1539</span>
+<span id="1540">1540</span>
+<span id="1541">1541</span>
+<span id="1542">1542</span>
+<span id="1543">1543</span>
+<span id="1544">1544</span>
+<span id="1545">1545</span>
+<span id="1546">1546</span>
+<span id="1547">1547</span>
+<span id="1548">1548</span>
+<span id="1549">1549</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -1528,6 +1616,17 @@
 	<span class="ident">Changed</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>),
 	<span class="doccomment">/// The tree has not changed.</span>
 	<span class="ident">Unchanged</span>,
+}
+
+<span class="doccomment">/// Filtering action.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">FilterAction</span> {
+	<span class="doccomment">/// Remove the node and its subtree.</span>
+	<span class="ident">Remove</span>,
+	<span class="doccomment">/// Maintain the node.</span>
+	<span class="ident">KeepNode</span>,
+	<span class="doccomment">/// Maintain the node and its subtree.</span>
+	<span class="ident">KeepTree</span>,
 }
 
 <span class="doccomment">/// A tree data structure that stores several nodes across multiple branches.</span>
@@ -2085,6 +2184,29 @@
 			(<span class="prelude-val">None</span>, <span class="bool-val">false</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">FinalizationResult::Unchanged</span>),
 		}
 	}
+
+	<span class="doccomment">/// Remove from the tree some nodes (and their subtrees) using a `filter` predicate.</span>
+	<span class="doccomment">/// The `filter` is called over tree nodes and returns a filter action:</span>
+	<span class="doccomment">/// - `Remove` if the node and its subtree should be removed;</span>
+	<span class="doccomment">/// - `KeepNode` if we should maintain the node and keep processing the tree.</span>
+	<span class="doccomment">/// - `KeepTree` if we should maintain the node and its entire subtree.</span>
+	<span class="doccomment">/// An iterator over all the pruned nodes is returned.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">drain_filter</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">filter</span>: <span class="ident">F</span>) -&gt; <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="ident">H</span>, <span class="ident">N</span>, <span class="ident">V</span>)<span class="op">&gt;</span>
+	<span class="kw">where</span>
+		<span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="kw-2">&amp;</span><span class="ident">H</span>, <span class="kw-2">&amp;</span><span class="ident">N</span>, <span class="kw-2">&amp;</span><span class="ident">V</span>) -&gt; <span class="ident">FilterAction</span>,
+	{
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">removed</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
+		<span class="kw">while</span> <span class="ident">i</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">roots</span>.<span class="ident">len</span>() {
+			<span class="kw">if</span> <span class="self">self</span>.<span class="ident">roots</span>[<span class="ident">i</span>].<span class="ident">drain_filter</span>(<span class="kw-2">&amp;mut</span> <span class="ident">filter</span>, <span class="kw-2">&amp;mut</span> <span class="ident">removed</span>) {
+				<span class="ident">removed</span>.<span class="ident">push</span>(<span class="self">self</span>.<span class="ident">roots</span>.<span class="ident">remove</span>(<span class="ident">i</span>));
+			} <span class="kw">else</span> {
+				<span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+			}
+		}
+		<span class="self">self</span>.<span class="ident">rebalance</span>();
+		<span class="ident">RemovedIterator</span> { <span class="ident">stack</span>: <span class="ident">removed</span> }
+	}
 }
 
 <span class="comment">// Workaround for: https://github.com/rust-lang/rust/issues/34537</span>
@@ -2310,6 +2432,34 @@
 				},
 			}
 		}
+
+		<span class="doccomment">/// Calls a `filter` predicate for the given node.</span>
+		<span class="doccomment">/// The `filter` is called over tree nodes and returns a filter action:</span>
+		<span class="doccomment">/// - `Remove` if the node and its subtree should be removed;</span>
+		<span class="doccomment">/// - `KeepNode` if we should maintain the node and keep processing the tree;</span>
+		<span class="doccomment">/// - `KeepTree` if we should maintain the node and its entire subtree.</span>
+		<span class="doccomment">/// Pruned subtrees are added to the `removed` list.</span>
+		<span class="doccomment">/// Returns a booleans indicateing if this node (and its subtree) should be removed.</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">drain_filter</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">filter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>, <span class="ident">removed</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Node</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span>, <span class="ident">V</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="ident">bool</span>
+		<span class="kw">where</span>
+			<span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="kw-2">&amp;</span><span class="ident">H</span>, <span class="kw-2">&amp;</span><span class="ident">N</span>, <span class="kw-2">&amp;</span><span class="ident">V</span>) -&gt; <span class="ident">FilterAction</span>,
+		{
+			<span class="kw">match</span> <span class="ident">filter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">hash</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">number</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">data</span>) {
+				<span class="ident">FilterAction::KeepNode</span> =&gt; {
+					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
+					<span class="kw">while</span> <span class="ident">i</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">children</span>.<span class="ident">len</span>() {
+						<span class="kw">if</span> <span class="self">self</span>.<span class="ident">children</span>[<span class="ident">i</span>].<span class="ident">drain_filter</span>(<span class="ident">filter</span>, <span class="ident">removed</span>) {
+							<span class="ident">removed</span>.<span class="ident">push</span>(<span class="self">self</span>.<span class="ident">children</span>.<span class="ident">remove</span>(<span class="ident">i</span>));
+						} <span class="kw">else</span> {
+							<span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+						}
+					}
+					<span class="bool-val">false</span>
+				},
+				<span class="ident">FilterAction::KeepTree</span> =&gt; <span class="bool-val">false</span>,
+				<span class="ident">FilterAction::Remove</span> =&gt; <span class="bool-val">true</span>,
+			}
+		}
 	}
 }
 
@@ -2356,6 +2506,8 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">test</span> {
+	<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::FilterAction</span>;
+
 	<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Error</span>, <span class="ident">FinalizationResult</span>, <span class="ident">ForkTree</span>};
 
 	<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
@@ -2380,11 +2532,11 @@
 		<span class="comment">//   /   - G</span>
 		<span class="comment">//  /   /</span>
 		<span class="comment">// A - F - H - I</span>
-		<span class="comment">//          \</span>
-		<span class="comment">//           - L - M \</span>
-		<span class="comment">//               - O</span>
-		<span class="comment">//  \</span>
-		<span class="comment">//   — J - K</span>
+		<span class="comment">//  \       \</span>
+		<span class="comment">//   \       - L - M</span>
+		<span class="comment">//    \          \</span>
+		<span class="comment">//     \          - O</span>
+		<span class="comment">//      - J - K</span>
 		<span class="comment">//</span>
 		<span class="comment">// (where N is not a part of fork tree)</span>
 		<span class="comment">//</span>
@@ -2917,6 +3069,30 @@
 		<span class="macro">assert_eq!</span>(
 			<span class="ident">tree</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">h</span>, <span class="kw">_</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="kw-2">*</span><span class="ident">h</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
 			[<span class="string">&quot;A&quot;</span>, <span class="string">&quot;F&quot;</span>, <span class="string">&quot;H&quot;</span>, <span class="string">&quot;L&quot;</span>, <span class="string">&quot;O&quot;</span>, <span class="string">&quot;P&quot;</span>, <span class="string">&quot;M&quot;</span>, <span class="string">&quot;I&quot;</span>, <span class="string">&quot;G&quot;</span>, <span class="string">&quot;B&quot;</span>, <span class="string">&quot;C&quot;</span>, <span class="string">&quot;D&quot;</span>, <span class="string">&quot;E&quot;</span>, <span class="string">&quot;J&quot;</span>, <span class="string">&quot;K&quot;</span>]
+		);
+	}
+
+	<span class="attribute">#[<span class="ident">test</span>]</span>
+	<span class="kw">fn</span> <span class="ident">tree_drain_filter</span>() {
+		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">tree</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">test_fork_tree</span>();
+
+		<span class="kw">let</span> <span class="ident">filter</span> <span class="op">=</span> <span class="op">|</span><span class="ident">h</span>: <span class="op">&amp;&amp;</span><span class="ident">str</span>, <span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="ident">u64</span>, <span class="kw">_</span>: <span class="kw-2">&amp;</span>()<span class="op">|</span> <span class="kw">match</span> <span class="kw-2">*</span><span class="ident">h</span> {
+			<span class="string">&quot;A&quot;</span> <span class="op">|</span> <span class="string">&quot;B&quot;</span> <span class="op">|</span> <span class="string">&quot;F&quot;</span> <span class="op">|</span> <span class="string">&quot;G&quot;</span> =&gt; <span class="ident">FilterAction::KeepNode</span>,
+			<span class="string">&quot;C&quot;</span> =&gt; <span class="ident">FilterAction::KeepTree</span>,
+			<span class="string">&quot;H&quot;</span> <span class="op">|</span> <span class="string">&quot;J&quot;</span> =&gt; <span class="ident">FilterAction::Remove</span>,
+			<span class="kw">_</span> =&gt; <span class="macro">panic!</span>(<span class="string">&quot;Unexpected filtering for node: {}&quot;</span>, <span class="kw-2">*</span><span class="ident">h</span>),
+		};
+
+		<span class="kw">let</span> <span class="ident">removed</span> <span class="op">=</span> <span class="ident">tree</span>.<span class="ident">drain_filter</span>(<span class="ident">filter</span>);
+
+		<span class="macro">assert_eq!</span>(
+			<span class="ident">tree</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">h</span>, <span class="kw">_</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="kw-2">*</span><span class="ident">h</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
+			[<span class="string">&quot;A&quot;</span>, <span class="string">&quot;B&quot;</span>, <span class="string">&quot;C&quot;</span>, <span class="string">&quot;D&quot;</span>, <span class="string">&quot;E&quot;</span>, <span class="string">&quot;F&quot;</span>, <span class="string">&quot;G&quot;</span>]
+		);
+
+		<span class="macro">assert_eq!</span>(
+			<span class="ident">removed</span>.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">h</span>, <span class="kw">_</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="ident">h</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
+			[<span class="string">&quot;J&quot;</span>, <span class="string">&quot;K&quot;</span>, <span class="string">&quot;H&quot;</span>, <span class="string">&quot;L&quot;</span>, <span class="string">&quot;M&quot;</span>, <span class="string">&quot;O&quot;</span>, <span class="string">&quot;I&quot;</span>]
 		);
 	}
 }

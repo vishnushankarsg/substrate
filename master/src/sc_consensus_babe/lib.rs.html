@@ -1830,6 +1830,79 @@
 <span id="1830">1830</span>
 <span id="1831">1831</span>
 <span id="1832">1832</span>
+<span id="1833">1833</span>
+<span id="1834">1834</span>
+<span id="1835">1835</span>
+<span id="1836">1836</span>
+<span id="1837">1837</span>
+<span id="1838">1838</span>
+<span id="1839">1839</span>
+<span id="1840">1840</span>
+<span id="1841">1841</span>
+<span id="1842">1842</span>
+<span id="1843">1843</span>
+<span id="1844">1844</span>
+<span id="1845">1845</span>
+<span id="1846">1846</span>
+<span id="1847">1847</span>
+<span id="1848">1848</span>
+<span id="1849">1849</span>
+<span id="1850">1850</span>
+<span id="1851">1851</span>
+<span id="1852">1852</span>
+<span id="1853">1853</span>
+<span id="1854">1854</span>
+<span id="1855">1855</span>
+<span id="1856">1856</span>
+<span id="1857">1857</span>
+<span id="1858">1858</span>
+<span id="1859">1859</span>
+<span id="1860">1860</span>
+<span id="1861">1861</span>
+<span id="1862">1862</span>
+<span id="1863">1863</span>
+<span id="1864">1864</span>
+<span id="1865">1865</span>
+<span id="1866">1866</span>
+<span id="1867">1867</span>
+<span id="1868">1868</span>
+<span id="1869">1869</span>
+<span id="1870">1870</span>
+<span id="1871">1871</span>
+<span id="1872">1872</span>
+<span id="1873">1873</span>
+<span id="1874">1874</span>
+<span id="1875">1875</span>
+<span id="1876">1876</span>
+<span id="1877">1877</span>
+<span id="1878">1878</span>
+<span id="1879">1879</span>
+<span id="1880">1880</span>
+<span id="1881">1881</span>
+<span id="1882">1882</span>
+<span id="1883">1883</span>
+<span id="1884">1884</span>
+<span id="1885">1885</span>
+<span id="1886">1886</span>
+<span id="1887">1887</span>
+<span id="1888">1888</span>
+<span id="1889">1889</span>
+<span id="1890">1890</span>
+<span id="1891">1891</span>
+<span id="1892">1892</span>
+<span id="1893">1893</span>
+<span id="1894">1894</span>
+<span id="1895">1895</span>
+<span id="1896">1896</span>
+<span id="1897">1897</span>
+<span id="1898">1898</span>
+<span id="1899">1899</span>
+<span id="1900">1900</span>
+<span id="1901">1901</span>
+<span id="1902">1902</span>
+<span id="1903">1903</span>
+<span id="1904">1904</span>
+<span id="1905">1905</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -1924,8 +1997,8 @@
 <span class="kw">use</span> <span class="ident">schnorrkel::SignatureError</span>;
 
 <span class="kw">use</span> <span class="ident">sc_client_api</span>::{
-	<span class="ident">backend::AuxStore</span>, <span class="ident">AuxDataOperations</span>, <span class="ident">BlockchainEvents</span>, <span class="ident">FinalityNotification</span>, <span class="ident">PreCommitActions</span>,
-	<span class="ident">ProvideUncles</span>, <span class="ident">UsageProvider</span>,
+	<span class="ident">backend::AuxStore</span>, <span class="ident">AuxDataOperations</span>, <span class="ident">Backend</span> <span class="kw">as</span> <span class="ident">BackendT</span>, <span class="ident">BlockchainEvents</span>,
+	<span class="ident">FinalityNotification</span>, <span class="ident">PreCommitActions</span>, <span class="ident">ProvideUncles</span>, <span class="ident">UsageProvider</span>,
 };
 <span class="kw">use</span> <span class="ident">sc_consensus</span>::{
 	<span class="ident">block_import</span>::{
@@ -1945,7 +2018,9 @@
 <span class="kw">use</span> <span class="ident">sp_api</span>::{<span class="ident">ApiExt</span>, <span class="ident">ProvideRuntimeApi</span>};
 <span class="kw">use</span> <span class="ident">sp_application_crypto::AppKey</span>;
 <span class="kw">use</span> <span class="ident">sp_block_builder::BlockBuilder</span> <span class="kw">as</span> <span class="ident">BlockBuilderApi</span>;
-<span class="kw">use</span> <span class="ident">sp_blockchain</span>::{<span class="ident">Error</span> <span class="kw">as</span> <span class="ident">ClientError</span>, <span class="ident">HeaderBackend</span>, <span class="ident">HeaderMetadata</span>, <span class="prelude-ty">Result</span> <span class="kw">as</span> <span class="ident">ClientResult</span>};
+<span class="kw">use</span> <span class="ident">sp_blockchain</span>::{
+	<span class="ident">Backend</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">Error</span> <span class="kw">as</span> <span class="ident">ClientError</span>, <span class="ident">HeaderBackend</span>, <span class="ident">HeaderMetadata</span>, <span class="prelude-ty">Result</span> <span class="kw">as</span> <span class="ident">ClientResult</span>,
+};
 <span class="kw">use</span> <span class="ident">sp_consensus</span>::{
 	<span class="ident">BlockOrigin</span>, <span class="ident">CacheKeyId</span>, <span class="ident">CanAuthorWith</span>, <span class="ident">Environment</span>, <span class="ident">Error</span> <span class="kw">as</span> <span class="ident">ConsensusError</span>, <span class="ident">Proposer</span>,
 	<span class="ident">SelectChain</span>,
@@ -3661,6 +3736,77 @@
 	};
 
 	<span class="prelude-val">Ok</span>(<span class="ident">BasicQueue::new</span>(<span class="ident">verifier</span>, <span class="ident">Box::new</span>(<span class="ident">block_import</span>), <span class="ident">justification_import</span>, <span class="ident">spawner</span>, <span class="ident">registry</span>))
+}
+
+<span class="doccomment">/// Reverts aux data.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">revert</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Client</span>, <span class="ident">Backend</span><span class="op">&gt;</span>(
+	<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>,
+	<span class="ident">backend</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Backend</span><span class="op">&gt;</span>,
+	<span class="ident">blocks</span>: <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
+) -&gt; <span class="ident">ClientResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+<span class="kw">where</span>
+	<span class="ident">Block</span>: <span class="ident">BlockT</span>,
+	<span class="ident">Client</span>: <span class="ident">AuxStore</span>
+		<span class="op">+</span> <span class="ident">HeaderMetadata</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Error</span> <span class="op">=</span> <span class="ident">sp_blockchain::Error</span><span class="op">&gt;</span>
+		<span class="op">+</span> <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>
+		<span class="op">+</span> <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>
+		<span class="op">+</span> <span class="ident">UsageProvider</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
+	<span class="ident">Client::Api</span>: <span class="ident">BabeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
+	<span class="ident">Backend</span>: <span class="ident">BackendT</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
+{
+	<span class="kw">let</span> <span class="ident">best_number</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">info</span>().<span class="ident">best_number</span>;
+	<span class="kw">let</span> <span class="ident">finalized</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">info</span>().<span class="ident">finalized_number</span>;
+	<span class="kw">let</span> <span class="ident">revertible</span> <span class="op">=</span> <span class="ident">blocks</span>.<span class="ident">min</span>(<span class="ident">best_number</span> <span class="op">-</span> <span class="ident">finalized</span>);
+
+	<span class="kw">let</span> <span class="ident">number</span> <span class="op">=</span> <span class="ident">best_number</span> <span class="op">-</span> <span class="ident">revertible</span>;
+	<span class="kw">let</span> <span class="ident">hash</span> <span class="op">=</span> <span class="ident">client</span>
+		.<span class="ident">block_hash_from_id</span>(<span class="kw-2">&amp;</span><span class="ident">BlockId::Number</span>(<span class="ident">number</span>))<span class="question-mark">?</span>
+		.<span class="ident">ok_or</span>(<span class="ident">ClientError::Backend</span>(<span class="macro">format!</span>(
+			<span class="string">&quot;Unexpected hash lookup failure for block number: {}&quot;</span>,
+			<span class="ident">number</span>
+		)))<span class="question-mark">?</span>;
+
+	<span class="comment">// Revert epoch changes tree.</span>
+
+	<span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">Config::get</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">client</span>)<span class="question-mark">?</span>;
+	<span class="kw">let</span> <span class="ident">epoch_changes</span> <span class="op">=</span>
+		<span class="ident">aux_schema::load_epoch_changes</span>::<span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Client</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">client</span>, <span class="ident">config</span>.<span class="ident">genesis_config</span>())<span class="question-mark">?</span>;
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">epoch_changes</span> <span class="op">=</span> <span class="ident">epoch_changes</span>.<span class="ident">shared_data</span>();
+
+	<span class="kw">if</span> <span class="ident">number</span> <span class="op">==</span> <span class="ident">Zero::zero</span>() {
+		<span class="comment">// Special case, no epoch changes data were present on genesis.</span>
+		<span class="kw-2">*</span><span class="ident">epoch_changes</span> <span class="op">=</span> <span class="ident">EpochChangesFor</span>::<span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Epoch</span><span class="op">&gt;</span><span class="ident">::default</span>();
+	} <span class="kw">else</span> {
+		<span class="ident">epoch_changes</span>.<span class="ident">revert</span>(<span class="ident">descendent_query</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">client</span>), <span class="ident">hash</span>, <span class="ident">number</span>);
+	}
+
+	<span class="comment">// Remove block weights added after the revert point.</span>
+
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weight_keys</span> <span class="op">=</span> <span class="ident">HashSet::with_capacity</span>(<span class="ident">revertible</span>.<span class="ident">saturated_into</span>());
+	<span class="kw">let</span> <span class="ident">leaves</span> <span class="op">=</span> <span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">leaves</span>()<span class="question-mark">?</span>.<span class="ident">into_iter</span>().<span class="ident">filter</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">leaf</span><span class="op">|</span> {
+		<span class="ident">sp_blockchain::tree_route</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">client</span>, <span class="ident">hash</span>, <span class="ident">leaf</span>)
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">route</span><span class="op">|</span> <span class="ident">route</span>.<span class="ident">retracted</span>().<span class="ident">is_empty</span>())
+			.<span class="ident">unwrap_or_default</span>()
+	});
+	<span class="kw">for</span> <span class="ident">leaf</span> <span class="kw">in</span> <span class="ident">leaves</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hash</span> <span class="op">=</span> <span class="ident">leaf</span>;
+		<span class="comment">// Insert parent after parent until we don&#39;t hit an already processed</span>
+		<span class="comment">// branch or we reach a direct child of the rollback point.</span>
+		<span class="kw">while</span> <span class="ident">weight_keys</span>.<span class="ident">insert</span>(<span class="ident">aux_schema::block_weight_key</span>(<span class="ident">hash</span>)) {
+			<span class="kw">let</span> <span class="ident">meta</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">header_metadata</span>(<span class="ident">hash</span>)<span class="question-mark">?</span>;
+			<span class="kw">if</span> <span class="ident">meta</span>.<span class="ident">number</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">number</span> <span class="op">+</span> <span class="ident">One::one</span>() {
+				<span class="comment">// We&#39;ve reached a child of the revert point, stop here.</span>
+				<span class="kw">break</span>
+			}
+			<span class="ident">hash</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">header_metadata</span>(<span class="ident">hash</span>)<span class="question-mark">?</span>.<span class="ident">parent</span>;
+		}
+	}
+	<span class="kw">let</span> <span class="ident">weight_keys</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">weight_keys</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="ident">val</span>.<span class="ident">as_slice</span>()).<span class="ident">collect</span>();
+
+	<span class="comment">// Write epoch changes and remove weights in one shot.</span>
+	<span class="ident">aux_schema::write_epoch_changes</span>::<span class="op">&lt;</span><span class="ident">Block</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">epoch_changes</span>, <span class="op">|</span><span class="ident">values</span><span class="op">|</span> {
+		<span class="ident">client</span>.<span class="ident">insert_aux</span>(<span class="ident">values</span>, <span class="ident">weight_keys</span>.<span class="ident">iter</span>())
+	})
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="sc_consensus_babe" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
