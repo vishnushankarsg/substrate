@@ -170,6 +170,8 @@
 <span id="170">170</span>
 <span id="171">171</span>
 <span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -231,7 +233,7 @@
 
 <span class="kw">impl</span> <span class="ident">ServiceBranch</span> {
 	<span class="doccomment">/// Return the weight of the `nudge` function when it takes the branch denoted by `self`.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">weight_of_nudge</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="self">self</span>) -&gt; <span class="ident">frame_support::weights::Weight</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">weight_of_nudge</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(<span class="self">self</span>) -&gt; <span class="ident">frame_support::weights::Weight</span> {
 		<span class="kw">use</span> <span class="ident">ServiceBranch</span>::<span class="kw-2">*</span>;
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident">NoDeposit</span> =&gt; <span class="ident">T::WeightInfo::nudge_referendum_no_deposit</span>(),
@@ -253,7 +255,7 @@
 	}
 
 	<span class="doccomment">/// Return the maximum possible weight of the `nudge` function.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">max_weight_of_nudge</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>() -&gt; <span class="ident">frame_support::weights::Weight</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">max_weight_of_nudge</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>() -&gt; <span class="ident">frame_support::weights::Weight</span> {
 		<span class="number">0</span>.<span class="ident">max</span>(<span class="ident">T::WeightInfo::nudge_referendum_no_deposit</span>())
 			.<span class="ident">max</span>(<span class="ident">T::WeightInfo::nudge_referendum_preparing</span>())
 			.<span class="ident">max</span>(<span class="ident">T::WeightInfo::nudge_referendum_queued</span>())
@@ -273,7 +275,9 @@
 
 	<span class="doccomment">/// Return the weight of the `place_decision_deposit` function when it takes the branch denoted</span>
 	<span class="doccomment">/// by `self`.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">weight_of_deposit</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">frame_support::weights::Weight</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">weight_of_deposit</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
+		<span class="self">self</span>,
+	) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">frame_support::weights::Weight</span><span class="op">&gt;</span> {
 		<span class="kw">use</span> <span class="ident">ServiceBranch</span>::<span class="kw-2">*</span>;
 		<span class="prelude-val">Some</span>(<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident">Preparing</span> =&gt; <span class="ident">T::WeightInfo::place_decision_deposit_preparing</span>(),
@@ -296,7 +300,7 @@
 	}
 
 	<span class="doccomment">/// Return the maximum possible weight of the `place_decision_deposit` function.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">max_weight_of_deposit</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>() -&gt; <span class="ident">frame_support::weights::Weight</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">max_weight_of_deposit</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>() -&gt; <span class="ident">frame_support::weights::Weight</span> {
 		<span class="number">0</span>.<span class="ident">max</span>(<span class="ident">T::WeightInfo::place_decision_deposit_preparing</span>())
 			.<span class="ident">max</span>(<span class="ident">T::WeightInfo::place_decision_deposit_queued</span>())
 			.<span class="ident">max</span>(<span class="ident">T::WeightInfo::place_decision_deposit_not_queued</span>())
@@ -326,7 +330,7 @@
 <span class="kw">impl</span> <span class="ident">OneFewerDecidingBranch</span> {
 	<span class="doccomment">/// Return the weight of the `one_fewer_deciding` function when it takes the branch denoted</span>
 	<span class="doccomment">/// by `self`.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">weight</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="self">self</span>) -&gt; <span class="ident">frame_support::weights::Weight</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">weight</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(<span class="self">self</span>) -&gt; <span class="ident">frame_support::weights::Weight</span> {
 		<span class="kw">use</span> <span class="ident">OneFewerDecidingBranch</span>::<span class="kw-2">*</span>;
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident">QueueEmpty</span> =&gt; <span class="ident">T::WeightInfo::one_fewer_deciding_queue_empty</span>(),
@@ -336,7 +340,7 @@
 	}
 
 	<span class="doccomment">/// Return the maximum possible weight of the `one_fewer_deciding` function.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">max_weight</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>() -&gt; <span class="ident">frame_support::weights::Weight</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">max_weight</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>() -&gt; <span class="ident">frame_support::weights::Weight</span> {
 		<span class="number">0</span>.<span class="ident">max</span>(<span class="ident">T::WeightInfo::one_fewer_deciding_queue_empty</span>())
 			.<span class="ident">max</span>(<span class="ident">T::WeightInfo::one_fewer_deciding_passing</span>())
 			.<span class="ident">max</span>(<span class="ident">T::WeightInfo::one_fewer_deciding_failing</span>())

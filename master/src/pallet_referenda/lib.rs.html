@@ -1059,6 +1059,22 @@
 <span id="1059">1059</span>
 <span id="1060">1060</span>
 <span id="1061">1061</span>
+<span id="1062">1062</span>
+<span id="1063">1063</span>
+<span id="1064">1064</span>
+<span id="1065">1065</span>
+<span id="1066">1066</span>
+<span id="1067">1067</span>
+<span id="1068">1068</span>
+<span id="1069">1069</span>
+<span id="1070">1070</span>
+<span id="1071">1071</span>
+<span id="1072">1072</span>
+<span id="1073">1073</span>
+<span id="1074">1074</span>
+<span id="1075">1075</span>
+<span id="1076">1076</span>
+<span id="1077">1077</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1144,15 +1160,18 @@
 <span class="kw">mod</span> <span class="ident">branch</span>;
 <span class="kw">mod</span> <span class="ident">types</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">weights</span>;
-<span class="kw">use</span> <span class="ident">branch</span>::{<span class="ident">BeginDecidingBranch</span>, <span class="ident">OneFewerDecidingBranch</span>, <span class="ident">ServiceBranch</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">pallet</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">types</span>::{
-	<span class="ident">BalanceOf</span>, <span class="ident">CallOf</span>, <span class="ident">Curve</span>, <span class="ident">DecidingStatus</span>, <span class="ident">DecidingStatusOf</span>, <span class="ident">Deposit</span>, <span class="ident">InsertSorted</span>,
-	<span class="ident">NegativeImbalanceOf</span>, <span class="ident">PalletsOriginOf</span>, <span class="ident">ReferendumIndex</span>, <span class="ident">ReferendumInfo</span>, <span class="ident">ReferendumInfoOf</span>,
-	<span class="ident">ReferendumStatus</span>, <span class="ident">ReferendumStatusOf</span>, <span class="ident">ScheduleAddressOf</span>, <span class="ident">TallyOf</span>, <span class="ident">TrackIdOf</span>, <span class="ident">TrackInfo</span>,
-	<span class="ident">TrackInfoOf</span>, <span class="ident">TracksInfo</span>, <span class="ident">VotesOf</span>,
+
+<span class="kw">use</span> <span class="ident"><span class="self">self</span>::branch</span>::{<span class="ident">BeginDecidingBranch</span>, <span class="ident">OneFewerDecidingBranch</span>, <span class="ident">ServiceBranch</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::{
+	<span class="ident">pallet</span>::<span class="kw-2">*</span>,
+	<span class="ident">types</span>::{
+		<span class="ident">BalanceOf</span>, <span class="ident">CallOf</span>, <span class="ident">Curve</span>, <span class="ident">DecidingStatus</span>, <span class="ident">DecidingStatusOf</span>, <span class="ident">Deposit</span>, <span class="ident">InsertSorted</span>,
+		<span class="ident">NegativeImbalanceOf</span>, <span class="ident">PalletsOriginOf</span>, <span class="ident">ReferendumIndex</span>, <span class="ident">ReferendumInfo</span>, <span class="ident">ReferendumInfoOf</span>,
+		<span class="ident">ReferendumStatus</span>, <span class="ident">ReferendumStatusOf</span>, <span class="ident">ScheduleAddressOf</span>, <span class="ident">TallyOf</span>, <span class="ident">TrackIdOf</span>, <span class="ident">TrackInfo</span>,
+		<span class="ident">TrackInfoOf</span>, <span class="ident">TracksInfo</span>, <span class="ident">VotesOf</span>,
+	},
+	<span class="ident">weights::WeightInfo</span>,
 };
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">weights::WeightInfo</span>;
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">mock</span>;
@@ -1167,25 +1186,33 @@
 <span class="attribute">#[<span class="ident">frame_support::pallet</span>]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">pallet</span> {
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-	<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">pallet_prelude</span>::<span class="kw-2">*</span>, <span class="ident">traits::EnsureOrigin</span>, <span class="ident">Parameter</span>};
+	<span class="kw">use</span> <span class="ident">frame_support::pallet_prelude</span>::<span class="kw-2">*</span>;
 	<span class="kw">use</span> <span class="ident">frame_system::pallet_prelude</span>::<span class="kw-2">*</span>;
-	<span class="kw">use</span> <span class="ident">sp_runtime::DispatchResult</span>;
 
 	<span class="attribute">#[<span class="ident">pallet::pallet</span>]</span>
 	<span class="attribute">#[<span class="ident">pallet::generate_store</span>(<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">trait</span> <span class="ident">Store</span>)]</span>
 	<span class="attribute">#[<span class="ident">pallet::without_storage_info</span>]</span>
-	<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw">_</span>);
+	<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span> <span class="op">=</span> ()<span class="op">&gt;</span>(<span class="kw">_</span>);
 
 	<span class="attribute">#[<span class="ident">pallet::config</span>]</span>
-	<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Config</span>: <span class="ident">frame_system::Config</span> <span class="op">+</span> <span class="ident">Sized</span> {
+	<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span>: <span class="lifetime">&#39;static</span> <span class="op">=</span> ()<span class="op">&gt;</span>: <span class="ident">frame_system::Config</span> <span class="op">+</span> <span class="ident">Sized</span> {
 		<span class="comment">// System level stuff.</span>
-		<span class="kw">type</span> <span class="ident">Call</span>: <span class="ident">Parameter</span> <span class="op">+</span> <span class="ident">Dispatchable</span><span class="op">&lt;</span><span class="ident">Origin</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::Origin</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>;
-		<span class="kw">type</span> <span class="ident">Event</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Event</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">IsType</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::Event</span><span class="op">&gt;</span>;
+		<span class="kw">type</span> <span class="ident">Call</span>: <span class="ident">Parameter</span> <span class="op">+</span> <span class="ident">Dispatchable</span><span class="op">&lt;</span><span class="ident">Origin</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::Origin</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+		<span class="kw">type</span> <span class="ident">Event</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Event</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">IsType</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::Event</span><span class="op">&gt;</span>;
 		<span class="doccomment">/// Weight information for extrinsics in this pallet.</span>
 		<span class="kw">type</span> <span class="ident">WeightInfo</span>: <span class="ident">WeightInfo</span>;
 		<span class="doccomment">/// The Scheduler.</span>
-		<span class="kw">type</span> <span class="ident">Scheduler</span>: <span class="ident">ScheduleAnon</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::BlockNumber</span>, <span class="ident">CallOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">PalletsOriginOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::Hash</span><span class="op">&gt;</span>
-			<span class="op">+</span> <span class="ident">ScheduleNamed</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::BlockNumber</span>, <span class="ident">CallOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">PalletsOriginOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::Hash</span><span class="op">&gt;</span>;
+		<span class="kw">type</span> <span class="ident">Scheduler</span>: <span class="ident">ScheduleAnon</span><span class="op">&lt;</span>
+				<span class="ident"><span class="self">Self</span>::BlockNumber</span>,
+				<span class="ident">CallOf</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">I</span><span class="op">&gt;</span>,
+				<span class="ident">PalletsOriginOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>,
+				<span class="ident">Hash</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::Hash</span>,
+			<span class="op">&gt;</span> <span class="op">+</span> <span class="ident">ScheduleNamed</span><span class="op">&lt;</span>
+				<span class="ident"><span class="self">Self</span>::BlockNumber</span>,
+				<span class="ident">CallOf</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">I</span><span class="op">&gt;</span>,
+				<span class="ident">PalletsOriginOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>,
+				<span class="ident">Hash</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::Hash</span>,
+			<span class="op">&gt;</span>;
 		<span class="doccomment">/// Currency type for this pallet.</span>
 		<span class="kw">type</span> <span class="ident">Currency</span>: <span class="ident">ReservableCurrency</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>;
 		<span class="comment">// Origins and unbalances.</span>
@@ -1194,7 +1221,7 @@
 		<span class="doccomment">/// Origin from which any vote may be killed.</span>
 		<span class="kw">type</span> <span class="ident">KillOrigin</span>: <span class="ident">EnsureOrigin</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Origin</span><span class="op">&gt;</span>;
 		<span class="doccomment">/// Handler for the unbalanced reduction when slashing a preimage deposit.</span>
-		<span class="kw">type</span> <span class="ident">Slash</span>: <span class="ident">OnUnbalanced</span><span class="op">&lt;</span><span class="ident">NegativeImbalanceOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+		<span class="kw">type</span> <span class="ident">Slash</span>: <span class="ident">OnUnbalanced</span><span class="op">&lt;</span><span class="ident">NegativeImbalanceOf</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 		<span class="doccomment">/// The counting type for votes. Usually just balance.</span>
 		<span class="kw">type</span> <span class="ident">Votes</span>: <span class="ident">AtLeast32BitUnsigned</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Parameter</span> <span class="op">+</span> <span class="ident">Member</span>;
 		<span class="doccomment">/// The tallying type.</span>
@@ -1203,7 +1230,7 @@
 		<span class="comment">// Constants</span>
 		<span class="doccomment">/// The minimum amount to be used as a deposit for a public referendum proposal.</span>
 		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
-		<span class="kw">type</span> <span class="ident">SubmissionDeposit</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+		<span class="kw">type</span> <span class="ident">SubmissionDeposit</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 		<span class="doccomment">/// Maximum size of the referendum queue for a single track.</span>
 		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
@@ -1223,7 +1250,7 @@
 		<span class="comment">// The other stuff.</span>
 		<span class="doccomment">/// Information concerning the different referendum tracks.</span>
 		<span class="kw">type</span> <span class="ident">Tracks</span>: <span class="ident">TracksInfo</span><span class="op">&lt;</span>
-			<span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>,
+			<span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">I</span><span class="op">&gt;</span>,
 			<span class="ident"><span class="self">Self</span>::BlockNumber</span>,
 			<span class="ident">Origin</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Origin</span> <span class="kw">as</span> <span class="ident">OriginTrait</span><span class="op">&gt;</span><span class="ident">::PalletsOrigin</span>,
 		<span class="op">&gt;</span>;
@@ -1231,39 +1258,40 @@
 
 	<span class="doccomment">/// The next free referendum index, aka the number of referenda started so far.</span>
 	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
-	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">ReferendumCount</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageValue</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">ReferendumIndex</span>, <span class="ident">ValueQuery</span><span class="op">&gt;</span>;
+	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">ReferendumCount</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageValue</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">ReferendumIndex</span>, <span class="ident">ValueQuery</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Information concerning any given referendum.</span>
 	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
-	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">ReferendumInfoFor</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span>
-		<span class="ident">StorageMap</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">Blake2_128Concat</span>, <span class="ident">ReferendumIndex</span>, <span class="ident">ReferendumInfoOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">ReferendumInfoFor</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">=</span>
+		<span class="ident">StorageMap</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">Blake2_128Concat</span>, <span class="ident">ReferendumIndex</span>, <span class="ident">ReferendumInfoOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// The sorted list of referenda ready to be decided but not yet being decided, ordered by</span>
 	<span class="doccomment">/// conviction-weighted approvals.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This should be empty if `DecidingCount` is less than `TrackInfo::max_deciding`.</span>
 	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
-	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">TrackQueue</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageMap</span><span class="op">&lt;</span>
+	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">TrackQueue</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageMap</span><span class="op">&lt;</span>
 		<span class="kw">_</span>,
 		<span class="ident">Twox64Concat</span>,
-		<span class="ident">TrackIdOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+		<span class="ident">TrackIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
 		<span class="ident">BoundedVec</span><span class="op">&lt;</span>(<span class="ident">ReferendumIndex</span>, <span class="ident">T::Votes</span>), <span class="ident">T::MaxQueued</span><span class="op">&gt;</span>,
 		<span class="ident">ValueQuery</span>,
 	<span class="op">&gt;</span>;
 
 	<span class="doccomment">/// The number of referenda being decided currently.</span>
 	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
-	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">DecidingCount</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageMap</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">Twox64Concat</span>, <span class="ident">TrackIdOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">u32</span>, <span class="ident">ValueQuery</span><span class="op">&gt;</span>;
+	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">DecidingCount</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">=</span>
+		<span class="ident">StorageMap</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">Twox64Concat</span>, <span class="ident">TrackIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">u32</span>, <span class="ident">ValueQuery</span><span class="op">&gt;</span>;
 
 	<span class="attribute">#[<span class="ident">pallet::event</span>]</span>
 	<span class="attribute">#[<span class="ident">pallet::generate_deposit</span>(<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">deposit_event</span>)]</span>
-	<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Event</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Event</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span> <span class="op">=</span> ()<span class="op">&gt;</span> {
 		<span class="doccomment">/// A referendum has being submitted.</span>
 		<span class="ident">Submitted</span> {
 			<span class="doccomment">/// Index of the referendum.</span>
 			<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>,
 			<span class="doccomment">/// The track (and by extension proposal dispatch origin) of this referendum.</span>
-			<span class="ident">track</span>: <span class="ident">TrackIdOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+			<span class="ident">track</span>: <span class="ident">TrackIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
 			<span class="doccomment">/// The hash of the proposal up for referendum.</span>
 			<span class="ident">proposal_hash</span>: <span class="ident">T::Hash</span>,
 		},
@@ -1274,7 +1302,7 @@
 			<span class="doccomment">/// The account who placed the deposit.</span>
 			<span class="ident">who</span>: <span class="ident">T::AccountId</span>,
 			<span class="doccomment">/// The amount placed by the account.</span>
-			<span class="ident">amount</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+			<span class="ident">amount</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
 		},
 		<span class="doccomment">/// The decision deposit has been refunded.</span>
 		<span class="ident">DecisionDepositRefunded</span> {
@@ -1283,21 +1311,21 @@
 			<span class="doccomment">/// The account who placed the deposit.</span>
 			<span class="ident">who</span>: <span class="ident">T::AccountId</span>,
 			<span class="doccomment">/// The amount placed by the account.</span>
-			<span class="ident">amount</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+			<span class="ident">amount</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
 		},
 		<span class="doccomment">/// A deposit has been slashaed.</span>
 		<span class="ident">DepositSlashed</span> {
 			<span class="doccomment">/// The account who placed the deposit.</span>
 			<span class="ident">who</span>: <span class="ident">T::AccountId</span>,
 			<span class="doccomment">/// The amount placed by the account.</span>
-			<span class="ident">amount</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+			<span class="ident">amount</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
 		},
 		<span class="doccomment">/// A referendum has moved into the deciding phase.</span>
 		<span class="ident">DecisionStarted</span> {
 			<span class="doccomment">/// Index of the referendum.</span>
 			<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>,
 			<span class="doccomment">/// The track (and by extension proposal dispatch origin) of this referendum.</span>
-			<span class="ident">track</span>: <span class="ident">TrackIdOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+			<span class="ident">track</span>: <span class="ident">TrackIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
 			<span class="doccomment">/// The hash of the proposal up for referendum.</span>
 			<span class="ident">proposal_hash</span>: <span class="ident">T::Hash</span>,
 			<span class="doccomment">/// The current tally of votes in this referendum.</span>
@@ -1354,7 +1382,7 @@
 	}
 
 	<span class="attribute">#[<span class="ident">pallet::error</span>]</span>
-	<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span> <span class="op">=</span> ()<span class="op">&gt;</span> {
 		<span class="doccomment">/// Referendum is not ongoing.</span>
 		<span class="ident">NotOngoing</span>,
 		<span class="doccomment">/// Referendum&#39;s decision deposit is already paid.</span>
@@ -1380,7 +1408,7 @@
 	}
 
 	<span class="attribute">#[<span class="ident">pallet::call</span>]</span>
-	<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+	<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span> {
 		<span class="doccomment">/// Propose a referendum on a privileged action.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// - `origin`: must be `Signed` and the account must have `SubmissionDeposit` funds</span>
@@ -1399,9 +1427,10 @@
 		) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">who</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 
-			<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span> <span class="ident">T::Tracks::track_for</span>(<span class="kw-2">&amp;</span><span class="ident">proposal_origin</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::NoTrack</span>)<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span>
+				<span class="ident">T::Tracks::track_for</span>(<span class="kw-2">&amp;</span><span class="ident">proposal_origin</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::NoTrack</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">submission_deposit</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::take_deposit</span>(<span class="ident">who</span>, <span class="ident">T::SubmissionDeposit::get</span>())<span class="question-mark">?</span>;
-			<span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">ReferendumCount</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::mutate</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> {
+			<span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">ReferendumCount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::mutate</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> {
 				<span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">x</span>;
 				<span class="kw-2">*</span><span class="ident">x</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
 				<span class="ident">r</span>
@@ -1421,9 +1450,9 @@
 				<span class="ident">in_queue</span>: <span class="bool-val">false</span>,
 				<span class="ident">alarm</span>: <span class="ident"><span class="self">Self</span>::set_alarm</span>(<span class="ident">nudge_call</span>, <span class="ident">now</span>.<span class="ident">saturating_add</span>(<span class="ident">T::UndecidingTimeout::get</span>())),
 			};
-			<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="ident">ReferendumInfo::Ongoing</span>(<span class="ident">status</span>));
+			<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="ident">ReferendumInfo::Ongoing</span>(<span class="ident">status</span>));
 
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Submitted</span> { <span class="ident">index</span>, <span class="ident">track</span>, <span class="ident">proposal_hash</span> });
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::Submitted</span> { <span class="ident">index</span>, <span class="ident">track</span>, <span class="ident">proposal_hash</span> });
 			<span class="prelude-val">Ok</span>(())
 		}
 
@@ -1435,24 +1464,24 @@
 		<span class="doccomment">///   posted.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Emits `DecisionDepositPlaced`.</span>
-		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">ServiceBranch::max_weight_of_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>())]</span>
+		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">ServiceBranch::max_weight_of_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">place_decision_deposit</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>,
 		) -&gt; <span class="ident">DispatchResultWithPostInfo</span> {
 			<span class="kw">let</span> <span class="ident">who</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::ensure_ongoing</span>(<span class="ident">index</span>)<span class="question-mark">?</span>;
-			<span class="macro">ensure!</span>(<span class="ident">status</span>.<span class="ident">decision_deposit</span>.<span class="ident">is_none</span>(), <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::HasDeposit</span>);
-			<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::track</span>(<span class="ident">status</span>.<span class="ident">track</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::NoTrack</span>)<span class="question-mark">?</span>;
+			<span class="macro">ensure!</span>(<span class="ident">status</span>.<span class="ident">decision_deposit</span>.<span class="ident">is_none</span>(), <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::HasDeposit</span>);
+			<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::track</span>(<span class="ident">status</span>.<span class="ident">track</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::NoTrack</span>)<span class="question-mark">?</span>;
 			<span class="ident">status</span>.<span class="ident">decision_deposit</span> <span class="op">=</span>
 				<span class="prelude-val">Some</span>(<span class="ident"><span class="self">Self</span>::take_deposit</span>(<span class="ident">who</span>.<span class="ident">clone</span>(), <span class="ident">track</span>.<span class="ident">decision_deposit</span>)<span class="question-mark">?</span>);
 			<span class="kw">let</span> <span class="ident">now</span> <span class="op">=</span> <span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::block_number</span>();
 			<span class="kw">let</span> (<span class="ident">info</span>, <span class="kw">_</span>, <span class="ident">branch</span>) <span class="op">=</span> <span class="ident"><span class="self">Self</span>::service_referendum</span>(<span class="ident">now</span>, <span class="ident">index</span>, <span class="ident">status</span>);
-			<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="ident">info</span>);
+			<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="ident">info</span>);
 			<span class="kw">let</span> <span class="ident">e</span> <span class="op">=</span>
-				<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::DecisionDepositPlaced</span> { <span class="ident">index</span>, <span class="ident">who</span>, <span class="ident">amount</span>: <span class="ident">track</span>.<span class="ident">decision_deposit</span> };
+				<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::DecisionDepositPlaced</span> { <span class="ident">index</span>, <span class="ident">who</span>, <span class="ident">amount</span>: <span class="ident">track</span>.<span class="ident">decision_deposit</span> };
 			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">e</span>);
-			<span class="prelude-val">Ok</span>(<span class="ident">branch</span>.<span class="ident">weight_of_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>().<span class="ident">into</span>())
+			<span class="prelude-val">Ok</span>(<span class="ident">branch</span>.<span class="ident">weight_of_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>().<span class="ident">into</span>())
 		}
 
 		<span class="doccomment">/// Refund the Decision Deposit for a closed referendum back to the depositor.</span>
@@ -1468,14 +1497,15 @@
 			<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>,
 		) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="ident">ensure_signed_or_root</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">index</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::BadReferendum</span>)<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">info</span> <span class="op">=</span>
+				<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">index</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::BadReferendum</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">deposit</span> <span class="op">=</span> <span class="ident">info</span>
 				.<span class="ident">take_decision_deposit</span>()
-				.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Unfinished</span>)<span class="question-mark">?</span>
-				.<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::NoDeposit</span>)<span class="question-mark">?</span>;
+				.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::Unfinished</span>)<span class="question-mark">?</span>
+				.<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::NoDeposit</span>)<span class="question-mark">?</span>;
 			<span class="ident"><span class="self">Self</span>::refund_deposit</span>(<span class="prelude-val">Some</span>(<span class="ident">deposit</span>.<span class="ident">clone</span>()));
-			<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="ident">info</span>);
-			<span class="kw">let</span> <span class="ident">e</span> <span class="op">=</span> <span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::DecisionDepositRefunded</span> {
+			<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="ident">info</span>);
+			<span class="kw">let</span> <span class="ident">e</span> <span class="op">=</span> <span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::DecisionDepositRefunded</span> {
 				<span class="ident">index</span>,
 				<span class="ident">who</span>: <span class="ident">deposit</span>.<span class="ident">who</span>,
 				<span class="ident">amount</span>: <span class="ident">deposit</span>.<span class="ident">amount</span>,
@@ -1498,13 +1528,13 @@
 				<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">T::Scheduler::cancel</span>(<span class="ident">last_alarm</span>);
 			}
 			<span class="ident"><span class="self">Self</span>::note_one_fewer_deciding</span>(<span class="ident">status</span>.<span class="ident">track</span>);
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Cancelled</span> { <span class="ident">index</span>, <span class="ident">tally</span>: <span class="ident">status</span>.<span class="ident">tally</span> });
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::Cancelled</span> { <span class="ident">index</span>, <span class="ident">tally</span>: <span class="ident">status</span>.<span class="ident">tally</span> });
 			<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">ReferendumInfo::Cancelled</span>(
 				<span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::block_number</span>(),
 				<span class="ident">status</span>.<span class="ident">submission_deposit</span>,
 				<span class="ident">status</span>.<span class="ident">decision_deposit</span>,
 			);
-			<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="ident">info</span>);
+			<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="ident">info</span>);
 			<span class="prelude-val">Ok</span>(())
 		}
 
@@ -1522,11 +1552,11 @@
 				<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">T::Scheduler::cancel</span>(<span class="ident">last_alarm</span>);
 			}
 			<span class="ident"><span class="self">Self</span>::note_one_fewer_deciding</span>(<span class="ident">status</span>.<span class="ident">track</span>);
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Killed</span> { <span class="ident">index</span>, <span class="ident">tally</span>: <span class="ident">status</span>.<span class="ident">tally</span> });
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::Killed</span> { <span class="ident">index</span>, <span class="ident">tally</span>: <span class="ident">status</span>.<span class="ident">tally</span> });
 			<span class="ident"><span class="self">Self</span>::slash_deposit</span>(<span class="prelude-val">Some</span>(<span class="ident">status</span>.<span class="ident">submission_deposit</span>.<span class="ident">clone</span>()));
 			<span class="ident"><span class="self">Self</span>::slash_deposit</span>(<span class="ident">status</span>.<span class="ident">decision_deposit</span>.<span class="ident">clone</span>());
 			<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">ReferendumInfo::Killed</span>(<span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::block_number</span>());
-			<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="ident">info</span>);
+			<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="ident">info</span>);
 			<span class="prelude-val">Ok</span>(())
 		}
 
@@ -1534,7 +1564,7 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// - `origin`: must be `Root`.</span>
 		<span class="doccomment">/// - `index`: the referendum to be advanced.</span>
-		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">ServiceBranch::max_weight_of_nudge</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>())]</span>
+		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">ServiceBranch::max_weight_of_nudge</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">nudge_referendum</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>,
@@ -1546,9 +1576,9 @@
 			<span class="ident">status</span>.<span class="ident">alarm</span> <span class="op">=</span> <span class="prelude-val">None</span>;
 			<span class="kw">let</span> (<span class="ident">info</span>, <span class="ident">dirty</span>, <span class="ident">branch</span>) <span class="op">=</span> <span class="ident"><span class="self">Self</span>::service_referendum</span>(<span class="ident">now</span>, <span class="ident">index</span>, <span class="ident">status</span>);
 			<span class="kw">if</span> <span class="ident">dirty</span> {
-				<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="ident">info</span>);
+				<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="ident">info</span>);
 			}
-			<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">branch</span>.<span class="ident">weight_of_nudge</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>()).<span class="ident">into</span>())
+			<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">branch</span>.<span class="ident">weight_of_nudge</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>()).<span class="ident">into</span>())
 		}
 
 		<span class="doccomment">/// Advance a track onto its next logical state. Only used internally.</span>
@@ -1560,14 +1590,14 @@
 		<span class="doccomment">/// `DecidingCount` is not yet updated. This means that we should either:</span>
 		<span class="doccomment">/// - begin deciding another referendum (and leave `DecidingCount` alone); or</span>
 		<span class="doccomment">/// - decrement `DecidingCount`.</span>
-		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">OneFewerDecidingBranch::max_weight</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>())]</span>
+		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">OneFewerDecidingBranch::max_weight</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">one_fewer_deciding</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="ident">track</span>: <span class="ident">TrackIdOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+			<span class="ident">track</span>: <span class="ident">TrackIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
 		) -&gt; <span class="ident">DispatchResultWithPostInfo</span> {
 			<span class="ident">ensure_root</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
-			<span class="kw">let</span> <span class="ident">track_info</span> <span class="op">=</span> <span class="ident">T::Tracks::info</span>(<span class="ident">track</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::BadTrack</span>)<span class="question-mark">?</span>;
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">track_queue</span> <span class="op">=</span> <span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">track</span>);
+			<span class="kw">let</span> <span class="ident">track_info</span> <span class="op">=</span> <span class="ident">T::Tracks::info</span>(<span class="ident">track</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::BadTrack</span>)<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">track_queue</span> <span class="op">=</span> <span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">track</span>);
 			<span class="kw">let</span> <span class="ident">branch</span> <span class="op">=</span>
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">index</span>, <span class="kw-2">mut</span> <span class="ident">status</span>)) <span class="op">=</span> <span class="ident"><span class="self">Self</span>::next_for_deciding</span>(<span class="kw-2">&amp;mut</span> <span class="ident">track_queue</span>) {
 					<span class="kw">let</span> <span class="ident">now</span> <span class="op">=</span> <span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::block_number</span>();
@@ -1576,23 +1606,23 @@
 					<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">set_alarm</span>) <span class="op">=</span> <span class="ident">maybe_alarm</span> {
 						<span class="ident"><span class="self">Self</span>::ensure_alarm_at</span>(<span class="kw-2">&amp;mut</span> <span class="ident">status</span>, <span class="ident">index</span>, <span class="ident">set_alarm</span>);
 					}
-					<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="ident">ReferendumInfo::Ongoing</span>(<span class="ident">status</span>));
-					<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">track</span>, <span class="ident">track_queue</span>);
+					<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="ident">ReferendumInfo::Ongoing</span>(<span class="ident">status</span>));
+					<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">track</span>, <span class="ident">track_queue</span>);
 					<span class="ident">branch</span>.<span class="ident">into</span>()
 				} <span class="kw">else</span> {
-					<span class="ident">DecidingCount</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::mutate</span>(<span class="ident">track</span>, <span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">saturating_dec</span>());
+					<span class="ident">DecidingCount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::mutate</span>(<span class="ident">track</span>, <span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">saturating_dec</span>());
 					<span class="ident">OneFewerDecidingBranch::QueueEmpty</span>
 				};
-			<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">branch</span>.<span class="ident">weight</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>()).<span class="ident">into</span>())
+			<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">branch</span>.<span class="ident">weight</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>()).<span class="ident">into</span>())
 		}
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">Polling</span><span class="op">&lt;</span><span class="ident">T::Tally</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">Polling</span><span class="op">&lt;</span><span class="ident">T::Tally</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span> {
 	<span class="kw">type</span> <span class="ident">Index</span> <span class="op">=</span> <span class="ident">ReferendumIndex</span>;
-	<span class="kw">type</span> <span class="ident">Votes</span> <span class="op">=</span> <span class="ident">VotesOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">Votes</span> <span class="op">=</span> <span class="ident">VotesOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">Moment</span> <span class="op">=</span> <span class="ident">T::BlockNumber</span>;
-	<span class="kw">type</span> <span class="ident">Class</span> <span class="op">=</span> <span class="ident">TrackIdOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">Class</span> <span class="op">=</span> <span class="ident">TrackIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">classes</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Class</span><span class="op">&gt;</span> {
 		<span class="ident">T::Tracks::tracks</span>().<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="number">0</span>).<span class="ident">collect</span>()
@@ -1600,14 +1630,14 @@
 
 	<span class="kw">fn</span> <span class="ident">access_poll</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>(
 		<span class="ident">index</span>: <span class="ident"><span class="self">Self</span>::Index</span>,
-		<span class="ident">f</span>: <span class="kw">impl</span> <span class="ident">FnOnce</span>(<span class="ident">PollStatus</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="ident">T::Tally</span>, <span class="ident">T::BlockNumber</span>, <span class="ident">TrackIdOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="ident">R</span>,
+		<span class="ident">f</span>: <span class="kw">impl</span> <span class="ident">FnOnce</span>(<span class="ident">PollStatus</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="ident">T::Tally</span>, <span class="ident">T::BlockNumber</span>, <span class="ident">TrackIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="ident">R</span>,
 	) -&gt; <span class="ident">R</span> {
-		<span class="kw">match</span> <span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">index</span>) {
+		<span class="kw">match</span> <span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">index</span>) {
 			<span class="prelude-val">Some</span>(<span class="ident">ReferendumInfo::Ongoing</span>(<span class="kw-2">mut</span> <span class="ident">status</span>)) =&gt; {
 				<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">f</span>(<span class="ident">PollStatus::Ongoing</span>(<span class="kw-2">&amp;mut</span> <span class="ident">status</span>.<span class="ident">tally</span>, <span class="ident">status</span>.<span class="ident">track</span>));
 				<span class="kw">let</span> <span class="ident">now</span> <span class="op">=</span> <span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::block_number</span>();
 				<span class="ident"><span class="self">Self</span>::ensure_alarm_at</span>(<span class="kw-2">&amp;mut</span> <span class="ident">status</span>, <span class="ident">index</span>, <span class="ident">now</span> <span class="op">+</span> <span class="ident">One::one</span>());
-				<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="ident">ReferendumInfo::Ongoing</span>(<span class="ident">status</span>));
+				<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="ident">ReferendumInfo::Ongoing</span>(<span class="ident">status</span>));
 				<span class="ident">result</span>
 			},
 			<span class="prelude-val">Some</span>(<span class="ident">ReferendumInfo::Approved</span>(<span class="ident">end</span>, ..)) =&gt; <span class="ident">f</span>(<span class="ident">PollStatus::Completed</span>(<span class="ident">end</span>, <span class="bool-val">true</span>)),
@@ -1619,15 +1649,15 @@
 	<span class="kw">fn</span> <span class="ident">try_access_poll</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>(
 		<span class="ident">index</span>: <span class="ident"><span class="self">Self</span>::Index</span>,
 		<span class="ident">f</span>: <span class="kw">impl</span> <span class="ident">FnOnce</span>(
-			<span class="ident">PollStatus</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="ident">T::Tally</span>, <span class="ident">T::BlockNumber</span>, <span class="ident">TrackIdOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+			<span class="ident">PollStatus</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="ident">T::Tally</span>, <span class="ident">T::BlockNumber</span>, <span class="ident">TrackIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 		) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">DispatchError</span><span class="op">&gt;</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">DispatchError</span><span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">index</span>) {
+		<span class="kw">match</span> <span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">index</span>) {
 			<span class="prelude-val">Some</span>(<span class="ident">ReferendumInfo::Ongoing</span>(<span class="kw-2">mut</span> <span class="ident">status</span>)) =&gt; {
 				<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">f</span>(<span class="ident">PollStatus::Ongoing</span>(<span class="kw-2">&amp;mut</span> <span class="ident">status</span>.<span class="ident">tally</span>, <span class="ident">status</span>.<span class="ident">track</span>))<span class="question-mark">?</span>;
 				<span class="kw">let</span> <span class="ident">now</span> <span class="op">=</span> <span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::block_number</span>();
 				<span class="ident"><span class="self">Self</span>::ensure_alarm_at</span>(<span class="kw-2">&amp;mut</span> <span class="ident">status</span>, <span class="ident">index</span>, <span class="ident">now</span> <span class="op">+</span> <span class="ident">One::one</span>());
-				<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="ident">ReferendumInfo::Ongoing</span>(<span class="ident">status</span>));
+				<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="ident">ReferendumInfo::Ongoing</span>(<span class="ident">status</span>));
 				<span class="prelude-val">Ok</span>(<span class="ident">result</span>)
 			},
 			<span class="prelude-val">Some</span>(<span class="ident">ReferendumInfo::Approved</span>(<span class="ident">end</span>, ..)) =&gt; <span class="ident">f</span>(<span class="ident">PollStatus::Completed</span>(<span class="ident">end</span>, <span class="bool-val">true</span>)),
@@ -1636,13 +1666,13 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">as_ongoing</span>(<span class="ident">index</span>: <span class="ident"><span class="self">Self</span>::Index</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">T::Tally</span>, <span class="ident">TrackIdOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">as_ongoing</span>(<span class="ident">index</span>: <span class="ident"><span class="self">Self</span>::Index</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">T::Tally</span>, <span class="ident">TrackIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
 		<span class="ident"><span class="self">Self</span>::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">ok</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> (<span class="ident">x</span>.<span class="ident">tally</span>, <span class="ident">x</span>.<span class="ident">track</span>))
 	}
 
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>)]</span>
 	<span class="kw">fn</span> <span class="ident">create_ongoing</span>(<span class="ident">class</span>: <span class="ident"><span class="self">Self</span>::Class</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Index</span>, ()<span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">ReferendumCount</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::mutate</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> {
+		<span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">ReferendumCount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::mutate</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> {
 			<span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">x</span>;
 			<span class="kw-2">*</span><span class="ident">x</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
 			<span class="ident">r</span>
@@ -1651,7 +1681,7 @@
 		<span class="kw">let</span> <span class="ident">dummy_account_id</span> <span class="op">=</span>
 			<span class="ident">codec::Decode::decode</span>(<span class="kw-2">&amp;mut</span> <span class="ident">sp_runtime::traits::TrailingZeroInput::new</span>(<span class="kw-2">&amp;</span><span class="string">b&quot;dummy&quot;</span>[..]))
 				.<span class="ident">expect</span>(<span class="string">&quot;infinite length input; no invalid inputs for type; qed&quot;</span>);
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">ReferendumStatusOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">ReferendumStatusOf</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span> {
 			<span class="ident">track</span>: <span class="ident">class</span>,
 			<span class="ident">origin</span>: <span class="ident">frame_support::dispatch::RawOrigin::Root</span>.<span class="ident">into</span>(),
 			<span class="ident">proposal_hash</span>: <span class="op">&lt;</span><span class="ident">T::Hashing</span> <span class="kw">as</span> <span class="ident">sp_runtime::traits::Hash</span><span class="op">&gt;</span><span class="ident">::hash_of</span>(<span class="kw-2">&amp;</span><span class="ident">index</span>),
@@ -1665,7 +1695,7 @@
 			<span class="ident">alarm</span>: <span class="prelude-val">None</span>,
 		};
 		<span class="ident"><span class="self">Self</span>::ensure_alarm_at</span>(<span class="kw-2">&amp;mut</span> <span class="ident">status</span>, <span class="ident">index</span>, <span class="ident">sp_runtime::traits::Bounded::max_value</span>());
-		<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="ident">ReferendumInfo::Ongoing</span>(<span class="ident">status</span>));
+		<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="ident">ReferendumInfo::Ongoing</span>(<span class="ident">status</span>));
 		<span class="prelude-val">Ok</span>(<span class="ident">index</span>)
 	}
 
@@ -1680,7 +1710,7 @@
 		} <span class="kw">else</span> {
 			<span class="ident">ReferendumInfo::Rejected</span>(<span class="ident">now</span>, <span class="ident">status</span>.<span class="ident">submission_deposit</span>, <span class="ident">status</span>.<span class="ident">decision_deposit</span>)
 		};
-		<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="ident">info</span>);
+		<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="ident">info</span>);
 		<span class="prelude-val">Ok</span>(())
 	}
 
@@ -1694,20 +1724,22 @@
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Check that referendum `index` is in the `Ongoing` state and return the `ReferendumStatus`</span>
 	<span class="doccomment">/// value, or `Err` otherwise.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ensure_ongoing</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ReferendumStatusOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">DispatchError</span><span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">index</span>) {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ensure_ongoing</span>(
+		<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>,
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ReferendumStatusOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">DispatchError</span><span class="op">&gt;</span> {
+		<span class="kw">match</span> <span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">index</span>) {
 			<span class="prelude-val">Some</span>(<span class="ident">ReferendumInfo::Ongoing</span>(<span class="ident">status</span>)) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">status</span>),
-			<span class="kw">_</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::NotOngoing</span>.<span class="ident">into</span>()),
+			<span class="kw">_</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::NotOngoing</span>.<span class="ident">into</span>()),
 		}
 	}
 
 	<span class="comment">// Enqueue a proposal from a referendum which has presumably passed.</span>
 	<span class="kw">fn</span> <span class="ident">schedule_enactment</span>(
 		<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>,
-		<span class="ident">track</span>: <span class="kw-2">&amp;</span><span class="ident">TrackInfoOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+		<span class="ident">track</span>: <span class="kw-2">&amp;</span><span class="ident">TrackInfoOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
 		<span class="ident">desired</span>: <span class="ident">DispatchTime</span><span class="op">&lt;</span><span class="ident">T::BlockNumber</span><span class="op">&gt;</span>,
 		<span class="ident">origin</span>: <span class="ident">PalletsOriginOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 		<span class="ident">call_hash</span>: <span class="ident">T::Hash</span>,
@@ -1729,9 +1761,9 @@
 
 	<span class="doccomment">/// Set an alarm to dispatch `call` at block number `when`.</span>
 	<span class="kw">fn</span> <span class="ident">set_alarm</span>(
-		<span class="ident">call</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">CallOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+		<span class="ident">call</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">CallOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 		<span class="ident">when</span>: <span class="ident">T::BlockNumber</span>,
-	) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">T::BlockNumber</span>, <span class="ident">ScheduleAddressOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
+	) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">T::BlockNumber</span>, <span class="ident">ScheduleAddressOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">alarm_interval</span> <span class="op">=</span> <span class="ident">T::AlarmInterval::get</span>().<span class="ident">max</span>(<span class="ident">One::one</span>());
 		<span class="kw">let</span> <span class="ident">when</span> <span class="op">=</span> (<span class="ident">when</span> <span class="op">+</span> <span class="ident">alarm_interval</span> <span class="op">-</span> <span class="ident">One::one</span>()) <span class="op">/</span> <span class="ident">alarm_interval</span> <span class="op">*</span> <span class="ident">alarm_interval</span>;
 		<span class="kw">let</span> <span class="ident">maybe_result</span> <span class="op">=</span> <span class="ident">T::Scheduler::schedule</span>(
@@ -1759,10 +1791,10 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This will properly set up the `confirming` item.</span>
 	<span class="kw">fn</span> <span class="ident">begin_deciding</span>(
-		<span class="ident">status</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ReferendumStatusOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+		<span class="ident">status</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ReferendumStatusOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
 		<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>,
 		<span class="ident">now</span>: <span class="ident">T::BlockNumber</span>,
-		<span class="ident">track</span>: <span class="kw-2">&amp;</span><span class="ident">TrackInfoOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+		<span class="ident">track</span>: <span class="kw-2">&amp;</span><span class="ident">TrackInfoOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
 	) -&gt; (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T::BlockNumber</span><span class="op">&gt;</span>, <span class="ident">BeginDecidingBranch</span>) {
 		<span class="kw">let</span> <span class="ident">is_passing</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::is_passing</span>(
 			<span class="kw-2">&amp;</span><span class="ident">status</span>.<span class="ident">tally</span>,
@@ -1772,14 +1804,14 @@
 			<span class="kw-2">&amp;</span><span class="ident">track</span>.<span class="ident">min_approval</span>,
 		);
 		<span class="ident">status</span>.<span class="ident">in_queue</span> <span class="op">=</span> <span class="bool-val">false</span>;
-		<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::DecisionStarted</span> {
+		<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::DecisionStarted</span> {
 			<span class="ident">index</span>,
 			<span class="ident">tally</span>: <span class="ident">status</span>.<span class="ident">tally</span>.<span class="ident">clone</span>(),
 			<span class="ident">proposal_hash</span>: <span class="ident">status</span>.<span class="ident">proposal_hash</span>.<span class="ident">clone</span>(),
 			<span class="ident">track</span>: <span class="ident">status</span>.<span class="ident">track</span>.<span class="ident">clone</span>(),
 		});
 		<span class="kw">let</span> <span class="ident">confirming</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">is_passing</span> {
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ConfirmStarted</span> { <span class="ident">index</span> });
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ConfirmStarted</span> { <span class="ident">index</span> });
 			<span class="prelude-val">Some</span>(<span class="ident">now</span>.<span class="ident">saturating_add</span>(<span class="ident">track</span>.<span class="ident">confirm_period</span>))
 		} <span class="kw">else</span> {
 			<span class="prelude-val">None</span>
@@ -1798,21 +1830,21 @@
 	<span class="doccomment">/// If `None`, then it is queued and should be nudged automatically as the queue gets drained.</span>
 	<span class="kw">fn</span> <span class="ident">ready_for_deciding</span>(
 		<span class="ident">now</span>: <span class="ident">T::BlockNumber</span>,
-		<span class="ident">track</span>: <span class="kw-2">&amp;</span><span class="ident">TrackInfoOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+		<span class="ident">track</span>: <span class="kw-2">&amp;</span><span class="ident">TrackInfoOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
 		<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>,
-		<span class="ident">status</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ReferendumStatusOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+		<span class="ident">status</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ReferendumStatusOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
 	) -&gt; (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T::BlockNumber</span><span class="op">&gt;</span>, <span class="ident">ServiceBranch</span>) {
-		<span class="kw">let</span> <span class="ident">deciding_count</span> <span class="op">=</span> <span class="ident">DecidingCount</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">status</span>.<span class="ident">track</span>);
+		<span class="kw">let</span> <span class="ident">deciding_count</span> <span class="op">=</span> <span class="ident">DecidingCount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">status</span>.<span class="ident">track</span>);
 		<span class="kw">if</span> <span class="ident">deciding_count</span> <span class="op">&lt;</span> <span class="ident">track</span>.<span class="ident">max_deciding</span> {
 			<span class="comment">// Begin deciding.</span>
-			<span class="ident">DecidingCount</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">status</span>.<span class="ident">track</span>, <span class="ident">deciding_count</span>.<span class="ident">saturating_add</span>(<span class="number">1</span>));
+			<span class="ident">DecidingCount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">status</span>.<span class="ident">track</span>, <span class="ident">deciding_count</span>.<span class="ident">saturating_add</span>(<span class="number">1</span>));
 			<span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::begin_deciding</span>(<span class="ident">status</span>, <span class="ident">index</span>, <span class="ident">now</span>, <span class="ident">track</span>);
 			(<span class="ident">r</span>.<span class="number">0</span>, <span class="ident">r</span>.<span class="number">1</span>.<span class="ident">into</span>())
 		} <span class="kw">else</span> {
 			<span class="comment">// Add to queue.</span>
 			<span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> (<span class="ident">index</span>, <span class="ident">status</span>.<span class="ident">tally</span>.<span class="ident">ayes</span>());
 			<span class="ident">status</span>.<span class="ident">in_queue</span> <span class="op">=</span> <span class="bool-val">true</span>;
-			<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::mutate</span>(<span class="ident">status</span>.<span class="ident">track</span>, <span class="op">|</span><span class="ident">q</span><span class="op">|</span> <span class="ident">q</span>.<span class="ident">insert_sorted_by_key</span>(<span class="ident">item</span>, <span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="number">1</span>));
+			<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::mutate</span>(<span class="ident">status</span>.<span class="ident">track</span>, <span class="op">|</span><span class="ident">q</span><span class="op">|</span> <span class="ident">q</span>.<span class="ident">insert_sorted_by_key</span>(<span class="ident">item</span>, <span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="number">1</span>));
 			(<span class="prelude-val">None</span>, <span class="ident">ServiceBranch::Queued</span>)
 		}
 	}
@@ -1820,8 +1852,8 @@
 	<span class="doccomment">/// Grab the index and status for the referendum which is the highest priority of those for the</span>
 	<span class="doccomment">/// given track which are ready for being decided.</span>
 	<span class="kw">fn</span> <span class="ident">next_for_deciding</span>(
-		<span class="ident">track_queue</span>: <span class="kw-2">&amp;mut</span> <span class="ident">BoundedVec</span><span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">VotesOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>), <span class="ident">T::MaxQueued</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">ReferendumIndex</span>, <span class="ident">ReferendumStatusOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
+		<span class="ident">track_queue</span>: <span class="kw-2">&amp;mut</span> <span class="ident">BoundedVec</span><span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">VotesOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>), <span class="ident">T::MaxQueued</span><span class="op">&gt;</span>,
+	) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">ReferendumIndex</span>, <span class="ident">ReferendumStatusOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
 		<span class="kw">loop</span> {
 			<span class="kw">let</span> (<span class="ident">index</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">track_queue</span>.<span class="ident">pop</span>()<span class="question-mark">?</span>;
 			<span class="kw">match</span> <span class="ident"><span class="self">Self</span>::ensure_ongoing</span>(<span class="ident">index</span>) {
@@ -1834,7 +1866,7 @@
 	<span class="doccomment">/// Schedule a call to `one_fewer_deciding` function via the dispatchable</span>
 	<span class="doccomment">/// `defer_one_fewer_deciding`. We could theoretically call it immediately (and it would be</span>
 	<span class="doccomment">/// overall more efficient), however the weights become rather less easy to measure.</span>
-	<span class="kw">fn</span> <span class="ident">note_one_fewer_deciding</span>(<span class="ident">track</span>: <span class="ident">TrackIdOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) {
+	<span class="kw">fn</span> <span class="ident">note_one_fewer_deciding</span>(<span class="ident">track</span>: <span class="ident">TrackIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>) {
 		<span class="comment">// Set an alarm call for the next block to nudge the track along.</span>
 		<span class="kw">let</span> <span class="ident">now</span> <span class="op">=</span> <span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::block_number</span>();
 		<span class="kw">let</span> <span class="ident">next_block</span> <span class="op">=</span> <span class="ident">now</span> <span class="op">+</span> <span class="ident">One::one</span>();
@@ -1862,7 +1894,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Returns `false` if nothing changed.</span>
 	<span class="kw">fn</span> <span class="ident">ensure_alarm_at</span>(
-		<span class="ident">status</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ReferendumStatusOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+		<span class="ident">status</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ReferendumStatusOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
 		<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>,
 		<span class="ident">alarm</span>: <span class="ident">T::BlockNumber</span>,
 	) -&gt; <span class="ident">bool</span> {
@@ -1900,8 +1932,8 @@
 	<span class="kw">fn</span> <span class="ident">service_referendum</span>(
 		<span class="ident">now</span>: <span class="ident">T::BlockNumber</span>,
 		<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>,
-		<span class="kw-2">mut</span> <span class="ident">status</span>: <span class="ident">ReferendumStatusOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-	) -&gt; (<span class="ident">ReferendumInfoOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">bool</span>, <span class="ident">ServiceBranch</span>) {
+		<span class="kw-2">mut</span> <span class="ident">status</span>: <span class="ident">ReferendumStatusOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
+	) -&gt; (<span class="ident">ReferendumInfoOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">bool</span>, <span class="ident">ServiceBranch</span>) {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dirty</span> <span class="op">=</span> <span class="bool-val">false</span>;
 		<span class="comment">// Should it begin being decided?</span>
 		<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident"><span class="self">Self</span>::track</span>(<span class="ident">status</span>.<span class="ident">track</span>) {
@@ -1918,7 +1950,7 @@
 				<span class="kw">if</span> <span class="ident">status</span>.<span class="ident">in_queue</span> {
 					<span class="comment">// Does our position in the queue need updating?</span>
 					<span class="kw">let</span> <span class="ident">ayes</span> <span class="op">=</span> <span class="ident">status</span>.<span class="ident">tally</span>.<span class="ident">ayes</span>();
-					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">queue</span> <span class="op">=</span> <span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">status</span>.<span class="ident">track</span>);
+					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">queue</span> <span class="op">=</span> <span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">status</span>.<span class="ident">track</span>);
 					<span class="kw">let</span> <span class="ident">maybe_old_pos</span> <span class="op">=</span> <span class="ident">queue</span>.<span class="ident">iter</span>().<span class="ident">position</span>(<span class="op">|</span>(<span class="ident">x</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="kw-2">*</span><span class="ident">x</span> <span class="op">==</span> <span class="ident">index</span>);
 					<span class="kw">let</span> <span class="ident">new_pos</span> <span class="op">=</span> <span class="ident">queue</span>.<span class="ident">binary_search_by_key</span>(<span class="kw-2">&amp;</span><span class="ident">ayes</span>, <span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="number">1</span>).<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>);
 					<span class="ident">branch</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">maybe_old_pos</span>.<span class="ident">is_none</span>() <span class="op">&amp;&amp;</span> <span class="ident">new_pos</span> <span class="op">&gt;</span> <span class="number">0</span> {
@@ -1933,7 +1965,7 @@
 					} <span class="kw">else</span> {
 						<span class="ident">ServiceBranch::NotQueued</span>
 					};
-					<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">status</span>.<span class="ident">track</span>, <span class="ident">queue</span>);
+					<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">status</span>.<span class="ident">track</span>, <span class="ident">queue</span>);
 				} <span class="kw">else</span> {
 					<span class="comment">// Are we ready for deciding?</span>
 					<span class="ident">branch</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">status</span>.<span class="ident">decision_deposit</span>.<span class="ident">is_some</span>() {
@@ -1958,7 +1990,7 @@
 				<span class="kw">if</span> <span class="ident">status</span>.<span class="ident">deciding</span>.<span class="ident">is_none</span>() <span class="op">&amp;&amp;</span> <span class="ident">now</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">timeout</span> {
 					<span class="comment">// Too long without being decided - end it.</span>
 					<span class="ident"><span class="self">Self</span>::ensure_no_alarm</span>(<span class="kw-2">&amp;mut</span> <span class="ident">status</span>);
-					<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::TimedOut</span> { <span class="ident">index</span>, <span class="ident">tally</span>: <span class="ident">status</span>.<span class="ident">tally</span> });
+					<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::TimedOut</span> { <span class="ident">index</span>, <span class="ident">tally</span>: <span class="ident">status</span>.<span class="ident">tally</span> });
 					<span class="kw">return</span> (
 						<span class="ident">ReferendumInfo::TimedOut</span>(
 							<span class="ident">now</span>,
@@ -1992,7 +2024,7 @@
 								<span class="ident">status</span>.<span class="ident">origin</span>,
 								<span class="ident">call_hash</span>,
 							);
-							<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Confirmed</span> {
+							<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::Confirmed</span> {
 								<span class="ident">index</span>,
 								<span class="ident">tally</span>: <span class="ident">status</span>.<span class="ident">tally</span>,
 							});
@@ -2011,7 +2043,7 @@
 							<span class="comment">// Start confirming</span>
 							<span class="ident">dirty</span> <span class="op">=</span> <span class="bool-val">true</span>;
 							<span class="ident">deciding</span>.<span class="ident">confirming</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">now</span>.<span class="ident">saturating_add</span>(<span class="ident">track</span>.<span class="ident">confirm_period</span>));
-							<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ConfirmStarted</span> { <span class="ident">index</span> });
+							<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ConfirmStarted</span> { <span class="ident">index</span> });
 							<span class="ident">ServiceBranch::BeginConfirming</span>
 						},
 					}
@@ -2020,7 +2052,7 @@
 						<span class="comment">// Failed!</span>
 						<span class="ident"><span class="self">Self</span>::ensure_no_alarm</span>(<span class="kw-2">&amp;mut</span> <span class="ident">status</span>);
 						<span class="ident"><span class="self">Self</span>::note_one_fewer_deciding</span>(<span class="ident">status</span>.<span class="ident">track</span>);
-						<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Rejected</span> { <span class="ident">index</span>, <span class="ident">tally</span>: <span class="ident">status</span>.<span class="ident">tally</span> });
+						<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::Rejected</span> { <span class="ident">index</span>, <span class="ident">tally</span>: <span class="ident">status</span>.<span class="ident">tally</span> });
 						<span class="kw">return</span> (
 							<span class="ident">ReferendumInfo::Rejected</span>(
 								<span class="ident">now</span>,
@@ -2035,7 +2067,7 @@
 						<span class="comment">// Stop confirming</span>
 						<span class="ident">dirty</span> <span class="op">=</span> <span class="bool-val">true</span>;
 						<span class="ident">deciding</span>.<span class="ident">confirming</span> <span class="op">=</span> <span class="prelude-val">None</span>;
-						<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ConfirmAborted</span> { <span class="ident">index</span> });
+						<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ConfirmAborted</span> { <span class="ident">index</span> });
 						<span class="ident">ServiceBranch::EndConfirming</span>
 					} <span class="kw">else</span> {
 						<span class="ident">ServiceBranch::ContinueNotConfirming</span>
@@ -2054,7 +2086,7 @@
 	<span class="kw">fn</span> <span class="ident">decision_time</span>(
 		<span class="ident">deciding</span>: <span class="kw-2">&amp;</span><span class="ident">DecidingStatusOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 		<span class="ident">tally</span>: <span class="kw-2">&amp;</span><span class="ident">T::Tally</span>,
-		<span class="ident">track</span>: <span class="kw-2">&amp;</span><span class="ident">TrackInfoOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+		<span class="ident">track</span>: <span class="kw-2">&amp;</span><span class="ident">TrackInfoOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
 	) -&gt; <span class="ident">T::BlockNumber</span> {
 		<span class="ident">deciding</span>.<span class="ident">confirming</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> {
 			<span class="comment">// Set alarm to the point where the current voting would make it pass.</span>
@@ -2068,7 +2100,7 @@
 	}
 
 	<span class="doccomment">/// Cancel the alarm in `status`, if one exists.</span>
-	<span class="kw">fn</span> <span class="ident">ensure_no_alarm</span>(<span class="ident">status</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ReferendumStatusOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) {
+	<span class="kw">fn</span> <span class="ident">ensure_no_alarm</span>(<span class="ident">status</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ReferendumStatusOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>) {
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="kw">_</span>, <span class="ident">last_alarm</span>)) <span class="op">=</span> <span class="ident">status</span>.<span class="ident">alarm</span>.<span class="ident">take</span>() {
 			<span class="comment">// Incorrect alarm - cancel it.</span>
 			<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">T::Scheduler::cancel</span>(<span class="ident">last_alarm</span>);
@@ -2078,29 +2110,29 @@
 	<span class="doccomment">/// Reserve a deposit and return the `Deposit` instance.</span>
 	<span class="kw">fn</span> <span class="ident">take_deposit</span>(
 		<span class="ident">who</span>: <span class="ident">T::AccountId</span>,
-		<span class="ident">amount</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Deposit</span><span class="op">&lt;</span><span class="ident">T::AccountId</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">DispatchError</span><span class="op">&gt;</span> {
+		<span class="ident">amount</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Deposit</span><span class="op">&lt;</span><span class="ident">T::AccountId</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">DispatchError</span><span class="op">&gt;</span> {
 		<span class="ident">T::Currency::reserve</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">amount</span>)<span class="question-mark">?</span>;
 		<span class="prelude-val">Ok</span>(<span class="ident">Deposit</span> { <span class="ident">who</span>, <span class="ident">amount</span> })
 	}
 
 	<span class="doccomment">/// Return a deposit, if `Some`.</span>
-	<span class="kw">fn</span> <span class="ident">refund_deposit</span>(<span class="ident">deposit</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Deposit</span><span class="op">&lt;</span><span class="ident">T::AccountId</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>) {
+	<span class="kw">fn</span> <span class="ident">refund_deposit</span>(<span class="ident">deposit</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Deposit</span><span class="op">&lt;</span><span class="ident">T::AccountId</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>) {
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">Deposit</span> { <span class="ident">who</span>, <span class="ident">amount</span> }) <span class="op">=</span> <span class="ident">deposit</span> {
 			<span class="ident">T::Currency::unreserve</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">amount</span>);
 		}
 	}
 
 	<span class="doccomment">/// Slash a deposit, if `Some`.</span>
-	<span class="kw">fn</span> <span class="ident">slash_deposit</span>(<span class="ident">deposit</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Deposit</span><span class="op">&lt;</span><span class="ident">T::AccountId</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>) {
+	<span class="kw">fn</span> <span class="ident">slash_deposit</span>(<span class="ident">deposit</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Deposit</span><span class="op">&lt;</span><span class="ident">T::AccountId</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>) {
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">Deposit</span> { <span class="ident">who</span>, <span class="ident">amount</span> }) <span class="op">=</span> <span class="ident">deposit</span> {
 			<span class="ident">T::Slash::on_unbalanced</span>(<span class="ident">T::Currency::slash_reserved</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">amount</span>).<span class="number">0</span>);
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::DepositSlashed</span> { <span class="ident">who</span>, <span class="ident">amount</span> });
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::DepositSlashed</span> { <span class="ident">who</span>, <span class="ident">amount</span> });
 		}
 	}
 
 	<span class="doccomment">/// Get the track info value for the track `id`.</span>
-	<span class="kw">fn</span> <span class="ident">track</span>(<span class="ident">id</span>: <span class="ident">TrackIdOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">TrackInfoOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">track</span>(<span class="ident">id</span>: <span class="ident">TrackIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">TrackInfoOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">tracks</span> <span class="op">=</span> <span class="ident">T::Tracks::tracks</span>();
 		<span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">tracks</span>.<span class="ident">binary_search_by_key</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>, <span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="number">0</span>).<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>);
 		<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">tracks</span>[<span class="ident">index</span>].<span class="number">1</span>)
