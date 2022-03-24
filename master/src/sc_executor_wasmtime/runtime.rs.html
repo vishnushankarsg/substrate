@@ -668,6 +668,7 @@
 <span id="668">668</span>
 <span id="669">669</span>
 <span id="670">670</span>
+<span id="671">671</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -1084,20 +1085,22 @@ directory = \&quot;{cache_dir}\&quot;
 
 	<span class="doccomment">/// Configures wasmtime to use multiple threads for compiling.</span>
 	<span class="kw">pub</span> <span class="ident">parallel_compilation</span>: <span class="ident">bool</span>,
+
+	<span class="doccomment">/// The number of extra WASM pages which will be allocated</span>
+	<span class="doccomment">/// on top of what is requested by the WASM blob itself.</span>
+	<span class="kw">pub</span> <span class="ident">extra_heap_pages</span>: <span class="ident">u64</span>,
 }
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Config</span> {
-	<span class="doccomment">/// The number of wasm pages to be mounted after instantiation.</span>
-	<span class="kw">pub</span> <span class="ident">heap_pages</span>: <span class="ident">u64</span>,
-
 	<span class="doccomment">/// The total amount of memory in bytes an instance can request.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// If specified, the runtime will be able to allocate only that much of wasm memory.</span>
-	<span class="doccomment">/// This is the total number and therefore the [`Config::heap_pages`] is accounted for.</span>
+	<span class="doccomment">/// This is the total number and therefore the [`Semantics::extra_heap_pages`] is accounted</span>
+	<span class="doccomment">/// for.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// That means that the initial number of pages of a linear memory plus the</span>
-	<span class="doccomment">/// [`Config::heap_pages`] multiplied by the wasm page size (64KiB) should be less than or</span>
-	<span class="doccomment">/// equal to `max_memory_size`, otherwise the instance won&#39;t be created.</span>
+	<span class="doccomment">/// [`Semantics::extra_heap_pages`] multiplied by the wasm page size (64KiB) should be less</span>
+	<span class="doccomment">/// than or equal to `max_memory_size`, otherwise the instance won&#39;t be created.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Moreover, `memory.grow` will fail (return -1) if the sum of sizes of currently mounted</span>
 	<span class="doccomment">/// and additional pages exceeds `max_memory_size`.</span>
@@ -1204,21 +1207,7 @@ directory = \&quot;{cache_dir}\&quot;
 
 	<span class="kw">let</span> (<span class="ident">module</span>, <span class="ident">snapshot_data</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">code_supply_mode</span> {
 		<span class="ident">CodeSupplyMode::Verbatim</span> { <span class="ident">blob</span> } =&gt; {
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">blob</span> <span class="op">=</span> <span class="ident">instrument</span>(<span class="ident">blob</span>, <span class="kw-2">&amp;</span><span class="ident">config</span>.<span class="ident">semantics</span>)<span class="question-mark">?</span>;
-
-			<span class="comment">// We don&#39;t actually need the memory to be imported so we can just convert any memory</span>
-			<span class="comment">// import into an export with impunity. This simplifies our code since `wasmtime` will</span>
-			<span class="comment">// now automatically take care of creating the memory for us, and it also allows us</span>
-			<span class="comment">// to potentially enable `wasmtime`&#39;s instance pooling at a later date. (Imported</span>
-			<span class="comment">// memories are ineligible for pooling.)</span>
-			<span class="ident">blob</span>.<span class="ident">convert_memory_import_into_export</span>()<span class="question-mark">?</span>;
-			<span class="ident">blob</span>.<span class="ident">add_extra_heap_pages_to_memory_section</span>(
-				<span class="ident">config</span>
-					.<span class="ident">heap_pages</span>
-					.<span class="ident">try_into</span>()
-					.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">WasmError::Other</span>(<span class="macro">format!</span>(<span class="string">&quot;invalid `heap_pages`: {}&quot;</span>, <span class="ident">e</span>)))<span class="question-mark">?</span>,
-			)<span class="question-mark">?</span>;
-
+			<span class="kw">let</span> <span class="ident">blob</span> <span class="op">=</span> <span class="ident">prepare_blob_for_compilation</span>(<span class="ident">blob</span>, <span class="kw-2">&amp;</span><span class="ident">config</span>.<span class="ident">semantics</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">serialized_blob</span> <span class="op">=</span> <span class="ident">blob</span>.<span class="ident">clone</span>().<span class="ident">serialize</span>();
 
 			<span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">wasmtime::Module::new</span>(<span class="kw-2">&amp;</span><span class="ident">engine</span>, <span class="kw-2">&amp;</span><span class="ident">serialized_blob</span>)
@@ -1257,7 +1246,7 @@ directory = \&quot;{cache_dir}\&quot;
 	<span class="prelude-val">Ok</span>(<span class="ident">WasmtimeRuntime</span> { <span class="ident">engine</span>, <span class="ident">instance_pre</span>: <span class="ident">Arc::new</span>(<span class="ident">instance_pre</span>), <span class="ident">snapshot_data</span>, <span class="ident">config</span> })
 }
 
-<span class="kw">fn</span> <span class="ident">instrument</span>(
+<span class="kw">fn</span> <span class="ident">prepare_blob_for_compilation</span>(
 	<span class="kw-2">mut</span> <span class="ident">blob</span>: <span class="ident">RuntimeBlob</span>,
 	<span class="ident">semantics</span>: <span class="kw-2">&amp;</span><span class="ident">Semantics</span>,
 ) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">RuntimeBlob</span>, <span class="ident">WasmError</span><span class="op">&gt;</span> {
@@ -1270,6 +1259,19 @@ directory = \&quot;{cache_dir}\&quot;
 		<span class="ident">blob</span>.<span class="ident">expose_mutable_globals</span>();
 	}
 
+	<span class="comment">// We don&#39;t actually need the memory to be imported so we can just convert any memory</span>
+	<span class="comment">// import into an export with impunity. This simplifies our code since `wasmtime` will</span>
+	<span class="comment">// now automatically take care of creating the memory for us, and it also allows us</span>
+	<span class="comment">// to potentially enable `wasmtime`&#39;s instance pooling at a later date. (Imported</span>
+	<span class="comment">// memories are ineligible for pooling.)</span>
+	<span class="ident">blob</span>.<span class="ident">convert_memory_import_into_export</span>()<span class="question-mark">?</span>;
+	<span class="ident">blob</span>.<span class="ident">add_extra_heap_pages_to_memory_section</span>(
+		<span class="ident">semantics</span>
+			.<span class="ident">extra_heap_pages</span>
+			.<span class="ident">try_into</span>()
+			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">WasmError::Other</span>(<span class="macro">format!</span>(<span class="string">&quot;invalid `extra_heap_pages`: {}&quot;</span>, <span class="ident">e</span>)))<span class="question-mark">?</span>,
+	)<span class="question-mark">?</span>;
+
 	<span class="prelude-val">Ok</span>(<span class="ident">blob</span>)
 }
 
@@ -1279,7 +1281,7 @@ directory = \&quot;{cache_dir}\&quot;
 	<span class="ident">blob</span>: <span class="ident">RuntimeBlob</span>,
 	<span class="ident">semantics</span>: <span class="kw-2">&amp;</span><span class="ident">Semantics</span>,
 ) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">WasmError</span><span class="op">&gt;</span> {
-	<span class="kw">let</span> <span class="ident">blob</span> <span class="op">=</span> <span class="ident">instrument</span>(<span class="ident">blob</span>, <span class="ident">semantics</span>)<span class="question-mark">?</span>;
+	<span class="kw">let</span> <span class="ident">blob</span> <span class="op">=</span> <span class="ident">prepare_blob_for_compilation</span>(<span class="ident">blob</span>, <span class="ident">semantics</span>)<span class="question-mark">?</span>;
 
 	<span class="kw">let</span> <span class="ident">engine</span> <span class="op">=</span> <span class="ident">Engine::new</span>(<span class="kw-2">&amp;</span><span class="ident">common_config</span>(<span class="ident">semantics</span>)<span class="question-mark">?</span>)
 		.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">WasmError::Other</span>(<span class="macro">format!</span>(<span class="string">&quot;cannot create the engine: {}&quot;</span>, <span class="ident">e</span>)))<span class="question-mark">?</span>;

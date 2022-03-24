@@ -886,11 +886,11 @@
 		<span class="ident">WasmExecutionMethod::Compiled</span> =&gt; <span class="ident">sc_executor_wasmtime::create_runtime</span>::<span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span>(
 			<span class="ident">blob</span>,
 			<span class="ident">sc_executor_wasmtime::Config</span> {
-				<span class="ident">heap_pages</span>,
 				<span class="ident">max_memory_size</span>: <span class="prelude-val">None</span>,
 				<span class="ident">allow_missing_func_imports</span>,
 				<span class="ident">cache_path</span>: <span class="ident">cache_path</span>.<span class="ident">map</span>(<span class="ident">ToOwned::to_owned</span>),
 				<span class="ident">semantics</span>: <span class="ident">sc_executor_wasmtime::Semantics</span> {
+					<span class="ident">extra_heap_pages</span>: <span class="ident">heap_pages</span>,
 					<span class="ident">fast_instance_reuse</span>: <span class="bool-val">true</span>,
 					<span class="ident">deterministic_stack_limit</span>: <span class="prelude-val">None</span>,
 					<span class="ident">canonicalize_nans</span>: <span class="bool-val">false</span>,
