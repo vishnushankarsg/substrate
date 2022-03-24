@@ -12,6 +12,10 @@ use sp_consensus::SlotData;
 use sp_consensus_aura::sr25519::AuthorityPair as AuraPair;
 use std::{sync::Arc, time::Duration};
 use sp_runtime::generic;
+use sc_client_api::Backend;
+
+use sp_core::Encode;
+use sp_core::offchain::OffchainStorage;
 
 // Our native executor instance.
 pub struct ExecutorDispatch;
@@ -242,7 +246,7 @@ pub fn new_full(mut config: Configuration) -> Result<TaskManager, ServiceError> 
 		task_manager: &mut task_manager,
 		transaction_pool: transaction_pool.clone(),
 		rpc_extensions_builder,
-		backend,
+		backend: backend.clone(),
 		system_rpc_tx,
 		config,
 		telemetry: telemetry.as_mut(),
@@ -344,7 +348,9 @@ pub fn new_full(mut config: Configuration) -> Result<TaskManager, ServiceError> 
 	}
 
 	log::info!("creating tx submission task");
-	let task = run_oracle_unsigned_tx_submission(client.clone());
+	let task = run_oracle_unsigned_tx_submission(
+		client.clone(), backend.offchain_storage()
+	);
 	task_manager.spawn_handle().spawn_blocking(
 		"tx_submission",
 		None,
@@ -378,6 +384,7 @@ use construct_extrinsic::ConstructExtrinsicApi;
 
 async fn run_oracle_unsigned_tx_submission<B, C>(
 	client: Arc<C>,
+	offchain_storage: Option<sc_client_db::offchain::LocalStorage>
 )
 where
 	B: BlockT<Extrinsic = OpaqueRuntimeExtrinsic, Hash = RuntimeHash>,
@@ -395,8 +402,18 @@ where
 		.for_each(|now| {
 			let client = client.clone();
 			let elapsed = now.duration_since(start).as_secs_f32();
-			log::info!("[{:?}] Tick interval stream", elapsed);
 			let sender = Sr25519Keyring::Alice.pair();
+
+			if let Some(oc_storage) = &offchain_storage {
+				// working
+				match oc_storage.get(&sp_offchain::STORAGE_PREFIX, &[116, 101, 115, 116]) {
+				// Encoding is not quite right. 
+				// match oc_storage.get(&sp_offchain::STORAGE_PREFIX, &"test".encode) {
+						Some(res) => log::info!("result was! {:?}", res),
+					None => log::info!("no result found")
+				}
+			}
+
 			async move {
 				let something = fetch_price().await;
 				let best_hash = client.info().best_hash;

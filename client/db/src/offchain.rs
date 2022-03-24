@@ -57,6 +57,8 @@ impl sp_core::offchain::OffchainStorage for LocalStorage {
 		let mut tx = Transaction::new();
 		tx.set(columns::OFFCHAIN, &concatenate_prefix_and_key(prefix, key), value);
 
+		log::info!("Set with prefix:{:?}, key:{:?}, value:: {:?}", prefix, key, value);
+
 		if let Err(err) = self.db.commit(tx) {
 			error!("Error setting on local storage: {}", err)
 		}
@@ -72,6 +74,10 @@ impl sp_core::offchain::OffchainStorage for LocalStorage {
 	}
 
 	fn get(&self, prefix: &[u8], key: &[u8]) -> Option<Vec<u8>> {
+		log::info!("tried to read prefix: {:?}, key: {:?}", prefix, key);
+		
+		log::info!("but expected prefix {:?}, key: {:?}", [115, 116, 111, 114, 97, 103, 101], [116, 101, 115, 116]);
+
 		self.db.get(columns::OFFCHAIN, &concatenate_prefix_and_key(prefix, key))
 	}
 
