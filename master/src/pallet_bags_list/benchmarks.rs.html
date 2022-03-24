@@ -182,6 +182,10 @@
 <span id="182">182</span>
 <span id="183">183</span>
 <span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -327,6 +331,10 @@
 		<span class="comment">//</span>
 		<span class="comment">// - both heavier&#39;s `prev` and `next` are nodes that will need to be read and written.</span>
 		<span class="comment">// - `lighter` is the bag&#39;s `head`, so the bag will need to be read and written.</span>
+
+		<span class="comment">// clear any pre-existing storage.</span>
+		<span class="comment">// NOTE: safe to call outside block production</span>
+		<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::unsafe_clear</span>();
 
 		<span class="kw">let</span> <span class="ident">bag_thresh</span> <span class="op">=</span> <span class="ident">T::BagThresholds::get</span>()[<span class="number">0</span>];
 
