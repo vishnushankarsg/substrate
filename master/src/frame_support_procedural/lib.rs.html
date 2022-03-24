@@ -562,6 +562,19 @@
 <span id="562">562</span>
 <span id="563">563</span>
 <span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -592,9 +605,11 @@
 <span class="kw">mod</span> <span class="ident">key_prefix</span>;
 <span class="kw">mod</span> <span class="ident">match_and_insert</span>;
 <span class="kw">mod</span> <span class="ident">pallet</span>;
+<span class="kw">mod</span> <span class="ident">pallet_error</span>;
 <span class="kw">mod</span> <span class="ident">partial_eq_no_bound</span>;
 <span class="kw">mod</span> <span class="ident">storage</span>;
 <span class="kw">mod</span> <span class="ident">transactional</span>;
+<span class="kw">mod</span> <span class="ident">tt_macro</span>;
 
 <span class="kw">use</span> <span class="ident">proc_macro::TokenStream</span>;
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">cell::RefCell</span>, <span class="ident">str::FromStr</span>};
@@ -605,9 +620,9 @@
 	<span class="kw">static</span> <span class="ident">COUNTER</span>: <span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">Counter</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">RefCell::new</span>(<span class="ident">Counter</span>(<span class="number">0</span>));
 }
 
-<span class="doccomment">/// Counter to generate a relatively unique identifier for macros querying for the existence of</span>
-<span class="doccomment">/// pallet parts. This is necessary because declarative macros gets hoisted to the crate root,</span>
-<span class="doccomment">/// which shares the namespace with other pallets containing the very same query macros.</span>
+<span class="doccomment">/// Counter to generate a relatively unique identifier for macros. This is necessary because</span>
+<span class="doccomment">/// declarative macros gets hoisted to the crate root, which shares the namespace with other pallets</span>
+<span class="doccomment">/// containing the very same macros.</span>
 <span class="kw">struct</span> <span class="ident">Counter</span>(<span class="ident">u64</span>);
 
 <span class="kw">impl</span> <span class="ident">Counter</span> {
@@ -1125,6 +1140,17 @@
 <span class="attribute">#[<span class="ident">proc_macro</span>]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">match_and_insert</span>(<span class="ident">input</span>: <span class="ident">TokenStream</span>) -&gt; <span class="ident">TokenStream</span> {
 	<span class="ident">match_and_insert::match_and_insert</span>(<span class="ident">input</span>)
+}
+
+<span class="attribute">#[<span class="ident">proc_macro_derive</span>(<span class="ident">PalletError</span>, <span class="ident">attributes</span>(<span class="ident">codec</span>))]</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">derive_pallet_error</span>(<span class="ident">input</span>: <span class="ident">TokenStream</span>) -&gt; <span class="ident">TokenStream</span> {
+	<span class="ident">pallet_error::derive_pallet_error</span>(<span class="ident">input</span>)
+}
+
+<span class="doccomment">/// Internal macro used by `frame_support` to create tt-call-compliant macros</span>
+<span class="attribute">#[<span class="ident">proc_macro</span>]</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">__create_tt_macro</span>(<span class="ident">input</span>: <span class="ident">TokenStream</span>) -&gt; <span class="ident">TokenStream</span> {
+	<span class="ident">tt_macro::create_tt_return_macro</span>(<span class="ident">input</span>)
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="frame_support_procedural" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>

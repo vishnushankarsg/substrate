@@ -3745,7 +3745,7 @@
 <span class="doccomment">/// number.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dispatch_error_to_invalid</span>(<span class="ident">error</span>: <span class="ident">DispatchError</span>) -&gt; <span class="ident">InvalidTransaction</span> {
 	<span class="kw">let</span> <span class="ident">error_number</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">error</span> {
-		<span class="ident">DispatchError::Module</span>(<span class="ident">ModuleError</span> { <span class="ident">error</span>, .. }) =&gt; <span class="ident">error</span>,
+		<span class="ident">DispatchError::Module</span>(<span class="ident">ModuleError</span> { <span class="ident">error</span>, .. }) =&gt; <span class="ident">error</span>[<span class="number">0</span>],
 		<span class="kw">_</span> =&gt; <span class="number">0</span>,
 	};
 	<span class="ident">InvalidTransaction::Custom</span>(<span class="ident">error_number</span>)

@@ -471,6 +471,40 @@
 <span id="471">471</span>
 <span id="472">472</span>
 <span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -714,6 +748,7 @@
 		<span class="ident">expand::expand_outer_inherent</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>, <span class="kw-2">&amp;</span><span class="ident">block</span>, <span class="kw-2">&amp;</span><span class="ident">unchecked_extrinsic</span>, <span class="kw-2">&amp;</span><span class="ident">pallets</span>, <span class="kw-2">&amp;</span><span class="ident">scrate</span>);
 	<span class="kw">let</span> <span class="ident">validate_unsigned</span> <span class="op">=</span> <span class="ident">expand::expand_outer_validate_unsigned</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>, <span class="kw-2">&amp;</span><span class="ident">pallets</span>, <span class="kw-2">&amp;</span><span class="ident">scrate</span>);
 	<span class="kw">let</span> <span class="ident">integrity_test</span> <span class="op">=</span> <span class="ident">decl_integrity_test</span>(<span class="kw-2">&amp;</span><span class="ident">scrate</span>);
+	<span class="kw">let</span> <span class="ident">static_assertions</span> <span class="op">=</span> <span class="ident">decl_static_assertions</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>, <span class="kw-2">&amp;</span><span class="ident">pallets</span>, <span class="kw-2">&amp;</span><span class="ident">scrate</span>);
 
 	<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">quote!</span>(
 		#<span class="ident">scrate_decl</span>
@@ -755,6 +790,8 @@
 		#<span class="ident">validate_unsigned</span>
 
 		#<span class="ident">integrity_test</span>
+
+		#<span class="ident">static_assertions</span>
 	);
 
 	<span class="prelude-val">Ok</span>(<span class="ident">res</span>)
@@ -943,6 +980,37 @@
 			}
 		}
 	)
+}
+
+<span class="kw">fn</span> <span class="ident">decl_static_assertions</span>(
+	<span class="ident">runtime</span>: <span class="kw-2">&amp;</span><span class="ident">Ident</span>,
+	<span class="ident">pallet_decls</span>: <span class="kw-2">&amp;</span>[<span class="ident">Pallet</span>],
+	<span class="ident">scrate</span>: <span class="kw-2">&amp;</span><span class="ident">TokenStream2</span>,
+) -&gt; <span class="ident">TokenStream2</span> {
+	<span class="kw">let</span> <span class="ident">error_encoded_size_check</span> <span class="op">=</span> <span class="ident">pallet_decls</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">decl</span><span class="op">|</span> {
+		<span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">decl</span>.<span class="ident">path</span>;
+		<span class="kw">let</span> <span class="ident">assert_message</span> <span class="op">=</span> <span class="macro">format!</span>(
+			<span class="string">&quot;The maximum encoded size of the error type in the `{}` pallet exceeds \
+			`MAX_MODULE_ERROR_ENCODED_SIZE`&quot;</span>,
+			<span class="ident">decl</span>.<span class="ident">name</span>,
+		);
+
+		<span class="macro">quote!</span> {
+			#<span class="macro">scrate::tt_call!</span> {
+				<span class="kw">macro</span> <span class="op">=</span> [{ #<span class="ident">path::tt_error_token</span> }]
+				<span class="ident">frame_support</span> <span class="op">=</span> [{ #<span class="ident">scrate</span> }]
+				~~<span class="op">&gt;</span> #<span class="macro">scrate::assert_error_encoded_size!</span> {
+					<span class="ident">path</span> <span class="op">=</span> [{ #<span class="ident">path</span> }]
+					<span class="ident">runtime</span> <span class="op">=</span> [{ #<span class="ident">runtime</span> }]
+					<span class="ident">assert_message</span> <span class="op">=</span> [{ #<span class="ident">assert_message</span> }]
+				}
+			}
+		}
+	});
+
+	<span class="macro">quote!</span> {
+		#(#<span class="ident">error_encoded_size_check</span>)<span class="op">*</span>
+	}
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="frame_support_procedural" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>

@@ -2530,7 +2530,7 @@
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="attribute">#[<span class="ident">should_panic</span>(<span class="ident">expected</span> <span class="op">=</span> <span class="string">&quot;Invalid unsigned submission must produce invalid block and \
 	                           deprive validator from their authoring reward.: \
-	                           Module(ModuleError { index: 2, error: 1, message: \
+	                           Module(ModuleError { index: 2, error: [1, 0, 0, 0], message: \
 	                           Some(\&quot;PreDispatchWrongWinnerCount\&quot;) })&quot;</span>)]</span>
 	<span class="kw">fn</span> <span class="ident">unfeasible_solution_panics</span>() {
 		<span class="ident">ExtBuilder::default</span>().<span class="ident">build_and_execute</span>(<span class="op">|</span><span class="op">|</span> {
@@ -2652,7 +2652,7 @@
 				<span class="ident">MultiPhase::basic_checks</span>(<span class="kw-2">&amp;</span><span class="ident">solution</span>, <span class="string">&quot;mined&quot;</span>).<span class="ident">unwrap_err</span>(),
 				<span class="ident">MinerError::PreDispatchChecksFailed</span>(<span class="ident">DispatchError::Module</span>(<span class="ident">ModuleError</span> {
 					<span class="ident">index</span>: <span class="number">2</span>,
-					<span class="ident">error</span>: <span class="number">1</span>,
+					<span class="ident">error</span>: [<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>],
 					<span class="ident">message</span>: <span class="prelude-val">Some</span>(<span class="string">&quot;PreDispatchWrongWinnerCount&quot;</span>),
 				})),
 			);

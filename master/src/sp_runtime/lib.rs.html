@@ -1064,6 +1064,11 @@
 <span id="1064">1064</span>
 <span id="1065">1065</span>
 <span id="1066">1066</span>
+<span id="1067">1067</span>
+<span id="1068">1068</span>
+<span id="1069">1069</span>
+<span id="1070">1070</span>
+<span id="1071">1071</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1123,6 +1128,7 @@
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">curve</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">generic</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">legacy</span>;
 <span class="kw">mod</span> <span class="ident">multiaddress</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">offchain</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">runtime_logger</span>;
@@ -1162,6 +1168,10 @@
 };
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">either::Either</span>;
+
+<span class="doccomment">/// The number of bytes of the module-specific `error` field defined in [`ModuleError`].</span>
+<span class="doccomment">/// In FRAME, this is the maximum encoded size of a pallet error type.</span>
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MAX_MODULE_ERROR_ENCODED_SIZE</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">4</span>;
 
 <span class="doccomment">/// An abstraction over justification for a block&#39;s validity under a consensus algorithm.</span>
 <span class="doccomment">///</span>
@@ -1534,7 +1544,7 @@
 	<span class="doccomment">/// Module index, matching the metadata module index.</span>
 	<span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">u8</span>,
 	<span class="doccomment">/// Module specific error value.</span>
-	<span class="kw">pub</span> <span class="ident">error</span>: <span class="ident">u8</span>,
+	<span class="kw">pub</span> <span class="ident">error</span>: [<span class="ident">u8</span>; <span class="ident">MAX_MODULE_ERROR_ENCODED_SIZE</span>],
 	<span class="doccomment">/// Optional error message.</span>
 	<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">skip</span>)]</span>
 	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">serde</span>(<span class="ident">skip_deserializing</span>))]</span>
@@ -1988,15 +1998,15 @@
 	<span class="kw">fn</span> <span class="ident">dispatch_error_encoding</span>() {
 		<span class="kw">let</span> <span class="ident">error</span> <span class="op">=</span> <span class="ident">DispatchError::Module</span>(<span class="ident">ModuleError</span> {
 			<span class="ident">index</span>: <span class="number">1</span>,
-			<span class="ident">error</span>: <span class="number">2</span>,
+			<span class="ident">error</span>: [<span class="number">2</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>],
 			<span class="ident">message</span>: <span class="prelude-val">Some</span>(<span class="string">&quot;error message&quot;</span>),
 		});
 		<span class="kw">let</span> <span class="ident">encoded</span> <span class="op">=</span> <span class="ident">error</span>.<span class="ident">encode</span>();
 		<span class="kw">let</span> <span class="ident">decoded</span> <span class="op">=</span> <span class="ident">DispatchError::decode</span>(<span class="kw-2">&amp;mut</span> <span class="kw-2">&amp;</span><span class="ident">encoded</span>[..]).<span class="ident">unwrap</span>();
-		<span class="macro">assert_eq!</span>(<span class="ident">encoded</span>, <span class="macro">vec!</span>[<span class="number">3</span>, <span class="number">1</span>, <span class="number">2</span>]);
+		<span class="macro">assert_eq!</span>(<span class="ident">encoded</span>, <span class="macro">vec!</span>[<span class="number">3</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]);
 		<span class="macro">assert_eq!</span>(
 			<span class="ident">decoded</span>,
-			<span class="ident">DispatchError::Module</span>(<span class="ident">ModuleError</span> { <span class="ident">index</span>: <span class="number">1</span>, <span class="ident">error</span>: <span class="number">2</span>, <span class="ident">message</span>: <span class="prelude-val">None</span> })
+			<span class="ident">DispatchError::Module</span>(<span class="ident">ModuleError</span> { <span class="ident">index</span>: <span class="number">1</span>, <span class="ident">error</span>: [<span class="number">2</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>], <span class="ident">message</span>: <span class="prelude-val">None</span> })
 		);
 	}
 
@@ -2009,9 +2019,9 @@
 			<span class="ident">Other</span>(<span class="string">&quot;bar&quot;</span>),
 			<span class="ident">CannotLookup</span>,
 			<span class="ident">BadOrigin</span>,
-			<span class="ident">Module</span>(<span class="ident">ModuleError</span> { <span class="ident">index</span>: <span class="number">1</span>, <span class="ident">error</span>: <span class="number">1</span>, <span class="ident">message</span>: <span class="prelude-val">None</span> }),
-			<span class="ident">Module</span>(<span class="ident">ModuleError</span> { <span class="ident">index</span>: <span class="number">1</span>, <span class="ident">error</span>: <span class="number">2</span>, <span class="ident">message</span>: <span class="prelude-val">None</span> }),
-			<span class="ident">Module</span>(<span class="ident">ModuleError</span> { <span class="ident">index</span>: <span class="number">2</span>, <span class="ident">error</span>: <span class="number">1</span>, <span class="ident">message</span>: <span class="prelude-val">None</span> }),
+			<span class="ident">Module</span>(<span class="ident">ModuleError</span> { <span class="ident">index</span>: <span class="number">1</span>, <span class="ident">error</span>: [<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>], <span class="ident">message</span>: <span class="prelude-val">None</span> }),
+			<span class="ident">Module</span>(<span class="ident">ModuleError</span> { <span class="ident">index</span>: <span class="number">1</span>, <span class="ident">error</span>: [<span class="number">2</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>], <span class="ident">message</span>: <span class="prelude-val">None</span> }),
+			<span class="ident">Module</span>(<span class="ident">ModuleError</span> { <span class="ident">index</span>: <span class="number">2</span>, <span class="ident">error</span>: [<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>], <span class="ident">message</span>: <span class="prelude-val">None</span> }),
 			<span class="ident">ConsumerRemaining</span>,
 			<span class="ident">NoProviders</span>,
 			<span class="ident">Token</span>(<span class="ident">TokenError::NoFunds</span>),
@@ -2036,8 +2046,8 @@
 
 		<span class="comment">// Ignores `message` field in `Module` variant.</span>
 		<span class="macro">assert_eq!</span>(
-			<span class="ident">Module</span>(<span class="ident">ModuleError</span> { <span class="ident">index</span>: <span class="number">1</span>, <span class="ident">error</span>: <span class="number">1</span>, <span class="ident">message</span>: <span class="prelude-val">Some</span>(<span class="string">&quot;foo&quot;</span>) }),
-			<span class="ident">Module</span>(<span class="ident">ModuleError</span> { <span class="ident">index</span>: <span class="number">1</span>, <span class="ident">error</span>: <span class="number">1</span>, <span class="ident">message</span>: <span class="prelude-val">None</span> }),
+			<span class="ident">Module</span>(<span class="ident">ModuleError</span> { <span class="ident">index</span>: <span class="number">1</span>, <span class="ident">error</span>: [<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>], <span class="ident">message</span>: <span class="prelude-val">Some</span>(<span class="string">&quot;foo&quot;</span>) }),
+			<span class="ident">Module</span>(<span class="ident">ModuleError</span> { <span class="ident">index</span>: <span class="number">1</span>, <span class="ident">error</span>: [<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>], <span class="ident">message</span>: <span class="prelude-val">None</span> }),
 		);
 	}
 
