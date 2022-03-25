@@ -1343,6 +1343,12 @@
 <span id="1343">1343</span>
 <span id="1344">1344</span>
 <span id="1345">1345</span>
+<span id="1346">1346</span>
+<span id="1347">1347</span>
+<span id="1348">1348</span>
+<span id="1349">1349</span>
+<span id="1350">1350</span>
+<span id="1351">1351</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -2267,6 +2273,12 @@
 					<span class="ident">_set_id</span>: <span class="ident">sp_finality_grandpa::SetId</span>,
 					<span class="ident">_authority_id</span>: <span class="ident">sp_finality_grandpa::AuthorityId</span>,
 				) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">sp_finality_grandpa::OpaqueKeyOwnershipProof</span><span class="op">&gt;</span> {
+					<span class="prelude-val">None</span>
+				}
+			}
+
+			<span class="kw">impl</span> <span class="ident">beefy_primitives::BeefyApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">RuntimeApi</span> {
+				<span class="kw">fn</span> <span class="ident">validator_set</span>() -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">beefy_primitives::ValidatorSet</span><span class="op">&lt;</span><span class="ident">beefy_primitives::crypto::AuthorityId</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 					<span class="prelude-val">None</span>
 				}
 			}
