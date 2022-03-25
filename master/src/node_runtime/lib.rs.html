@@ -1927,6 +1927,14 @@
 <span id="1927">1927</span>
 <span id="1928">1928</span>
 <span id="1929">1929</span>
+<span id="1930">1930</span>
+<span id="1931">1931</span>
+<span id="1932">1932</span>
+<span id="1933">1933</span>
+<span id="1934">1934</span>
+<span id="1935">1935</span>
+<span id="1936">1936</span>
+<span id="1937">1937</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -2149,7 +2157,7 @@
 	<span class="kw">type</span> <span class="ident">SystemWeightInfo</span> <span class="op">=</span> <span class="ident">frame_system::weights::SubstrateWeight</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">SS58Prefix</span> <span class="op">=</span> <span class="ident">ConstU16</span><span class="op">&lt;</span><span class="number">42</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">OnSetCode</span> <span class="op">=</span> ();
-	<span class="kw">type</span> <span class="ident">MaxConsumers</span> <span class="op">=</span> <span class="ident">frame_support::traits::ConstU32</span><span class="op">&lt;</span><span class="number">16</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">MaxConsumers</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">16</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">impl</span> <span class="ident">pallet_randomness_collective_flip::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
@@ -2756,7 +2764,7 @@
 	<span class="kw">type</span> <span class="ident">Slash</span> <span class="op">=</span> <span class="ident">Treasury</span>;
 	<span class="kw">type</span> <span class="ident">Scheduler</span> <span class="op">=</span> <span class="ident">Scheduler</span>;
 	<span class="kw">type</span> <span class="ident">PalletsOrigin</span> <span class="op">=</span> <span class="ident">OriginCaller</span>;
-	<span class="kw">type</span> <span class="ident">MaxVotes</span> <span class="op">=</span> <span class="ident">frame_support::traits::ConstU32</span><span class="op">&lt;</span><span class="number">100</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">MaxVotes</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">100</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">pallet_democracy::weights::SubstrateWeight</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">MaxProposals</span> <span class="op">=</span> <span class="ident">MaxProposals</span>;
 }
@@ -2858,17 +2866,9 @@
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">TipFindersFee</span>: <span class="ident">Percent</span> <span class="op">=</span> <span class="ident">Percent::from_percent</span>(<span class="number">20</span>);
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">TipReportDepositBase</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">1</span> <span class="op">*</span> <span class="ident">DOLLARS</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DataDepositPerByte</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">1</span> <span class="op">*</span> <span class="ident">CENTS</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyDepositBase</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">1</span> <span class="op">*</span> <span class="ident">DOLLARS</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyDepositPayoutDelay</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">1</span> <span class="op">*</span> <span class="ident">DAYS</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">TreasuryPalletId</span>: <span class="ident">PalletId</span> <span class="op">=</span> <span class="ident">PalletId</span>(<span class="kw-2">*</span><span class="string">b&quot;py/trsry&quot;</span>);
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyUpdatePeriod</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">14</span> <span class="op">*</span> <span class="ident">DAYS</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaximumReasonLength</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">300</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyCuratorDeposit</span>: <span class="ident">Permill</span> <span class="op">=</span> <span class="ident">Permill::from_percent</span>(<span class="number">50</span>);
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyValueMinimum</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">5</span> <span class="op">*</span> <span class="ident">DOLLARS</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaxApprovals</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">100</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaxActiveChildBountyCount</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">5</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ChildBountyValueMinimum</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">1</span> <span class="op">*</span> <span class="ident">DOLLARS</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ChildBountyCuratorDepositBase</span>: <span class="ident">Permill</span> <span class="op">=</span> <span class="ident">Permill::from_percent</span>(<span class="number">10</span>);
 }
 
 <span class="kw">impl</span> <span class="ident">pallet_treasury::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
@@ -2895,12 +2895,25 @@
 	<span class="kw">type</span> <span class="ident">MaxApprovals</span> <span class="op">=</span> <span class="ident">MaxApprovals</span>;
 }
 
+<span class="macro">parameter_types!</span> {
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyCuratorDeposit</span>: <span class="ident">Permill</span> <span class="op">=</span> <span class="ident">Permill::from_percent</span>(<span class="number">50</span>);
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyValueMinimum</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">5</span> <span class="op">*</span> <span class="ident">DOLLARS</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyDepositBase</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">1</span> <span class="op">*</span> <span class="ident">DOLLARS</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CuratorDepositMultiplier</span>: <span class="ident">Permill</span> <span class="op">=</span> <span class="ident">Permill::from_percent</span>(<span class="number">50</span>);
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CuratorDepositMin</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">1</span> <span class="op">*</span> <span class="ident">DOLLARS</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CuratorDepositMax</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">100</span> <span class="op">*</span> <span class="ident">DOLLARS</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyDepositPayoutDelay</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">1</span> <span class="op">*</span> <span class="ident">DAYS</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyUpdatePeriod</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">14</span> <span class="op">*</span> <span class="ident">DAYS</span>;
+}
+
 <span class="kw">impl</span> <span class="ident">pallet_bounties::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
 	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
 	<span class="kw">type</span> <span class="ident">BountyDepositBase</span> <span class="op">=</span> <span class="ident">BountyDepositBase</span>;
 	<span class="kw">type</span> <span class="ident">BountyDepositPayoutDelay</span> <span class="op">=</span> <span class="ident">BountyDepositPayoutDelay</span>;
 	<span class="kw">type</span> <span class="ident">BountyUpdatePeriod</span> <span class="op">=</span> <span class="ident">BountyUpdatePeriod</span>;
-	<span class="kw">type</span> <span class="ident">BountyCuratorDeposit</span> <span class="op">=</span> <span class="ident">BountyCuratorDeposit</span>;
+	<span class="kw">type</span> <span class="ident">CuratorDepositMultiplier</span> <span class="op">=</span> <span class="ident">CuratorDepositMultiplier</span>;
+	<span class="kw">type</span> <span class="ident">CuratorDepositMin</span> <span class="op">=</span> <span class="ident">CuratorDepositMin</span>;
+	<span class="kw">type</span> <span class="ident">CuratorDepositMax</span> <span class="op">=</span> <span class="ident">CuratorDepositMax</span>;
 	<span class="kw">type</span> <span class="ident">BountyValueMinimum</span> <span class="op">=</span> <span class="ident">BountyValueMinimum</span>;
 	<span class="kw">type</span> <span class="ident">DataDepositPerByte</span> <span class="op">=</span> <span class="ident">DataDepositPerByte</span>;
 	<span class="kw">type</span> <span class="ident">MaximumReasonLength</span> <span class="op">=</span> <span class="ident">MaximumReasonLength</span>;
@@ -2908,11 +2921,14 @@
 	<span class="kw">type</span> <span class="ident">ChildBountyManager</span> <span class="op">=</span> <span class="ident">ChildBounties</span>;
 }
 
+<span class="macro">parameter_types!</span> {
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ChildBountyValueMinimum</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">1</span> <span class="op">*</span> <span class="ident">DOLLARS</span>;
+}
+
 <span class="kw">impl</span> <span class="ident">pallet_child_bounties::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
 	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
-	<span class="kw">type</span> <span class="ident">MaxActiveChildBountyCount</span> <span class="op">=</span> <span class="ident">MaxActiveChildBountyCount</span>;
+	<span class="kw">type</span> <span class="ident">MaxActiveChildBountyCount</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">5</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">ChildBountyValueMinimum</span> <span class="op">=</span> <span class="ident">ChildBountyValueMinimum</span>;
-	<span class="kw">type</span> <span class="ident">ChildBountyCuratorDepositBase</span> <span class="op">=</span> <span class="ident">ChildBountyCuratorDepositBase</span>;
 	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">pallet_child_bounties::weights::SubstrateWeight</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
 

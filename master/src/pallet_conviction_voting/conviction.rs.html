@@ -148,14 +148,14 @@
 
 <span class="doccomment">//! The conviction datatype.</span>
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::types::Delegations</span>;
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">MaxEncodedLen</span>};
 <span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
 	<span class="ident">traits</span>::{<span class="ident">Bounded</span>, <span class="ident">CheckedDiv</span>, <span class="ident">CheckedMul</span>, <span class="ident">Zero</span>},
 	<span class="ident">RuntimeDebug</span>,
 };
-<span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">convert::TryFrom</span>, <span class="ident">result::Result</span>};
+
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::types::Delegations</span>;
 
 <span class="doccomment">/// A value denoting the strength of conviction of a vote.</span>
 <span class="attribute">#[<span class="ident">derive</span>(
