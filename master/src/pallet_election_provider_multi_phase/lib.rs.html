@@ -2158,8 +2158,6 @@
 <span id="2158">2158</span>
 <span id="2159">2159</span>
 <span id="2160">2160</span>
-<span id="2161">2161</span>
-<span id="2162">2162</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -2404,7 +2402,7 @@
 <span class="kw">use</span> <span class="ident">frame_system</span>::{<span class="ident">ensure_none</span>, <span class="ident">offchain::SendTransactionTypes</span>};
 <span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
 <span class="kw">use</span> <span class="ident">sp_arithmetic</span>::{
-	<span class="ident">traits</span>::{<span class="ident">CheckedAdd</span>, <span class="ident">Saturating</span>, <span class="ident">Zero</span>},
+	<span class="ident">traits</span>::{<span class="ident">Bounded</span>, <span class="ident">CheckedAdd</span>, <span class="ident">Saturating</span>, <span class="ident">Zero</span>},
 	<span class="ident">UpperOf</span>,
 };
 <span class="kw">use</span> <span class="ident">sp_npos_elections</span>::{
@@ -2485,10 +2483,7 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">InstantElectionProvider</span> <span class="kw">for</span> <span class="ident">NoFallback</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">instant_elect</span>(
-		<span class="kw">_</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-		<span class="kw">_</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Supports</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">elect_with_bounds</span>(<span class="kw">_</span>: <span class="ident">usize</span>, <span class="kw">_</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Supports</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span> {
 		<span class="prelude-val">Err</span>(<span class="string">&quot;NoFallback.&quot;</span>)
 	}
 }
@@ -2845,7 +2840,7 @@
 			<span class="op">+</span> <span class="ident">TypeInfo</span>;
 
 		<span class="doccomment">/// Configuration for the fallback.</span>
-		<span class="kw">type</span> <span class="ident">Fallback</span>: <span class="ident">ElectionProvider</span><span class="op">&lt;</span>
+		<span class="kw">type</span> <span class="ident">Fallback</span>: <span class="ident">InstantElectionProvider</span><span class="op">&lt;</span>
 			<span class="ident">AccountId</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::AccountId</span>,
 			<span class="ident">BlockNumber</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::BlockNumber</span>,
 			<span class="ident">DataProvider</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::DataProvider</span>,
@@ -2854,7 +2849,7 @@
 		<span class="doccomment">/// Configuration of the governance-only fallback.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// As a side-note, it is recommend for test-nets to use `type ElectionProvider =</span>
-		<span class="doccomment">/// OnChainSeqPhragmen&lt;_&gt;` if the test-net is not expected to have thousands of nominators.</span>
+		<span class="doccomment">/// BoundedExecution&lt;_&gt;` if the test-net is not expected to have thousands of nominators.</span>
 		<span class="kw">type</span> <span class="ident">GovernanceFallback</span>: <span class="ident">InstantElectionProvider</span><span class="op">&lt;</span>
 			<span class="ident">AccountId</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::AccountId</span>,
 			<span class="ident">BlockNumber</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::BlockNumber</span>,
@@ -3202,13 +3197,14 @@
 			<span class="kw">let</span> <span class="ident">maybe_max_voters</span> <span class="op">=</span> <span class="ident">maybe_max_voters</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span> <span class="kw">as</span> <span class="ident">usize</span>);
 			<span class="kw">let</span> <span class="ident">maybe_max_targets</span> <span class="op">=</span> <span class="ident">maybe_max_targets</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span> <span class="kw">as</span> <span class="ident">usize</span>);
 
-			<span class="kw">let</span> <span class="ident">supports</span> <span class="op">=</span>
-				<span class="ident">T::GovernanceFallback::instant_elect</span>(<span class="ident">maybe_max_voters</span>, <span class="ident">maybe_max_targets</span>).<span class="ident">map_err</span>(
-					<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
-						<span class="macro">log!</span>(<span class="ident">error</span>, <span class="string">&quot;GovernanceFallback failed: {:?}&quot;</span>, <span class="ident">e</span>);
-						<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::FallbackFailed</span>
-					},
-				)<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="ident">supports</span> <span class="op">=</span> <span class="ident">T::GovernanceFallback::elect_with_bounds</span>(
+				<span class="ident">maybe_max_voters</span>.<span class="ident">unwrap_or</span>(<span class="ident">Bounded::max_value</span>()),
+				<span class="ident">maybe_max_targets</span>.<span class="ident">unwrap_or</span>(<span class="ident">Bounded::max_value</span>()),
+			)
+			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
+				<span class="macro">log!</span>(<span class="ident">error</span>, <span class="string">&quot;GovernanceFallback failed: {:?}&quot;</span>, <span class="ident">e</span>);
+				<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::FallbackFailed</span>
+			})<span class="question-mark">?</span>;
 
 			<span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">ReadySolution</span> {
 				<span class="ident">supports</span>,

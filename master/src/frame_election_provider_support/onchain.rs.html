@@ -233,6 +233,55 @@
 <span id="233">233</span>
 <span id="234">234</span>
 <span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -250,9 +299,9 @@
 <span class="comment">// See the License for the specific language governing permissions and</span>
 <span class="comment">// limitations under the License.</span>
 
-<span class="doccomment">//! An implementation of [`ElectionProvider`] that does an on-chain sequential phragmen.</span>
+<span class="doccomment">//! An implementation of [`ElectionProvider`] that uses an `NposSolver` to do the election.</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">ElectionDataProvider</span>, <span class="ident">ElectionProvider</span>, <span class="ident">InstantElectionProvider</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">ElectionDataProvider</span>, <span class="ident">ElectionProvider</span>, <span class="ident">InstantElectionProvider</span>, <span class="ident">NposSolver</span>};
 <span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">traits::Get</span>, <span class="ident">weights::DispatchClass</span>};
 <span class="kw">use</span> <span class="ident">sp_npos_elections</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">collections::btree_map::BTreeMap</span>, <span class="ident">marker::PhantomData</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>};
@@ -276,92 +325,141 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// This will accept voting data on the fly and produce the results immediately.</span>
 <span class="doccomment">///</span>
+<span class="doccomment">/// Finally, the [`ElectionProvider`] implementation of this type does not impose any limits on the</span>
+<span class="doccomment">/// number of voters and targets that are fetched. This could potentially make this unsuitable for</span>
+<span class="doccomment">/// execution onchain. One could, however, impose bounds on it by using for example</span>
+<span class="doccomment">/// `BoundedExecution` which will the bounds provided in the configuration.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// On the other hand, the [`InstantElectionProvider`] implementation does limit these inputs,</span>
+<span class="doccomment">/// either via using `BoundedExecution` and imposing the bounds there, or dynamically via calling</span>
+<span class="doccomment">/// `elect_with_bounds` providing these bounds. If you use `elect_with_bounds` along with</span>
+<span class="doccomment">/// `InstantElectionProvider`, the bound that would be used is the minimum of the 2 bounds.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// It is advisable to use the former ([`ElectionProvider::elect`]) only at genesis, or for testing,</span>
+<span class="doccomment">/// the latter [`InstantElectionProvider::elect_with_bounds`] for onchain operations, with</span>
+<span class="doccomment">/// thoughtful bounds.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Please use `BoundedExecution` at all times except at genesis or for testing, with thoughtful</span>
+<span class="doccomment">/// bounds in order to bound the potential execution time. Limit the use `UnboundedExecution` at</span>
+<span class="doccomment">/// genesis or for testing, as it does not bound the inputs. However, this can be used with</span>
+<span class="doccomment">/// `[InstantElectionProvider::elect_with_bounds`] that dynamically imposes limits.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BoundedExecution</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">BoundedExecutionConfig</span><span class="op">&gt;</span>(<span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>);
+
+<span class="doccomment">/// An unbounded variant of [`BoundedExecution`].</span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// ### Warning</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// This can be very expensive to run frequently on-chain. Use with care. Moreover, this</span>
 <span class="doccomment">/// implementation ignores the additional data of the election data provider and gives no insight on</span>
 <span class="doccomment">/// how much weight was consumed.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Finally, the [`ElectionProvider`] implementation of this type does not impose any limits on the</span>
-<span class="doccomment">/// number of voters and targets that are fetched. This could potentially make this unsuitable for</span>
-<span class="doccomment">/// execution onchain. On the other hand, the [`InstantElectionProvider`] implementation does limit</span>
-<span class="doccomment">/// these inputs.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// It is advisable to use the former ([`ElectionProvider::elect`]) only at genesis, or for testing,</span>
-<span class="doccomment">/// the latter [`InstantElectionProvider::instant_elect`] for onchain operations, with thoughtful</span>
-<span class="doccomment">/// bounds.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OnChainSequentialPhragmen</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>);
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">UnboundedExecution</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">ExecutionConfig</span><span class="op">&gt;</span>(<span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>);
 
-<span class="doccomment">/// Configuration trait of [`OnChainSequentialPhragmen`].</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Note that this is similar to a pallet traits, but [`OnChainSequentialPhragmen`] is not a pallet.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// WARNING: the user of this pallet must ensure that the `Accuracy` type will work nicely with the</span>
-<span class="doccomment">/// normalization operation done inside `seq_phragmen`. See</span>
-<span class="doccomment">/// [`sp_npos_elections::Assignment::try_normalize`] for more info.</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Config</span>: <span class="ident">frame_system::Config</span> {
-	<span class="doccomment">/// The accuracy used to compute the election:</span>
-	<span class="kw">type</span> <span class="ident">Accuracy</span>: <span class="ident">PerThing128</span>;
+<span class="doccomment">/// Configuration trait of [`UnboundedExecution`].</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ExecutionConfig</span> {
+	<span class="doccomment">/// Something that implements the system pallet configs. This is to enable to register extra</span>
+	<span class="doccomment">/// weight.</span>
+	<span class="kw">type</span> <span class="ident">System</span>: <span class="ident">frame_system::Config</span>;
+	<span class="doccomment">/// `NposSolver` that should be used, an example would be `PhragMMS`.</span>
+	<span class="kw">type</span> <span class="ident">Solver</span>: <span class="ident">NposSolver</span><span class="op">&lt;</span>
+		<span class="ident">AccountId</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::System</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span>,
+		<span class="ident">Error</span> <span class="op">=</span> <span class="ident">sp_npos_elections::Error</span>,
+	<span class="op">&gt;</span>;
 	<span class="doccomment">/// Something that provides the data for election.</span>
 	<span class="kw">type</span> <span class="ident">DataProvider</span>: <span class="ident">ElectionDataProvider</span><span class="op">&lt;</span>
-		<span class="ident">AccountId</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::AccountId</span>,
-		<span class="ident">BlockNumber</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::BlockNumber</span>,
+		<span class="ident">AccountId</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::System</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span>,
+		<span class="ident">BlockNumber</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::System</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::BlockNumber</span>,
 	<span class="op">&gt;</span>;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">OnChainSequentialPhragmen</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">elect_with</span>(
-		<span class="ident">maybe_max_voters</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-		<span class="ident">maybe_max_targets</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Supports</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">voters</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">ElectionProvider</span><span class="op">&gt;</span><span class="ident">::DataProvider::electing_voters</span>(<span class="ident">maybe_max_voters</span>)
-			.<span class="ident">map_err</span>(<span class="ident">Error::DataProvider</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">targets</span> <span class="op">=</span>
-			<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">ElectionProvider</span><span class="op">&gt;</span><span class="ident">::DataProvider::electable_targets</span>(<span class="ident">maybe_max_targets</span>)
-				.<span class="ident">map_err</span>(<span class="ident">Error::DataProvider</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">desired_targets</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">ElectionProvider</span><span class="op">&gt;</span><span class="ident">::DataProvider::desired_targets</span>()
-			.<span class="ident">map_err</span>(<span class="ident">Error::DataProvider</span>)<span class="question-mark">?</span>;
-
-		<span class="kw">let</span> <span class="ident">stake_map</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">T::AccountId</span>, <span class="ident">VoteWeight</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">voters</span>
-			.<span class="ident">iter</span>()
-			.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">validator</span>, <span class="ident">vote_weight</span>, <span class="kw">_</span>)<span class="op">|</span> (<span class="ident">validator</span>.<span class="ident">clone</span>(), <span class="kw-2">*</span><span class="ident">vote_weight</span>))
-			.<span class="ident">collect</span>();
-
-		<span class="kw">let</span> <span class="ident">stake_of</span> <span class="op">=</span>
-			<span class="op">|</span><span class="ident">w</span>: <span class="kw-2">&amp;</span><span class="ident">T::AccountId</span><span class="op">|</span> -&gt; <span class="ident">VoteWeight</span> { <span class="ident">stake_map</span>.<span class="ident">get</span>(<span class="ident">w</span>).<span class="ident">cloned</span>().<span class="ident">unwrap_or_default</span>() };
-
-		<span class="kw">let</span> <span class="ident">ElectionResult</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">T::Accuracy</span><span class="op">&gt;</span> { <span class="ident">winners</span>: <span class="kw">_</span>, <span class="ident">assignments</span> } <span class="op">=</span>
-			<span class="ident">seq_phragmen</span>(<span class="ident">desired_targets</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">targets</span>, <span class="ident">voters</span>, <span class="prelude-val">None</span>).<span class="ident">map_err</span>(<span class="ident">Error::from</span>)<span class="question-mark">?</span>;
-
-		<span class="kw">let</span> <span class="ident">staked</span> <span class="op">=</span> <span class="ident">assignment_ratio_to_staked_normalized</span>(<span class="ident">assignments</span>, <span class="kw-2">&amp;</span><span class="ident">stake_of</span>)<span class="question-mark">?</span>;
-
-		<span class="kw">let</span> <span class="ident">weight</span> <span class="op">=</span> <span class="ident">T::BlockWeights::get</span>().<span class="ident">max_block</span>;
-		<span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::register_extra_weight_unchecked</span>(
-			<span class="ident">weight</span>,
-			<span class="ident">DispatchClass::Mandatory</span>,
-		);
-
-		<span class="prelude-val">Ok</span>(<span class="ident">to_supports</span>(<span class="kw-2">&amp;</span><span class="ident">staked</span>))
-	}
+<span class="doccomment">/// Configuration trait of [`BoundedExecution`].</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">BoundedExecutionConfig</span>: <span class="ident">ExecutionConfig</span> {
+	<span class="doccomment">/// Bounds the number of voters.</span>
+	<span class="kw">type</span> <span class="ident">VotersBound</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>;
+	<span class="doccomment">/// Bounds the number of targets.</span>
+	<span class="kw">type</span> <span class="ident">TargetsBound</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">ElectionProvider</span> <span class="kw">for</span> <span class="ident">OnChainSequentialPhragmen</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-	<span class="kw">type</span> <span class="ident">AccountId</span> <span class="op">=</span> <span class="ident">T::AccountId</span>;
-	<span class="kw">type</span> <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="ident">T::BlockNumber</span>;
+<span class="kw">fn</span> <span class="ident">elect_with</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">ExecutionConfig</span><span class="op">&gt;</span>(
+	<span class="ident">maybe_max_voters</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+	<span class="ident">maybe_max_targets</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Supports</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T::System</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+	<span class="kw">let</span> <span class="ident">voters</span> <span class="op">=</span> <span class="ident">T::DataProvider::electing_voters</span>(<span class="ident">maybe_max_voters</span>).<span class="ident">map_err</span>(<span class="ident">Error::DataProvider</span>)<span class="question-mark">?</span>;
+	<span class="kw">let</span> <span class="ident">targets</span> <span class="op">=</span>
+		<span class="ident">T::DataProvider::electable_targets</span>(<span class="ident">maybe_max_targets</span>).<span class="ident">map_err</span>(<span class="ident">Error::DataProvider</span>)<span class="question-mark">?</span>;
+	<span class="kw">let</span> <span class="ident">desired_targets</span> <span class="op">=</span> <span class="ident">T::DataProvider::desired_targets</span>().<span class="ident">map_err</span>(<span class="ident">Error::DataProvider</span>)<span class="question-mark">?</span>;
+
+	<span class="kw">let</span> <span class="ident">stake_map</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">voters</span>
+		.<span class="ident">iter</span>()
+		.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">validator</span>, <span class="ident">vote_weight</span>, <span class="kw">_</span>)<span class="op">|</span> (<span class="ident">validator</span>.<span class="ident">clone</span>(), <span class="kw-2">*</span><span class="ident">vote_weight</span>))
+		.<span class="ident">collect</span>();
+
+	<span class="kw">let</span> <span class="ident">stake_of</span> <span class="op">=</span> <span class="op">|</span><span class="ident">w</span>: <span class="kw-2">&amp;</span><span class="op">&lt;</span><span class="ident">T::System</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span><span class="op">|</span> -&gt; <span class="ident">VoteWeight</span> {
+		<span class="ident">stake_map</span>.<span class="ident">get</span>(<span class="ident">w</span>).<span class="ident">cloned</span>().<span class="ident">unwrap_or_default</span>()
+	};
+
+	<span class="kw">let</span> <span class="ident">ElectionResult</span> { <span class="ident">winners</span>: <span class="kw">_</span>, <span class="ident">assignments</span> } <span class="op">=</span>
+		<span class="ident">T::Solver::solve</span>(<span class="ident">desired_targets</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">targets</span>, <span class="ident">voters</span>).<span class="ident">map_err</span>(<span class="ident">Error::from</span>)<span class="question-mark">?</span>;
+
+	<span class="kw">let</span> <span class="ident">staked</span> <span class="op">=</span> <span class="ident">assignment_ratio_to_staked_normalized</span>(<span class="ident">assignments</span>, <span class="kw-2">&amp;</span><span class="ident">stake_of</span>)<span class="question-mark">?</span>;
+
+	<span class="kw">let</span> <span class="ident">weight</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T::System</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::BlockWeights::get</span>().<span class="ident">max_block</span>;
+	<span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T::System</span><span class="op">&gt;</span><span class="ident">::register_extra_weight_unchecked</span>(
+		<span class="ident">weight</span>,
+		<span class="ident">DispatchClass::Mandatory</span>,
+	);
+
+	<span class="prelude-val">Ok</span>(<span class="ident">to_supports</span>(<span class="kw-2">&amp;</span><span class="ident">staked</span>))
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">ExecutionConfig</span><span class="op">&gt;</span> <span class="ident">ElectionProvider</span> <span class="kw">for</span> <span class="ident">UnboundedExecution</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+	<span class="kw">type</span> <span class="ident">AccountId</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T::System</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span>;
+	<span class="kw">type</span> <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T::System</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::BlockNumber</span>;
 	<span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="ident">Error</span>;
 	<span class="kw">type</span> <span class="ident">DataProvider</span> <span class="op">=</span> <span class="ident">T::DataProvider</span>;
 
-	<span class="kw">fn</span> <span class="ident">elect</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Supports</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span> {
-		<span class="ident"><span class="self">Self</span>::elect_with</span>(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>)
+	<span class="kw">fn</span> <span class="ident">elect</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Supports</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T::System</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span><span class="op">&gt;</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span> {
+		<span class="comment">// This should not be called if not in `std` mode (and therefore neither in genesis nor in</span>
+		<span class="comment">// testing)</span>
+		<span class="kw">if</span> <span class="macro">cfg!</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)) {
+			<span class="macro">frame_support::log::error!</span>(
+				<span class="string">&quot;Please use `InstantElectionProvider` instead to provide bounds on election if not in \
+				genesis or testing mode&quot;</span>
+			);
+		}
+
+		<span class="ident">elect_with</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>)
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">InstantElectionProvider</span> <span class="kw">for</span> <span class="ident">OnChainSequentialPhragmen</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">instant_elect</span>(
-		<span class="ident">maybe_max_voters</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-		<span class="ident">maybe_max_targets</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">ExecutionConfig</span><span class="op">&gt;</span> <span class="ident">InstantElectionProvider</span> <span class="kw">for</span> <span class="ident">UnboundedExecution</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">elect_with_bounds</span>(
+		<span class="ident">max_voters</span>: <span class="ident">usize</span>,
+		<span class="ident">max_targets</span>: <span class="ident">usize</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Supports</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span> {
-		<span class="ident"><span class="self">Self</span>::elect_with</span>(<span class="ident">maybe_max_voters</span>, <span class="ident">maybe_max_targets</span>)
+		<span class="ident">elect_with</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="prelude-val">Some</span>(<span class="ident">max_voters</span>), <span class="prelude-val">Some</span>(<span class="ident">max_targets</span>))
+	}
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">BoundedExecutionConfig</span><span class="op">&gt;</span> <span class="ident">ElectionProvider</span> <span class="kw">for</span> <span class="ident">BoundedExecution</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+	<span class="kw">type</span> <span class="ident">AccountId</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T::System</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span>;
+	<span class="kw">type</span> <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T::System</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::BlockNumber</span>;
+	<span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="ident">Error</span>;
+	<span class="kw">type</span> <span class="ident">DataProvider</span> <span class="op">=</span> <span class="ident">T::DataProvider</span>;
+
+	<span class="kw">fn</span> <span class="ident">elect</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Supports</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T::System</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span><span class="op">&gt;</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span> {
+		<span class="ident">elect_with</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="prelude-val">Some</span>(<span class="ident">T::VotersBound::get</span>() <span class="kw">as</span> <span class="ident">usize</span>), <span class="prelude-val">Some</span>(<span class="ident">T::TargetsBound::get</span>() <span class="kw">as</span> <span class="ident">usize</span>))
+	}
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">BoundedExecutionConfig</span><span class="op">&gt;</span> <span class="ident">InstantElectionProvider</span> <span class="kw">for</span> <span class="ident">BoundedExecution</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">elect_with_bounds</span>(
+		<span class="ident">max_voters</span>: <span class="ident">usize</span>,
+		<span class="ident">max_targets</span>: <span class="ident">usize</span>,
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Supports</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span> {
+		<span class="ident">elect_with</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
+			<span class="prelude-val">Some</span>(<span class="ident">max_voters</span>.<span class="ident">min</span>(<span class="ident">T::VotersBound::get</span>() <span class="kw">as</span> <span class="ident">usize</span>)),
+			<span class="prelude-val">Some</span>(<span class="ident">max_targets</span>.<span class="ident">min</span>(<span class="ident">T::TargetsBound::get</span>() <span class="kw">as</span> <span class="ident">usize</span>)),
+		)
 	}
 }
 
@@ -370,7 +468,6 @@
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 	<span class="kw">use</span> <span class="ident">sp_npos_elections::Support</span>;
 	<span class="kw">use</span> <span class="ident">sp_runtime::Perbill</span>;
-
 	<span class="kw">type</span> <span class="ident">AccountId</span> <span class="op">=</span> <span class="ident">u64</span>;
 	<span class="kw">type</span> <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="ident">u64</span>;
 
@@ -415,12 +512,13 @@
 		<span class="kw">type</span> <span class="ident">MaxConsumers</span> <span class="op">=</span> <span class="ident">frame_support::traits::ConstU32</span><span class="op">&lt;</span><span class="number">16</span><span class="op">&gt;</span>;
 	}
 
-	<span class="kw">impl</span> <span class="ident">Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
-		<span class="kw">type</span> <span class="ident">Accuracy</span> <span class="op">=</span> <span class="ident">Perbill</span>;
+	<span class="kw">impl</span> <span class="ident">ExecutionConfig</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
+		<span class="kw">type</span> <span class="ident">System</span> <span class="op">=</span> <span class="self">Self</span>;
+		<span class="kw">type</span> <span class="ident">Solver</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::SequentialPhragmen</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">Perbill</span><span class="op">&gt;</span>;
 		<span class="kw">type</span> <span class="ident">DataProvider</span> <span class="op">=</span> <span class="ident">mock_data_provider::DataProvider</span>;
 	}
 
-	<span class="kw">type</span> <span class="ident">OnChainPhragmen</span> <span class="op">=</span> <span class="ident">OnChainSequentialPhragmen</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">OnChainPhragmen</span> <span class="op">=</span> <span class="ident">UnboundedExecution</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 
 	<span class="kw">mod</span> <span class="ident">mock_data_provider</span> {
 		<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">bounded_vec</span>, <span class="ident">traits::ConstU32</span>};

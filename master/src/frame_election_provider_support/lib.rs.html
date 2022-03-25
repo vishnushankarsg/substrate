@@ -565,6 +565,14 @@
 <span id="565">565</span>
 <span id="566">566</span>
 <span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -735,6 +743,7 @@
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">onchain</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">traits</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
 <span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">traits::Get</span>, <span class="ident">BoundedVec</span>, <span class="ident">RuntimeDebug</span>};
 <span class="kw">use</span> <span class="ident">sp_runtime::traits::Bounded</span>;
@@ -935,9 +944,10 @@
 		<span class="ident">BlockNumber</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::BlockNumber</span>,
 	<span class="op">&gt;</span>;
 
-	<span class="doccomment">/// Elect a new set of winners.</span>
+	<span class="doccomment">/// Elect a new set of winners, without specifying any bounds on the amount of data fetched from</span>
+	<span class="doccomment">/// [`Self::DataProvider`]. An implementation could nonetheless impose its own custom limits.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// The result is returned in a target major format, namely as vector of supports.</span>
+	<span class="doccomment">/// The result is returned in a target major format, namely as *vector of supports*.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This should be implemented as a self-weighing function. The implementor should register its</span>
 	<span class="doccomment">/// appropriate weight at the end of execution with the system pallet directly.</span>
@@ -952,11 +962,17 @@
 <span class="doccomment">/// Consequently, allows for control over the amount of data that is being fetched from the</span>
 <span class="doccomment">/// [`ElectionProvider::DataProvider`].</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">InstantElectionProvider</span>: <span class="ident">ElectionProvider</span> {
-	<span class="doccomment">/// Elect a new set of winners, instantly, with the given given limits set on the</span>
+	<span class="doccomment">/// Elect a new set of winners, but unlike [`ElectionProvider::elect`] which cannot enforce</span>
+	<span class="doccomment">/// bounds, this trait method can enforce bounds on the amount of data provided by the</span>
 	<span class="doccomment">/// `DataProvider`.</span>
-	<span class="kw">fn</span> <span class="ident">instant_elect</span>(
-		<span class="ident">maybe_max_voters</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-		<span class="ident">maybe_max_targets</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// An implementing type, if itself bounded, should choose the minimum of the two bounds to</span>
+	<span class="doccomment">/// choose the final value of `max_voters` and `max_targets`. In other words, an implementation</span>
+	<span class="doccomment">/// should guarantee that `max_voter` and `max_targets` provided to this method are absolutely</span>
+	<span class="doccomment">/// respected.</span>
+	<span class="kw">fn</span> <span class="ident">elect_with_bounds</span>(
+		<span class="ident">max_voters</span>: <span class="ident">usize</span>,
+		<span class="ident">max_targets</span>: <span class="ident">usize</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Supports</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span>;
 }
 
