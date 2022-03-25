@@ -154,6 +154,8 @@
 <span id="154">154</span>
 <span id="155">155</span>
 <span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -171,6 +173,7 @@
 <span class="comment">// See the License for the specific language governing permissions and</span>
 <span class="comment">// limitations under the License.</span>
 
+<span class="kw">mod</span> <span class="ident">block</span>;
 <span class="kw">mod</span> <span class="ident">command</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">overhead</span>;
 <span class="kw">mod</span> <span class="ident">post_processing</span>;
@@ -180,6 +183,7 @@
 <span class="kw">use</span> <span class="ident">sc_cli</span>::{<span class="ident">ExecutionStrategy</span>, <span class="ident">WasmExecutionMethod</span>, <span class="ident">DEFAULT_WASM_EXECUTION_METHOD</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">path::PathBuf</span>};
 
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">block::BlockCmd</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">overhead</span>::{<span class="ident">ExtrinsicBuilder</span>, <span class="ident">OverheadCmd</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">storage::StorageCmd</span>;
 
