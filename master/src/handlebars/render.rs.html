@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;handlebars-4.1.6&#x2F;src&#x2F;render.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>render.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../handlebars/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">   1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;handlebars-4.2.2&#x2F;src&#x2F;render.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>render.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../handlebars/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
 <span id="4">   4</span>
@@ -1117,6 +1117,48 @@
 <span id="1117">1117</span>
 <span id="1118">1118</span>
 <span id="1119">1119</span>
+<span id="1120">1120</span>
+<span id="1121">1121</span>
+<span id="1122">1122</span>
+<span id="1123">1123</span>
+<span id="1124">1124</span>
+<span id="1125">1125</span>
+<span id="1126">1126</span>
+<span id="1127">1127</span>
+<span id="1128">1128</span>
+<span id="1129">1129</span>
+<span id="1130">1130</span>
+<span id="1131">1131</span>
+<span id="1132">1132</span>
+<span id="1133">1133</span>
+<span id="1134">1134</span>
+<span id="1135">1135</span>
+<span id="1136">1136</span>
+<span id="1137">1137</span>
+<span id="1138">1138</span>
+<span id="1139">1139</span>
+<span id="1140">1140</span>
+<span id="1141">1141</span>
+<span id="1142">1142</span>
+<span id="1143">1143</span>
+<span id="1144">1144</span>
+<span id="1145">1145</span>
+<span id="1146">1146</span>
+<span id="1147">1147</span>
+<span id="1148">1148</span>
+<span id="1149">1149</span>
+<span id="1150">1150</span>
+<span id="1151">1151</span>
+<span id="1152">1152</span>
+<span id="1153">1153</span>
+<span id="1154">1154</span>
+<span id="1155">1155</span>
+<span id="1156">1156</span>
+<span id="1157">1157</span>
+<span id="1158">1158</span>
+<span id="1159">1159</span>
+<span id="1160">1160</span>
+<span id="1161">1161</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::borrow</span>::{<span class="ident">Borrow</span>, <span class="ident">Cow</span>};
 <span class="kw">use</span> <span class="ident">std::collections</span>::{<span class="ident">BTreeMap</span>, <span class="ident">VecDeque</span>};
 <span class="kw">use</span> <span class="ident">std::fmt</span>;
@@ -1220,6 +1262,10 @@
         <span class="self">self</span>.<span class="ident">blocks</span>.<span class="ident">pop_front</span>();
     }
 
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">clear_blocks</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
+        <span class="self">self</span>.<span class="ident">blocks</span>.<span class="ident">clear</span>();
+    }
+
     <span class="doccomment">/// Borrow a reference to current block context</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">block</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">BlockContext</span><span class="op">&lt;</span><span class="lifetime">&#39;reg</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">blocks</span>.<span class="ident">front</span>()
@@ -1309,7 +1355,10 @@
     }
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">dec_partial_block_depth</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="self">self</span>.<span class="ident">inner_mut</span>().<span class="ident">partial_block_depth</span> <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
+        <span class="kw">let</span> <span class="ident">depth</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">inner_mut</span>().<span class="ident">partial_block_depth</span>;
+        <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">depth</span> <span class="op">&gt;</span> <span class="number">0</span> {
+            <span class="kw-2">*</span><span class="ident">depth</span> <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
+        }
     }
 
     <span class="doccomment">/// Remove a registered partial</span>
@@ -1394,9 +1443,10 @@
         <span class="ident">f</span>.<span class="ident">debug_struct</span>(<span class="string">&quot;RenderContextInner&quot;</span>)
             .<span class="ident">field</span>(<span class="string">&quot;partials&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">partials</span>)
             .<span class="ident">field</span>(<span class="string">&quot;partial_block_stack&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">partial_block_stack</span>)
+            .<span class="ident">field</span>(<span class="string">&quot;partial_block_depth&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">partial_block_depth</span>)
             .<span class="ident">field</span>(<span class="string">&quot;root_template&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">root_template</span>)
             .<span class="ident">field</span>(<span class="string">&quot;current_template&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">current_template</span>)
-            .<span class="ident">field</span>(<span class="string">&quot;disable_eacape&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">disable_escape</span>)
+            .<span class="ident">field</span>(<span class="string">&quot;disable_escape&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">disable_escape</span>)
             .<span class="ident">finish</span>()
     }
 }
@@ -2235,6 +2285,40 @@
         <span class="ident">r</span>.<span class="ident">render</span>(<span class="string">&quot;t1&quot;</span>, <span class="kw-2">&amp;</span><span class="macro">json!</span>({<span class="string">&quot;name&quot;</span>: <span class="string">&quot;Alex&quot;</span>})).<span class="ident">unwrap</span>(),
         <span class="string">&quot;Output name: first_name not resolved&quot;</span>
     );
+}
+
+<span class="attribute">#[<span class="ident">test</span>]</span>
+<span class="kw">fn</span> <span class="ident">test_identifiers_starting_with_numbers</span>() {
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">Registry::new</span>();
+
+    <span class="macro">assert!</span>(<span class="ident">r</span>
+        .<span class="ident">register_template_string</span>(<span class="string">&quot;r1&quot;</span>, <span class="string">&quot;{{#if 0a}}true{{/if}}&quot;</span>)
+        .<span class="ident">is_ok</span>());
+    <span class="kw">let</span> <span class="ident">r1</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">render</span>(<span class="string">&quot;r1&quot;</span>, <span class="kw-2">&amp;</span><span class="macro">json!</span>({<span class="string">&quot;0a&quot;</span>: <span class="bool-val">true</span>})).<span class="ident">unwrap</span>();
+    <span class="macro">assert_eq!</span>(<span class="ident">r1</span>, <span class="string">&quot;true&quot;</span>);
+
+    <span class="macro">assert!</span>(<span class="ident">r</span>.<span class="ident">register_template_string</span>(<span class="string">&quot;r2&quot;</span>, <span class="string">&quot;{{eq 1a 1}}&quot;</span>).<span class="ident">is_ok</span>());
+    <span class="kw">let</span> <span class="ident">r2</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">render</span>(<span class="string">&quot;r2&quot;</span>, <span class="kw-2">&amp;</span><span class="macro">json!</span>({<span class="string">&quot;1a&quot;</span>: <span class="number">2</span>, <span class="string">&quot;a&quot;</span>: <span class="number">1</span>})).<span class="ident">unwrap</span>();
+    <span class="macro">assert_eq!</span>(<span class="ident">r2</span>, <span class="string">&quot;false&quot;</span>);
+
+    <span class="macro">assert!</span>(<span class="ident">r</span>
+        .<span class="ident">register_template_string</span>(<span class="string">&quot;r3&quot;</span>, <span class="string">&quot;0: {{0}} {{#if (eq 0 true)}}resolved from context{{/if}}\n1a: {{1a}} {{#if (eq 1a true)}}resolved from context{{/if}}\n2_2: {{2_2}} {{#if (eq 2_2 true)}}resolved from context{{/if}}&quot;</span>) <span class="comment">// YUP it is just eq that barfs! is if handled specially? maybe this test should go nearer to specific helpers that fail?</span>
+        .<span class="ident">is_ok</span>());
+    <span class="kw">let</span> <span class="ident">r3</span> <span class="op">=</span> <span class="ident">r</span>
+        .<span class="ident">render</span>(<span class="string">&quot;r3&quot;</span>, <span class="kw-2">&amp;</span><span class="macro">json!</span>({<span class="string">&quot;0&quot;</span>: <span class="bool-val">true</span>, <span class="string">&quot;1a&quot;</span>: <span class="bool-val">true</span>, <span class="string">&quot;2_2&quot;</span>: <span class="bool-val">true</span>}))
+        .<span class="ident">unwrap</span>();
+    <span class="macro">assert_eq!</span>(
+        <span class="ident">r3</span>,
+        <span class="string">&quot;0: true \n1a: true resolved from context\n2_2: true resolved from context&quot;</span>
+    );
+
+    <span class="comment">// these should all be errors:</span>
+    <span class="macro">assert!</span>(<span class="ident">r</span>.<span class="ident">register_template_string</span>(<span class="string">&quot;r4&quot;</span>, <span class="string">&quot;{{eq 1}}&quot;</span>).<span class="ident">is_ok</span>());
+    <span class="macro">assert!</span>(<span class="ident">r</span>.<span class="ident">register_template_string</span>(<span class="string">&quot;r5&quot;</span>, <span class="string">&quot;{{eq a1}}&quot;</span>).<span class="ident">is_ok</span>());
+    <span class="macro">assert!</span>(<span class="ident">r</span>.<span class="ident">register_template_string</span>(<span class="string">&quot;r6&quot;</span>, <span class="string">&quot;{{eq 1a}}&quot;</span>).<span class="ident">is_ok</span>());
+    <span class="macro">assert!</span>(<span class="ident">r</span>.<span class="ident">render</span>(<span class="string">&quot;r4&quot;</span>, <span class="kw-2">&amp;</span>()).<span class="ident">is_err</span>());
+    <span class="macro">assert!</span>(<span class="ident">r</span>.<span class="ident">render</span>(<span class="string">&quot;r5&quot;</span>, <span class="kw-2">&amp;</span>()).<span class="ident">is_err</span>());
+    <span class="macro">assert!</span>(<span class="ident">r</span>.<span class="ident">render</span>(<span class="string">&quot;r6&quot;</span>, <span class="kw-2">&amp;</span>()).<span class="ident">is_err</span>());
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="handlebars" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
