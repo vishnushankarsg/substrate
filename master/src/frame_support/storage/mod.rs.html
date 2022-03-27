@@ -1802,9 +1802,6 @@
 <span id="1802">1802</span>
 <span id="1803">1803</span>
 <span id="1804">1804</span>
-<span id="1805">1805</span>
-<span id="1806">1806</span>
-<span id="1807">1807</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -2323,9 +2320,6 @@
 }
 
 <span class="doccomment">/// An implementation of a map with a two keys.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// It provides an important ability to efficiently remove all entries</span>
-<span class="doccomment">/// that have a common first key.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Details on implementation can be found at [`generator::StorageDoubleMap`].</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">StorageDoubleMap</span><span class="op">&lt;</span><span class="ident">K1</span>: <span class="ident">FullEncode</span>, <span class="ident">K2</span>: <span class="ident">FullEncode</span>, <span class="ident">V</span>: <span class="ident">FullCodec</span><span class="op">&gt;</span> {
