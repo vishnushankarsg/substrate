@@ -521,14 +521,14 @@
 <span class="comment">// See the License for the specific language governing permissions and</span>
 <span class="comment">// limitations under the License.</span>
 
-<span class="doccomment">//! Substrate inherent extrinsics</span>
+<span class="doccomment">//! Substrate Inherent Extrinsics</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Inherent extrinsics are extrinsics that are inherently added to each block. However, it is up to</span>
-<span class="doccomment">//! runtime implementation to require an inherent for each block or to make it optional. Inherents</span>
-<span class="doccomment">//! are mainly used to pass data from the block producer to the runtime. So, inherents require some</span>
-<span class="doccomment">//! part that is running on the client side and some part that is running on the runtime side. Any</span>
-<span class="doccomment">//! data that is required by an inherent is passed as [`InherentData`] from the client to the</span>
-<span class="doccomment">//! runtime when the inherents are constructed.</span>
+<span class="doccomment">//! the runtime implementation to require an inherent for each block or to make it optional.</span>
+<span class="doccomment">//! Inherents are mainly used to pass data from the block producer to the runtime. So, inherents</span>
+<span class="doccomment">//! require some part that is running on the client side and some part that is running on the</span>
+<span class="doccomment">//! runtime side. Any data that is required by an inherent is passed as [`InherentData`] from the</span>
+<span class="doccomment">//! client to the runtime when the inherents are constructed.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! The process of constructing and applying inherents is the following:</span>
 <span class="doccomment">//!</span>
