@@ -913,12 +913,12 @@
 	<span class="doccomment">/// Creates a wasm module that calls the imported function named `getter_name` `repeat`</span>
 	<span class="doccomment">/// times. The imported function is expected to have the &quot;getter signature&quot; of</span>
 	<span class="doccomment">/// (out_ptr: u32, len_ptr: u32) -&gt; ().</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">getter</span>(<span class="ident">getter_name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>, <span class="ident">repeat</span>: <span class="ident">u32</span>) -&gt; <span class="self">Self</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">getter</span>(<span class="ident">module_name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>, <span class="ident">getter_name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>, <span class="ident">repeat</span>: <span class="ident">u32</span>) -&gt; <span class="self">Self</span> {
 		<span class="kw">let</span> <span class="ident">pages</span> <span class="op">=</span> <span class="ident">max_pages</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
 		<span class="ident">ModuleDefinition</span> {
 			<span class="ident">memory</span>: <span class="prelude-val">Some</span>(<span class="ident">ImportedMemory::max</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>()),
 			<span class="ident">imported_functions</span>: <span class="macro">vec!</span>[<span class="ident">ImportedFunction</span> {
-				<span class="ident">module</span>: <span class="string">&quot;seal0&quot;</span>,
+				<span class="ident">module</span>: <span class="ident">module_name</span>,
 				<span class="ident">name</span>: <span class="ident">getter_name</span>,
 				<span class="ident">params</span>: <span class="macro">vec!</span>[<span class="ident">ValueType::I32</span>, <span class="ident">ValueType::I32</span>],
 				<span class="ident">return_type</span>: <span class="prelude-val">None</span>,
