@@ -573,6 +573,7 @@
 <span id="573">573</span>
 <span id="574">574</span>
 <span id="575">575</span>
+<span id="576">576</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -745,12 +746,13 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">traits</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
-<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">traits::Get</span>, <span class="ident">BoundedVec</span>, <span class="ident">RuntimeDebug</span>};
+<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">BoundedVec</span>, <span class="ident">RuntimeDebug</span>};
 <span class="kw">use</span> <span class="ident">sp_runtime::traits::Bounded</span>;
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>};
 
 <span class="doccomment">/// Re-export the solution generation macro.</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">frame_election_provider_solution_type::generate_solution_type</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">frame_support::traits::Get</span>;
 <span class="doccomment">/// Re-export some type as they are used in the interface.</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_arithmetic::PerThing</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_npos_elections</span>::{
