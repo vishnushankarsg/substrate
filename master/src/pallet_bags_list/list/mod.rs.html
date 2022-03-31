@@ -875,6 +875,35 @@
 <span id="875">875</span>
 <span id="876">876</span>
 <span id="877">877</span>
+<span id="878">878</span>
+<span id="879">879</span>
+<span id="880">880</span>
+<span id="881">881</span>
+<span id="882">882</span>
+<span id="883">883</span>
+<span id="884">884</span>
+<span id="885">885</span>
+<span id="886">886</span>
+<span id="887">887</span>
+<span id="888">888</span>
+<span id="889">889</span>
+<span id="890">890</span>
+<span id="891">891</span>
+<span id="892">892</span>
+<span id="893">893</span>
+<span id="894">894</span>
+<span id="895">895</span>
+<span id="896">896</span>
+<span id="897">897</span>
+<span id="898">898</span>
+<span id="899">899</span>
+<span id="900">900</span>
+<span id="901">901</span>
+<span id="902">902</span>
+<span id="903">903</span>
+<span id="904">904</span>
+<span id="905">905</span>
+<span id="906">906</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -919,6 +948,8 @@
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ListError</span> {
 	<span class="doccomment">/// A duplicate id has been detected.</span>
 	<span class="ident">Duplicate</span>,
+	<span class="doccomment">/// Given node id was not found.</span>
+	<span class="ident">NodeNotFound</span>,
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
@@ -1119,6 +1150,33 @@
 		};
 
 		<span class="ident">iter</span>.<span class="ident">filter_map</span>(<span class="ident">Bag::get</span>).<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">bag</span><span class="op">|</span> <span class="ident">bag</span>.<span class="ident">iter</span>())
+	}
+
+	<span class="doccomment">/// Same as `iter`, but we start from a specific node.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// All items after this node are returned, excluding `start` itself.</span>
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">iter_from</span>(
+		<span class="ident">start</span>: <span class="kw-2">&amp;</span><span class="ident">T::AccountId</span>,
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">Node</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">ListError</span><span class="op">&gt;</span> {
+		<span class="comment">// We chain two iterators:</span>
+		<span class="comment">// 1. from the given `start` till the end of the bag</span>
+		<span class="comment">// 2. all the bags that come after `start`&#39;s bag.</span>
+
+		<span class="kw">let</span> <span class="ident">start_node</span> <span class="op">=</span> <span class="ident">Node</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">start</span>).<span class="ident">ok_or</span>(<span class="ident">ListError::NodeNotFound</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">start_node_upper</span> <span class="op">=</span> <span class="ident">start_node</span>.<span class="ident">bag_upper</span>;
+		<span class="kw">let</span> <span class="ident">start_bag</span> <span class="op">=</span> <span class="ident">sp_std::iter::successors</span>(<span class="ident">start_node</span>.<span class="ident">next</span>(), <span class="op">|</span><span class="ident">prev</span><span class="op">|</span> <span class="ident">prev</span>.<span class="ident">next</span>());
+
+		<span class="kw">let</span> <span class="ident">thresholds</span> <span class="op">=</span> <span class="ident">T::BagThresholds::get</span>();
+		<span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="ident">thresholds</span>.<span class="ident">partition_point</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">threshold</span><span class="op">|</span> <span class="ident">start_node_upper</span> <span class="op">&gt;</span> <span class="ident">threshold</span>);
+		<span class="kw">let</span> <span class="ident">leftover_bags</span> <span class="op">=</span> <span class="ident">thresholds</span>
+			.<span class="ident">into_iter</span>()
+			.<span class="ident">take</span>(<span class="ident">idx</span>)
+			.<span class="ident">copied</span>()
+			.<span class="ident">rev</span>()
+			.<span class="ident">filter_map</span>(<span class="ident">Bag::get</span>)
+			.<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">bag</span><span class="op">|</span> <span class="ident">bag</span>.<span class="ident">iter</span>());
+
+		<span class="prelude-val">Ok</span>(<span class="ident">start_bag</span>.<span class="ident">chain</span>(<span class="ident">leftover_bags</span>))
 	}
 
 	<span class="doccomment">/// Insert several ids into the appropriate bags in the list. Continues with insertions</span>
