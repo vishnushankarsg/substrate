@@ -198,41 +198,6 @@
 <span id="198">198</span>
 <span id="199">199</span>
 <span id="200">200</span>
-<span id="201">201</span>
-<span id="202">202</span>
-<span id="203">203</span>
-<span id="204">204</span>
-<span id="205">205</span>
-<span id="206">206</span>
-<span id="207">207</span>
-<span id="208">208</span>
-<span id="209">209</span>
-<span id="210">210</span>
-<span id="211">211</span>
-<span id="212">212</span>
-<span id="213">213</span>
-<span id="214">214</span>
-<span id="215">215</span>
-<span id="216">216</span>
-<span id="217">217</span>
-<span id="218">218</span>
-<span id="219">219</span>
-<span id="220">220</span>
-<span id="221">221</span>
-<span id="222">222</span>
-<span id="223">223</span>
-<span id="224">224</span>
-<span id="225">225</span>
-<span id="226">226</span>
-<span id="227">227</span>
-<span id="228">228</span>
-<span id="229">229</span>
-<span id="230">230</span>
-<span id="231">231</span>
-<span id="232">232</span>
-<span id="233">233</span>
-<span id="234">234</span>
-<span id="235">235</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -264,17 +229,16 @@
 <span class="doccomment">//! The MMR leaf contains:</span>
 <span class="doccomment">//! 1. Block number and parent block hash.</span>
 <span class="doccomment">//! 2. Merkle Tree Root Hash of next BEEFY validator set.</span>
-<span class="doccomment">//! 3. Merkle Tree Root Hash of current parachain heads state.</span>
+<span class="doccomment">//! 3. Arbitrary extra leaf data to be used by downstream pallets to include custom data.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! and thanks to versioning can be easily updated in the future.</span>
 
-<span class="kw">use</span> <span class="ident">sp_runtime::traits</span>::{<span class="ident">Convert</span>, <span class="ident">Hash</span>};
+<span class="kw">use</span> <span class="ident">sp_runtime::traits</span>::{<span class="ident">Convert</span>, <span class="ident">Hash</span>, <span class="ident">Member</span>};
 <span class="kw">use</span> <span class="ident">sp_std::prelude</span>::<span class="kw-2">*</span>;
 
-<span class="kw">use</span> <span class="ident">beefy_primitives::mmr</span>::{<span class="ident">BeefyNextAuthoritySet</span>, <span class="ident">MmrLeaf</span>, <span class="ident">MmrLeafVersion</span>};
+<span class="kw">use</span> <span class="ident">beefy_primitives::mmr</span>::{<span class="ident">BeefyDataProvider</span>, <span class="ident">BeefyNextAuthoritySet</span>, <span class="ident">MmrLeaf</span>, <span class="ident">MmrLeafVersion</span>};
 <span class="kw">use</span> <span class="ident">pallet_mmr::primitives::LeafDataProvider</span>;
 
-<span class="kw">use</span> <span class="ident">codec::Encode</span>;
 <span class="kw">use</span> <span class="ident">frame_support::traits::Get</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">pallet</span>::<span class="kw-2">*</span>;
@@ -325,23 +289,6 @@
 }
 
 <span class="kw">type</span> <span class="ident">MerkleRootOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">pallet_mmr::Config</span><span class="op">&gt;</span><span class="ident">::Hash</span>;
-<span class="kw">type</span> <span class="ident">ParaId</span> <span class="op">=</span> <span class="ident">u32</span>;
-<span class="kw">type</span> <span class="ident">ParaHead</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>;
-
-<span class="doccomment">/// A type that is able to return current list of parachain heads that end up in the MMR leaf.</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ParachainHeadsProvider</span> {
-	<span class="doccomment">/// Return a list of tuples containing a `ParaId` and Parachain Header data (ParaHead).</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// The returned data does not have to be sorted.</span>
-	<span class="kw">fn</span> <span class="ident">parachain_heads</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">ParaId</span>, <span class="ident">ParaHead</span>)<span class="op">&gt;</span>;
-}
-
-<span class="doccomment">/// A default implementation for runtimes without parachains.</span>
-<span class="kw">impl</span> <span class="ident">ParachainHeadsProvider</span> <span class="kw">for</span> () {
-	<span class="kw">fn</span> <span class="ident">parachain_heads</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">ParaId</span>, <span class="ident">ParaHead</span>)<span class="op">&gt;</span> {
-		<span class="ident">Default::default</span>()
-	}
-}
 
 <span class="attribute">#[<span class="ident">frame_support::pallet</span>]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">pallet</span> {
@@ -373,12 +320,11 @@
 		<span class="doccomment">/// efficiency reasons.</span>
 		<span class="kw">type</span> <span class="ident">BeefyAuthorityToMerkleLeaf</span>: <span class="ident">Convert</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">pallet_beefy::Config</span><span class="op">&gt;</span><span class="ident">::BeefyId</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
-		<span class="doccomment">/// Retrieve a list of current parachain heads.</span>
-		<span class="doccomment">///</span>
-		<span class="doccomment">/// The trait is implemented for `paras` module, but since not all chains might have</span>
-		<span class="doccomment">/// parachains, and we want to keep the MMR leaf structure uniform, it&#39;s possible to use</span>
-		<span class="doccomment">/// `()` as well to simply put dummy data to the leaf.</span>
-		<span class="kw">type</span> <span class="ident">ParachainHeads</span>: <span class="ident">ParachainHeadsProvider</span>;
+		<span class="doccomment">/// The type expected for the leaf extra data</span>
+		<span class="kw">type</span> <span class="ident">LeafExtra</span>: <span class="ident">Member</span> <span class="op">+</span> <span class="ident">codec::FullCodec</span>;
+
+		<span class="doccomment">/// Retrieve arbitrary data that should be added to the mmr leaf</span>
+		<span class="kw">type</span> <span class="ident">BeefyDataProvider</span>: <span class="ident">BeefyDataProvider</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::LeafExtra</span><span class="op">&gt;</span>;
 	}
 
 	<span class="doccomment">/// Details of next BEEFY authority set.</span>
@@ -398,13 +344,14 @@
 		<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::BlockNumber</span>,
 		<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::Hash</span>,
 		<span class="ident">MerkleRootOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+		<span class="ident">T::LeafExtra</span>,
 	<span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">leaf_data</span>() -&gt; <span class="ident"><span class="self">Self</span>::LeafData</span> {
 		<span class="ident">MmrLeaf</span> {
 			<span class="ident">version</span>: <span class="ident">T::LeafVersion::get</span>(),
 			<span class="ident">parent_number_and_hash</span>: <span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::leaf_data</span>(),
-			<span class="ident">parachain_heads</span>: <span class="ident">Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::parachain_heads_merkle_root</span>(),
+			<span class="ident">leaf_extra</span>: <span class="ident">T::BeefyDataProvider::extra_data</span>(),
 			<span class="ident">beefy_next_authority_set</span>: <span class="ident">Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::update_beefy_next_authority_set</span>(),
 		}
 	}
@@ -423,23 +370,6 @@
 <span class="kw">where</span>
 	<span class="ident">MerkleRootOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">beefy_merkle_tree::Hash</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">beefy_merkle_tree::Hash</span><span class="op">&gt;</span>,
 {
-	<span class="doccomment">/// Returns latest root hash of a merkle tree constructed from all active parachain headers.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// The leafs are sorted by `ParaId` to allow more efficient lookups and non-existence proofs.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// NOTE this does not include parathreads - only parachains are part of the merkle tree.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// NOTE This is an initial and inefficient implementation, which re-constructs</span>
-	<span class="doccomment">/// the merkle tree every block. Instead we should update the merkle root in</span>
-	<span class="doccomment">/// [Self::on_initialize] call of this pallet and update the merkle tree efficiently (use</span>
-	<span class="doccomment">/// on-chain storage to persist inner nodes).</span>
-	<span class="kw">fn</span> <span class="ident">parachain_heads_merkle_root</span>() -&gt; <span class="ident">MerkleRootOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">para_heads</span> <span class="op">=</span> <span class="ident">T::ParachainHeads::parachain_heads</span>();
-		<span class="ident">para_heads</span>.<span class="ident">sort</span>();
-		<span class="kw">let</span> <span class="ident">para_heads</span> <span class="op">=</span> <span class="ident">para_heads</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">pair</span><span class="op">|</span> <span class="ident">pair</span>.<span class="ident">encode</span>());
-		<span class="ident">beefy_merkle_tree::merkle_root</span>::<span class="op">&lt;</span><span class="self">Self</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">para_heads</span>).<span class="ident">into</span>()
-	}
-
 	<span class="doccomment">/// Returns details of the next BEEFY authority set.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Details contain authority set id, authority set length and a merkle root,</span>

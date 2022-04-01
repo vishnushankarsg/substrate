@@ -130,6 +130,21 @@
 <span id="130">130</span>
 <span id="131">131</span>
 <span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -158,12 +173,26 @@
 <span class="doccomment">//! but we imagine they will be useful for other chains that either want to bridge with Polkadot</span>
 <span class="doccomment">//! or are completely standalone, but heavily inspired by Polkadot.</span>
 
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::Vec</span>;
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">MaxEncodedLen</span>};
 <span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
 
+<span class="doccomment">/// A provider for extra data that gets added to the Mmr leaf</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">BeefyDataProvider</span><span class="op">&lt;</span><span class="ident">ExtraData</span><span class="op">&gt;</span> {
+	<span class="doccomment">/// Return a vector of bytes, ideally should be a merkle root hash</span>
+	<span class="kw">fn</span> <span class="ident">extra_data</span>() -&gt; <span class="ident">ExtraData</span>;
+}
+
+<span class="doccomment">/// A default implementation for runtimes.</span>
+<span class="kw">impl</span> <span class="ident">BeefyDataProvider</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> () {
+	<span class="kw">fn</span> <span class="ident">extra_data</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {
+		<span class="ident">Vec::new</span>()
+	}
+}
+
 <span class="doccomment">/// A standard leaf that gets added every block to the MMR constructed by Substrate&#39;s `pallet_mmr`.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MmrLeaf</span><span class="op">&lt;</span><span class="ident">BlockNumber</span>, <span class="ident">Hash</span>, <span class="ident">MerkleRoot</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MmrLeaf</span><span class="op">&lt;</span><span class="ident">BlockNumber</span>, <span class="ident">Hash</span>, <span class="ident">MerkleRoot</span>, <span class="ident">ExtraData</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Version of the leaf format.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Can be used to enable future format migrations and compatibility.</span>
@@ -173,8 +202,9 @@
 	<span class="kw">pub</span> <span class="ident">parent_number_and_hash</span>: (<span class="ident">BlockNumber</span>, <span class="ident">Hash</span>),
 	<span class="doccomment">/// A merkle root of the next BEEFY authority set.</span>
 	<span class="kw">pub</span> <span class="ident">beefy_next_authority_set</span>: <span class="ident">BeefyNextAuthoritySet</span><span class="op">&lt;</span><span class="ident">MerkleRoot</span><span class="op">&gt;</span>,
-	<span class="doccomment">/// A merkle root of all registered parachain heads.</span>
-	<span class="kw">pub</span> <span class="ident">parachain_heads</span>: <span class="ident">MerkleRoot</span>,
+	<span class="doccomment">/// Arbitrary extra leaf data to be used by downstream pallets to include custom data in the</span>
+	<span class="doccomment">/// [`MmrLeaf`]</span>
+	<span class="kw">pub</span> <span class="ident">leaf_extra</span>: <span class="ident">ExtraData</span>,
 }
 
 <span class="doccomment">/// A MMR leaf versioning scheme.</span>
