@@ -1802,6 +1802,102 @@
 <span id="1802">1802</span>
 <span id="1803">1803</span>
 <span id="1804">1804</span>
+<span id="1805">1805</span>
+<span id="1806">1806</span>
+<span id="1807">1807</span>
+<span id="1808">1808</span>
+<span id="1809">1809</span>
+<span id="1810">1810</span>
+<span id="1811">1811</span>
+<span id="1812">1812</span>
+<span id="1813">1813</span>
+<span id="1814">1814</span>
+<span id="1815">1815</span>
+<span id="1816">1816</span>
+<span id="1817">1817</span>
+<span id="1818">1818</span>
+<span id="1819">1819</span>
+<span id="1820">1820</span>
+<span id="1821">1821</span>
+<span id="1822">1822</span>
+<span id="1823">1823</span>
+<span id="1824">1824</span>
+<span id="1825">1825</span>
+<span id="1826">1826</span>
+<span id="1827">1827</span>
+<span id="1828">1828</span>
+<span id="1829">1829</span>
+<span id="1830">1830</span>
+<span id="1831">1831</span>
+<span id="1832">1832</span>
+<span id="1833">1833</span>
+<span id="1834">1834</span>
+<span id="1835">1835</span>
+<span id="1836">1836</span>
+<span id="1837">1837</span>
+<span id="1838">1838</span>
+<span id="1839">1839</span>
+<span id="1840">1840</span>
+<span id="1841">1841</span>
+<span id="1842">1842</span>
+<span id="1843">1843</span>
+<span id="1844">1844</span>
+<span id="1845">1845</span>
+<span id="1846">1846</span>
+<span id="1847">1847</span>
+<span id="1848">1848</span>
+<span id="1849">1849</span>
+<span id="1850">1850</span>
+<span id="1851">1851</span>
+<span id="1852">1852</span>
+<span id="1853">1853</span>
+<span id="1854">1854</span>
+<span id="1855">1855</span>
+<span id="1856">1856</span>
+<span id="1857">1857</span>
+<span id="1858">1858</span>
+<span id="1859">1859</span>
+<span id="1860">1860</span>
+<span id="1861">1861</span>
+<span id="1862">1862</span>
+<span id="1863">1863</span>
+<span id="1864">1864</span>
+<span id="1865">1865</span>
+<span id="1866">1866</span>
+<span id="1867">1867</span>
+<span id="1868">1868</span>
+<span id="1869">1869</span>
+<span id="1870">1870</span>
+<span id="1871">1871</span>
+<span id="1872">1872</span>
+<span id="1873">1873</span>
+<span id="1874">1874</span>
+<span id="1875">1875</span>
+<span id="1876">1876</span>
+<span id="1877">1877</span>
+<span id="1878">1878</span>
+<span id="1879">1879</span>
+<span id="1880">1880</span>
+<span id="1881">1881</span>
+<span id="1882">1882</span>
+<span id="1883">1883</span>
+<span id="1884">1884</span>
+<span id="1885">1885</span>
+<span id="1886">1886</span>
+<span id="1887">1887</span>
+<span id="1888">1888</span>
+<span id="1889">1889</span>
+<span id="1890">1890</span>
+<span id="1891">1891</span>
+<span id="1892">1892</span>
+<span id="1893">1893</span>
+<span id="1894">1894</span>
+<span id="1895">1895</span>
+<span id="1896">1896</span>
+<span id="1897">1897</span>
+<span id="1898">1898</span>
+<span id="1899">1899</span>
+<span id="1900">1900</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1831,8 +1927,11 @@
 };
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">EncodeLike</span>, <span class="ident">FullCodec</span>, <span class="ident">FullEncode</span>};
 <span class="kw">use</span> <span class="ident">sp_core::storage::ChildInfo</span>;
-<span class="kw">use</span> <span class="ident">sp_runtime::generic</span>::{<span class="ident">Digest</span>, <span class="ident">DigestItem</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_runtime::TransactionOutcome</span>;
+<span class="kw">use</span> <span class="ident">sp_runtime</span>::{
+	<span class="ident">generic</span>::{<span class="ident">Digest</span>, <span class="ident">DigestItem</span>},
+	<span class="ident">DispatchError</span>, <span class="ident">TransactionalError</span>,
+};
 <span class="kw">use</span> <span class="ident">sp_std::prelude</span>::<span class="kw-2">*</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">types::Key</span>;
 
@@ -1848,55 +1947,65 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">unhashed</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">weak_bounded_vec</span>;
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">any</span>(<span class="ident">test</span>, <span class="ident">debug_assertions</span>)))]</span>
-<span class="kw">mod</span> <span class="ident">debug_helper</span> {
-	<span class="kw">use</span> <span class="ident">std::cell::RefCell</span>;
+<span class="kw">mod</span> <span class="ident">transaction_level_tracker</span> {
+	<span class="kw">use</span> <span class="ident">core::sync::atomic</span>::{<span class="ident">AtomicU32</span>, <span class="ident">Ordering</span>};
 
-	<span class="macro">thread_local!</span> {
-		<span class="kw">static</span> <span class="ident">TRANSACTION_LEVEL</span>: <span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">RefCell::new</span>(<span class="number">0</span>);
+	<span class="kw">type</span> <span class="ident">Layer</span> <span class="op">=</span> <span class="ident">u32</span>;
+	<span class="kw">static</span> <span class="ident">NUM_LEVELS</span>: <span class="ident">AtomicU32</span> <span class="op">=</span> <span class="ident">AtomicU32::new</span>(<span class="number">0</span>);
+	<span class="kw">const</span> <span class="ident">TRANSACTIONAL_LIMIT</span>: <span class="ident">Layer</span> <span class="op">=</span> <span class="number">255</span>;
+
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_transaction_level</span>() -&gt; <span class="ident">Layer</span> {
+		<span class="ident">NUM_LEVELS</span>.<span class="ident">load</span>(<span class="ident">Ordering::SeqCst</span>)
 	}
 
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">require_transaction</span>() {
-		<span class="kw">let</span> <span class="ident">level</span> <span class="op">=</span> <span class="ident">TRANSACTION_LEVEL</span>.<span class="ident">with</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">v</span>.<span class="ident">borrow</span>());
-		<span class="kw">if</span> <span class="ident">level</span> <span class="op">==</span> <span class="number">0</span> {
-			<span class="macro">panic!</span>(<span class="string">&quot;Require transaction not called within with_transaction&quot;</span>);
-		}
-	}
-
-	<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TransactionLevelGuard</span>;
-
-	<span class="kw">impl</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">TransactionLevelGuard</span> {
-		<span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-			<span class="ident">TRANSACTION_LEVEL</span>.<span class="ident">with</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">v</span>.<span class="ident">borrow_mut</span>() <span class="op">-</span><span class="op">=</span> <span class="number">1</span>);
-		}
-	}
-
-	<span class="doccomment">/// Increments the transaction level.</span>
+	<span class="doccomment">/// Increments the transaction level. Returns an error if levels go past the limit.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Returns a guard that when dropped decrements the transaction level automatically.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">inc_transaction_level</span>() -&gt; <span class="ident">TransactionLevelGuard</span> {
-		<span class="ident">TRANSACTION_LEVEL</span>.<span class="ident">with</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> {
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">val</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">borrow_mut</span>();
-			<span class="kw-2">*</span><span class="ident">val</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-			<span class="kw">if</span> <span class="kw-2">*</span><span class="ident">val</span> <span class="op">&gt;</span> <span class="number">10</span> {
-				<span class="macro">log::warn!</span>(
-					<span class="string">&quot;Detected with_transaction with nest level {}. Nested usage of with_transaction is not recommended.&quot;</span>,
-					<span class="kw-2">*</span><span class="ident">val</span>
-				);
-			}
-		});
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">inc_transaction_level</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">StorageLayerGuard</span>, ()<span class="op">&gt;</span> {
+		<span class="ident">NUM_LEVELS</span>
+			.<span class="ident">fetch_update</span>(<span class="ident">Ordering::SeqCst</span>, <span class="ident">Ordering::SeqCst</span>, <span class="op">|</span><span class="ident">existing_levels</span><span class="op">|</span> {
+				<span class="kw">if</span> <span class="ident">existing_levels</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">TRANSACTIONAL_LIMIT</span> {
+					<span class="kw">return</span> <span class="prelude-val">None</span>
+				}
+				<span class="comment">// Cannot overflow because of check above.</span>
+				<span class="prelude-val">Some</span>(<span class="ident">existing_levels</span> <span class="op">+</span> <span class="number">1</span>)
+			})
+			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())<span class="question-mark">?</span>;
+		<span class="prelude-val">Ok</span>(<span class="ident">StorageLayerGuard</span>)
+	}
 
-		<span class="ident">TransactionLevelGuard</span>
+	<span class="kw">fn</span> <span class="ident">dec_transaction_level</span>() {
+		<span class="ident">NUM_LEVELS</span>
+			.<span class="ident">fetch_update</span>(<span class="ident">Ordering::SeqCst</span>, <span class="ident">Ordering::SeqCst</span>, <span class="op">|</span><span class="ident">existing_levels</span><span class="op">|</span> {
+				<span class="kw">if</span> <span class="ident">existing_levels</span> <span class="op">==</span> <span class="number">0</span> {
+					<span class="macro">log::warn!</span>(
+					<span class="string">&quot;We are underflowing with calculating transactional levels. Not great, but let&#39;s not panic...&quot;</span>,
+				);
+					<span class="prelude-val">None</span>
+				} <span class="kw">else</span> {
+					<span class="comment">// Cannot underflow because of checks above.</span>
+					<span class="prelude-val">Some</span>(<span class="ident">existing_levels</span> <span class="op">-</span> <span class="number">1</span>)
+				}
+			})
+			.<span class="ident">ok</span>();
+	}
+
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_transactional</span>() -&gt; <span class="ident">bool</span> {
+		<span class="ident">get_transaction_level</span>() <span class="op">&gt;</span> <span class="number">0</span>
+	}
+
+	<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StorageLayerGuard</span>;
+
+	<span class="kw">impl</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">StorageLayerGuard</span> {
+		<span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
+			<span class="ident">dec_transaction_level</span>()
+		}
 	}
 }
 
-<span class="doccomment">/// Assert this method is called within a storage transaction.</span>
-<span class="doccomment">/// This will **panic** if is not called within a storage transaction.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// This assertion is enabled for native execution and when `debug_assertions` are enabled.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">require_transaction</span>() {
-	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">any</span>(<span class="ident">test</span>, <span class="ident">debug_assertions</span>)))]</span>
-	<span class="ident">debug_helper::require_transaction</span>();
+<span class="doccomment">/// Check if the current call is within a transactional layer.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_transactional</span>() -&gt; <span class="ident">bool</span> {
+	<span class="ident">transaction_level_tracker::is_transactional</span>()
 }
 
 <span class="doccomment">/// Execute the supplied function in a new storage transaction.</span>
@@ -1904,15 +2013,55 @@
 <span class="doccomment">/// All changes to storage performed by the supplied function are discarded if the returned</span>
 <span class="doccomment">/// outcome is `TransactionOutcome::Rollback`.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// Transactions can be nested to any depth. Commits happen to the parent transaction.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_transaction</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>(<span class="ident">f</span>: <span class="kw">impl</span> <span class="ident">FnOnce</span>() -&gt; <span class="ident">TransactionOutcome</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>) -&gt; <span class="ident">R</span> {
+<span class="doccomment">/// Transactions can be nested up to `TRANSACTIONAL_LIMIT` times; more than that will result in an</span>
+<span class="doccomment">/// error.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Commits happen to the parent transaction.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_transaction</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>(<span class="ident">f</span>: <span class="kw">impl</span> <span class="ident">FnOnce</span>() -&gt; <span class="ident">TransactionOutcome</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+	<span class="ident">E</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">DispatchError</span><span class="op">&gt;</span>,
+{
 	<span class="kw">use</span> <span class="ident">sp_io::storage</span>::{<span class="ident">commit_transaction</span>, <span class="ident">rollback_transaction</span>, <span class="ident">start_transaction</span>};
 	<span class="kw">use</span> <span class="ident">TransactionOutcome</span>::<span class="kw-2">*</span>;
 
+	<span class="kw">let</span> <span class="ident">_guard</span> <span class="op">=</span> <span class="ident">transaction_level_tracker::inc_transaction_level</span>()
+		.<span class="ident">map_err</span>(<span class="op">|</span>()<span class="op">|</span> <span class="ident">TransactionalError::LimitReached</span>.<span class="ident">into</span>())<span class="question-mark">?</span>;
+
 	<span class="ident">start_transaction</span>();
 
-	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">any</span>(<span class="ident">test</span>, <span class="ident">debug_assertions</span>)))]</span>
-	<span class="kw">let</span> <span class="ident">_guard</span> <span class="op">=</span> <span class="ident">debug_helper::inc_transaction_level</span>();
+	<span class="kw">match</span> <span class="ident">f</span>() {
+		<span class="ident">Commit</span>(<span class="ident">res</span>) =&gt; {
+			<span class="ident">commit_transaction</span>();
+			<span class="ident">res</span>
+		},
+		<span class="ident">Rollback</span>(<span class="ident">res</span>) =&gt; {
+			<span class="ident">rollback_transaction</span>();
+			<span class="ident">res</span>
+		},
+	}
+}
+
+<span class="doccomment">/// Same as [`with_transaction`] but without a limit check on nested transactional layers.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// This is mostly for backwards compatibility before there was a transactional layer limit.</span>
+<span class="doccomment">/// It is recommended to only use [`with_transaction`] to avoid users from generating too many</span>
+<span class="doccomment">/// transactional layers.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_transaction_unchecked</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>(<span class="ident">f</span>: <span class="kw">impl</span> <span class="ident">FnOnce</span>() -&gt; <span class="ident">TransactionOutcome</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>) -&gt; <span class="ident">R</span> {
+	<span class="kw">use</span> <span class="ident">sp_io::storage</span>::{<span class="ident">commit_transaction</span>, <span class="ident">rollback_transaction</span>, <span class="ident">start_transaction</span>};
+	<span class="kw">use</span> <span class="ident">TransactionOutcome</span>::<span class="kw-2">*</span>;
+
+	<span class="kw">let</span> <span class="ident">maybe_guard</span> <span class="op">=</span> <span class="ident">transaction_level_tracker::inc_transaction_level</span>();
+
+	<span class="kw">if</span> <span class="ident">maybe_guard</span>.<span class="ident">is_err</span>() {
+		<span class="macro">log::warn!</span>(
+			<span class="string">&quot;The transactional layer limit has been reached, and new transactional layers are being
+			spawned with `with_transaction_unchecked`. This could be caused by someone trying to
+			attack your chain, and you should investigate usage of `with_transaction_unchecked` and
+			potentially migrate to `with_transaction`, which enforces a transactional limit.&quot;</span>,
+		);
+	}
+
+	<span class="ident">start_transaction</span>();
 
 	<span class="kw">match</span> <span class="ident">f</span>() {
 		<span class="ident">Commit</span>(<span class="ident">res</span>) =&gt; {
@@ -3222,12 +3371,13 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">test</span> {
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-	<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">assert_ok</span>, <span class="ident">hash::Identity</span>, <span class="ident">Twox128</span>};
+	<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">assert_noop</span>, <span class="ident">assert_ok</span>, <span class="ident">hash::Identity</span>, <span class="ident">Twox128</span>};
 	<span class="kw">use</span> <span class="ident">bounded_vec::BoundedVec</span>;
 	<span class="kw">use</span> <span class="ident">frame_support::traits::ConstU32</span>;
 	<span class="kw">use</span> <span class="ident">generator::StorageValue</span> <span class="kw">as</span> <span class="kw">_</span>;
 	<span class="kw">use</span> <span class="ident">sp_core::hashing::twox_128</span>;
 	<span class="kw">use</span> <span class="ident">sp_io::TestExternalities</span>;
+	<span class="kw">use</span> <span class="ident">sp_runtime::DispatchResult</span>;
 	<span class="kw">use</span> <span class="ident">weak_bounded_vec::WeakBoundedVec</span>;
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
@@ -3339,25 +3489,67 @@
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
-	<span class="attribute">#[<span class="ident">should_panic</span>(<span class="ident">expected</span> <span class="op">=</span> <span class="string">&quot;Require transaction not called within with_transaction&quot;</span>)]</span>
-	<span class="kw">fn</span> <span class="ident">require_transaction_should_panic</span>() {
+	<span class="kw">fn</span> <span class="ident">is_transactional_should_return_false</span>() {
 		<span class="ident">TestExternalities::default</span>().<span class="ident">execute_with</span>(<span class="op">|</span><span class="op">|</span> {
-			<span class="ident">require_transaction</span>();
+			<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">is_transactional</span>());
 		});
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
-	<span class="kw">fn</span> <span class="ident">require_transaction_should_not_panic_in_with_transaction</span>() {
+	<span class="kw">fn</span> <span class="ident">is_transactional_should_not_error_in_with_transaction</span>() {
 		<span class="ident">TestExternalities::default</span>().<span class="ident">execute_with</span>(<span class="op">|</span><span class="op">|</span> {
-			<span class="ident">with_transaction</span>(<span class="op">|</span><span class="op">|</span> {
-				<span class="ident">require_transaction</span>();
-				<span class="ident">TransactionOutcome::Commit</span>(())
-			});
+			<span class="macro">assert_ok!</span>(<span class="ident">with_transaction</span>(<span class="op">|</span><span class="op">|</span> -&gt; <span class="ident">TransactionOutcome</span><span class="op">&lt;</span><span class="ident">DispatchResult</span><span class="op">&gt;</span> {
+				<span class="macro">assert!</span>(<span class="ident">is_transactional</span>());
+				<span class="ident">TransactionOutcome::Commit</span>(<span class="prelude-val">Ok</span>(()))
+			}));
 
-			<span class="ident">with_transaction</span>(<span class="op">|</span><span class="op">|</span> {
-				<span class="ident">require_transaction</span>();
-				<span class="ident">TransactionOutcome::Rollback</span>(())
-			});
+			<span class="macro">assert_noop!</span>(
+				<span class="ident">with_transaction</span>(<span class="op">|</span><span class="op">|</span> -&gt; <span class="ident">TransactionOutcome</span><span class="op">&lt;</span><span class="ident">DispatchResult</span><span class="op">&gt;</span> {
+					<span class="macro">assert!</span>(<span class="ident">is_transactional</span>());
+					<span class="ident">TransactionOutcome::Rollback</span>(<span class="prelude-val">Err</span>(<span class="string">&quot;revert&quot;</span>.<span class="ident">into</span>()))
+				}),
+				<span class="string">&quot;revert&quot;</span>
+			);
+		});
+	}
+
+	<span class="kw">fn</span> <span class="ident">recursive_transactional</span>(<span class="ident">num</span>: <span class="ident">u32</span>) -&gt; <span class="ident">DispatchResult</span> {
+		<span class="kw">if</span> <span class="ident">num</span> <span class="op">==</span> <span class="number">0</span> {
+			<span class="kw">return</span> <span class="prelude-val">Ok</span>(())
+		}
+
+		<span class="ident">with_transaction</span>(<span class="op">|</span><span class="op">|</span> -&gt; <span class="ident">TransactionOutcome</span><span class="op">&lt;</span><span class="ident">DispatchResult</span><span class="op">&gt;</span> {
+			<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">recursive_transactional</span>(<span class="ident">num</span> <span class="op">-</span> <span class="number">1</span>);
+			<span class="ident">TransactionOutcome::Commit</span>(<span class="ident">res</span>)
+		})
+	}
+
+	<span class="attribute">#[<span class="ident">test</span>]</span>
+	<span class="kw">fn</span> <span class="ident">transaction_limit_should_work</span>() {
+		<span class="ident">TestExternalities::default</span>().<span class="ident">execute_with</span>(<span class="op">|</span><span class="op">|</span> {
+			<span class="macro">assert_eq!</span>(<span class="ident">transaction_level_tracker::get_transaction_level</span>(), <span class="number">0</span>);
+
+			<span class="macro">assert_ok!</span>(<span class="ident">with_transaction</span>(<span class="op">|</span><span class="op">|</span> -&gt; <span class="ident">TransactionOutcome</span><span class="op">&lt;</span><span class="ident">DispatchResult</span><span class="op">&gt;</span> {
+				<span class="macro">assert_eq!</span>(<span class="ident">transaction_level_tracker::get_transaction_level</span>(), <span class="number">1</span>);
+				<span class="ident">TransactionOutcome::Commit</span>(<span class="prelude-val">Ok</span>(()))
+			}));
+
+			<span class="macro">assert_ok!</span>(<span class="ident">with_transaction</span>(<span class="op">|</span><span class="op">|</span> -&gt; <span class="ident">TransactionOutcome</span><span class="op">&lt;</span><span class="ident">DispatchResult</span><span class="op">&gt;</span> {
+				<span class="macro">assert_eq!</span>(<span class="ident">transaction_level_tracker::get_transaction_level</span>(), <span class="number">1</span>);
+				<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">with_transaction</span>(<span class="op">|</span><span class="op">|</span> -&gt; <span class="ident">TransactionOutcome</span><span class="op">&lt;</span><span class="ident">DispatchResult</span><span class="op">&gt;</span> {
+					<span class="macro">assert_eq!</span>(<span class="ident">transaction_level_tracker::get_transaction_level</span>(), <span class="number">2</span>);
+					<span class="ident">TransactionOutcome::Commit</span>(<span class="prelude-val">Ok</span>(()))
+				});
+				<span class="ident">TransactionOutcome::Commit</span>(<span class="ident">res</span>)
+			}));
+
+			<span class="macro">assert_ok!</span>(<span class="ident">recursive_transactional</span>(<span class="number">255</span>));
+			<span class="macro">assert_noop!</span>(
+				<span class="ident">recursive_transactional</span>(<span class="number">256</span>),
+				<span class="ident">sp_runtime::TransactionalError::LimitReached</span>
+			);
+
+			<span class="macro">assert_eq!</span>(<span class="ident">transaction_level_tracker::get_transaction_level</span>(), <span class="number">0</span>);
 		});
 	}
 

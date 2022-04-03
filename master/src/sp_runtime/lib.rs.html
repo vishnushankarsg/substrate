@@ -1069,6 +1069,39 @@
 <span id="1069">1069</span>
 <span id="1070">1070</span>
 <span id="1071">1071</span>
+<span id="1072">1072</span>
+<span id="1073">1073</span>
+<span id="1074">1074</span>
+<span id="1075">1075</span>
+<span id="1076">1076</span>
+<span id="1077">1077</span>
+<span id="1078">1078</span>
+<span id="1079">1079</span>
+<span id="1080">1080</span>
+<span id="1081">1081</span>
+<span id="1082">1082</span>
+<span id="1083">1083</span>
+<span id="1084">1084</span>
+<span id="1085">1085</span>
+<span id="1086">1086</span>
+<span id="1087">1087</span>
+<span id="1088">1088</span>
+<span id="1089">1089</span>
+<span id="1090">1090</span>
+<span id="1091">1091</span>
+<span id="1092">1092</span>
+<span id="1093">1093</span>
+<span id="1094">1094</span>
+<span id="1095">1095</span>
+<span id="1096">1096</span>
+<span id="1097">1097</span>
+<span id="1098">1098</span>
+<span id="1099">1099</span>
+<span id="1100">1100</span>
+<span id="1101">1101</span>
+<span id="1102">1102</span>
+<span id="1103">1103</span>
+<span id="1104">1104</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1557,6 +1590,31 @@
 	}
 }
 
+<span class="doccomment">/// Errors related to transactional storage layers.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Debug</span>, <span class="ident">TypeInfo</span>)]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>))]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">TransactionalError</span> {
+	<span class="doccomment">/// Too many transactional layers have been spawned.</span>
+	<span class="ident">LimitReached</span>,
+	<span class="doccomment">/// A transactional layer was expected, but does not exist.</span>
+	<span class="ident">NoLayer</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">TransactionalError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> {
+	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">e</span>: <span class="ident">TransactionalError</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> {
+		<span class="kw">match</span> <span class="ident">e</span> {
+			<span class="ident">TransactionalError::LimitReached</span> =&gt; <span class="string">&quot;Too many transactional layers have been spawned&quot;</span>,
+			<span class="ident">TransactionalError::NoLayer</span> =&gt; <span class="string">&quot;A transactional layer was expected, but does not exist&quot;</span>,
+		}
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">TransactionalError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DispatchError</span> {
+	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">e</span>: <span class="ident">TransactionalError</span>) -&gt; <span class="ident">DispatchError</span> {
+		<span class="ident"><span class="self">Self</span>::Transactional</span>(<span class="ident">e</span>)
+	}
+}
+
 <span class="doccomment">/// Reason why a dispatch call failed.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Eq</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Debug</span>, <span class="ident">TypeInfo</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>))]</span>
@@ -1583,6 +1641,9 @@
 	<span class="ident">Token</span>(<span class="ident">TokenError</span>),
 	<span class="doccomment">/// An arithmetic error.</span>
 	<span class="ident">Arithmetic</span>(<span class="ident">ArithmeticError</span>),
+	<span class="doccomment">/// The number of transactional layers has been reached, or we are not in a transactional</span>
+	<span class="doccomment">/// layer.</span>
+	<span class="ident">Transactional</span>(<span class="ident">TransactionalError</span>),
 }
 
 <span class="doccomment">/// Result of a `Dispatchable` which contains the `DispatchResult` and additional information about</span>
@@ -1718,6 +1779,7 @@
 			<span class="ident">DispatchError::TooManyConsumers</span> =&gt; <span class="string">&quot;Too many consumers&quot;</span>,
 			<span class="ident">DispatchError::Token</span>(<span class="ident">e</span>) =&gt; <span class="ident">e</span>.<span class="ident">into</span>(),
 			<span class="ident">DispatchError::Arithmetic</span>(<span class="ident">e</span>) =&gt; <span class="ident">e</span>.<span class="ident">into</span>(),
+			<span class="ident">DispatchError::Transactional</span>(<span class="ident">e</span>) =&gt; <span class="ident">e</span>.<span class="ident">into</span>(),
 		}
 	}
 }
@@ -1754,6 +1816,10 @@
 			},
 			<span class="ident"><span class="self">Self</span>::Arithmetic</span>(<span class="ident">e</span>) =&gt; {
 				<span class="string">&quot;Arithmetic error: &quot;</span>.<span class="ident">print</span>();
+				<span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="kw-2">*</span><span class="ident">e</span>).<span class="ident">print</span>();
+			},
+			<span class="ident"><span class="self">Self</span>::Transactional</span>(<span class="ident">e</span>) =&gt; {
+				<span class="string">&quot;Transactional error: &quot;</span>.<span class="ident">print</span>();
 				<span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="kw-2">*</span><span class="ident">e</span>).<span class="ident">print</span>();
 			},
 		}
