@@ -1167,7 +1167,7 @@
 	<span class="doccomment">/// Deposit one of this module&#39;s logs.</span>
 	<span class="kw">fn</span> <span class="ident">deposit_log</span>(<span class="ident">log</span>: <span class="ident">ConsensusLog</span><span class="op">&lt;</span><span class="ident">T::BlockNumber</span><span class="op">&gt;</span>) {
 		<span class="kw">let</span> <span class="ident">log</span> <span class="op">=</span> <span class="ident">DigestItem::Consensus</span>(<span class="ident">GRANDPA_ENGINE_ID</span>, <span class="ident">log</span>.<span class="ident">encode</span>());
-		<span class="op">&lt;</span><span class="ident">frame_system::Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::deposit_log</span>(<span class="ident">log</span>.<span class="ident">into</span>());
+		<span class="op">&lt;</span><span class="ident">frame_system::Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::deposit_log</span>(<span class="ident">log</span>);
 	}
 
 	<span class="comment">// Perform module initialization, abstracted so that it can be called either through genesis</span>
