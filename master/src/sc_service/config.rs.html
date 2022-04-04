@@ -595,7 +595,7 @@
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">std::convert::From</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BasePath</span> {
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BasePath</span> {
 	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">path</span>: <span class="ident">PathBuf</span>) -&gt; <span class="self">Self</span> {
 		<span class="ident">BasePath::new</span>(<span class="ident">path</span>)
 	}

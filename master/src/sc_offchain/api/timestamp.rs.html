@@ -65,9 +65,6 @@
 <span id="65">65</span>
 <span id="66">66</span>
 <span id="67">67</span>
-<span id="68">68</span>
-<span id="69">69</span>
-<span id="70">70</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -89,10 +86,7 @@
 <span class="doccomment">//! Helper methods dedicated to timestamps.</span>
 
 <span class="kw">use</span> <span class="ident">sp_core::offchain::Timestamp</span>;
-<span class="kw">use</span> <span class="ident">std</span>::{
-	<span class="ident">convert::TryInto</span>,
-	<span class="ident">time</span>::{<span class="ident">Duration</span>, <span class="ident">SystemTime</span>},
-};
+<span class="kw">use</span> <span class="ident">std::time</span>::{<span class="ident">Duration</span>, <span class="ident">SystemTime</span>};
 
 <span class="doccomment">/// Returns the current time as a `Timestamp`.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">now</span>() -&gt; <span class="ident">Timestamp</span> {

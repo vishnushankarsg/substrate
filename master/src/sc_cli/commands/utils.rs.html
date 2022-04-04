@@ -358,7 +358,7 @@
 	<span class="ident">Pair</span>,
 };
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{<span class="ident">traits::IdentifyAccount</span>, <span class="ident">MultiSigner</span>};
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">convert::TryFrom</span>, <span class="ident">io::Read</span>, <span class="ident">path::PathBuf</span>};
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">io::Read</span>, <span class="ident">path::PathBuf</span>};
 
 <span class="doccomment">/// Public key type for Runtime</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">PublicFor</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">P</span> <span class="kw">as</span> <span class="ident">sp_core::Pair</span><span class="op">&gt;</span><span class="ident">::Public</span>;

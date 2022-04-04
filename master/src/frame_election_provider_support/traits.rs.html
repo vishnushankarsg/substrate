@@ -123,10 +123,6 @@
 <span id="123">123</span>
 <span id="124">124</span>
 <span id="125">125</span>
-<span id="126">126</span>
-<span id="127">127</span>
-<span id="128">128</span>
-<span id="129">129</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -151,16 +147,12 @@
 <span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
 <span class="kw">use</span> <span class="ident">sp_arithmetic::traits</span>::{<span class="ident">Bounded</span>, <span class="ident">UniqueSaturatedInto</span>};
 <span class="kw">use</span> <span class="ident">sp_npos_elections</span>::{<span class="ident">ElectionScore</span>, <span class="ident">Error</span>, <span class="ident">EvaluateSupport</span>};
-<span class="kw">use</span> <span class="ident">sp_std</span>::{
-	<span class="ident">convert</span>::{<span class="ident">TryFrom</span>, <span class="ident">TryInto</span>},
-	<span class="ident">fmt::Debug</span>,
-	<span class="ident">prelude</span>::<span class="kw-2">*</span>,
-};
+<span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>};
 
 <span class="doccomment">/// An opaque index-based, NPoS solution type.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">NposSolution</span>
 <span class="kw">where</span>
-	<span class="self">Self</span>: <span class="ident">Sized</span> <span class="op">+</span> <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">sp_std::convert::TryFrom</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">IndexAssignmentOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>], <span class="ident">Error</span> <span class="op">=</span> <span class="ident">Error</span><span class="op">&gt;</span>,
+	<span class="self">Self</span>: <span class="ident">Sized</span> <span class="op">+</span> <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">IndexAssignmentOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>], <span class="ident">Error</span> <span class="op">=</span> <span class="ident">Error</span><span class="op">&gt;</span>,
 {
 	<span class="doccomment">/// The maximum number of votes that are allowed.</span>
 	<span class="kw">const</span> <span class="ident">LIMIT</span>: <span class="ident">usize</span>;

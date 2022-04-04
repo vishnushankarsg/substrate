@@ -466,7 +466,7 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">sp_wasm_interface</span>::{<span class="ident">FunctionContext</span>, <span class="ident">Pointer</span>, <span class="prelude-ty">Result</span>};
 
-<span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">convert::TryFrom</span>, <span class="ident">marker::PhantomData</span>};
+<span class="kw">use</span> <span class="ident">sp_std::marker::PhantomData</span>;
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>))]</span>
 <span class="kw">use</span> <span class="ident">sp_std::vec::Vec</span>;
@@ -815,7 +815,7 @@
 <span class="doccomment">///     }</span>
 <span class="doccomment">/// }</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// impl std::convert::TryFrom&lt;u8&gt; for Test {</span>
+<span class="doccomment">/// impl TryFrom&lt;u8&gt; for Test {</span>
 <span class="doccomment">///     type Error = ();</span>
 <span class="doccomment">///</span>
 <span class="doccomment">///     fn try_from(val: u8) -&gt; Result&lt;Test, ()&gt; {</span>

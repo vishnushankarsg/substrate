@@ -195,7 +195,7 @@
 <span class="kw">use</span> <span class="ident">sc_service::config</span>::{<span class="ident">BasePath</span>, <span class="ident">KeystoreConfig</span>};
 <span class="kw">use</span> <span class="ident">sp_core::crypto</span>::{<span class="ident">KeyTypeId</span>, <span class="ident">SecretString</span>};
 <span class="kw">use</span> <span class="ident">sp_keystore</span>::{<span class="ident">SyncCryptoStore</span>, <span class="ident">SyncCryptoStorePtr</span>};
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">convert::TryFrom</span>, <span class="ident">sync::Arc</span>};
+<span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 <span class="doccomment">/// The `insert` command</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Parser</span>)]</span>

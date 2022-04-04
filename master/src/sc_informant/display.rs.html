@@ -226,10 +226,6 @@
 <span id="226">226</span>
 <span id="227">227</span>
 <span id="228">228</span>
-<span id="229">229</span>
-<span id="230">230</span>
-<span id="231">231</span>
-<span id="232">232</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -254,11 +250,7 @@
 <span class="kw">use</span> <span class="ident">sc_client_api::ClientInfo</span>;
 <span class="kw">use</span> <span class="ident">sc_network</span>::{<span class="ident">NetworkStatus</span>, <span class="ident">SyncState</span>, <span class="ident">WarpSyncPhase</span>, <span class="ident">WarpSyncProgress</span>};
 <span class="kw">use</span> <span class="ident">sp_runtime::traits</span>::{<span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>, <span class="ident">CheckedDiv</span>, <span class="ident">NumberFor</span>, <span class="ident">Saturating</span>, <span class="ident">Zero</span>};
-<span class="kw">use</span> <span class="ident">std</span>::{
-	<span class="ident">convert</span>::{<span class="ident">TryFrom</span>, <span class="ident">TryInto</span>},
-	<span class="ident">fmt</span>,
-	<span class="ident">time::Instant</span>,
-};
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>, <span class="ident">time::Instant</span>};
 
 <span class="doccomment">/// State of the informant display system.</span>
 <span class="doccomment">///</span>
