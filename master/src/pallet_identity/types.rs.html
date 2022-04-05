@@ -467,6 +467,7 @@
 <span id="467">467</span>
 <span id="468">468</span>
 <span id="469">469</span>
+<span id="470">470</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -486,7 +487,7 @@
 
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">MaxEncodedLen</span>};
-<span class="kw">use</span> <span class="ident">enumflags2::BitFlags</span>;
+<span class="kw">use</span> <span class="ident">enumflags2</span>::{<span class="ident">bitflags</span>, <span class="ident">BitFlags</span>};
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">traits</span>::{<span class="ident">ConstU32</span>, <span class="ident">Get</span>},
 	<span class="ident">BoundedVec</span>, <span class="ident">CloneNoBound</span>, <span class="ident">PartialEqNoBound</span>, <span class="ident">RuntimeDebugNoBound</span>,
@@ -699,8 +700,9 @@
 
 <span class="doccomment">/// The fields that we use to identify the owner of an account with. Each corresponds to a field</span>
 <span class="doccomment">/// in the `IdentityInfo` struct.</span>
+<span class="attribute">#[<span class="ident">bitflags</span>]</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">u64</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">BitFlags</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IdentityField</span> {
 	<span class="ident">Display</span> <span class="op">=</span> <span class="number">0b0000000000000000000000000000000000000000000000000000000000000001</span>,
 	<span class="ident">Legal</span> <span class="op">=</span> <span class="number">0b0000000000000000000000000000000000000000000000000000000000000010</span>,
