@@ -11,7 +11,7 @@ bare minimum clean up: reapplying the data segments and restoring the values for
 variables.</p>
 <p>Since this feature depends on instrumentation, it can be set only if runtime is
 instantiated using the runtime blob, e.g. using <a href="fn.create_runtime.html" title="create_runtime"><code>create_runtime</code></a>.</p>
-</div><span id="structfield.deterministic_stack_limit" class="structfield small-section-header"><a href="#structfield.deterministic_stack_limit" class="anchor field"></a><code>deterministic_stack_limit: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="struct.DeterministicStackLimit.html" title="struct sc_executor_wasmtime::DeterministicStackLimit">DeterministicStackLimit</a>&gt;</code></span><div class="docblock"><p>Specifiying <code>Some</code> will enable deterministic stack height. That is, all executor
+</div><span id="structfield.deterministic_stack_limit" class="structfield small-section-header"><a href="#structfield.deterministic_stack_limit" class="anchor field"></a><code>deterministic_stack_limit: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="struct.DeterministicStackLimit.html" title="struct sc_executor_wasmtime::DeterministicStackLimit">DeterministicStackLimit</a>&gt;</code></span><div class="docblock"><p>Specifying <code>Some</code> will enable deterministic stack height. That is, all executor
 invocations will reach stack overflow at the exactly same point across different wasmtime
 versions and architectures.</p>
 <p>This is achieved by a combination of running an instrumentation pass on input code and
