@@ -7,7 +7,9 @@
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">libloading</span>::{<span class="ident">Library</span>, <span class="ident">library_filename</span>};
 <span class="comment">// Will attempt to load `libLLVM.so` on Linux, `libLLVM.dylib` on macOS and `LLVM.dll` on</span>
 <span class="comment">// Windows.</span>
-<span class="kw">let</span> <span class="ident">library</span> <span class="op">=</span> <span class="ident">Library::new</span>(<span class="ident">library_filename</span>(<span class="string">&quot;LLVM&quot;</span>));</code></pre></div>
+<span class="kw">let</span> <span class="ident">library</span> <span class="op">=</span> <span class="kw">unsafe</span> {
+    <span class="ident">Library::new</span>(<span class="ident">library_filename</span>(<span class="string">&quot;LLVM&quot;</span>))
+};</code></pre></div>
 </div></details></section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../" data-current-crate="libloading" data-search-index-js="../search-index.js" data-search-js="../search.js"></div>
     <script src="../main.js"></script>
 </body></html>

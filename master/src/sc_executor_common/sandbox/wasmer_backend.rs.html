@@ -477,9 +477,8 @@
 
 <span class="kw">impl</span> <span class="ident">Backend</span> {
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
-		<span class="kw">let</span> <span class="ident">compiler</span> <span class="op">=</span> <span class="ident">wasmer_compiler_singlepass::Singlepass::default</span>();
-
-		<span class="ident">Backend</span> { <span class="ident">store</span>: <span class="ident">wasmer::Store::new</span>(<span class="kw-2">&amp;</span><span class="ident">wasmer::JIT::new</span>(<span class="ident">compiler</span>).<span class="ident">engine</span>()) }
+		<span class="kw">let</span> <span class="ident">compiler</span> <span class="op">=</span> <span class="ident">wasmer::Singlepass::default</span>();
+		<span class="ident">Backend</span> { <span class="ident">store</span>: <span class="ident">wasmer::Store::new</span>(<span class="kw-2">&amp;</span><span class="ident">wasmer::Universal::new</span>(<span class="ident">compiler</span>).<span class="ident">engine</span>()) }
 	}
 }
 
@@ -625,6 +624,7 @@
 			<span class="ident">wasmer::InstantiationError::Start</span>(<span class="kw">_</span>) =&gt; <span class="ident">InstantiationError::StartTrapped</span>,
 			<span class="ident">wasmer::InstantiationError::HostEnvInitialization</span>(<span class="kw">_</span>) =&gt;
 				<span class="ident">InstantiationError::EnvironmentDefinitionCorrupted</span>,
+			<span class="ident">wasmer::InstantiationError::CpuFeature</span>(<span class="kw">_</span>) =&gt; <span class="ident">InstantiationError::CpuFeature</span>,
 		})
 	})<span class="question-mark">?</span>;
 

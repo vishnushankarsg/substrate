@@ -597,6 +597,8 @@
 <span id="597">597</span>
 <span id="598">598</span>
 <span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -850,6 +852,8 @@
 	<span class="doccomment">/// Module is well-formed, instantiated and linked, but while executing the start function</span>
 	<span class="doccomment">/// a trap was generated.</span>
 	<span class="ident">StartTrapped</span>,
+	<span class="doccomment">/// The code was compiled with a CPU feature not available on the host.</span>
+	<span class="ident">CpuFeature</span>,
 }
 
 <span class="kw">fn</span> <span class="ident">decode_environment_definition</span>(
