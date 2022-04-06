@@ -575,17 +575,17 @@
 }
 
 <span class="doccomment">/// Default value for the `--execution-syncing` parameter.</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DEFAULT_EXECUTION_SYNCING</span>: <span class="ident">ExecutionStrategy</span> <span class="op">=</span> <span class="ident">ExecutionStrategy::NativeElseWasm</span>;
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DEFAULT_EXECUTION_SYNCING</span>: <span class="ident">ExecutionStrategy</span> <span class="op">=</span> <span class="ident">ExecutionStrategy::Wasm</span>;
 <span class="doccomment">/// Default value for the `--execution-import-block` parameter.</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DEFAULT_EXECUTION_IMPORT_BLOCK</span>: <span class="ident">ExecutionStrategy</span> <span class="op">=</span> <span class="ident">ExecutionStrategy::NativeElseWasm</span>;
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DEFAULT_EXECUTION_IMPORT_BLOCK</span>: <span class="ident">ExecutionStrategy</span> <span class="op">=</span> <span class="ident">ExecutionStrategy::Wasm</span>;
 <span class="doccomment">/// Default value for the `--execution-import-block` parameter when the node is a validator.</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DEFAULT_EXECUTION_IMPORT_BLOCK_VALIDATOR</span>: <span class="ident">ExecutionStrategy</span> <span class="op">=</span> <span class="ident">ExecutionStrategy::Wasm</span>;
 <span class="doccomment">/// Default value for the `--execution-block-construction` parameter.</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DEFAULT_EXECUTION_BLOCK_CONSTRUCTION</span>: <span class="ident">ExecutionStrategy</span> <span class="op">=</span> <span class="ident">ExecutionStrategy::Wasm</span>;
 <span class="doccomment">/// Default value for the `--execution-offchain-worker` parameter.</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DEFAULT_EXECUTION_OFFCHAIN_WORKER</span>: <span class="ident">ExecutionStrategy</span> <span class="op">=</span> <span class="ident">ExecutionStrategy::Native</span>;
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DEFAULT_EXECUTION_OFFCHAIN_WORKER</span>: <span class="ident">ExecutionStrategy</span> <span class="op">=</span> <span class="ident">ExecutionStrategy::Wasm</span>;
 <span class="doccomment">/// Default value for the `--execution-other` parameter.</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DEFAULT_EXECUTION_OTHER</span>: <span class="ident">ExecutionStrategy</span> <span class="op">=</span> <span class="ident">ExecutionStrategy::Native</span>;
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DEFAULT_EXECUTION_OTHER</span>: <span class="ident">ExecutionStrategy</span> <span class="op">=</span> <span class="ident">ExecutionStrategy::Wasm</span>;
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="sc_cli" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
     <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>

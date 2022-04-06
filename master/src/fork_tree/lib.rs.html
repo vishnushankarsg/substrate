@@ -1547,6 +1547,22 @@
 <span id="1547">1547</span>
 <span id="1548">1548</span>
 <span id="1549">1549</span>
+<span id="1550">1550</span>
+<span id="1551">1551</span>
+<span id="1552">1552</span>
+<span id="1553">1553</span>
+<span id="1554">1554</span>
+<span id="1555">1555</span>
+<span id="1556">1556</span>
+<span id="1557">1557</span>
+<span id="1558">1558</span>
+<span id="1559">1559</span>
+<span id="1560">1560</span>
+<span id="1561">1561</span>
+<span id="1562">1562</span>
+<span id="1563">1563</span>
+<span id="1564">1564</span>
+<span id="1565">1565</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -2058,14 +2074,14 @@
 	}
 
 	<span class="doccomment">/// Checks if any node in the tree is finalized by either finalizing the</span>
-	<span class="doccomment">/// node itself or a child node that&#39;s not in the tree, guaranteeing that</span>
-	<span class="doccomment">/// the node being finalized isn&#39;t a descendent of any of the node&#39;s</span>
-	<span class="doccomment">/// children. Returns `Some(true)` if the node being finalized is a root,</span>
-	<span class="doccomment">/// `Some(false)` if the node being finalized is not a root, and `None` if</span>
-	<span class="doccomment">/// no node in the tree is finalized. The given `predicate` is checked on</span>
-	<span class="doccomment">/// the prospective finalized root and must pass for finalization to occur.</span>
-	<span class="doccomment">/// The given function `is_descendent_of` should return `true` if the second</span>
-	<span class="doccomment">/// hash (target) is a descendent of the first hash (base).</span>
+	<span class="doccomment">/// node itself or a node&#39;s descendent that&#39;s not in the tree, guaranteeing</span>
+	<span class="doccomment">/// that the node being finalized isn&#39;t a descendent of (or equal to) any of</span>
+	<span class="doccomment">/// the node&#39;s children. Returns `Some(true)` if the node being finalized is</span>
+	<span class="doccomment">/// a root, `Some(false)` if the node being finalized is not a root, and</span>
+	<span class="doccomment">/// `None` if no node in the tree is finalized. The given `predicate` is</span>
+	<span class="doccomment">/// checked on the prospective finalized root and must pass for finalization</span>
+	<span class="doccomment">/// to occur. The given function `is_descendent_of` should return `true` if</span>
+	<span class="doccomment">/// the second hash (target) is a descendent of the first hash (base).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">finalizes_any_with_descendent_if</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">P</span>, <span class="ident">E</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">hash</span>: <span class="kw-2">&amp;</span><span class="ident">H</span>,
@@ -2090,8 +2106,10 @@
 		<span class="kw">for</span> <span class="ident">node</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">node_iter</span>() {
 			<span class="kw">if</span> <span class="ident">predicate</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>.<span class="ident">data</span>) {
 				<span class="kw">if</span> <span class="ident">node</span>.<span class="ident">hash</span> <span class="op">==</span> <span class="kw-2">*</span><span class="ident">hash</span> <span class="op">|</span><span class="op">|</span> <span class="ident">is_descendent_of</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>.<span class="ident">hash</span>, <span class="ident">hash</span>)<span class="question-mark">?</span> {
-					<span class="kw">for</span> <span class="ident">node</span> <span class="kw">in</span> <span class="ident">node</span>.<span class="ident">children</span>.<span class="ident">iter</span>() {
-						<span class="kw">if</span> <span class="ident">node</span>.<span class="ident">number</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">number</span> <span class="op">&amp;&amp;</span> <span class="ident">is_descendent_of</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>.<span class="ident">hash</span>, <span class="kw-2">&amp;</span><span class="ident">hash</span>)<span class="question-mark">?</span> {
+					<span class="kw">for</span> <span class="ident">child</span> <span class="kw">in</span> <span class="ident">node</span>.<span class="ident">children</span>.<span class="ident">iter</span>() {
+						<span class="kw">if</span> <span class="ident">child</span>.<span class="ident">number</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">number</span> <span class="op">&amp;&amp;</span>
+							(<span class="ident">child</span>.<span class="ident">hash</span> <span class="op">==</span> <span class="kw-2">*</span><span class="ident">hash</span> <span class="op">|</span><span class="op">|</span> <span class="ident">is_descendent_of</span>(<span class="kw-2">&amp;</span><span class="ident">child</span>.<span class="ident">hash</span>, <span class="ident">hash</span>)<span class="question-mark">?</span>)
+						{
 							<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::UnfinalizedAncestor</span>)
 						}
 					}
@@ -2105,12 +2123,12 @@
 	}
 
 	<span class="doccomment">/// Finalize a root in the tree by either finalizing the node itself or a</span>
-	<span class="doccomment">/// child node that&#39;s not in the tree, guaranteeing that the node being</span>
-	<span class="doccomment">/// finalized isn&#39;t a descendent of any of the root&#39;s children. The given</span>
-	<span class="doccomment">/// `predicate` is checked on the prospective finalized root and must pass for</span>
-	<span class="doccomment">/// finalization to occur. The given function `is_descendent_of` should</span>
-	<span class="doccomment">/// return `true` if the second hash (target) is a descendent of the first</span>
-	<span class="doccomment">/// hash (base).</span>
+	<span class="doccomment">/// node&#39;s descendent that&#39;s not in the tree, guaranteeing that the node</span>
+	<span class="doccomment">/// being finalized isn&#39;t a descendent of (or equal to) any of the root&#39;s</span>
+	<span class="doccomment">/// children. The given `predicate` is checked on the prospective finalized</span>
+	<span class="doccomment">/// root and must pass for finalization to occur. The given function</span>
+	<span class="doccomment">/// `is_descendent_of` should return `true` if the second hash (target) is a</span>
+	<span class="doccomment">/// descendent of the first hash (base).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">finalize_with_descendent_if</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">P</span>, <span class="ident">E</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">hash</span>: <span class="kw-2">&amp;</span><span class="ident">H</span>,
@@ -2136,8 +2154,10 @@
 		<span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">root</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">roots</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
 			<span class="kw">if</span> <span class="ident">predicate</span>(<span class="kw-2">&amp;</span><span class="ident">root</span>.<span class="ident">data</span>) {
 				<span class="kw">if</span> <span class="ident">root</span>.<span class="ident">hash</span> <span class="op">==</span> <span class="kw-2">*</span><span class="ident">hash</span> <span class="op">|</span><span class="op">|</span> <span class="ident">is_descendent_of</span>(<span class="kw-2">&amp;</span><span class="ident">root</span>.<span class="ident">hash</span>, <span class="ident">hash</span>)<span class="question-mark">?</span> {
-					<span class="kw">for</span> <span class="ident">node</span> <span class="kw">in</span> <span class="ident">root</span>.<span class="ident">children</span>.<span class="ident">iter</span>() {
-						<span class="kw">if</span> <span class="ident">node</span>.<span class="ident">number</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">number</span> <span class="op">&amp;&amp;</span> <span class="ident">is_descendent_of</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>.<span class="ident">hash</span>, <span class="kw-2">&amp;</span><span class="ident">hash</span>)<span class="question-mark">?</span> {
+					<span class="kw">for</span> <span class="ident">child</span> <span class="kw">in</span> <span class="ident">root</span>.<span class="ident">children</span>.<span class="ident">iter</span>() {
+						<span class="kw">if</span> <span class="ident">child</span>.<span class="ident">number</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">number</span> <span class="op">&amp;&amp;</span>
+							(<span class="ident">child</span>.<span class="ident">hash</span> <span class="op">==</span> <span class="kw-2">*</span><span class="ident">hash</span> <span class="op">|</span><span class="op">|</span> <span class="ident">is_descendent_of</span>(<span class="kw-2">&amp;</span><span class="ident">child</span>.<span class="ident">hash</span>, <span class="ident">hash</span>)<span class="question-mark">?</span>)
+						{
 							<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::UnfinalizedAncestor</span>)
 						}
 					}
@@ -2155,12 +2175,11 @@
 			<span class="ident">node</span>.<span class="ident">data</span>
 		});
 
-		<span class="comment">// if the block being finalized is earlier than a given root, then it</span>
-		<span class="comment">// must be its ancestor, otherwise we can prune the root. if there&#39;s a</span>
-		<span class="comment">// root at the same height then the hashes must match. otherwise the</span>
-		<span class="comment">// node being finalized is higher than the root so it must be its</span>
-		<span class="comment">// descendent (in this case the node wasn&#39;t finalized earlier presumably</span>
-		<span class="comment">// because the predicate didn&#39;t pass).</span>
+		<span class="comment">// Retain only roots that are descendents of the finalized block (this</span>
+		<span class="comment">// happens if the node has been properly finalized) or that are</span>
+		<span class="comment">// ancestors (or equal) to the finalized block (in this case the node</span>
+		<span class="comment">// wasn&#39;t finalized earlier presumably because the predicate didn&#39;t</span>
+		<span class="comment">// pass).</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">changed</span> <span class="op">=</span> <span class="bool-val">false</span>;
 		<span class="kw">let</span> <span class="ident">roots</span> <span class="op">=</span> <span class="ident">std::mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">roots</span>);
 
@@ -2824,18 +2843,31 @@
 			<span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
 		);
 
+		<span class="comment">// finalizing &quot;D&quot; is not allowed since it is not a root.</span>
+		<span class="macro">assert_eq!</span>(
+			<span class="ident">tree</span>.<span class="ident">finalize_with_descendent_if</span>(<span class="kw-2">&amp;</span><span class="string">&quot;D&quot;</span>, <span class="number">10</span>, <span class="kw-2">&amp;</span><span class="ident">is_descendent_of</span>, <span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">effective</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">10</span>),
+			<span class="prelude-val">Err</span>(<span class="ident">Error::UnfinalizedAncestor</span>)
+		);
+
 		<span class="comment">// finalizing &quot;D&quot; will finalize a block from the tree, but it can&#39;t be applied yet</span>
-		<span class="comment">// since it is not a root change</span>
+		<span class="comment">// since it is not a root change.</span>
 		<span class="macro">assert_eq!</span>(
 			<span class="ident">tree</span>.<span class="ident">finalizes_any_with_descendent_if</span>(<span class="kw-2">&amp;</span><span class="string">&quot;D&quot;</span>, <span class="number">10</span>, <span class="kw-2">&amp;</span><span class="ident">is_descendent_of</span>, <span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">effective</span> <span class="op">==</span>
-				<span class="number">10</span>,),
+				<span class="number">10</span>),
 			<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="bool-val">false</span>)),
+		);
+
+		<span class="comment">// finalizing &quot;E&quot; is not allowed since there are not finalized anchestors.</span>
+		<span class="macro">assert_eq!</span>(
+			<span class="ident">tree</span>.<span class="ident">finalizes_any_with_descendent_if</span>(<span class="kw-2">&amp;</span><span class="string">&quot;E&quot;</span>, <span class="number">15</span>, <span class="kw-2">&amp;</span><span class="ident">is_descendent_of</span>, <span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">effective</span> <span class="op">==</span>
+				<span class="number">10</span>),
+			<span class="prelude-val">Err</span>(<span class="ident">Error::UnfinalizedAncestor</span>)
 		);
 
 		<span class="comment">// finalizing &quot;B&quot; doesn&#39;t finalize &quot;A0&quot; since the predicate doesn&#39;t pass,</span>
 		<span class="comment">// although it will clear out &quot;A1&quot; from the tree</span>
 		<span class="macro">assert_eq!</span>(
-			<span class="ident">tree</span>.<span class="ident">finalize_with_descendent_if</span>(<span class="kw-2">&amp;</span><span class="string">&quot;B&quot;</span>, <span class="number">2</span>, <span class="kw-2">&amp;</span><span class="ident">is_descendent_of</span>, <span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">effective</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">2</span>,),
+			<span class="ident">tree</span>.<span class="ident">finalize_with_descendent_if</span>(<span class="kw-2">&amp;</span><span class="string">&quot;B&quot;</span>, <span class="number">2</span>, <span class="kw-2">&amp;</span><span class="ident">is_descendent_of</span>, <span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">effective</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">2</span>),
 			<span class="prelude-val">Ok</span>(<span class="ident">FinalizationResult::Changed</span>(<span class="prelude-val">None</span>)),
 		);
 
@@ -2856,7 +2888,7 @@
 		);
 
 		<span class="macro">assert_eq!</span>(
-			<span class="ident">tree</span>.<span class="ident">finalize_with_descendent_if</span>(<span class="kw-2">&amp;</span><span class="string">&quot;C&quot;</span>, <span class="number">5</span>, <span class="kw-2">&amp;</span><span class="ident">is_descendent_of</span>, <span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">effective</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">5</span>,),
+			<span class="ident">tree</span>.<span class="ident">finalize_with_descendent_if</span>(<span class="kw-2">&amp;</span><span class="string">&quot;C&quot;</span>, <span class="number">5</span>, <span class="kw-2">&amp;</span><span class="ident">is_descendent_of</span>, <span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">effective</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">5</span>),
 			<span class="prelude-val">Ok</span>(<span class="ident">FinalizationResult::Changed</span>(<span class="prelude-val">Some</span>(<span class="ident">Change</span> { <span class="ident">effective</span>: <span class="number">5</span> }))),
 		);
 
@@ -2875,12 +2907,12 @@
 		<span class="comment">// it will work with &quot;G&quot; though since it is not in the same branch as &quot;E&quot;</span>
 		<span class="macro">assert_eq!</span>(
 			<span class="ident">tree</span>.<span class="ident">finalizes_any_with_descendent_if</span>(<span class="kw-2">&amp;</span><span class="string">&quot;G&quot;</span>, <span class="number">100</span>, <span class="kw-2">&amp;</span><span class="ident">is_descendent_of</span>, <span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">effective</span> <span class="op">&lt;</span><span class="op">=</span>
-				<span class="number">100</span>,),
+				<span class="number">100</span>),
 			<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="bool-val">true</span>)),
 		);
 
 		<span class="macro">assert_eq!</span>(
-			<span class="ident">tree</span>.<span class="ident">finalize_with_descendent_if</span>(<span class="kw-2">&amp;</span><span class="string">&quot;G&quot;</span>, <span class="number">100</span>, <span class="kw-2">&amp;</span><span class="ident">is_descendent_of</span>, <span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">effective</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">100</span>,),
+			<span class="ident">tree</span>.<span class="ident">finalize_with_descendent_if</span>(<span class="kw-2">&amp;</span><span class="string">&quot;G&quot;</span>, <span class="number">100</span>, <span class="kw-2">&amp;</span><span class="ident">is_descendent_of</span>, <span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">effective</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">100</span>),
 			<span class="prelude-val">Ok</span>(<span class="ident">FinalizationResult::Changed</span>(<span class="prelude-val">Some</span>(<span class="ident">Change</span> { <span class="ident">effective</span>: <span class="number">10</span> }))),
 		);
 
