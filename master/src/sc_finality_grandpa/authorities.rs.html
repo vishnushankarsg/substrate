@@ -1716,6 +1716,37 @@
 <span id="1716">1716</span>
 <span id="1717">1717</span>
 <span id="1718">1718</span>
+<span id="1719">1719</span>
+<span id="1720">1720</span>
+<span id="1721">1721</span>
+<span id="1722">1722</span>
+<span id="1723">1723</span>
+<span id="1724">1724</span>
+<span id="1725">1725</span>
+<span id="1726">1726</span>
+<span id="1727">1727</span>
+<span id="1728">1728</span>
+<span id="1729">1729</span>
+<span id="1730">1730</span>
+<span id="1731">1731</span>
+<span id="1732">1732</span>
+<span id="1733">1733</span>
+<span id="1734">1734</span>
+<span id="1735">1735</span>
+<span id="1736">1736</span>
+<span id="1737">1737</span>
+<span id="1738">1738</span>
+<span id="1739">1739</span>
+<span id="1740">1740</span>
+<span id="1741">1741</span>
+<span id="1742">1742</span>
+<span id="1743">1743</span>
+<span id="1744">1744</span>
+<span id="1745">1745</span>
+<span id="1746">1746</span>
+<span id="1747">1747</span>
+<span id="1748">1748</span>
+<span id="1749">1749</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -1739,7 +1770,7 @@
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">cmp::Ord</span>, <span class="ident">fmt::Debug</span>, <span class="ident">ops::Add</span>};
 
 <span class="kw">use</span> <span class="ident">finality_grandpa::voter_set::VoterSet</span>;
-<span class="kw">use</span> <span class="ident">fork_tree::ForkTree</span>;
+<span class="kw">use</span> <span class="ident">fork_tree</span>::{<span class="ident">FilterAction</span>, <span class="ident">ForkTree</span>};
 <span class="kw">use</span> <span class="ident">log::debug</span>;
 <span class="kw">use</span> <span class="ident">parity_scale_codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
 <span class="kw">use</span> <span class="ident">parking_lot::MappedMutexGuard</span>;
@@ -1937,6 +1968,37 @@
 	<span class="doccomment">/// Get the current set id and a reference to the current authority set.</span>
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">current</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (<span class="ident">u64</span>, <span class="kw-2">&amp;</span>[(<span class="ident">AuthorityId</span>, <span class="ident">u64</span>)]) {
 		(<span class="self">self</span>.<span class="ident">set_id</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">current_authorities</span>[..])
+	}
+
+	<span class="doccomment">/// Revert to a specified block given its `hash` and `number`.</span>
+	<span class="doccomment">/// This removes all the authority set changes that were announced after</span>
+	<span class="doccomment">/// the revert point.</span>
+	<span class="doccomment">/// Revert point is identified by `number` and `hash`.</span>
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">revert</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">E</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">hash</span>: <span class="ident">H</span>, <span class="ident">number</span>: <span class="ident">N</span>, <span class="ident">is_descendent_of</span>: <span class="kw-2">&amp;</span><span class="ident">F</span>)
+	<span class="kw">where</span>
+		<span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">H</span>, <span class="kw-2">&amp;</span><span class="ident">H</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">E</span><span class="op">&gt;</span>,
+	{
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">filter</span> <span class="op">=</span> <span class="op">|</span><span class="ident">node_hash</span>: <span class="kw-2">&amp;</span><span class="ident">H</span>, <span class="ident">node_num</span>: <span class="kw-2">&amp;</span><span class="ident">N</span>, <span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="ident">PendingChange</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span><span class="op">|</span> {
+			<span class="kw">if</span> <span class="ident">number</span> <span class="op">&gt;</span><span class="op">=</span> <span class="kw-2">*</span><span class="ident">node_num</span> <span class="op">&amp;&amp;</span>
+				(<span class="ident">is_descendent_of</span>(<span class="ident">node_hash</span>, <span class="kw-2">&amp;</span><span class="ident">hash</span>).<span class="ident">unwrap_or_default</span>() <span class="op">|</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">node_hash</span> <span class="op">==</span> <span class="ident">hash</span>)
+			{
+				<span class="comment">// Continue the search in this subtree.</span>
+				<span class="ident">FilterAction::KeepNode</span>
+			} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">number</span> <span class="op">&lt;</span> <span class="kw-2">*</span><span class="ident">node_num</span> <span class="op">&amp;&amp;</span> <span class="ident">is_descendent_of</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>, <span class="ident">node_hash</span>).<span class="ident">unwrap_or_default</span>() {
+				<span class="comment">// Found a node to be removed.</span>
+				<span class="ident">FilterAction::Remove</span>
+			} <span class="kw">else</span> {
+				<span class="comment">// Not a parent or child of the one we&#39;re looking for, stop processing this branch.</span>
+				<span class="ident">FilterAction::KeepTree</span>
+			}
+		};
+
+		<span class="comment">// Remove standard changes.</span>
+		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pending_standard_changes</span>.<span class="ident">drain_filter</span>(<span class="kw-2">&amp;mut</span> <span class="ident">filter</span>);
+
+		<span class="comment">// Remove forced changes.</span>
+		<span class="self">self</span>.<span class="ident">pending_forced_changes</span>
+			.<span class="ident">retain</span>(<span class="op">|</span><span class="ident">change</span><span class="op">|</span> <span class="op">!</span><span class="ident">is_descendent_of</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>, <span class="kw-2">&amp;</span><span class="ident">change</span>.<span class="ident">canon_hash</span>).<span class="ident">unwrap_or_default</span>());
 	}
 }
 

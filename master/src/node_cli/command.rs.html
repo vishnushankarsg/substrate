@@ -204,6 +204,9 @@
 <span id="204">204</span>
 <span id="205">205</span>
 <span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -222,7 +225,11 @@
 <span class="comment">// You should have received a copy of the GNU General Public License</span>
 <span class="comment">// along with this program. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">chain_spec</span>, <span class="ident">service</span>, <span class="ident">service::new_partial</span>, <span class="ident">Cli</span>, <span class="ident">Subcommand</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{
+	<span class="ident">chain_spec</span>, <span class="ident">service</span>,
+	<span class="ident">service</span>::{<span class="ident">new_partial</span>, <span class="ident">FullClient</span>},
+	<span class="ident">Cli</span>, <span class="ident">Subcommand</span>,
+};
 <span class="kw">use</span> <span class="ident">node_executor::ExecutorDispatch</span>;
 <span class="kw">use</span> <span class="ident">node_primitives::Block</span>;
 <span class="kw">use</span> <span class="ident">node_runtime::RuntimeApi</span>;
@@ -381,13 +388,12 @@
 			<span class="kw">let</span> <span class="ident">runner</span> <span class="op">=</span> <span class="ident">cli</span>.<span class="ident">create_runner</span>(<span class="ident">cmd</span>)<span class="question-mark">?</span>;
 			<span class="ident">runner</span>.<span class="ident">async_run</span>(<span class="op">|</span><span class="ident">config</span><span class="op">|</span> {
 				<span class="kw">let</span> <span class="ident">PartialComponents</span> { <span class="ident">client</span>, <span class="ident">task_manager</span>, <span class="ident">backend</span>, .. } <span class="op">=</span> <span class="ident">new_partial</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>)<span class="question-mark">?</span>;
-				<span class="kw">let</span> <span class="ident">revert_aux</span> <span class="op">=</span> <span class="ident">Box::new</span>(<span class="op">|</span><span class="ident">client</span>, <span class="ident">backend</span>, <span class="ident">blocks</span><span class="op">|</span> {
-					<span class="ident">sc_consensus_babe::revert</span>(<span class="ident">client</span>, <span class="ident">backend</span>, <span class="ident">blocks</span>)<span class="question-mark">?</span>;
-					<span class="comment">// TODO: grandpa revert</span>
+				<span class="kw">let</span> <span class="ident">aux_revert</span> <span class="op">=</span> <span class="ident">Box::new</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FullClient</span><span class="op">&gt;</span>, <span class="ident">backend</span>, <span class="ident">blocks</span><span class="op">|</span> {
+					<span class="ident">sc_consensus_babe::revert</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="ident">backend</span>, <span class="ident">blocks</span>)<span class="question-mark">?</span>;
+					<span class="ident">grandpa::revert</span>(<span class="ident">client</span>, <span class="ident">blocks</span>)<span class="question-mark">?</span>;
 					<span class="prelude-val">Ok</span>(())
 				});
-
-				<span class="prelude-val">Ok</span>((<span class="ident">cmd</span>.<span class="ident">run</span>(<span class="ident">client</span>, <span class="ident">backend</span>, <span class="prelude-val">Some</span>(<span class="ident">revert_aux</span>)), <span class="ident">task_manager</span>))
+				<span class="prelude-val">Ok</span>((<span class="ident">cmd</span>.<span class="ident">run</span>(<span class="ident">client</span>, <span class="ident">backend</span>, <span class="prelude-val">Some</span>(<span class="ident">aux_revert</span>)), <span class="ident">task_manager</span>))
 			})
 		},
 		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;try-runtime&quot;</span>)]</span>
