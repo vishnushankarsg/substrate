@@ -210,7 +210,7 @@
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">marker::PhantomData</span>, <span class="ident">sync::Arc</span>, <span class="ident">time::Instant</span>};
 <span class="kw">use</span> <span class="ident">thousands::Separable</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::storage::record</span>::{<span class="ident">StatSelect</span>, <span class="ident">Stats</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::shared</span>::{<span class="ident">StatSelect</span>, <span class="ident">Stats</span>};
 
 <span class="doccomment">/// Log target for printing block weight info.</span>
 <span class="kw">const</span> <span class="ident">LOG_TARGET</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;benchmark::block::weight&quot;</span>;

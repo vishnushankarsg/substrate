@@ -161,10 +161,10 @@
 		<span class="ident">bench</span>::{<span class="ident">Benchmark</span>, <span class="ident">BenchmarkParams</span>, <span class="ident">BenchmarkType</span>},
 		<span class="ident">template::TemplateData</span>,
 	},
-	<span class="ident">post_processing::WeightParams</span>,
+	<span class="ident">shared::WeightParams</span>,
 };
 
-<span class="doccomment">/// Benchmarks the per-block and per-extrinsic execution overhead.</span>
+<span class="doccomment">/// Benchmark the execution overhead per-block and per-extrinsic.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Parser</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OverheadCmd</span> {
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
@@ -202,11 +202,11 @@
 }
 
 <span class="kw">impl</span> <span class="ident">OverheadCmd</span> {
-	<span class="doccomment">/// Measures the per-block and per-extrinsic execution overhead.</span>
+	<span class="doccomment">/// Measure the per-block and per-extrinsic execution overhead.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Writes the results to console and into two instances of the</span>
 	<span class="doccomment">/// `weights.hbs` template, one for each benchmark.</span>
-	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">BA</span>, <span class="ident">C</span><span class="op">&gt;</span>(
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">BA</span>, <span class="ident">C</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">cfg</span>: <span class="ident">Configuration</span>,
 		<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>,

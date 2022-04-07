@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["node_template"] = [{"text":"impl <a class=\"trait\" href=\"frame_benchmarking_cli/overhead/cmd/trait.ExtrinsicBuilder.html\" title=\"trait frame_benchmarking_cli::overhead::cmd::ExtrinsicBuilder\">ExtrinsicBuilder</a> for <a class=\"struct\" href=\"node_template/command_helper/struct.BenchmarkExtrinsicBuilder.html\" title=\"struct node_template::command_helper::BenchmarkExtrinsicBuilder\">BenchmarkExtrinsicBuilder</a>","synthetic":false,"types":["node_template::command_helper::BenchmarkExtrinsicBuilder"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

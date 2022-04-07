@@ -130,7 +130,7 @@
 
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::bench</span>::{<span class="ident">Benchmark</span>, <span class="ident">BenchmarkParams</span>};
 
-<span class="doccomment">/// Benchmark the execution time historic blocks.</span>
+<span class="doccomment">/// Benchmark the execution time of historic blocks.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// This can be used to verify that blocks do not use more weight than they consumed</span>
 <span class="doccomment">/// in their `WeightInfo`. Example:</span>
@@ -174,7 +174,7 @@
 	<span class="doccomment">/// Benchmark the execution time of historic blocks and compare it to their consumed weight.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Output will be printed to console.</span>
-	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">BA</span>, <span class="ident">C</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">BA</span>, <span class="ident">C</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	<span class="kw">where</span>
 		<span class="ident">Block</span>: <span class="ident">BlockT</span><span class="op">&lt;</span><span class="ident">Extrinsic</span> <span class="op">=</span> <span class="ident">OpaqueExtrinsic</span><span class="op">&gt;</span>,
 		<span class="ident">BA</span>: <span class="ident">ClientBackend</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,

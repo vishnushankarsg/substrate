@@ -203,6 +203,7 @@
 <span id="203">203</span>
 <span id="204">204</span>
 <span id="205">205</span>
+<span id="206">206</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2022 Parity Technologies (UK) Ltd.</span>
@@ -239,8 +240,9 @@
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">path::PathBuf</span>, <span class="ident">sync::Arc</span>};
 
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::template::TemplateData</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::post_processing::WeightParams</span>;
-<span class="doccomment">/// Benchmark the storage of a Substrate node with a live chain snapshot.</span>
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::shared::WeightParams</span>;
+
+<span class="doccomment">/// Benchmark the storage speed of a chain snapshot.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Parser</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StorageCmd</span> {
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
@@ -304,7 +306,7 @@
 <span class="kw">impl</span> <span class="ident">StorageCmd</span> {
 	<span class="doccomment">/// Calls into the Read and Write benchmarking functions.</span>
 	<span class="doccomment">/// Processes the output and writes it into files and stdout.</span>
-	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">BA</span>, <span class="ident">C</span><span class="op">&gt;</span>(
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">BA</span>, <span class="ident">C</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">cfg</span>: <span class="ident">Configuration</span>,
 		<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>,
