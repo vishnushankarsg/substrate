@@ -146,7 +146,6 @@
 <span id="146">146</span>
 <span id="147">147</span>
 <span id="148">148</span>
-<span id="149">149</span>
 </pre><pre class="rust"><code><span class="doccomment">/// ! Traits and default implementation for paying transaction fees.</span>
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::Config</span>;
 
@@ -161,7 +160,7 @@
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">marker::PhantomData</span>};
 
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
-	<span class="ident">traits</span>::{<span class="ident">Currency</span>, <span class="ident">ExistenceRequirement</span>, <span class="ident">Get</span>, <span class="ident">Imbalance</span>, <span class="ident">OnUnbalanced</span>, <span class="ident">WithdrawReasons</span>},
+	<span class="ident">traits</span>::{<span class="ident">Currency</span>, <span class="ident">ExistenceRequirement</span>, <span class="ident">Imbalance</span>, <span class="ident">OnUnbalanced</span>, <span class="ident">WithdrawReasons</span>},
 	<span class="ident">unsigned::TransactionValidityError</span>,
 };
 
@@ -222,7 +221,6 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">C</span>, <span class="ident">OU</span><span class="op">&gt;</span> <span class="ident">OnChargeTransaction</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">CurrencyAdapter</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">OU</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">T</span>: <span class="ident">Config</span>,
-	<span class="ident">T::TransactionByteFee</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">C</span> <span class="kw">as</span> <span class="ident">Currency</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Balance</span><span class="op">&gt;</span>,
 	<span class="ident">C</span>: <span class="ident">Currency</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span><span class="op">&gt;</span>,
 	<span class="ident">C::PositiveImbalance</span>: <span class="ident">Imbalance</span><span class="op">&lt;</span>
 		<span class="op">&lt;</span><span class="ident">C</span> <span class="kw">as</span> <span class="ident">Currency</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Balance</span>,
