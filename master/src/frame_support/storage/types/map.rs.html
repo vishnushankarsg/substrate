@@ -619,6 +619,12 @@
 <span id="619">619</span>
 <span id="620">620</span>
 <span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -862,6 +868,12 @@
 	<span class="doccomment">/// All values in the client overlay will be deleted, if there is some `limit` then up to</span>
 	<span class="doccomment">/// `limit` values are deleted from the client backend, if `limit` is none then all values in</span>
 	<span class="doccomment">/// the client backend are deleted.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Note</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Calling this multiple times per block with a `limit` set leads always to the same keys being</span>
+	<span class="doccomment">/// removed and the same result being returned. This happens because the keys to delete in the</span>
+	<span class="doccomment">/// overlay are not taken into account when deleting keys in the backend.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remove_all</span>(<span class="ident">limit</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>) -&gt; <span class="ident">sp_io::KillStorageResult</span> {
 		<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident"><span class="kw">crate</span>::storage::StoragePrefixedMap</span><span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::remove_all</span>(<span class="ident">limit</span>)
 	}

@@ -2069,9 +2069,7 @@
 	<span class="doccomment">/// The limit can be used to partially delete a prefix storage in case it is too large</span>
 	<span class="doccomment">/// to delete in one go (block).</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// It returns a boolean false iff some keys are remaining in</span>
-	<span class="doccomment">/// the prefix after the functions returns. Also returns a `u32` with</span>
-	<span class="doccomment">/// the number of keys removed from the process.</span>
+	<span class="doccomment">/// Returns [`KillStorageResult`] to inform about the result.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Note</span>
 	<span class="doccomment">///</span>
@@ -2082,8 +2080,10 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Calling this function multiple times per block for the same `prefix` does</span>
 	<span class="doccomment">/// not make much sense because it is not cumulative when called inside the same block.</span>
-	<span class="doccomment">/// Use this function to distribute the deletion of a single child trie across multiple</span>
-	<span class="doccomment">/// blocks.</span>
+	<span class="doccomment">/// The deletion would always start from `prefix` resulting in the same keys being deleted</span>
+	<span class="doccomment">/// every time this function is called with the exact same arguments per block. This happens</span>
+	<span class="doccomment">/// because the keys in the overlay are not taken into account when deleting keys in the</span>
+	<span class="doccomment">/// backend.</span>
 	<span class="attribute">#[<span class="ident">version</span>(<span class="number">2</span>)]</span>
 	<span class="kw">fn</span> <span class="ident">clear_prefix</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">prefix</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">limit</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>) -&gt; <span class="ident">KillStorageResult</span> {
 		<span class="kw">let</span> (<span class="ident">all_removed</span>, <span class="ident">num_removed</span>) <span class="op">=</span> <span class="ident">Externalities::clear_prefix</span>(<span class="kw-2">*</span><span class="self">self</span>, <span class="ident">prefix</span>, <span class="ident">limit</span>);
