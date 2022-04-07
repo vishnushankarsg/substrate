@@ -1131,7 +1131,7 @@
 	<span class="doccomment">/// Has no effect if the node was already a reserved peer.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// &gt; **Note**: Keep in mind that the networking has to know an address for this node,</span>
-	<span class="doccomment">/// &gt;           otherwise it will not be able to connect to it.</span>
+	<span class="doccomment">/// &gt; otherwise it will not be able to connect to it.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_reserved_peer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">set_id</span>: <span class="ident">SetId</span>, <span class="ident">peer_id</span>: <span class="ident">PeerId</span>) {
 		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">tx</span>.<span class="ident">unbounded_send</span>(<span class="ident">Action::AddReservedPeer</span>(<span class="ident">set_id</span>, <span class="ident">peer_id</span>));
 	}
@@ -1234,7 +1234,7 @@
 	<span class="doccomment">/// List of bootstrap nodes to initialize the set with.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// &gt; **Note**: Keep in mind that the networking has to know an address for these nodes,</span>
-	<span class="doccomment">/// &gt;           otherwise it will not be able to connect to them.</span>
+	<span class="doccomment">/// &gt; otherwise it will not be able to connect to them.</span>
 	<span class="kw">pub</span> <span class="ident">bootnodes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Lists of nodes we should always be connected to.</span>

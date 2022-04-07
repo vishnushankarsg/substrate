@@ -779,8 +779,8 @@
 <span class="doccomment">//! slots.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! &gt; Note: This module is purely dedicated to managing slots and reputations. Features such as</span>
-<span class="doccomment">//! &gt;       for example connecting to some nodes in priority should be added outside of this</span>
-<span class="doccomment">//! &gt;       module, rather than inside.</span>
+<span class="doccomment">//! &gt; for example connecting to some nodes in priority should be added outside of this</span>
+<span class="doccomment">//! &gt; module, rather than inside.</span>
 
 <span class="kw">use</span> <span class="ident">libp2p::PeerId</span>;
 <span class="kw">use</span> <span class="ident">log::error</span>;
@@ -804,8 +804,8 @@
 	<span class="doccomment">/// List of nodes that we know about.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// &gt; **Note**: This list should really be ordered by decreasing reputation, so that we can</span>
-	<span class="doccomment">///           easily select the best node to connect to. As a first draft, however, we don&#39;t</span>
-	<span class="doccomment">///           sort, to make the logic easier.</span>
+	<span class="doccomment">/// &gt; easily select the best node to connect to. As a first draft, however, we don&#39;t sort, to</span>
+	<span class="doccomment">/// &gt; make the logic easier.</span>
 	<span class="ident">nodes</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">PeerId</span>, <span class="ident">Node</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Configuration of each set. The size of this `Vec` is never modified.</span>
