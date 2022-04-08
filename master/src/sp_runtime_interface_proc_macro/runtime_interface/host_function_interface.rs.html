@@ -423,6 +423,22 @@
 <span id="423">423</span>
 <span id="424">424</span>
 <span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -799,11 +815,27 @@
 				-&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>#<span class="ident">ffi_return_ty</span>, #<span class="ident">crate_::sp_wasm_interface::wasmtime::Trap</span><span class="op">&gt;</span>
 			{
 				<span class="ident">T::with_function_context</span>(<span class="ident">caller</span>, <span class="kw">move</span> <span class="op">|</span><span class="ident">__function_context__</span><span class="op">|</span> {
-					#<span class="ident">struct_name::call</span>(
-						<span class="ident">__function_context__</span>,
-						#(#<span class="ident">ffi_names</span>,)<span class="op">*</span>
-					)
-				}).<span class="ident">map_err</span>(#<span class="ident">crate_::sp_wasm_interface::wasmtime::Trap::new</span>)
+					<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">std::panic::catch_unwind</span>(<span class="ident">std::panic::AssertUnwindSafe</span>(<span class="op">|</span><span class="op">|</span> {
+						#<span class="ident">struct_name::call</span>(
+							<span class="ident">__function_context__</span>,
+							#(#<span class="ident">ffi_names</span>,)<span class="op">*</span>
+						).<span class="ident">map_err</span>(#<span class="ident">crate_::sp_wasm_interface::wasmtime::Trap::new</span>)
+					}));
+					<span class="kw">match</span> <span class="ident">result</span> {
+						<span class="prelude-val">Ok</span>(<span class="ident">result</span>) =&gt; <span class="ident">result</span>,
+						<span class="prelude-val">Err</span>(<span class="ident">panic</span>) =&gt; {
+							<span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span>
+								<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">message</span>) <span class="op">=</span> <span class="ident">panic</span>.<span class="ident">downcast_ref</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>() {
+									<span class="macro">format!</span>(<span class="string">&quot;host code panicked while being called by the runtime: {}&quot;</span>, <span class="ident">message</span>)
+								} <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">message</span>) <span class="op">=</span> <span class="ident">panic</span>.<span class="ident">downcast_ref</span>::<span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span>() {
+									<span class="macro">format!</span>(<span class="string">&quot;host code panicked while being called by the runtime: {}&quot;</span>, <span class="ident">message</span>)
+								} <span class="kw">else</span> {
+									<span class="string">&quot;host code panicked while being called by the runtime&quot;</span>.<span class="ident">to_owned</span>()
+								};
+							<span class="kw">return</span> <span class="prelude-val">Err</span>(#<span class="ident">crate_::sp_wasm_interface::wasmtime::Trap::new</span>(<span class="ident">message</span>));
+						}
+					}
+				})
 			}
 		)<span class="question-mark">?</span>;
 	};

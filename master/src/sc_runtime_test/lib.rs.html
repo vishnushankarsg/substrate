@@ -526,6 +526,8 @@
 <span id="526">526</span>
 <span id="527">527</span>
 <span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>), <span class="ident">no_std</span>)]</span>
 
 <span class="comment">// Make the WASM binary available.</span>
@@ -641,7 +643,9 @@
 	   }
    }
 
-   <span class="kw">fn</span> <span class="ident">test_exhaust_heap</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> { <span class="ident">Vec::with_capacity</span>(<span class="number">16777216</span>) }
+	<span class="kw">fn</span> <span class="ident">test_allocate_vec</span>(<span class="ident">size</span>: <span class="ident">u32</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {
+		<span class="ident">Vec::with_capacity</span>(<span class="ident">size</span> <span class="kw">as</span> <span class="ident">usize</span>)
+	}
 
    <span class="kw">fn</span> <span class="ident">test_fp_f32add</span>(<span class="ident">a</span>: [<span class="ident">u8</span>; <span class="number">4</span>], <span class="ident">b</span>: [<span class="ident">u8</span>; <span class="number">4</span>]) -&gt; [<span class="ident">u8</span>; <span class="number">4</span>] {
 	   <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">f32::from_le_bytes</span>(<span class="ident">a</span>);
