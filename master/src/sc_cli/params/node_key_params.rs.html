@@ -279,7 +279,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// The node&#39;s secret key determines the corresponding public key and hence the</span>
 	<span class="doccomment">/// node&#39;s peer ID in the context of libp2p.</span>
-	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;TYPE&quot;</span>, <span class="ident">arg_enum</span>, <span class="ident">ignore_case</span> <span class="op">=</span> <span class="bool-val">true</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;Ed25519&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;TYPE&quot;</span>, <span class="ident">arg_enum</span>, <span class="ident">ignore_case</span> <span class="op">=</span> <span class="bool-val">true</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;ed25519&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">node_key_type</span>: <span class="ident">NodeKeyType</span>,
 
 	<span class="doccomment">/// The file from which to read the node&#39;s secret key to use for libp2p networking.</span>

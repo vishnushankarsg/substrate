@@ -289,6 +289,12 @@
 <span id="289">289</span>
 <span id="290">290</span>
 <span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -423,12 +429,18 @@
 
 	<span class="doccomment">/// Blockchain syncing mode.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// - `Full`: Download and validate full blockchain history.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// - `Fast`: Download blocks and the latest state only.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// - `FastUnsafe`: Same as `Fast`, but skip downloading state proofs.</span>
-	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">arg_enum</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;SYNC_MODE&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;Full&quot;</span>, <span class="ident">ignore_case</span>(<span class="bool-val">true</span>))]</span>
+	<span class="doccomment">/// - `full`: Download and validate full blockchain history.</span>
+	<span class="doccomment">/// - `fast`: Download blocks and the latest state only.</span>
+	<span class="doccomment">/// - `fast-unsafe`: Same as `fast`, but skip downloading state proofs.</span>
+	<span class="doccomment">/// - `warp`: Download the latest state and proof.</span>
+	<span class="attribute">#[<span class="ident">clap</span>(
+		<span class="ident">long</span>,
+		<span class="ident">arg_enum</span>,
+		<span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;SYNC_MODE&quot;</span>,
+		<span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;full&quot;</span>,
+		<span class="ident">ignore_case</span> <span class="op">=</span> <span class="bool-val">true</span>,
+		<span class="ident">verbatim_doc_comment</span>
+	)]</span>
 	<span class="kw">pub</span> <span class="ident">sync</span>: <span class="ident">SyncMode</span>,
 }
 

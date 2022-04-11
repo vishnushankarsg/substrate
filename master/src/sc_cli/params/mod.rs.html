@@ -304,7 +304,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Args</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CryptoSchemeFlag</span> {
 	<span class="doccomment">/// cryptography scheme</span>
-	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;SCHEME&quot;</span>, <span class="ident">arg_enum</span>, <span class="ident">ignore_case</span> <span class="op">=</span> <span class="bool-val">true</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;Sr25519&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;SCHEME&quot;</span>, <span class="ident">arg_enum</span>, <span class="ident">ignore_case</span> <span class="op">=</span> <span class="bool-val">true</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;sr25519&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">scheme</span>: <span class="ident">CryptoScheme</span>,
 }
 
@@ -312,7 +312,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Args</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OutputTypeFlag</span> {
 	<span class="doccomment">/// output format</span>
-	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;FORMAT&quot;</span>, <span class="ident">arg_enum</span>, <span class="ident">ignore_case</span> <span class="op">=</span> <span class="bool-val">true</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;Text&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;FORMAT&quot;</span>, <span class="ident">arg_enum</span>, <span class="ident">ignore_case</span> <span class="op">=</span> <span class="bool-val">true</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;text&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">output_type</span>: <span class="ident">OutputType</span>,
 }
 

@@ -696,16 +696,16 @@
 
 	<span class="doccomment">/// RPC methods to expose.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// - `Unsafe`: Exposes every RPC method.</span>
-	<span class="doccomment">/// - `Safe`: Exposes only a safe subset of RPC methods, denying unsafe RPC methods.</span>
-	<span class="doccomment">/// - `Auto`: Acts as `Safe` if RPC is served externally, e.g. when `--{rpc,ws}-external` is</span>
-	<span class="doccomment">///   passed, otherwise acts as `Unsafe`.</span>
+	<span class="doccomment">/// - `unsafe`: Exposes every RPC method.</span>
+	<span class="doccomment">/// - `safe`: Exposes only a safe subset of RPC methods, denying unsafe RPC methods.</span>
+	<span class="doccomment">/// - `auto`: Acts as `safe` if RPC is served externally, e.g. when `--{rpc,ws}-external` is</span>
+	<span class="doccomment">///   passed, otherwise acts as `unsafe`.</span>
 	<span class="attribute">#[<span class="ident">clap</span>(
 		<span class="ident">long</span>,
 		<span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;METHOD SET&quot;</span>,
 		<span class="ident">arg_enum</span>,
 		<span class="ident">ignore_case</span> <span class="op">=</span> <span class="bool-val">true</span>,
-		<span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;Auto&quot;</span>,
+		<span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;auto&quot;</span>,
 		<span class="ident">verbatim_doc_comment</span>
 	)]</span>
 	<span class="kw">pub</span> <span class="ident">rpc_methods</span>: <span class="ident">RpcMethods</span>,

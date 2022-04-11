@@ -55,10 +55,10 @@ Use <code>--unsafe-rpc-external</code> to suppress the warning if you understand
 <p>Same as <code>--rpc-external</code>.</p>
 </div><span id="structfield.rpc_methods" class="structfield small-section-header"><a href="#structfield.rpc_methods" class="anchor field"></a><code>rpc_methods: <a class="enum" href="arg_enums/enum.RpcMethods.html" title="enum sc_cli::arg_enums::RpcMethods">RpcMethods</a></code></span><div class="docblock"><p>RPC methods to expose.</p>
 <ul>
-<li><code>Unsafe</code>: Exposes every RPC method.</li>
-<li><code>Safe</code>: Exposes only a safe subset of RPC methods, denying unsafe RPC methods.</li>
-<li><code>Auto</code>: Acts as <code>Safe</code> if RPC is served externally, e.g. when <code>--{rpc,ws}-external</code> is
-passed, otherwise acts as <code>Unsafe</code>.</li>
+<li><code>unsafe</code>: Exposes every RPC method.</li>
+<li><code>safe</code>: Exposes only a safe subset of RPC methods, denying unsafe RPC methods.</li>
+<li><code>auto</code>: Acts as <code>safe</code> if RPC is served externally, e.g. when <code>--{rpc,ws}-external</code> is
+passed, otherwise acts as <code>unsafe</code>.</li>
 </ul>
 </div><span id="structfield.ws_external" class="structfield small-section-header"><a href="#structfield.ws_external" class="anchor field"></a><code>ws_external: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><div class="docblock"><p>Listen to all Websocket interfaces.</p>
 <p>Default is local. Note: not all RPC methods are safe to be exposed publicly. Use an RPC
