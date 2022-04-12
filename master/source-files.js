@@ -552,6 +552,7 @@ sourcesIndex["sc_service"] = {"name":"","dirs":[{"name":"chain_ops","files":["ch
 sourcesIndex["sc_service_test"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["sc_state_db"] = {"name":"","files":["lib.rs","noncanonical.rs","pruning.rs"]};
 sourcesIndex["sc_sync_state_rpc"] = {"name":"","files":["lib.rs"]};
+sourcesIndex["sc_sysinfo"] = {"name":"","files":["lib.rs","sysinfo.rs","sysinfo_linux.rs"]};
 sourcesIndex["sc_telemetry"] = {"name":"","files":["endpoints.rs","error.rs","lib.rs","node.rs","transport.rs"]};
 sourcesIndex["sc_tracing"] = {"name":"","dirs":[{"name":"block","files":["mod.rs"]},{"name":"logging","dirs":[{"name":"layers","files":["mod.rs","prefix_layer.rs"]}],"files":["directives.rs","event_format.rs","fast_local_time.rs","mod.rs","stderr_writer.rs"]}],"files":["lib.rs"]};
 sourcesIndex["sc_tracing_proc_macro"] = {"name":"","files":["lib.rs"]};
