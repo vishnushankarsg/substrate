@@ -2097,17 +2097,6 @@
 <span id="2092">2092</span>
 <span id="2093">2093</span>
 <span id="2094">2094</span>
-<span id="2095">2095</span>
-<span id="2096">2096</span>
-<span id="2097">2097</span>
-<span id="2098">2098</span>
-<span id="2099">2099</span>
-<span id="2100">2100</span>
-<span id="2101">2101</span>
-<span id="2102">2102</span>
-<span id="2103">2103</span>
-<span id="2104">2104</span>
-<span id="2105">2105</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -3009,36 +2998,25 @@
 			<span class="kw">let</span> <span class="ident">finalized</span> <span class="op">=</span>
 				<span class="ident">route_from_finalized</span>.<span class="ident">enacted</span>().<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">elem</span><span class="op">|</span> <span class="ident">elem</span>.<span class="ident">hash</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 
-			<span class="kw">let</span> <span class="ident">last_finalized_number</span> <span class="op">=</span> <span class="self">self</span>
-				.<span class="ident">backend</span>
-				.<span class="ident">blockchain</span>()
-				.<span class="ident">number</span>(<span class="ident">last_finalized</span>)<span class="question-mark">?</span>
-				.<span class="ident">expect</span>(<span class="string">&quot;Previous finalized block expected to be onchain; qed&quot;</span>);
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stale_heads</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
-			<span class="kw">for</span> <span class="ident">head</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">leaves</span>()<span class="question-mark">?</span> {
-				<span class="kw">let</span> <span class="ident">route_from_finalized</span> <span class="op">=</span>
-					<span class="ident">sp_blockchain::tree_route</span>(<span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">blockchain</span>(), <span class="ident">block</span>, <span class="ident">head</span>)<span class="question-mark">?</span>;
-				<span class="kw">let</span> <span class="ident">retracted</span> <span class="op">=</span> <span class="ident">route_from_finalized</span>.<span class="ident">retracted</span>();
-				<span class="kw">let</span> <span class="ident">pivot</span> <span class="op">=</span> <span class="ident">route_from_finalized</span>.<span class="ident">common_block</span>();
-				<span class="comment">// It is not guaranteed that `backend.blockchain().leaves()` doesn&#39;t return</span>
-				<span class="comment">// heads that were in a stale state before this finalization and thus already</span>
-				<span class="comment">// included in previous notifications. We want to skip such heads.</span>
-				<span class="comment">// Given the &quot;route&quot; from the currently finalized block to the head under</span>
-				<span class="comment">// analysis, the condition for it to be added to the new stale heads list is:</span>
-				<span class="comment">// `!retracted.is_empty() &amp;&amp; last_finalized_number &lt;= pivot.number`</span>
-				<span class="comment">// 1. &quot;route&quot; has some &quot;retractions&quot;.</span>
-				<span class="comment">// 2. previously finalized block number is not greater than the &quot;route&quot; pivot:</span>
-				<span class="comment">//    - if `last_finalized_number &lt;= pivot.number` then this is a new stale head;</span>
-				<span class="comment">//    - else the stale head was already included by some previous finalization.</span>
-				<span class="kw">if</span> <span class="op">!</span><span class="ident">retracted</span>.<span class="ident">is_empty</span>() <span class="op">&amp;&amp;</span> <span class="ident">last_finalized_number</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">pivot</span>.<span class="ident">number</span> {
-					<span class="ident">stale_heads</span>.<span class="ident">push</span>(<span class="ident">head</span>);
-				}
-			}
+			<span class="kw">let</span> <span class="ident">block_number</span> <span class="op">=</span> <span class="ident">route_from_finalized</span>
+				.<span class="ident">last</span>()
+				.<span class="ident">expect</span>(
+					<span class="string">&quot;The block to finalize is always the latest \
+						block in the route to the finalized block; qed&quot;</span>,
+				)
+				.<span class="ident">number</span>;
+
+			<span class="comment">// The stale heads are the leaves that will be displaced after the</span>
+			<span class="comment">// block is finalized.</span>
+			<span class="kw">let</span> <span class="ident">stale_heads</span> <span class="op">=</span>
+				<span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">displaced_leaves_after_finalizing</span>(<span class="ident">block_number</span>)<span class="question-mark">?</span>;
+
 			<span class="kw">let</span> <span class="ident">header</span> <span class="op">=</span> <span class="self">self</span>
 				.<span class="ident">backend</span>
 				.<span class="ident">blockchain</span>()
 				.<span class="ident">header</span>(<span class="ident">BlockId::Hash</span>(<span class="ident">block</span>))<span class="question-mark">?</span>
-				.<span class="ident">expect</span>(<span class="string">&quot;Finalized block expected to be onchain; qed&quot;</span>);
+				.<span class="ident">expect</span>(<span class="string">&quot;Block to finalize expected to be onchain; qed&quot;</span>);
+
 			<span class="ident">operation</span>.<span class="ident">notify_finalized</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">FinalizeSummary</span> { <span class="ident">header</span>, <span class="ident">finalized</span>, <span class="ident">stale_heads</span> });
 		}
 

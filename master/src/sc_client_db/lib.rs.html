@@ -3413,6 +3413,19 @@
 <span id="3408">3408</span>
 <span id="3409">3409</span>
 <span id="3410">3410</span>
+<span id="3411">3411</span>
+<span id="3412">3412</span>
+<span id="3413">3413</span>
+<span id="3414">3414</span>
+<span id="3415">3415</span>
+<span id="3416">3416</span>
+<span id="3417">3417</span>
+<span id="3418">3418</span>
+<span id="3419">3419</span>
+<span id="3420">3420</span>
+<span id="3421">3421</span>
+<span id="3422">3422</span>
+<span id="3423">3423</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -4040,6 +4053,19 @@
 
 	<span class="kw">fn</span> <span class="ident">leaves</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">ClientResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="ident">leaves</span>.<span class="ident">read</span>().<span class="ident">hashes</span>())
+	}
+
+	<span class="kw">fn</span> <span class="ident">displaced_leaves_after_finalizing</span>(
+		<span class="kw-2">&amp;</span><span class="self">self</span>,
+		<span class="ident">block_number</span>: <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
+	) -&gt; <span class="ident">ClientResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="prelude-val">Ok</span>(<span class="self">self</span>
+			.<span class="ident">leaves</span>
+			.<span class="ident">read</span>()
+			.<span class="ident">displaced_by_finalize_height</span>(<span class="ident">block_number</span>)
+			.<span class="ident">leaves</span>()
+			.<span class="ident">cloned</span>()
+			.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>())
 	}
 
 	<span class="kw">fn</span> <span class="ident">children</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">parent_hash</span>: <span class="ident">Block::Hash</span>) -&gt; <span class="ident">ClientResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span> {

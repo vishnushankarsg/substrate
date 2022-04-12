@@ -282,6 +282,14 @@
 <span id="277">277</span>
 <span id="278">278</span>
 <span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -383,6 +391,14 @@
 	<span class="doccomment">/// in other words, that have no children, are chain heads.</span>
 	<span class="doccomment">/// Results must be ordered best (longest, highest) chain first.</span>
 	<span class="kw">fn</span> <span class="ident">leaves</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+
+	<span class="doccomment">/// Returns displaced leaves after the given block would be finalized.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// The returned leaves do not contain the leaves from the same height as `block_number`.</span>
+	<span class="kw">fn</span> <span class="ident">displaced_leaves_after_finalizing</span>(
+		<span class="kw-2">&amp;</span><span class="self">self</span>,
+		<span class="ident">block_number</span>: <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Return hashes of all blocks that are children of the block with `parent_hash`.</span>
 	<span class="kw">fn</span> <span class="ident">children</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">parent_hash</span>: <span class="ident">Block::Hash</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>;

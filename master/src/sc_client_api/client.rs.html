@@ -358,6 +358,8 @@
 <span id="353">353</span>
 <span id="354">354</span>
 <span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -667,6 +669,8 @@
 	<span class="doccomment">/// Finalized block header.</span>
 	<span class="kw">pub</span> <span class="ident">header</span>: <span class="ident">Block::Header</span>,
 	<span class="doccomment">/// Path from the old finalized to new finalized parent (implicitly finalized blocks).</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// This maps to the range `(old_finalized, new_finalized]`.</span>
 	<span class="kw">pub</span> <span class="ident">tree_route</span>: <span class="ident">Arc</span><span class="op">&lt;</span>[<span class="ident">Block::Hash</span>]<span class="op">&gt;</span>,
 	<span class="doccomment">/// Stale branches heads.</span>
 	<span class="kw">pub</span> <span class="ident">stale_heads</span>: <span class="ident">Arc</span><span class="op">&lt;</span>[<span class="ident">Block::Hash</span>]<span class="op">&gt;</span>,
