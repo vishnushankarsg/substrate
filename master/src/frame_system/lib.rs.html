@@ -1667,6 +1667,11 @@
 <span id="1662">1662</span>
 <span id="1663">1663</span>
 <span id="1664">1664</span>
+<span id="1665">1665</span>
+<span id="1666">1666</span>
+<span id="1667">1667</span>
+<span id="1668">1668</span>
+<span id="1669">1669</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -2260,11 +2265,14 @@
 
 	<span class="doccomment">/// Events deposited for the current block.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// NOTE: This storage item is explicitly unbounded since it is never intended to be read</span>
-	<span class="doccomment">/// from within the runtime.</span>
+	<span class="doccomment">/// NOTE: The item is unbound and should therefore never be read on chain.</span>
+	<span class="doccomment">/// It could otherwise inflate the PoV size of a block.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Events have a large in-memory size. Box the events to not go out-of-memory</span>
+	<span class="doccomment">/// just in case someone still reads them from within the runtime.</span>
 	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
 	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">type</span> <span class="ident">Events</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span>
-		<span class="ident">StorageValue</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">EventRecord</span><span class="op">&lt;</span><span class="ident">T::Event</span>, <span class="ident">T::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">ValueQuery</span><span class="op">&gt;</span>;
+		<span class="ident">StorageValue</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">EventRecord</span><span class="op">&lt;</span><span class="ident">T::Event</span>, <span class="ident">T::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">ValueQuery</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// The number of events in the `Events&lt;T&gt;` list.</span>
 	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
@@ -2882,7 +2890,7 @@
 			<span class="ident">old_event_count</span>
 		};
 
-		<span class="ident">Events</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::append</span>(<span class="kw-2">&amp;</span><span class="ident">event</span>);
+		<span class="ident">Events</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::append</span>(<span class="ident">event</span>);
 
 		<span class="kw">for</span> <span class="ident">topic</span> <span class="kw">in</span> <span class="ident">topics</span> {
 			<span class="op">&lt;</span><span class="ident">EventTopics</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::append</span>(<span class="ident">topic</span>, <span class="kw-2">&amp;</span>(<span class="ident">block_number</span>, <span class="ident">event_idx</span>));
@@ -3049,14 +3057,16 @@
 	<span class="doccomment">/// items for any behavior like this.</span>
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>, <span class="ident">test</span>))]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">events</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">EventRecord</span><span class="op">&lt;</span><span class="ident">T::Event</span>, <span class="ident">T::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-		<span class="ident"><span class="self">Self</span>::read_events_no_consensus</span>()
+		<span class="comment">// Dereferencing the events here is fine since we are not in the</span>
+		<span class="comment">// memory-restricted runtime.</span>
+		<span class="ident"><span class="self">Self</span>::read_events_no_consensus</span>().<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">e</span>).<span class="ident">collect</span>()
 	}
 
 	<span class="doccomment">/// Get the current events deposited by the runtime.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Should only be called if you know what you are doing and outside of the runtime block</span>
 	<span class="doccomment">/// execution else it can have a large impact on the PoV size of a block.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_events_no_consensus</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">EventRecord</span><span class="op">&lt;</span><span class="ident">T::Event</span>, <span class="ident">T::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_events_no_consensus</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">EventRecord</span><span class="op">&lt;</span><span class="ident">T::Event</span>, <span class="ident">T::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="ident">Events</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>()
 	}
 
