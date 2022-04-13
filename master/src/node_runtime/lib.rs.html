@@ -1948,6 +1948,10 @@
 <span id="1943">1943</span>
 <span id="1944">1944</span>
 <span id="1945">1945</span>
+<span id="1946">1946</span>
+<span id="1947">1947</span>
+<span id="1948">1948</span>
+<span id="1949">1949</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -3211,7 +3215,7 @@
 	<span class="kw">const</span> <span class="ident">INDEXING_PREFIX</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">u8</span>] <span class="op">=</span> <span class="string">b&quot;mmr&quot;</span>;
 	<span class="kw">type</span> <span class="ident">Hashing</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Runtime</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::Hashing</span>;
 	<span class="kw">type</span> <span class="ident">Hash</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Runtime</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::Hash</span>;
-	<span class="kw">type</span> <span class="ident">LeafData</span> <span class="op">=</span> <span class="ident">frame_system::Pallet</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">LeafData</span> <span class="op">=</span> <span class="ident">pallet_mmr::ParentNumberAndHash</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">OnNewRoot</span> <span class="op">=</span> ();
 	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> ();
 }
@@ -3753,6 +3757,10 @@
 		) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">mmr::Error</span><span class="op">&gt;</span> {
 			<span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">mmr::DataOrHash::Data</span>(<span class="ident">leaf</span>.<span class="ident">into_opaque_leaf</span>());
 			<span class="ident">pallet_mmr::verify_leaf_proof</span>::<span class="op">&lt;</span><span class="ident">mmr::Hashing</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">root</span>, <span class="ident">node</span>, <span class="ident">proof</span>)
+		}
+
+		<span class="kw">fn</span> <span class="ident">mmr_root</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">mmr::Hash</span>, <span class="ident">mmr::Error</span><span class="op">&gt;</span> {
+			<span class="prelude-val">Ok</span>(<span class="ident">Mmr::mmr_root</span>())
 		}
 	}
 

@@ -239,13 +239,13 @@
 <span class="kw">use</span> <span class="ident">jsonrpc_derive::rpc</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
 
-<span class="kw">use</span> <span class="ident">pallet_mmr_primitives</span>::{<span class="ident">Error</span> <span class="kw">as</span> <span class="ident">MmrError</span>, <span class="ident">Proof</span>};
 <span class="kw">use</span> <span class="ident">sp_api::ProvideRuntimeApi</span>;
 <span class="kw">use</span> <span class="ident">sp_blockchain::HeaderBackend</span>;
 <span class="kw">use</span> <span class="ident">sp_core::Bytes</span>;
+<span class="kw">use</span> <span class="ident">sp_mmr_primitives</span>::{<span class="ident">Error</span> <span class="kw">as</span> <span class="ident">MmrError</span>, <span class="ident">LeafIndex</span>, <span class="ident">Proof</span>};
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{<span class="ident">generic::BlockId</span>, <span class="ident">traits::Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>};
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">pallet_mmr_primitives</span>::{<span class="ident">LeafIndex</span>, <span class="ident">MmrApi</span> <span class="kw">as</span> <span class="ident">MmrRuntimeApi</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_mmr_primitives::MmrApi</span> <span class="kw">as</span> <span class="ident">MmrRuntimeApi</span>;
 
 <span class="doccomment">/// Retrieved MMR leaf and its proof.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
@@ -255,7 +255,7 @@
 	<span class="kw">pub</span> <span class="ident">block_hash</span>: <span class="ident">BlockHash</span>,
 	<span class="doccomment">/// SCALE-encoded leaf data.</span>
 	<span class="kw">pub</span> <span class="ident">leaf</span>: <span class="ident">Bytes</span>,
-	<span class="doccomment">/// SCALE-encoded proof data. See [pallet_mmr_primitives::Proof].</span>
+	<span class="doccomment">/// SCALE-encoded proof data. See [sp_mmr_primitives::Proof].</span>
 	<span class="kw">pub</span> <span class="ident">proof</span>: <span class="ident">Bytes</span>,
 }
 

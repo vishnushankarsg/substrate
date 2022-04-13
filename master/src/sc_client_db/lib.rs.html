@@ -3426,6 +3426,7 @@
 <span id="3421">3421</span>
 <span id="3422">3422</span>
 <span id="3423">3423</span>
+<span id="3424">3424</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -3534,6 +3535,7 @@
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">DbState</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">=</span>
 	<span class="ident">sp_state_machine::TrieBackend</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">sp_state_machine::Storage</span><span class="op">&lt;</span><span class="ident">HashFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">HashFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;with-parity-db&quot;</span>)]</span>
 <span class="doccomment">/// Length of a [`DbHash`].</span>
 <span class="kw">const</span> <span class="ident">DB_HASH_LEN</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">32</span>;
 

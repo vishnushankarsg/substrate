@@ -242,7 +242,7 @@
 <span class="kw">use</span> <span class="ident">sp_std::prelude</span>::<span class="kw-2">*</span>;
 
 <span class="kw">use</span> <span class="ident">beefy_primitives::mmr</span>::{<span class="ident">BeefyDataProvider</span>, <span class="ident">BeefyNextAuthoritySet</span>, <span class="ident">MmrLeaf</span>, <span class="ident">MmrLeafVersion</span>};
-<span class="kw">use</span> <span class="ident">pallet_mmr::primitives::LeafDataProvider</span>;
+<span class="kw">use</span> <span class="ident">pallet_mmr</span>::{<span class="ident">LeafDataProvider</span>, <span class="ident">ParentNumberAndHash</span>};
 
 <span class="kw">use</span> <span class="ident">frame_support::traits::Get</span>;
 
@@ -355,7 +355,7 @@
 	<span class="kw">fn</span> <span class="ident">leaf_data</span>() -&gt; <span class="ident"><span class="self">Self</span>::LeafData</span> {
 		<span class="ident">MmrLeaf</span> {
 			<span class="ident">version</span>: <span class="ident">T::LeafVersion::get</span>(),
-			<span class="ident">parent_number_and_hash</span>: <span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::leaf_data</span>(),
+			<span class="ident">parent_number_and_hash</span>: <span class="ident">ParentNumberAndHash</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::leaf_data</span>(),
 			<span class="ident">leaf_extra</span>: <span class="ident">T::BeefyDataProvider::extra_data</span>(),
 			<span class="ident">beefy_next_authority_set</span>: <span class="ident">Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::update_beefy_next_authority_set</span>(),
 		}

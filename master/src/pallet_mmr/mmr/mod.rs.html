@@ -69,7 +69,7 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">storage</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">utils</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::primitives::FullLeaf</span>;
+<span class="kw">use</span> <span class="ident">sp_mmr_primitives</span>::{<span class="ident">DataOrHash</span>, <span class="ident">FullLeaf</span>};
 <span class="kw">use</span> <span class="ident">sp_runtime::traits</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::mmr</span>::{<span class="ident">verify_leaf_proof</span>, <span class="ident">Mmr</span>};
@@ -78,7 +78,7 @@
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">NodeOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span>, <span class="ident">L</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Node</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident"><span class="kw">crate</span>::Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Hashing</span>, <span class="ident">L</span><span class="op">&gt;</span>;
 
 <span class="doccomment">/// A node stored in the MMR.</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Node</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">L</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::primitives::DataOrHash</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">L</span><span class="op">&gt;</span>;
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Node</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">L</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">DataOrHash</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">L</span><span class="op">&gt;</span>;
 
 <span class="doccomment">/// Default Merging &amp; Hashing behavior for MMR.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Hasher</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">L</span><span class="op">&gt;</span>(<span class="ident">sp_std::marker::PhantomData</span><span class="op">&lt;</span>(<span class="ident">H</span>, <span class="ident">L</span>)<span class="op">&gt;</span>);

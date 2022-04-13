@@ -207,6 +207,12 @@
 <span id="202">202</span>
 <span id="203">203</span>
 <span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -236,9 +242,10 @@
 <span class="kw">use</span> <span class="ident">sp_blockchain::HeaderBackend</span>;
 <span class="kw">use</span> <span class="ident">sp_consensus::SyncOracle</span>;
 <span class="kw">use</span> <span class="ident">sp_keystore::SyncCryptoStorePtr</span>;
+<span class="kw">use</span> <span class="ident">sp_mmr_primitives::MmrApi</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime::traits::Block</span>;
 
-<span class="kw">use</span> <span class="ident">beefy_primitives::BeefyApi</span>;
+<span class="kw">use</span> <span class="ident">beefy_primitives</span>::{<span class="ident">BeefyApi</span>, <span class="ident">MmrRootHash</span>};
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::notification</span>::{<span class="ident">BeefyBestBlockSender</span>, <span class="ident">BeefySignedCommitmentSender</span>};
 
@@ -296,7 +303,7 @@
 <span class="doccomment">/// of today, Rust does not allow a type alias to be used as a trait bound. Tracking</span>
 <span class="doccomment">/// issue is &lt;https://github.com/rust-lang/rust/issues/41517&gt;.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Client</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">BE</span><span class="op">&gt;</span>:
-	<span class="ident">BlockchainEvents</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Finalizer</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">BE</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>
+	<span class="ident">BlockchainEvents</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Finalizer</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">BE</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>
 <span class="kw">where</span>
 	<span class="ident">B</span>: <span class="ident">Block</span>,
 	<span class="ident">BE</span>: <span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
@@ -319,18 +326,21 @@
 }
 
 <span class="doccomment">/// BEEFY gadget initialization parameters.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BeefyParams</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">BE</span>, <span class="ident">C</span>, <span class="ident">N</span><span class="op">&gt;</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BeefyParams</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">BE</span>, <span class="ident">C</span>, <span class="ident">N</span>, <span class="ident">R</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">B</span>: <span class="ident">Block</span>,
 	<span class="ident">BE</span>: <span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 	<span class="ident">C</span>: <span class="ident">Client</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">BE</span><span class="op">&gt;</span>,
-	<span class="ident">C::Api</span>: <span class="ident">BeefyApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+	<span class="ident">R</span>: <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+	<span class="ident">R::Api</span>: <span class="ident">BeefyApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">MmrApi</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">MmrRootHash</span><span class="op">&gt;</span>,
 	<span class="ident">N</span>: <span class="ident">GossipNetwork</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">SyncOracle</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
 	<span class="doccomment">/// BEEFY client</span>
 	<span class="kw">pub</span> <span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Client Backend</span>
 	<span class="kw">pub</span> <span class="ident">backend</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">BE</span><span class="op">&gt;</span>,
+	<span class="doccomment">/// Runtime Api Provider</span>
+	<span class="kw">pub</span> <span class="ident">runtime</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Local key store</span>
 	<span class="kw">pub</span> <span class="ident">key_store</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SyncCryptoStorePtr</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Gossip network</span>
@@ -347,21 +357,22 @@
 	<span class="kw">pub</span> <span class="ident">protocol_name</span>: <span class="ident">std::borrow::Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>,
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">test</span>))]</span>
 <span class="doccomment">/// Start the BEEFY gadget.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// This is a thin shim around running and awaiting a BEEFY worker.</span>
-<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">start_beefy_gadget</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">BE</span>, <span class="ident">C</span>, <span class="ident">N</span><span class="op">&gt;</span>(<span class="ident">beefy_params</span>: <span class="ident">BeefyParams</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">BE</span>, <span class="ident">C</span>, <span class="ident">N</span><span class="op">&gt;</span>)
+<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">start_beefy_gadget</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">BE</span>, <span class="ident">C</span>, <span class="ident">N</span>, <span class="ident">R</span><span class="op">&gt;</span>(<span class="ident">beefy_params</span>: <span class="ident">BeefyParams</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">BE</span>, <span class="ident">C</span>, <span class="ident">N</span>, <span class="ident">R</span><span class="op">&gt;</span>)
 <span class="kw">where</span>
 	<span class="ident">B</span>: <span class="ident">Block</span>,
 	<span class="ident">BE</span>: <span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 	<span class="ident">C</span>: <span class="ident">Client</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">BE</span><span class="op">&gt;</span>,
-	<span class="ident">C::Api</span>: <span class="ident">BeefyApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+	<span class="ident">R</span>: <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+	<span class="ident">R::Api</span>: <span class="ident">BeefyApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">MmrApi</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">MmrRootHash</span><span class="op">&gt;</span>,
 	<span class="ident">N</span>: <span class="ident">GossipNetwork</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">SyncOracle</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
 	<span class="kw">let</span> <span class="ident">BeefyParams</span> {
 		<span class="ident">client</span>,
 		<span class="ident">backend</span>,
+		<span class="ident">runtime</span>,
 		<span class="ident">key_store</span>,
 		<span class="ident">network</span>,
 		<span class="ident">signed_commitment_sender</span>,
@@ -397,6 +408,7 @@
 	<span class="kw">let</span> <span class="ident">worker_params</span> <span class="op">=</span> <span class="ident">worker::WorkerParams</span> {
 		<span class="ident">client</span>,
 		<span class="ident">backend</span>,
+		<span class="ident">runtime</span>,
 		<span class="ident">key_store</span>: <span class="ident">key_store</span>.<span class="ident">into</span>(),
 		<span class="ident">signed_commitment_sender</span>,
 		<span class="ident">beefy_best_block_sender</span>,
@@ -407,7 +419,7 @@
 		<span class="ident">sync_oracle</span>,
 	};
 
-	<span class="kw">let</span> <span class="ident">worker</span> <span class="op">=</span> <span class="ident">worker::BeefyWorker</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">worker_params</span>);
+	<span class="kw">let</span> <span class="ident">worker</span> <span class="op">=</span> <span class="ident">worker::BeefyWorker</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">worker_params</span>);
 
 	<span class="ident">worker</span>.<span class="ident">run</span>().<span class="kw">await</span>
 }

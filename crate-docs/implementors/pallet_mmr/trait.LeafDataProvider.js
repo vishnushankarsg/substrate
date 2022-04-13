@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["pallet_mmr"] = [{"text":"impl&lt;T:&nbsp;<a class=\"trait\" href=\"frame_system/pallet/trait.Config.html\" title=\"trait frame_system::pallet::Config\">Config</a>&gt; <a class=\"trait\" href=\"pallet_mmr/trait.LeafDataProvider.html\" title=\"trait pallet_mmr::LeafDataProvider\">LeafDataProvider</a> for <a class=\"struct\" href=\"pallet_mmr/struct.ParentNumberAndHash.html\" title=\"struct pallet_mmr::ParentNumberAndHash\">ParentNumberAndHash</a>&lt;T&gt;","synthetic":false,"types":["pallet_mmr::ParentNumberAndHash"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
