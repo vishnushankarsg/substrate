@@ -1700,6 +1700,10 @@
 <span id="1695">1695</span>
 <span id="1696">1696</span>
 <span id="1697">1697</span>
+<span id="1698">1698</span>
+<span id="1699">1699</span>
+<span id="1700">1700</span>
+<span id="1701">1701</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -2330,6 +2334,8 @@
 		<span class="ident">Chilled</span>(<span class="ident">T::AccountId</span>),
 		<span class="doccomment">/// The stakers&#39; rewards are getting paid. \[era_index, validator_stash\]</span>
 		<span class="ident">PayoutStarted</span>(<span class="ident">EraIndex</span>, <span class="ident">T::AccountId</span>),
+		<span class="doccomment">/// A validator has set their preferences.</span>
+		<span class="ident">ValidatorPrefsSet</span>(<span class="ident">T::AccountId</span>, <span class="ident">ValidatorPrefs</span>),
 	}
 
 	<span class="attribute">#[<span class="ident">pallet::error</span>]</span>
@@ -2718,7 +2724,9 @@
 			}
 
 			<span class="ident"><span class="self">Self</span>::do_remove_nominator</span>(<span class="ident">stash</span>);
-			<span class="ident"><span class="self">Self</span>::do_add_validator</span>(<span class="ident">stash</span>, <span class="ident">prefs</span>);
+			<span class="ident"><span class="self">Self</span>::do_add_validator</span>(<span class="ident">stash</span>, <span class="ident">prefs</span>.<span class="ident">clone</span>());
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ValidatorPrefsSet</span>(<span class="ident">ledger</span>.<span class="ident">stash</span>, <span class="ident">prefs</span>));
+
 			<span class="prelude-val">Ok</span>(())
 		}
 
