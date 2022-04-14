@@ -859,12 +859,6 @@
 <span id="854">854</span>
 <span id="855">855</span>
 <span id="856">856</span>
-<span id="857">857</span>
-<span id="858">858</span>
-<span id="859">859</span>
-<span id="860">860</span>
-<span id="861">861</span>
-<span id="862">862</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1396,14 +1390,8 @@
 		<span class="ident">maybe_need_admin</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>,
 		<span class="ident">f</span>: <span class="ident">TransferFlags</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">T::Balance</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">DeadConsequence</span><span class="op">&gt;</span>), <span class="ident">DispatchError</span><span class="op">&gt;</span> {
-		<span class="comment">// Early exist if no-op.</span>
+		<span class="comment">// Early exit if no-op.</span>
 		<span class="kw">if</span> <span class="ident">amount</span>.<span class="ident">is_zero</span>() {
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::Transferred</span> {
-				<span class="ident">asset_id</span>: <span class="ident">id</span>,
-				<span class="ident">from</span>: <span class="ident">source</span>.<span class="ident">clone</span>(),
-				<span class="ident">to</span>: <span class="ident">dest</span>.<span class="ident">clone</span>(),
-				<span class="ident">amount</span>,
-			});
 			<span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">amount</span>, <span class="prelude-val">None</span>))
 		}
 
