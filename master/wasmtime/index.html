@@ -3,8 +3,8 @@
         </a><h2 class="location"></h2>
     </nav>
     <nav class="sidebar"><a class="sidebar-logo" href="../wasmtime/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
-        </a><h2 class="location"><a href="#">Crate wasmtime</a></h2><div class="sidebar-elems"><div class="block"><ul><li class="version">Version 0.33.0</li><li><a id="all-types" href="all.html">All Items</a></li></div></ul><section><div class="block"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#constants">Constants</a></li><li><a href="#traits">Traits</a></li><li><a href="#unions">Unions</a></li></ul></div></section><div id="sidebar-vars" data-name="wasmtime" data-ty="mod" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../wasmtime/index.html"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="main-heading">
-    <h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">wasmtime</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/wasmtime/lib.rs.html#1-453">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Wasmtime’s embedding API</p>
+        </a><h2 class="location"><a href="#">Crate wasmtime</a></h2><div class="sidebar-elems"><div class="block"><ul><li class="version">Version 0.35.3</li><li><a id="all-types" href="all.html">All Items</a></li></div></ul><section><div class="block"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#constants">Constants</a></li><li><a href="#traits">Traits</a></li><li><a href="#unions">Unions</a></li></ul></div></section><div id="sidebar-vars" data-name="wasmtime" data-ty="mod" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../wasmtime/index.html"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="main-heading">
+    <h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">wasmtime</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/wasmtime/lib.rs.html#1-468">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Wasmtime’s embedding API</p>
 <p>This crate contains an API used to interact with WebAssembly modules. For
 example you can compile modules, instantiate them, call them, etc. As an
 embedder of WebAssembly you can also provide WebAssembly modules
@@ -253,8 +253,8 @@ jitdump runtime profiling format. The profiler can be selected with
 <a href="struct.Config.html#method.profiler" title="Config::profiler"><code>Config::profiler</code></a>.</p>
 </li>
 <li>
-<p><code>vtune</code> - Not enabled by default, this feature compiles in support for
-supporting VTune profiling of JIT code.</p>
+<p><code>vtune</code> - Enabled by default, this feature compiles in support for VTune
+profiling of JIT code.</p>
 </li>
 <li>
 <p><code>uffd</code> - Not enabled by default. This feature enables <code>userfaultfd</code> support
@@ -267,6 +267,23 @@ supported on Linux and requires a Linux kernel version 4.11 or higher.</p>
 <p><code>all-arch</code> - Not enabled by default. This feature compiles in support for
 all architectures for both the JIT compiler and the <code>wasmtime compile</code> CLI
 command.</p>
+</li>
+<li>
+<p><code>pooling-allocator</code> - Enabled by default, this feature adds support for
+the pooling allocation strategy enabled via
+<a href="struct.Config.html#method.allocation_strategy" title="Config::allocation_strategy"><code>Config::allocation_strategy</code></a>. The pooling allocator can enable more
+efficient reuse of resources for high-concurrency and
+high-instantiation-count scenarios.</p>
+</li>
+<li>
+<p><code>memory-init-cow</code> - Enabled by default, this feature builds in support
+for, on supported platforms, initializing wasm linear memories with
+copy-on-write heap mappings. This makes instantiation much faster by
+<code>mmap</code>-ing the initial memory image into place instead of copying memory
+into place, allowing sharing pages that end up only getting read. Note
+that this is simply compile-time support and this must also be enabled at
+run-time via <a href="struct.Config.html#structfield.memory_init_cow" title="Config::memory_init_cow"><code>Config::memory_init_cow</code></a> (which is also enabled by
+default).</p>
 </li>
 </ul>
 <h3 id="examples"><a href="#examples">Examples</a></h3>
