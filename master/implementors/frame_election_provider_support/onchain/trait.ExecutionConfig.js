@@ -1,3 +1,0 @@
-(function() {var implementors = {};
-implementors["node_runtime"] = [{"text":"impl <a class=\"trait\" href=\"frame_election_provider_support/onchain/trait.ExecutionConfig.html\" title=\"trait frame_election_provider_support::onchain::ExecutionConfig\">ExecutionConfig</a> for <a class=\"struct\" href=\"node_runtime/struct.OnChainSeqPhragmen.html\" title=\"struct node_runtime::OnChainSeqPhragmen\">OnChainSeqPhragmen</a>","synthetic":false,"types":["node_runtime::OnChainSeqPhragmen"]}];
-if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
