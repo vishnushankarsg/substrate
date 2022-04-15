@@ -202,13 +202,6 @@
 <span id="197">197</span>
 <span id="198">198</span>
 <span id="199">199</span>
-<span id="200">200</span>
-<span id="201">201</span>
-<span id="202">202</span>
-<span id="203">203</span>
-<span id="204">204</span>
-<span id="205">205</span>
-<span id="206">206</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2022 Parity Technologies (UK) Ltd.</span>
@@ -245,7 +238,7 @@
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">path::PathBuf</span>, <span class="ident">sync::Arc</span>};
 
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::template::TemplateData</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::shared::WeightParams</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::shared</span>::{<span class="ident">new_rng</span>, <span class="ident">WeightParams</span>};
 
 <span class="doccomment">/// Benchmark the storage speed of a chain snapshot.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Parser</span>)]</span>
@@ -362,13 +355,6 @@
 		}
 	}
 
-	<span class="doccomment">/// Creates an rng from a random seed.</span>
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">setup_rng</span>() -&gt; <span class="kw">impl</span> <span class="ident">rand::Rng</span> {
-		<span class="kw">let</span> <span class="ident">seed</span> <span class="op">=</span> <span class="ident">rand::thread_rng</span>().<span class="ident">gen</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>();
-		<span class="macro">info!</span>(<span class="string">&quot;Using seed {}&quot;</span>, <span class="ident">seed</span>);
-		<span class="ident">StdRng::seed_from_u64</span>(<span class="ident">seed</span>)
-	}
-
 	<span class="doccomment">/// Run some rounds of the (read) benchmark as warmup.</span>
 	<span class="doccomment">/// See `frame_benchmarking_cli::storage::read::bench_read` for detailed comments.</span>
 	<span class="kw">fn</span> <span class="ident">bench_warmup</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">BA</span>, <span class="ident">C</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">client</span>: <span class="kw-2">&amp;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
@@ -380,7 +366,7 @@
 		<span class="kw">let</span> <span class="ident">block</span> <span class="op">=</span> <span class="ident">BlockId::Number</span>(<span class="ident">client</span>.<span class="ident">usage_info</span>().<span class="ident">chain</span>.<span class="ident">best_number</span>);
 		<span class="kw">let</span> <span class="ident">empty_prefix</span> <span class="op">=</span> <span class="ident">StorageKey</span>(<span class="ident">Vec::new</span>());
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">keys</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">storage_keys</span>(<span class="kw-2">&amp;</span><span class="ident">block</span>, <span class="kw-2">&amp;</span><span class="ident">empty_prefix</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::setup_rng</span>();
+		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">rng</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">new_rng</span>(<span class="prelude-val">None</span>);
 		<span class="ident">keys</span>.<span class="ident">shuffle</span>(<span class="kw-2">&amp;mut</span> <span class="ident">rng</span>);
 
 		<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="self">self</span>.<span class="ident">params</span>.<span class="ident">warmups</span> {

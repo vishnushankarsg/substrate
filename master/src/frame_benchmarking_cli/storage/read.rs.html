@@ -99,7 +99,7 @@
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">sync::Arc</span>, <span class="ident">time::Instant</span>};
 
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::cmd::StorageCmd</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::shared::BenchRecord</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::shared</span>::{<span class="ident">new_rng</span>, <span class="ident">BenchRecord</span>};
 
 <span class="kw">impl</span> <span class="ident">StorageCmd</span> {
 	<span class="doccomment">/// Benchmarks the time it takes to read a single Storage item.</span>
@@ -118,7 +118,7 @@
 		<span class="comment">// Load all keys and randomly shuffle them.</span>
 		<span class="kw">let</span> <span class="ident">empty_prefix</span> <span class="op">=</span> <span class="ident">StorageKey</span>(<span class="ident">Vec::new</span>());
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">keys</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">storage_keys</span>(<span class="kw-2">&amp;</span><span class="ident">block</span>, <span class="kw-2">&amp;</span><span class="ident">empty_prefix</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::setup_rng</span>();
+		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">rng</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">new_rng</span>(<span class="prelude-val">None</span>);
 		<span class="ident">keys</span>.<span class="ident">shuffle</span>(<span class="kw-2">&amp;mut</span> <span class="ident">rng</span>);
 
 		<span class="comment">// Interesting part here:</span>

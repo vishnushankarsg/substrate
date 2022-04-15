@@ -173,7 +173,7 @@
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">sync::Arc</span>, <span class="ident">time::Instant</span>};
 
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::cmd::StorageCmd</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::shared::BenchRecord</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::shared</span>::{<span class="ident">new_rng</span>, <span class="ident">BenchRecord</span>};
 
 <span class="kw">impl</span> <span class="ident">StorageCmd</span> {
 	<span class="doccomment">/// Benchmarks the time it takes to write a single Storage item.</span>
@@ -200,7 +200,7 @@
 		<span class="macro">info!</span>(<span class="string">&quot;Preparing keys from block {}&quot;</span>, <span class="ident">block</span>);
 		<span class="comment">// Load all KV pairs and randomly shuffle them.</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">kvs</span> <span class="op">=</span> <span class="ident">trie</span>.<span class="ident">pairs</span>();
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::setup_rng</span>();
+		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">rng</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">new_rng</span>(<span class="prelude-val">None</span>);
 		<span class="ident">kvs</span>.<span class="ident">shuffle</span>(<span class="kw-2">&amp;mut</span> <span class="ident">rng</span>);
 
 		<span class="comment">// Generate all random values first; Make sure there are no collisions with existing</span>

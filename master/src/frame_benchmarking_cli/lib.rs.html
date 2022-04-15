@@ -102,6 +102,11 @@
 <span id="97">97</span>
 <span id="98">98</span>
 <span id="99">99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -122,12 +127,14 @@
 <span class="doccomment">//! Contains the root [`BenchmarkCmd`] command and exports its sub-commands.</span>
 
 <span class="kw">mod</span> <span class="ident">block</span>;
+<span class="kw">mod</span> <span class="ident">machine</span>;
 <span class="kw">mod</span> <span class="ident">overhead</span>;
 <span class="kw">mod</span> <span class="ident">pallet</span>;
 <span class="kw">mod</span> <span class="ident">shared</span>;
 <span class="kw">mod</span> <span class="ident">storage</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">block::BlockCmd</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">machine::MachineCmd</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">overhead</span>::{<span class="ident">ExtrinsicBuilder</span>, <span class="ident">OverheadCmd</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">pallet::PalletCmd</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">storage::StorageCmd</span>;
@@ -143,6 +150,8 @@
 	<span class="ident">Storage</span>(<span class="ident">StorageCmd</span>),
 	<span class="ident">Overhead</span>(<span class="ident">OverheadCmd</span>),
 	<span class="ident">Block</span>(<span class="ident">BlockCmd</span>),
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">hide</span> <span class="op">=</span> <span class="bool-val">true</span>)]</span> <span class="comment">// Hidden until fully completed.</span>
+	<span class="ident">Machine</span>(<span class="ident">MachineCmd</span>),
 }
 
 <span class="doccomment">/// Unwraps a [`BenchmarkCmd`] into its concrete sub-command.</span>
@@ -157,6 +166,7 @@
 			<span class="ident">BenchmarkCmd::Storage</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cmd</span>) =&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span>,
 			<span class="ident">BenchmarkCmd::Overhead</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cmd</span>) =&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span>,
 			<span class="ident">BenchmarkCmd::Block</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cmd</span>) =&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span>,
+			<span class="ident">BenchmarkCmd::Machine</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cmd</span>) =&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span>,
 		}
 	}
 }

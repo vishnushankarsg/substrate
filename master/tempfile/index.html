@@ -4,9 +4,9 @@
     </nav>
     <nav class="sidebar"><a class="sidebar-logo" href="../tempfile/index.html"><div class="logo-container">
                     <img src="https://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png" alt="logo"></div>
-        </a><h2 class="location"><a href="#">Crate tempfile</a></h2><div class="sidebar-elems"><div class="block"><ul><li class="version">Version 3.2.0</li><li><a id="all-types" href="all.html">All Items</a></li></div></ul><section><div class="block"><ul><li><a href="#structs">Structs</a></li><li><a href="#functions">Functions</a></li></ul></div></section><div id="sidebar-vars" data-name="tempfile" data-ty="mod" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../tempfile/index.html">
+        </a><h2 class="location"><a href="#">Crate tempfile</a></h2><div class="sidebar-elems"><div class="block"><ul><li class="version">Version 3.3.0</li><li><a id="all-types" href="all.html">All Items</a></li></div></ul><section><div class="block"><ul><li><a href="#structs">Structs</a></li><li><a href="#functions">Functions</a></li></ul></div></section><div id="sidebar-vars" data-name="tempfile" data-ty="mod" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../tempfile/index.html">
                         <img src="https://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="main-heading">
-    <h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">tempfile</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/tempfile/lib.rs.html#1-500">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Temporary files and directories.</p>
+    <h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">tempfile</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/tempfile/lib.rs.html#1-537">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Temporary files and directories.</p>
 <ul>
 <li>Use the <a href="fn.tempfile.html"><code>tempfile()</code></a> function for temporary files</li>
 <li>Use the <a href="fn.tempdir.html"><code>tempdir()</code></a> function for temporary directories.</li>
@@ -27,6 +27,25 @@ a temporary file cleaner could delete the temporary file which an attacker could
 <p><code>tempfile</code> doesn’t rely on file paths so this isn’t an issue. However, <code>NamedTempFile</code> does
 rely on file paths for <em>some</em> operations. See the security documentation on
 the <code>NamedTempFile</code> type for more information.</p>
+<h3 id="early-drop-pitfall"><a href="#early-drop-pitfall">Early drop pitfall</a></h3>
+<p>Because <code>TempDir</code> and <code>NamedTempFile</code> rely on their destructors for cleanup, this can lead
+to an unexpected early removal of the directory/file, usually when working with APIs which are
+generic over <code>AsRef&lt;Path&gt;</code>. Consider the following example:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// Create a directory inside of `std::env::temp_dir()`.</span>
+<span class="kw">let</span> <span class="ident">temp_dir</span> <span class="op">=</span> <span class="ident">tempdir</span>()<span class="question-mark">?</span>;
+
+<span class="comment">// Spawn the `touch` command inside the temporary directory and collect the exit status</span>
+<span class="comment">// Note that `temp_dir` is **not** moved into `current_dir`, but passed as a reference</span>
+<span class="kw">let</span> <span class="ident">exit_status</span> <span class="op">=</span> <span class="ident">Command::new</span>(<span class="string">&quot;touch&quot;</span>).<span class="ident">arg</span>(<span class="string">&quot;tmp&quot;</span>).<span class="ident">current_dir</span>(<span class="kw-2">&amp;</span><span class="ident">temp_dir</span>).<span class="ident">status</span>()<span class="question-mark">?</span>;
+<span class="macro">assert!</span>(<span class="ident">exit_status</span>.<span class="ident">success</span>());
+</code></pre></div>
+<p>This works because a reference to <code>temp_dir</code> is passed to <code>current_dir</code>, resulting in the
+destructor of <code>temp_dir</code> being run after the <code>Command</code> has finished execution. Moving the
+<code>TempDir</code> into the <code>current_dir</code> call would result in the <code>TempDir</code> being converted into
+an internal representation, with the original value being dropped and the directory thus
+being deleted, before the command can be executed.</p>
+<p>The <code>touch</code> command would fail with an <code>No such file or directory</code> error.</p>
 <h3 id="examples"><a href="#examples">Examples</a></h3>
 <p>Create a temporary file and write some data into it:</p>
 

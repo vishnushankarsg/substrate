@@ -68,6 +68,16 @@
 <span id="63">63</span>
 <span id="64">64</span>
 <span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2022 Parity Technologies (UK) Ltd.</span>
@@ -94,6 +104,8 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">record::BenchRecord</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">stats</span>::{<span class="ident">StatSelect</span>, <span class="ident">Stats</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">weight_params::WeightParams</span>;
+
+<span class="kw">use</span> <span class="ident">rand::prelude</span>::<span class="kw-2">*</span>;
 
 <span class="doccomment">/// A Handlebars helper to add an underscore after every 3rd character,</span>
 <span class="doccomment">/// i.e. a separator for large numbers.</span>
@@ -132,6 +144,14 @@
 		<span class="ident">s</span>.<span class="ident">insert</span>(<span class="number">0</span>, <span class="ident">val</span>);
 	}
 	<span class="ident">s</span>
+}
+
+<span class="doccomment">/// Returns an rng and the seed that was used to create it.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Uses a random seed if none is provided.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_rng</span>(<span class="ident">seed</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>) -&gt; (<span class="kw">impl</span> <span class="ident">rand::Rng</span>, <span class="ident">u64</span>) {
+	<span class="kw">let</span> <span class="ident">seed</span> <span class="op">=</span> <span class="ident">seed</span>.<span class="ident">unwrap_or</span>(<span class="ident">rand::thread_rng</span>().<span class="ident">gen</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>());
+	(<span class="ident">rand_pcg::Pcg64::seed_from_u64</span>(<span class="ident">seed</span>), <span class="ident">seed</span>)
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="frame_benchmarking_cli" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (e745b4ddb 2022-04-07)" ></div>
