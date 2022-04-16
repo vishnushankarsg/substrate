@@ -48,7 +48,7 @@ for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
 dual licensed as above, without any additional terms or conditions.</p>
 <h3 id="serde-support"><a href="#serde-support"><code>serde</code> support</a></h3>
 <p>When the <code>serde</code> feature of this crate is enabled, <code>Serialize</code> and
-<code>Deserialize</code> impls are provided for the <a href="struct.Signature.html" title="Signature"><code>Signature</code></a> and [<code>VerifyingKey</code>]
+<code>Deserialize</code> impls are provided for the <a href="struct.Signature.html" title="Signature"><code>Signature</code></a> and <a href="struct.VerifyingKey.html" title="VerifyingKey"><code>VerifyingKey</code></a>
 types.</p>
 <p>Please see type-specific documentation for more information.</p>
 <h3 id="interop"><a href="#interop">Interop</a></h3>
@@ -66,10 +66,13 @@ API.</p>
 </div></details><h2 id="reexports" class="small-section-header"><a href="#reexports">Re-exports</a></h2>
 <div class="item-table"><div class="item-row"><div class="item-left import-item"><code>pub use <a class="mod" href="../elliptic_curve/index.html" title="mod elliptic_curve">elliptic_curve</a>;</code></div><div class="item-right docblock-short"></div></div><div class="item-row"><div class="item-left import-item"><code>pub use <a class="mod" href="../signature/index.html" title="mod signature">signature</a>;</code></div><div class="item-right docblock-short"></div></div></div><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2>
 <div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="mod" href="der/index.html" title="ecdsa::der mod">der</a></div><div class="item-right docblock-short"><p>Support for ECDSA signatures encoded as ASN.1 DER.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="hazmat/index.html" title="ecdsa::hazmat mod">hazmat</a></div><div class="item-right docblock-short"><p>Low-level ECDSA primitives.</p>
 </div></div></div><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2>
 <div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Error.html" title="ecdsa::Error struct">Error</a></div><div class="item-right docblock-short"><p>Signature errors.</p>
 </div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.RecoveryId.html" title="ecdsa::RecoveryId struct">RecoveryId</a></div><div class="item-right docblock-short"><p>Recovery IDs, a.k.a. “recid”.</p>
 </div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Signature.html" title="ecdsa::Signature struct">Signature</a></div><div class="item-right docblock-short"><p>ECDSA signature (fixed-size). Generic over elliptic curve types.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.SigningKey.html" title="ecdsa::SigningKey struct">SigningKey</a></div><div class="item-right docblock-short"><p>ECDSA signing key. Generic over elliptic curves.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.VerifyingKey.html" title="ecdsa::VerifyingKey struct">VerifyingKey</a></div><div class="item-right docblock-short"><p>ECDSA verification key (i.e. public key). Generic over elliptic curves.</p>
 </div></div></div><h2 id="traits" class="small-section-header"><a href="#traits">Traits</a></h2>
 <div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.PrimeCurve.html" title="ecdsa::PrimeCurve trait">PrimeCurve</a></div><div class="item-right docblock-short"><p>Marker trait for elliptic curves with prime order.</p>
 </div></div></div><h2 id="types" class="small-section-header"><a href="#types">Type Definitions</a></h2>

@@ -200,9 +200,6 @@
 <span id="195">195</span>
 <span id="196">196</span>
 <span id="197">197</span>
-<span id="198">198</span>
-<span id="199">199</span>
-<span id="200">200</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -244,7 +241,7 @@
 <span class="kw">use</span> <span class="ident">beefy_primitives::mmr</span>::{<span class="ident">BeefyDataProvider</span>, <span class="ident">BeefyNextAuthoritySet</span>, <span class="ident">MmrLeaf</span>, <span class="ident">MmrLeafVersion</span>};
 <span class="kw">use</span> <span class="ident">pallet_mmr</span>::{<span class="ident">LeafDataProvider</span>, <span class="ident">ParentNumberAndHash</span>};
 
-<span class="kw">use</span> <span class="ident">frame_support::traits::Get</span>;
+<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">crypto::ecdsa::ECDSAExt</span>, <span class="ident">traits::Get</span>};
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">pallet</span>::<span class="kw-2">*</span>;
 
@@ -276,18 +273,15 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BeefyEcdsaToEthereum</span>;
 <span class="kw">impl</span> <span class="ident">Convert</span><span class="op">&lt;</span><span class="ident">beefy_primitives::crypto::AuthorityId</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BeefyEcdsaToEthereum</span> {
 	<span class="kw">fn</span> <span class="ident">convert</span>(<span class="ident">a</span>: <span class="ident">beefy_primitives::crypto::AuthorityId</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {
-		<span class="kw">use</span> <span class="ident">k256</span>::{<span class="ident">elliptic_curve::sec1::ToEncodedPoint</span>, <span class="ident">PublicKey</span>};
-		<span class="kw">use</span> <span class="ident">sp_core::crypto::ByteArray</span>;
-
-		<span class="ident">PublicKey::from_sec1_bytes</span>(<span class="ident">a</span>.<span class="ident">as_slice</span>())
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">pub_key</span><span class="op">|</span> {
-				<span class="comment">// uncompress the key</span>
-				<span class="kw">let</span> <span class="ident">uncompressed</span> <span class="op">=</span> <span class="ident">pub_key</span>.<span class="ident">to_encoded_point</span>(<span class="bool-val">false</span>);
-				<span class="comment">// convert to ETH address</span>
-				<span class="ident">sp_io::hashing::keccak_256</span>(<span class="kw-2">&amp;</span><span class="ident">uncompressed</span>.<span class="ident">as_bytes</span>()[<span class="number">1</span>..])[<span class="number">12</span>..].<span class="ident">to_vec</span>()
-			})
+		<span class="ident">sp_core::ecdsa::Public::try_from</span>(<span class="ident">a</span>.<span class="ident">as_ref</span>())
 			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
 				<span class="macro">log::error!</span>(<span class="ident">target</span>: <span class="string">&quot;runtime::beefy&quot;</span>, <span class="string">&quot;Invalid BEEFY PublicKey format!&quot;</span>);
+			})
+			.<span class="ident">unwrap_or</span>(<span class="ident">sp_core::ecdsa::Public::from_raw</span>([<span class="number">0u8</span>; <span class="number">33</span>]))
+			.<span class="ident">to_eth_address</span>()
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">to_vec</span>())
+			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
+				<span class="macro">log::error!</span>(<span class="ident">target</span>: <span class="string">&quot;runtime::beefy&quot;</span>, <span class="string">&quot;Failed to convert BEEFY PublicKey to ETH address!&quot;</span>);
 			})
 			.<span class="ident">unwrap_or_default</span>()
 	}

@@ -2873,6 +2873,44 @@
 <span id="2868">2868</span>
 <span id="2869">2869</span>
 <span id="2870">2870</span>
+<span id="2871">2871</span>
+<span id="2872">2872</span>
+<span id="2873">2873</span>
+<span id="2874">2874</span>
+<span id="2875">2875</span>
+<span id="2876">2876</span>
+<span id="2877">2877</span>
+<span id="2878">2878</span>
+<span id="2879">2879</span>
+<span id="2880">2880</span>
+<span id="2881">2881</span>
+<span id="2882">2882</span>
+<span id="2883">2883</span>
+<span id="2884">2884</span>
+<span id="2885">2885</span>
+<span id="2886">2886</span>
+<span id="2887">2887</span>
+<span id="2888">2888</span>
+<span id="2889">2889</span>
+<span id="2890">2890</span>
+<span id="2891">2891</span>
+<span id="2892">2892</span>
+<span id="2893">2893</span>
+<span id="2894">2894</span>
+<span id="2895">2895</span>
+<span id="2896">2896</span>
+<span id="2897">2897</span>
+<span id="2898">2898</span>
+<span id="2899">2899</span>
+<span id="2900">2900</span>
+<span id="2901">2901</span>
+<span id="2902">2902</span>
+<span id="2903">2903</span>
+<span id="2904">2904</span>
+<span id="2905">2905</span>
+<span id="2906">2906</span>
+<span id="2907">2907</span>
+<span id="2908">2908</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -4829,6 +4867,44 @@
 				<span class="ident">Counter</span>(<span class="number">32</span>, <span class="number">65</span>), <span class="comment">// signature_ptr</span>
 				<span class="ident">Regular</span>(<span class="ident">Instruction::I32Const</span>(<span class="number">0</span>)), <span class="comment">// message_hash_ptr</span>
 				<span class="ident">Regular</span>(<span class="ident">Instruction::I32Const</span>(<span class="ident">signatures_bytes_len</span> <span class="op">+</span> <span class="number">32</span>)), <span class="comment">// output_len_ptr</span>
+				<span class="ident">Regular</span>(<span class="ident">Instruction::Call</span>(<span class="number">0</span>)),
+				<span class="ident">Regular</span>(<span class="ident">Instruction::Drop</span>),
+			])),
+			.. <span class="ident">Default::default</span>()
+		});
+		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
+
+	<span class="comment">// Only calling the function itself for the list of</span>
+	<span class="comment">// generated different ECDSA keys.</span>
+	<span class="ident">seal_ecdsa_to_eth_address</span> {
+		<span class="kw">let</span> <span class="ident">r</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">API_BENCHMARK_BATCHES</span>;
+		<span class="kw">let</span> <span class="ident">key_type</span> <span class="op">=</span> <span class="ident">sp_core::crypto::KeyTypeId</span>(<span class="kw-2">*</span><span class="string">b&quot;code&quot;</span>);
+		<span class="kw">let</span> <span class="ident">pub_keys_bytes</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">r</span> <span class="op">*</span> <span class="ident">API_BENCHMARK_BATCH_SIZE</span>)
+			.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
+				<span class="ident">sp_io::crypto::ecdsa_generate</span>(<span class="ident">key_type</span>, <span class="prelude-val">None</span>).<span class="number">0</span>
+			})
+		.<span class="ident">flatten</span>()
+		.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> <span class="ident">pub_keys_bytes_len</span> <span class="op">=</span> <span class="ident">pub_keys_bytes</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">i32</span>;
+		<span class="kw">let</span> <span class="ident">code</span> <span class="op">=</span> <span class="ident">WasmModule</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="ident">ModuleDefinition</span> {
+			<span class="ident">memory</span>: <span class="prelude-val">Some</span>(<span class="ident">ImportedMemory::max</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>()),
+			<span class="ident">imported_functions</span>: <span class="macro">vec!</span>[<span class="ident">ImportedFunction</span> {
+				<span class="ident">module</span>: <span class="string">&quot;__unstable__&quot;</span>,
+				<span class="ident">name</span>: <span class="string">&quot;seal_ecdsa_to_eth_address&quot;</span>,
+				<span class="ident">params</span>: <span class="macro">vec!</span>[<span class="ident">ValueType::I32</span>, <span class="ident">ValueType::I32</span>],
+				<span class="ident">return_type</span>: <span class="prelude-val">Some</span>(<span class="ident">ValueType::I32</span>),
+			}],
+			<span class="ident">data_segments</span>: <span class="macro">vec!</span>[
+				<span class="ident">DataSegment</span> {
+					<span class="ident">offset</span>: <span class="number">0</span>,
+					<span class="ident">value</span>: <span class="ident">pub_keys_bytes</span>,
+				},
+			],
+			<span class="ident">call_body</span>: <span class="prelude-val">Some</span>(<span class="ident">body::repeated_dyn</span>(<span class="ident">r</span> <span class="op">*</span> <span class="ident">API_BENCHMARK_BATCH_SIZE</span>, <span class="macro">vec!</span>[
+				<span class="ident">Counter</span>(<span class="number">0</span>, <span class="number">33</span>), <span class="comment">// pub_key_ptr</span>
+				<span class="ident">Regular</span>(<span class="ident">Instruction::I32Const</span>(<span class="ident">pub_keys_bytes_len</span>)), <span class="comment">// out_ptr</span>
 				<span class="ident">Regular</span>(<span class="ident">Instruction::Call</span>(<span class="number">0</span>)),
 				<span class="ident">Regular</span>(<span class="ident">Instruction::Drop</span>),
 			])),

@@ -17,8 +17,8 @@ type for interoperability purposes (particularly in conjunction with the
 <a href="../../signature/signer/trait.Signer.html" title="signature::Signer"><code>signature::Signer</code></a> trait). Example use cases for this include other
 software implementations of ECDSA/secp256k1 and wrappers for cloud KMS
 services or hardware devices (HSM or crypto hardware wallet).</li>
-<li><code>ecdsa</code>: provides <code>ecdsa-core</code> features plus the [<code>SigningKey</code>] and
-[<code>VerifyingKey</code>] types which natively implement ECDSA/secp256k1 signing and
+<li><code>ecdsa</code>: provides <code>ecdsa-core</code> features plus the <a href="struct.SigningKey.html" title="SigningKey"><code>SigningKey</code></a> and
+<a href="struct.VerifyingKey.html" title="VerifyingKey"><code>VerifyingKey</code></a> types which natively implement ECDSA/secp256k1 signing and
 verification.</li>
 </ul>
 <p>Additionally, this crate contains support for computing ECDSA signatures
@@ -62,10 +62,12 @@ for more information.</p>
 <span class="kw">let</span> <span class="ident">verify_key</span> <span class="op">=</span> <span class="ident">VerifyingKey::from</span>(<span class="kw-2">&amp;</span><span class="ident">signing_key</span>); <span class="comment">// Serialize with `::to_encoded_point()`</span>
 <span class="macro">assert!</span>(<span class="ident">verify_key</span>.<span class="ident">verify</span>(<span class="ident">message</span>, <span class="kw-2">&amp;</span><span class="ident">signature</span>).<span class="ident">is_ok</span>());</code></pre></div>
 </div></details><h2 id="reexports" class="small-section-header"><a href="#reexports">Re-exports</a></h2>
-<div class="item-table"><div class="item-row"><div class="item-left import-item"><code>pub use ecdsa_core::<a class="mod" href="../../signature/index.html" title="mod signature">signature</a>;</code></div><div class="item-right docblock-short"></div></div></div><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left import-item"><code>pub use ecdsa_core::<a class="mod" href="../../signature/index.html" title="mod signature">signature</a>;</code></div><div class="item-right docblock-short"></div></div><div class="item-row"><div class="item-left import-item"><code>pub use ecdsa_core::signature::<a class="mod" href="../../digest/index.html" title="mod digest">digest</a>;</code></div><div class="item-right docblock-short"></div></div></div><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2>
 <div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="mod" href="recoverable/index.html" title="k256::ecdsa::recoverable mod">recoverable</a></div><div class="item-right docblock-short"><p>Ethereum-style “recoverable signatures”.</p>
 </div></div></div><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2>
 <div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.Error.html" title="k256::ecdsa::Error struct">Error</a></div><div class="item-right docblock-short"><p>Signature errors.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.SigningKey.html" title="k256::ecdsa::SigningKey struct">SigningKey</a></div><div class="item-right docblock-short"><p>ECDSA/secp256k1 signing key</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.VerifyingKey.html" title="k256::ecdsa::VerifyingKey struct">VerifyingKey</a></div><div class="item-right docblock-short"><p>ECDSA/secp256k1 verification key (i.e. public key)</p>
 </div></div></div><h2 id="types" class="small-section-header"><a href="#types">Type Definitions</a></h2>
 <div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="type" href="type.DerSignature.html" title="k256::ecdsa::DerSignature type">DerSignature</a></div><div class="item-right docblock-short"><p>ECDSA/secp256k1 signature (ASN.1 DER encoded)</p>
 </div></div><div class="item-row"><div class="item-left module-item"><a class="type" href="type.Signature.html" title="k256::ecdsa::Signature type">Signature</a></div><div class="item-right docblock-short"><p>ECDSA/secp256k1 signature (fixed-size)</p>

@@ -72,12 +72,12 @@ as ASN.1 DER.</p>
 <li><a href="https://doc.rust-lang.org/nightly/core/primitive.bool.html" title="bool"><code>bool</code></a>: ASN.1 <code>BOOLEAN</code>.</li>
 <li><a href="https://doc.rust-lang.org/nightly/core/primitive.i8.html" title="i8"><code>i8</code></a>, <a href="https://doc.rust-lang.org/nightly/core/primitive.i16.html" title="i16"><code>i16</code></a>, <a href="https://doc.rust-lang.org/nightly/core/primitive.i32.html" title="i32"><code>i32</code></a>, <a href="https://doc.rust-lang.org/nightly/core/primitive.i64.html" title="i64"><code>i64</code></a>, <a href="https://doc.rust-lang.org/nightly/core/primitive.i128.html" title="i128"><code>i128</code></a>: ASN.1 <code>INTEGER</code>.</li>
 <li><a href="https://doc.rust-lang.org/nightly/core/primitive.u8.html" title="u8"><code>u8</code></a>, <a href="https://doc.rust-lang.org/nightly/core/primitive.u16.html" title="u16"><code>u16</code></a>, <a href="https://doc.rust-lang.org/nightly/core/primitive.u32.html" title="u32"><code>u32</code></a>, <a href="https://doc.rust-lang.org/nightly/core/primitive.u64.html" title="u64"><code>u64</code></a>, <a href="https://doc.rust-lang.org/nightly/core/primitive.u128.html" title="u128"><code>u128</code></a>: ASN.1 <code>INTEGER</code>.</li>
-<li><a href="https://doc.rust-lang.org/nightly/core/primitive.str.html" title="str"><code>str</code></a>, <a href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="alloc::string::String"><code>String</code></a>: ASN.1 <code>UTF8String</code>.
+<li><a href="https://doc.rust-lang.org/nightly/core/primitive.str.html" title="str"><code>str</code></a>, [<code>String</code>][<code>alloc::string::String</code>]: ASN.1 <code>UTF8String</code>.
 <code>String</code> requires <code>alloc</code> feature. See also <a href="asn1/struct.Utf8String.html"><code>Utf8String</code></a>.
 Requires <code>alloc</code> feature. See also <a href="asn1/struct.SetOf.html"><code>SetOf</code></a>.</li>
 <li><a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="Option"><code>Option</code></a>: ASN.1 <code>OPTIONAL</code>.</li>
 <li>[<code>SystemTime</code>][<code>std::time::SystemTime</code>]: ASN.1 <code>GeneralizedTime</code>. Requires <code>std</code> feature.</li>
-<li><a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="alloc::vec::Vec"><code>Vec</code></a>: ASN.1 <code>SEQUENCE OF</code>. Requires <code>alloc</code> feature.</li>
+<li>[<code>Vec</code>][<code>alloc::vec::Vec</code>]: ASN.1 <code>SEQUENCE OF</code>. Requires <code>alloc</code> feature.</li>
 <li><code>[T; N]</code>: ASN.1 <code>SEQUENCE OF</code>. See also <a href="asn1/struct.SequenceOf.html"><code>SequenceOf</code></a>.</li>
 </ul>
 <p>The following ASN.1 types provided by this crate also impl these traits:</p>
@@ -91,7 +91,7 @@ Requires <code>alloc</code> feature. See also <a href="asn1/struct.SetOf.html"><
 <li><a href="asn1/struct.OctetString.html"><code>OctetString</code></a>: ASN.1 <code>OCTET STRING</code></li>
 <li><a href="asn1/struct.PrintableString.html"><code>PrintableString</code></a>: ASN.1 <code>PrintableString</code> (ASCII subset)</li>
 <li><a href="asn1/struct.SequenceOf.html"><code>SequenceOf</code></a>: ASN.1 <code>SEQUENCE OF</code></li>
-<li><a href="asn1/struct.SetOf.html"><code>SetOf</code></a>, <a href="asn1/struct.SetOfVec.html"><code>SetOfVec</code></a>: ASN.1 <code>SET OF</code></li>
+<li><a href="asn1/struct.SetOf.html"><code>SetOf</code></a>, <a href="asn1::SetOfVec"><code>SetOfVec</code></a>: ASN.1 <code>SET OF</code></li>
 <li><a href="asn1/struct.UIntBytes.html"><code>UIntBytes</code></a>: ASN.1 unsigned <code>INTEGER</code> with raw access to encoded bytes</li>
 <li><a href="asn1/struct.UtcTime.html"><code>UtcTime</code></a>: ASN.1 <code>UTCTime</code></li>
 <li><a href="asn1/struct.Utf8String.html"><code>Utf8String</code></a>: ASN.1 <code>UTF8String</code></li>
@@ -343,7 +343,6 @@ this library.</p>
 </div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.DecodeValue.html" title="der::DecodeValue trait">DecodeValue</a></div><div class="item-right docblock-short"><p>Decode the value part of a Tag-Length-Value encoded field, sans the <a href="enum.Tag.html" title="Tag"><code>Tag</code></a>
 and <a href="struct.Length.html" title="Length"><code>Length</code></a>.</p>
 </div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.DerOrd.html" title="der::DerOrd trait">DerOrd</a></div><div class="item-right docblock-short"><p>DER ordering trait.</p>
-</div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.Document.html" title="der::Document trait">Document</a></div><div class="item-right docblock-short"><p>ASN.1 DER-encoded document.</p>
 </div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.Encodable.html" title="der::Encodable trait">Encodable</a></div><div class="item-right docblock-short"><p>Encoding trait.</p>
 </div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.EncodeValue.html" title="der::EncodeValue trait">EncodeValue</a></div><div class="item-right docblock-short"><p>Encode the value part of a Tag-Length-Value encoded field, sans the <a href="enum.Tag.html" title="Tag"><code>Tag</code></a>
 and <a href="struct.Length.html" title="Length"><code>Length</code></a>.</p>
