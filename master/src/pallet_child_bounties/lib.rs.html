@@ -927,16 +927,16 @@
 <span class="comment">// See the License for the specific language governing permissions and</span>
 <span class="comment">// limitations under the License.</span>
 
-<span class="doccomment">//! # Child Bounties Pallet ( pallet-child-bounties )</span>
+<span class="doccomment">//! # Child Bounties Pallet ( `pallet-child-bounties` )</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## Child Bounty</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! &gt; NOTE: This pallet is tightly coupled with pallet-treasury and pallet-bounties.</span>
+<span class="doccomment">//! &gt; NOTE: This pallet is tightly coupled with `pallet-treasury` and `pallet-bounties`.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! With child bounties, a large bounty proposal can be divided into smaller chunks,</span>
 <span class="doccomment">//! for parallel execution, and for efficient governance and tracking of spent funds.</span>
-<span class="doccomment">//! A child-bounty is a smaller piece of work, extracted from a parent bounty.</span>
-<span class="doccomment">//! A curator is assigned after the child-bounty is created by the parent bounty curator,</span>
+<span class="doccomment">//! A child bounty is a smaller piece of work, extracted from a parent bounty.</span>
+<span class="doccomment">//! A curator is assigned after the child bounty is created by the parent bounty curator,</span>
 <span class="doccomment">//! to be delegated with the responsibility of assigning a payout address once the specified</span>
 <span class="doccomment">//! set of tasks is completed.</span>
 <span class="doccomment">//!</span>
@@ -945,22 +945,22 @@
 <span class="doccomment">//! ### Dispatchable Functions</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Child Bounty protocol:</span>
-<span class="doccomment">//! - `add_child_bounty` - Add a child-bounty for a parent-bounty to for dividing the work in</span>
+<span class="doccomment">//! - `add_child_bounty` - Add a child bounty for a parent bounty to for dividing the work in</span>
 <span class="doccomment">//!   smaller tasks.</span>
-<span class="doccomment">//! - `propose_curator` - Assign an account to a child-bounty as candidate curator.</span>
-<span class="doccomment">//! - `accept_curator` - Accept a child-bounty assignment from the parent-bounty curator, setting a</span>
+<span class="doccomment">//! - `propose_curator` - Assign an account to a child bounty as candidate curator.</span>
+<span class="doccomment">//! - `accept_curator` - Accept a child bounty assignment from the parent bounty curator, setting a</span>
 <span class="doccomment">//!   curator deposit.</span>
 <span class="doccomment">//! - `award_child_bounty` - Close and pay out the specified amount for the completed work.</span>
-<span class="doccomment">//! - `claim_child_bounty` - Claim a specific child-bounty amount from the payout address.</span>
-<span class="doccomment">//! - `unassign_curator` - Unassign an accepted curator from a specific child-bounty.</span>
-<span class="doccomment">//! - `close_child_bounty` - Cancel the child-bounty for a specific treasury amount and close the</span>
+<span class="doccomment">//! - `claim_child_bounty` - Claim a specific child bounty amount from the payout address.</span>
+<span class="doccomment">//! - `unassign_curator` - Unassign an accepted curator from a specific child bounty.</span>
+<span class="doccomment">//! - `close_child_bounty` - Cancel the child bounty for a specific treasury amount and close the</span>
 <span class="doccomment">//!   bounty.</span>
 
 <span class="comment">// Most of the business logic in this pallet has been</span>
 <span class="comment">// originally contributed by &quot;https://github.com/shamb0&quot;,</span>
 <span class="comment">// as part of the PR - https://github.com/paritytech/substrate/pull/7965.</span>
 <span class="comment">// The code has been moved here and then refactored in order to</span>
-<span class="comment">// extract child-bounties as a separate pallet.</span>
+<span class="comment">// extract child bounties as a separate pallet.</span>
 
 <span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>), <span class="ident">no_std</span>)]</span>
 
@@ -1013,7 +1013,7 @@
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ChildBountyStatus</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">BlockNumber</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// The child-bounty is added and waiting for curator assignment.</span>
 	<span class="ident">Added</span>,
-	<span class="doccomment">/// A curator has been proposed by the parent-bounty curator. Waiting for</span>
+	<span class="doccomment">/// A curator has been proposed by the parent bounty curator. Waiting for</span>
 	<span class="doccomment">/// acceptance from the child-bounty curator.</span>
 	<span class="ident">CuratorProposed</span> {
 		<span class="doccomment">/// The assigned child-bounty curator of this bounty.</span>
@@ -1048,7 +1048,7 @@
 	<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Config</span>:
 		<span class="ident">frame_system::Config</span> <span class="op">+</span> <span class="ident">pallet_treasury::Config</span> <span class="op">+</span> <span class="ident">pallet_bounties::Config</span>
 	{
-		<span class="doccomment">/// Maximum number of child-bounties that can be added to a parent bounty.</span>
+		<span class="doccomment">/// Maximum number of child bounties that can be added to a parent bounty.</span>
 		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
 		<span class="kw">type</span> <span class="ident">MaxActiveChildBountyCount</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>;
 
@@ -1069,7 +1069,7 @@
 		<span class="ident">ParentBountyNotActive</span>,
 		<span class="doccomment">/// The bounty balance is not enough to add new child-bounty.</span>
 		<span class="ident">InsufficientBountyBalance</span>,
-		<span class="doccomment">/// Number of child-bounties exceeds limit `MaxActiveChildBountyCount`.</span>
+		<span class="doccomment">/// Number of child bounties exceeds limit `MaxActiveChildBountyCount`.</span>
 		<span class="ident">TooManyChildBounties</span>,
 	}
 
@@ -1096,14 +1096,14 @@
 	<span class="attribute">#[<span class="ident">pallet::getter</span>(<span class="kw">fn</span> <span class="ident">child_bounty_count</span>)]</span>
 	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">ChildBountyCount</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageValue</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">BountyIndex</span>, <span class="ident">ValueQuery</span><span class="op">&gt;</span>;
 
-	<span class="doccomment">/// Number of child-bounties per parent bounty.</span>
+	<span class="doccomment">/// Number of child bounties per parent bounty.</span>
 	<span class="doccomment">/// Map of parent bounty index to number of child bounties.</span>
 	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
 	<span class="attribute">#[<span class="ident">pallet::getter</span>(<span class="kw">fn</span> <span class="ident">parent_child_bounties</span>)]</span>
 	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">ParentChildBounties</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span>
 		<span class="ident">StorageMap</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">Twox64Concat</span>, <span class="ident">BountyIndex</span>, <span class="ident">u32</span>, <span class="ident">ValueQuery</span><span class="op">&gt;</span>;
 
-	<span class="doccomment">/// Child-bounties that have been added.</span>
+	<span class="doccomment">/// Child bounties that have been added.</span>
 	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
 	<span class="attribute">#[<span class="ident">pallet::getter</span>(<span class="kw">fn</span> <span class="ident">child_bounties</span>)]</span>
 	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">ChildBounties</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageDoubleMap</span><span class="op">&lt;</span>
@@ -1138,7 +1138,7 @@
 		<span class="doccomment">/// parent bounty to child-bounty account, if parent bounty has enough</span>
 		<span class="doccomment">/// funds, else the call fails.</span>
 		<span class="doccomment">///</span>
-		<span class="doccomment">/// Upper bound to maximum number of active  child-bounties that can be</span>
+		<span class="doccomment">/// Upper bound to maximum number of active  child bounties that can be</span>
 		<span class="doccomment">/// added are managed via runtime trait config</span>
 		<span class="doccomment">/// [`Config::MaxActiveChildBountyCount`].</span>
 		<span class="doccomment">///</span>
@@ -1339,12 +1339,12 @@
 		<span class="doccomment">/// the curator of the parent bounty, or any signed origin.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// For the origin other than T::RejectOrigin and the child-bounty</span>
-		<span class="doccomment">/// curator, parent-bounty must be in active state, for this call to</span>
+		<span class="doccomment">/// curator, parent bounty must be in active state, for this call to</span>
 		<span class="doccomment">/// work. We allow child-bounty curator and T::RejectOrigin to execute</span>
-		<span class="doccomment">/// this call irrespective of the parent-bounty state.</span>
+		<span class="doccomment">/// this call irrespective of the parent bounty state.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// If this function is called by the `RejectOrigin` or the</span>
-		<span class="doccomment">/// parent-bounty curator, we assume that the child-bounty curator is</span>
+		<span class="doccomment">/// parent bounty curator, we assume that the child-bounty curator is</span>
 		<span class="doccomment">/// malicious or inactive. As a result, child-bounty curator deposit is</span>
 		<span class="doccomment">/// slashed.</span>
 		<span class="doccomment">///</span>
@@ -1398,7 +1398,7 @@
 						},
 						<span class="ident">ChildBountyStatus::CuratorProposed</span> { <span class="kw-2">ref</span> <span class="ident">curator</span> } =&gt; {
 							<span class="comment">// A child-bounty curator has been proposed, but not accepted yet.</span>
-							<span class="comment">// Either `RejectOrigin`, parent-bounty curator or the proposed</span>
+							<span class="comment">// Either `RejectOrigin`, parent bounty curator or the proposed</span>
 							<span class="comment">// child-bounty curator can unassign the child-bounty curator.</span>
 							<span class="macro">ensure!</span>(
 								<span class="ident">maybe_sender</span>.<span class="ident">map_or</span>(<span class="bool-val">true</span>, <span class="op">|</span><span class="ident">sender</span><span class="op">|</span> {
@@ -1436,7 +1436,7 @@
 										<span class="ident">update_due</span> <span class="op">&lt;</span> <span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::block_number</span>()
 									{
 										<span class="comment">// Slash the child-bounty curator if</span>
-										<span class="comment">// + the call is made by the parent-bounty curator.</span>
+										<span class="comment">// + the call is made by the parent bounty curator.</span>
 										<span class="comment">// + or the curator is inactive.</span>
 										<span class="ident">slash_curator</span>(<span class="ident">curator</span>, <span class="kw-2">&amp;mut</span> <span class="ident">child_bounty</span>.<span class="ident">curator_deposit</span>);
 									<span class="comment">// Continue to change bounty status below.</span>
@@ -1468,7 +1468,7 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// The beneficiary will be able to claim the funds after a delay.</span>
 		<span class="doccomment">///</span>
-		<span class="doccomment">/// The dispatch origin for this call must be the master curator or</span>
+		<span class="doccomment">/// The dispatch origin for this call must be the parent curator or</span>
 		<span class="doccomment">/// curator of this child-bounty.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Parent bounty must be in active state, for this child-bounty call to</span>
@@ -1747,7 +1747,7 @@
 						<span class="comment">// Nothing extra to do besides the removal of the child-bounty below.</span>
 					},
 					<span class="ident">ChildBountyStatus::Active</span> { <span class="ident">curator</span> } =&gt; {
-						<span class="comment">// Cancelled by master curator or RejectOrigin,</span>
+						<span class="comment">// Cancelled by parent curator or RejectOrigin,</span>
 						<span class="comment">// refund deposit of the working child-bounty curator.</span>
 						<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">T::Currency::unreserve</span>(<span class="ident">curator</span>, <span class="ident">child_bounty</span>.<span class="ident">curator_deposit</span>);
 						<span class="comment">// Then execute removal of the child-bounty below.</span>
@@ -1762,7 +1762,7 @@
 					},
 				}
 
-				<span class="comment">// Revert the curator fee back to parent-bounty curator &amp;</span>
+				<span class="comment">// Revert the curator fee back to parent bounty curator &amp;</span>
 				<span class="comment">// reduce the active child-bounty count.</span>
 				<span class="ident">ChildrenCuratorFees</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::mutate</span>(<span class="ident">parent_bounty_id</span>, <span class="op">|</span><span class="ident">value</span><span class="op">|</span> {
 					<span class="kw-2">*</span><span class="ident">value</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">saturating_sub</span>(<span class="ident">child_bounty</span>.<span class="ident">fee</span>)
@@ -1800,7 +1800,7 @@
 }
 
 <span class="comment">// Implement ChildBountyManager to connect with the bounties pallet. This is</span>
-<span class="comment">// where we pass the active child-bounties and child curator fees to the parent</span>
+<span class="comment">// where we pass the active child bounties and child curator fees to the parent</span>
 <span class="comment">// bounty.</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">pallet_bounties::ChildBountyManager</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">child_bounties_count</span>(

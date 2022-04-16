@@ -899,6 +899,14 @@
 <span id="894">894</span>
 <span id="895">895</span>
 <span id="896">896</span>
+<span id="897">897</span>
+<span id="898">898</span>
+<span id="899">899</span>
+<span id="900">900</span>
+<span id="901">901</span>
+<span id="902">902</span>
+<span id="903">903</span>
+<span id="904">904</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -936,10 +944,17 @@
 <span class="doccomment">//! curator or once the bounty is active or payout is pending, resulting in the slash of the</span>
 <span class="doccomment">//! curator&#39;s deposit.</span>
 <span class="doccomment">//!</span>
+<span class="doccomment">//! This pallet may opt into using a [`ChildBountyManager`] that enables bounties to be split into</span>
+<span class="doccomment">//! sub-bounties, as children of anh established bounty (called the parent in the context of it&#39;s</span>
+<span class="doccomment">//! children).</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! &gt; NOTE: The parent bounty cannot be closed if it has a non-zero number of it has active child</span>
+<span class="doccomment">//! &gt; bounties associated with it.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ### Terminology</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Bounty:</span>
+<span class="doccomment">//!</span>
 <span class="doccomment">//! - **Bounty spending proposal:** A proposal to reward a predefined body of work upon completion</span>
 <span class="doccomment">//!   by the Treasury.</span>
 <span class="doccomment">//! - **Proposer:** An account proposing a bounty spending.</span>
@@ -961,6 +976,7 @@
 <span class="doccomment">//! ### Dispatchable Functions</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Bounty protocol:</span>
+<span class="doccomment">//!</span>
 <span class="doccomment">//! - `propose_bounty` - Propose a specific treasury amount to be earmarked for a predefined set of</span>
 <span class="doccomment">//!   tasks and stake the required deposit.</span>
 <span class="doccomment">//! - `approve_bounty` - Accept a specific treasury amount to be earmarked for a predefined body of</span>
@@ -1066,9 +1082,9 @@
 	},
 }
 
-<span class="doccomment">/// The child-bounty manager.</span>
+<span class="doccomment">/// The child bounty manager.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ChildBountyManager</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span> {
-	<span class="doccomment">/// Get the active child-bounties for a parent bounty.</span>
+	<span class="doccomment">/// Get the active child bounties for a parent bounty.</span>
 	<span class="kw">fn</span> <span class="ident">child_bounties_count</span>(<span class="ident">bounty_id</span>: <span class="ident">BountyIndex</span>) -&gt; <span class="ident">BountyIndex</span>;
 
 	<span class="doccomment">/// Get total curator fees of children-bounty curators.</span>
@@ -1132,7 +1148,7 @@
 		<span class="doccomment">/// Weight information for extrinsics in this pallet.</span>
 		<span class="kw">type</span> <span class="ident">WeightInfo</span>: <span class="ident">WeightInfo</span>;
 
-		<span class="doccomment">/// The child-bounty manager.</span>
+		<span class="doccomment">/// The child bounty manager.</span>
 		<span class="kw">type</span> <span class="ident">ChildBountyManager</span>: <span class="ident">ChildBountyManager</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 	}
 
@@ -1157,7 +1173,7 @@
 		<span class="ident">PendingPayout</span>,
 		<span class="doccomment">/// The bounties cannot be claimed/closed because it&#39;s still in the countdown period.</span>
 		<span class="ident">Premature</span>,
-		<span class="doccomment">/// The bounty cannot be closed because it has active child-bounties.</span>
+		<span class="doccomment">/// The bounty cannot be closed because it has active child bounties.</span>
 		<span class="ident">HasActiveChildBounty</span>,
 		<span class="doccomment">/// Too many approvals are already queued.</span>
 		<span class="ident">TooManyQueued</span>,
@@ -1453,7 +1469,7 @@
 			<span class="ident">Bounties</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::try_mutate_exists</span>(<span class="ident">bounty_id</span>, <span class="op">|</span><span class="ident">maybe_bounty</span><span class="op">|</span> -&gt; <span class="ident">DispatchResult</span> {
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bounty</span> <span class="op">=</span> <span class="ident">maybe_bounty</span>.<span class="ident">as_mut</span>().<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::InvalidIndex</span>)<span class="question-mark">?</span>;
 
-				<span class="comment">// Ensure no active child-bounties before processing the call.</span>
+				<span class="comment">// Ensure no active child bounties before processing the call.</span>
 				<span class="macro">ensure!</span>(
 					<span class="ident">T::ChildBountyManager::child_bounties_count</span>(<span class="ident">bounty_id</span>) <span class="op">==</span> <span class="number">0</span>,
 					<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::HasActiveChildBounty</span>
@@ -1511,8 +1527,8 @@
 					<span class="kw">let</span> <span class="ident">err_amount</span> <span class="op">=</span> <span class="ident">T::Currency::unreserve</span>(<span class="kw-2">&amp;</span><span class="ident">curator</span>, <span class="ident">bounty</span>.<span class="ident">curator_deposit</span>);
 					<span class="macro">debug_assert!</span>(<span class="ident">err_amount</span>.<span class="ident">is_zero</span>());
 
-					<span class="comment">// Get total child-bounties curator fees, and subtract it from master curator</span>
-					<span class="comment">// fee.</span>
+					<span class="comment">// Get total child bounties curator fees, and subtract it from the parent</span>
+					<span class="comment">// curator fee (the fee in present referenced bounty, `self`).</span>
 					<span class="kw">let</span> <span class="ident">children_fee</span> <span class="op">=</span> <span class="ident">T::ChildBountyManager::children_curator_fees</span>(<span class="ident">bounty_id</span>);
 					<span class="macro">debug_assert!</span>(<span class="ident">children_fee</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">fee</span>);
 
@@ -1564,7 +1580,7 @@
 				<span class="op">|</span><span class="ident">maybe_bounty</span><span class="op">|</span> -&gt; <span class="ident">DispatchResultWithPostInfo</span> {
 					<span class="kw">let</span> <span class="ident">bounty</span> <span class="op">=</span> <span class="ident">maybe_bounty</span>.<span class="ident">as_ref</span>().<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::InvalidIndex</span>)<span class="question-mark">?</span>;
 
-					<span class="comment">// Ensure no active child-bounties before processing the call.</span>
+					<span class="comment">// Ensure no active child bounties before processing the call.</span>
 					<span class="macro">ensure!</span>(
 						<span class="ident">T::ChildBountyManager::child_bounties_count</span>(<span class="ident">bounty_id</span>) <span class="op">==</span> <span class="number">0</span>,
 						<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::HasActiveChildBounty</span>

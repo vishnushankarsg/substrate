@@ -45,7 +45,7 @@ bounty and the parent bounty must be in “active” state.</p>
 <p>Child-bounty gets added successfully &amp; fund gets transferred from
 parent bounty to child-bounty account, if parent bounty has enough
 funds, else the call fails.</p>
-<p>Upper bound to maximum number of active  child-bounties that can be
+<p>Upper bound to maximum number of active  child bounties that can be
 added are managed via runtime trait config
 <a href="trait.Config.html#associatedtype.MaxActiveChildBountyCount" title="Config::MaxActiveChildBountyCount"><code>Config::MaxActiveChildBountyCount</code></a>.</p>
 <p>If the call is success, the status of child-bounty is updated to
@@ -87,11 +87,11 @@ call completion.</p>
 <p>The dispatch origin for this call can be either <code>RejectOrigin</code>, or
 the curator of the parent bounty, or any signed origin.</p>
 <p>For the origin other than T::RejectOrigin and the child-bounty
-curator, parent-bounty must be in active state, for this call to
+curator, parent bounty must be in active state, for this call to
 work. We allow child-bounty curator and T::RejectOrigin to execute
-this call irrespective of the parent-bounty state.</p>
+this call irrespective of the parent bounty state.</p>
 <p>If this function is called by the <code>RejectOrigin</code> or the
-parent-bounty curator, we assume that the child-bounty curator is
+parent bounty curator, we assume that the child-bounty curator is
 malicious or inactive. As a result, child-bounty curator deposit is
 slashed.</p>
 <p>If the origin is the child-bounty curator, we take this as a sign
@@ -113,7 +113,7 @@ completion.</p>
 </ul>
 </div><h3 id="variant.award_child_bounty" class="variant small-section-header"><a href="#variant.award_child_bounty" class="anchor field"></a><code>award_child_bounty</code></h3><div class="sub-variant" id="variant.award_child_bounty.fields"><h4>Fields</h4><div class="sub-variant-field"><span id="variant.award_child_bounty.field.parent_bounty_id" class="variant small-section-header"><a href="#variant.award_child_bounty.field.parent_bounty_id" class="anchor field"></a><code>parent_bounty_id:&nbsp;<a class="type" href="../../pallet_bounties/type.BountyIndex.html" title="type pallet_bounties::BountyIndex">BountyIndex</a></code></span></div><div class="sub-variant-field"><span id="variant.award_child_bounty.field.child_bounty_id" class="variant small-section-header"><a href="#variant.award_child_bounty.field.child_bounty_id" class="anchor field"></a><code>child_bounty_id:&nbsp;<a class="type" href="../../pallet_bounties/type.BountyIndex.html" title="type pallet_bounties::BountyIndex">BountyIndex</a></code></span></div><div class="sub-variant-field"><span id="variant.award_child_bounty.field.beneficiary" class="variant small-section-header"><a href="#variant.award_child_bounty.field.beneficiary" class="anchor field"></a><code>beneficiary:&nbsp;&lt;T::<a class="associatedtype" href="../../frame_system/pallet/trait.Config.html#associatedtype.Lookup" title="type frame_system::pallet::Config::Lookup">Lookup</a> as <a class="trait" href="../../sp_runtime/traits/trait.StaticLookup.html" title="trait sp_runtime::traits::StaticLookup">StaticLookup</a>&gt;::<a class="associatedtype" href="../../sp_runtime/traits/trait.StaticLookup.html#associatedtype.Source" title="type sp_runtime::traits::StaticLookup::Source">Source</a></code></span></div></div><div class="docblock"><p>Award child-bounty to a beneficiary.</p>
 <p>The beneficiary will be able to claim the funds after a delay.</p>
-<p>The dispatch origin for this call must be the master curator or
+<p>The dispatch origin for this call must be the parent curator or
 curator of this child-bounty.</p>
 <p>Parent bounty must be in active state, for this child-bounty call to
 work.</p>
