@@ -614,7 +614,7 @@
 
 	<span class="attribute">#[<span class="ident">pallet::call</span>]</span>
 	<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-		<span class="doccomment">/// Index and store data on chain. Minimum data size is 1 bytes, maximum is</span>
+		<span class="doccomment">/// Index and store data off chain. Minimum data size is 1 bytes, maximum is</span>
 		<span class="doccomment">/// `MaxTransactionSize`. Data will be removed after `STORAGE_PERIOD` blocks, unless `renew`</span>
 		<span class="doccomment">/// is called. # &lt;weight&gt;</span>
 		<span class="doccomment">/// - n*log(n) of data size, as all data is pushed to an in-memory trie.</span>

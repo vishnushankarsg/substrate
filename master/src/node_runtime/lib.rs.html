@@ -1957,6 +1957,13 @@
 <span id="1952">1952</span>
 <span id="1953">1953</span>
 <span id="1954">1954</span>
+<span id="1955">1955</span>
+<span id="1956">1956</span>
+<span id="1957">1957</span>
+<span id="1958">1958</span>
+<span id="1959">1959</span>
+<span id="1960">1960</span>
+<span id="1961">1961</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -2737,6 +2744,11 @@
 	<span class="kw">type</span> <span class="ident">Tracks</span> <span class="op">=</span> <span class="ident">TracksInfo</span>;
 }
 
+<span class="kw">impl</span> <span class="ident">pallet_remark::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">pallet_remark::weights::SubstrateWeight</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
+}
+
 <span class="macro">parameter_types!</span> {
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">LaunchPeriod</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">28</span> <span class="op">*</span> <span class="number">24</span> <span class="op">*</span> <span class="number">60</span> <span class="op">*</span> <span class="ident">MINUTES</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">VotingPeriod</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">28</span> <span class="op">*</span> <span class="number">24</span> <span class="op">*</span> <span class="number">60</span> <span class="op">*</span> <span class="ident">MINUTES</span>;
@@ -3416,6 +3428,7 @@
 		<span class="ident">StateTrieMigration</span>: <span class="ident">pallet_state_trie_migration</span>,
 		<span class="ident">ChildBounties</span>: <span class="ident">pallet_child_bounties</span>,
 		<span class="ident">Referenda</span>: <span class="ident">pallet_referenda</span>,
+		<span class="ident">Remark</span>: <span class="ident">pallet_remark</span>,
 		<span class="ident">ConvictionVoting</span>: <span class="ident">pallet_conviction_voting</span>,
 		<span class="ident">Whitelist</span>: <span class="ident">pallet_whitelist</span>,
 	}
@@ -3506,6 +3519,7 @@
 		[<span class="ident">pallet_preimage</span>, <span class="ident">Preimage</span>]
 		[<span class="ident">pallet_proxy</span>, <span class="ident">Proxy</span>]
 		[<span class="ident">pallet_referenda</span>, <span class="ident">Referenda</span>]
+		[<span class="ident">pallet_remark</span>, <span class="ident">Remark</span>]
 		[<span class="ident">pallet_scheduler</span>, <span class="ident">Scheduler</span>]
 		[<span class="ident">pallet_session</span>, <span class="ident">SessionBench</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>]
 		[<span class="ident">pallet_staking</span>, <span class="ident">Staking</span>]
