@@ -2228,7 +2228,7 @@
 		<span class="macro">ensure!</span>(
 			<span class="ident"><span class="self">Self</span>::queued_solution</span>().<span class="ident">map_or</span>(<span class="bool-val">true</span>, <span class="op">|</span><span class="ident">q</span>: <span class="ident">ReadySolution</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">|</span> <span class="ident">raw_solution</span>
 				.<span class="ident">score</span>
-				.<span class="ident">strict_threshold_better</span>(<span class="ident">q</span>.<span class="ident">score</span>, <span class="ident">T::SolutionImprovementThreshold::get</span>())),
+				.<span class="ident">strict_threshold_better</span>(<span class="ident">q</span>.<span class="ident">score</span>, <span class="ident">T::BetterUnsignedThreshold::get</span>())),
 			<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::PreDispatchWeakSubmission</span>,
 		);
 
@@ -2670,7 +2670,7 @@
 			.<span class="ident">desired_targets</span>(<span class="number">1</span>)
 			.<span class="ident">add_voter</span>(<span class="number">7</span>, <span class="number">2</span>, <span class="macro">bounded_vec!</span>[<span class="number">10</span>])
 			.<span class="ident">add_voter</span>(<span class="number">8</span>, <span class="number">5</span>, <span class="macro">bounded_vec!</span>[<span class="number">10</span>])
-			.<span class="ident">solution_improvement_threshold</span>(<span class="ident">Perbill::from_percent</span>(<span class="number">50</span>))
+			.<span class="ident">better_unsigned_threshold</span>(<span class="ident">Perbill::from_percent</span>(<span class="number">50</span>))
 			.<span class="ident">build_and_execute</span>(<span class="op">|</span><span class="op">|</span> {
 				<span class="ident">roll_to</span>(<span class="number">25</span>);
 				<span class="macro">assert!</span>(<span class="ident">MultiPhase::current_phase</span>().<span class="ident">is_unsigned</span>());

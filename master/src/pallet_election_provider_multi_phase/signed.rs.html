@@ -955,6 +955,54 @@
 <span id="950">950</span>
 <span id="951">951</span>
 <span id="952">952</span>
+<span id="953">953</span>
+<span id="954">954</span>
+<span id="955">955</span>
+<span id="956">956</span>
+<span id="957">957</span>
+<span id="958">958</span>
+<span id="959">959</span>
+<span id="960">960</span>
+<span id="961">961</span>
+<span id="962">962</span>
+<span id="963">963</span>
+<span id="964">964</span>
+<span id="965">965</span>
+<span id="966">966</span>
+<span id="967">967</span>
+<span id="968">968</span>
+<span id="969">969</span>
+<span id="970">970</span>
+<span id="971">971</span>
+<span id="972">972</span>
+<span id="973">973</span>
+<span id="974">974</span>
+<span id="975">975</span>
+<span id="976">976</span>
+<span id="977">977</span>
+<span id="978">978</span>
+<span id="979">979</span>
+<span id="980">980</span>
+<span id="981">981</span>
+<span id="982">982</span>
+<span id="983">983</span>
+<span id="984">984</span>
+<span id="985">985</span>
+<span id="986">986</span>
+<span id="987">987</span>
+<span id="988">988</span>
+<span id="989">989</span>
+<span id="990">990</span>
+<span id="991">991</span>
+<span id="992">992</span>
+<span id="993">993</span>
+<span id="994">994</span>
+<span id="995">995</span>
+<span id="996">996</span>
+<span id="997">997</span>
+<span id="998">998</span>
+<span id="999">999</span>
+<span id="1000">1000</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -1248,7 +1296,7 @@
 					<span class="prelude-val">None</span> =&gt; <span class="kw">return</span> <span class="ident">InsertResult::NotInserted</span>,
 					<span class="prelude-val">Some</span>((<span class="ident">score</span>, <span class="kw">_</span>)) =&gt; <span class="kw-2">*</span><span class="ident">score</span>,
 				};
-				<span class="kw">let</span> <span class="ident">threshold</span> <span class="op">=</span> <span class="ident">T::SolutionImprovementThreshold::get</span>();
+				<span class="kw">let</span> <span class="ident">threshold</span> <span class="op">=</span> <span class="ident">T::BetterSignedThreshold::get</span>();
 
 				<span class="comment">// if we haven&#39;t improved on the weakest score, don&#39;t change anything.</span>
 				<span class="kw">if</span> <span class="op">!</span><span class="ident">insert_score</span>.<span class="ident">strict_threshold_better</span>(<span class="ident">weakest_score</span>, <span class="ident">threshold</span>) {
@@ -1456,7 +1504,7 @@
 			<span class="ident">balances</span>, <span class="ident">raw_solution</span>, <span class="ident">roll_to</span>, <span class="ident">ExtBuilder</span>, <span class="ident">MultiPhase</span>, <span class="ident">Origin</span>, <span class="ident">Runtime</span>,
 			<span class="ident">SignedMaxSubmissions</span>, <span class="ident">SignedMaxWeight</span>,
 		},
-		<span class="ident">Error</span>, <span class="ident">Phase</span>,
+		<span class="ident">Error</span>, <span class="ident">Perbill</span>, <span class="ident">Phase</span>,
 	};
 	<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">assert_noop</span>, <span class="ident">assert_ok</span>, <span class="ident">assert_storage_noop</span>};
 
@@ -1587,6 +1635,54 @@
 				<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::SignedQueueFull</span>,
 			);
 		})
+	}
+
+	<span class="attribute">#[<span class="ident">test</span>]</span>
+	<span class="kw">fn</span> <span class="ident">cannot_submit_worse_with_full_queue_depends_on_threshold</span>() {
+		<span class="ident">ExtBuilder::default</span>()
+			.<span class="ident">signed_max_submission</span>(<span class="number">1</span>)
+			.<span class="ident">better_signed_threshold</span>(<span class="ident">Perbill::from_percent</span>(<span class="number">20</span>))
+			.<span class="ident">build_and_execute</span>(<span class="op">|</span><span class="op">|</span> {
+				<span class="ident">roll_to</span>(<span class="number">15</span>);
+				<span class="macro">assert!</span>(<span class="ident">MultiPhase::current_phase</span>().<span class="ident">is_signed</span>());
+
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> {
+					<span class="ident">score</span>: <span class="ident">ElectionScore</span> {
+						<span class="ident">minimal_stake</span>: <span class="number">5u128</span>,
+						<span class="ident">sum_stake</span>: <span class="number">0u128</span>,
+						<span class="ident">sum_stake_squared</span>: <span class="number">10u128</span>,
+					},
+					..<span class="ident">Default::default</span>()
+				};
+				<span class="macro">assert_ok!</span>(<span class="ident">MultiPhase::submit</span>(<span class="ident">Origin::signed</span>(<span class="number">99</span>), <span class="ident">Box::new</span>(<span class="ident">solution</span>)));
+
+				<span class="comment">// This is 10% better, so does not meet the 20% threshold and is therefore rejected.</span>
+				<span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> {
+					<span class="ident">score</span>: <span class="ident">ElectionScore</span> {
+						<span class="ident">minimal_stake</span>: <span class="number">5u128</span>,
+						<span class="ident">sum_stake</span>: <span class="number">0u128</span>,
+						<span class="ident">sum_stake_squared</span>: <span class="number">9u128</span>,
+					},
+					..<span class="ident">Default::default</span>()
+				};
+
+				<span class="macro">assert_noop!</span>(
+					<span class="ident">MultiPhase::submit</span>(<span class="ident">Origin::signed</span>(<span class="number">99</span>), <span class="ident">Box::new</span>(<span class="ident">solution</span>)),
+					<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::SignedQueueFull</span>,
+				);
+
+				<span class="comment">// This is however 30% better and should therefore be accepted.</span>
+				<span class="ident">solution</span> <span class="op">=</span> <span class="ident">RawSolution</span> {
+					<span class="ident">score</span>: <span class="ident">ElectionScore</span> {
+						<span class="ident">minimal_stake</span>: <span class="number">5u128</span>,
+						<span class="ident">sum_stake</span>: <span class="number">0u128</span>,
+						<span class="ident">sum_stake_squared</span>: <span class="number">7u128</span>,
+					},
+					..<span class="ident">Default::default</span>()
+				};
+
+				<span class="macro">assert_ok!</span>(<span class="ident">MultiPhase::submit</span>(<span class="ident">Origin::signed</span>(<span class="number">99</span>), <span class="ident">Box::new</span>(<span class="ident">solution</span>)));
+			})
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
