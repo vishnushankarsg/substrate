@@ -859,6 +859,14 @@
 <span id="854">854</span>
 <span id="855">855</span>
 <span id="856">856</span>
+<span id="857">857</span>
+<span id="858">858</span>
+<span id="859">859</span>
+<span id="860">860</span>
+<span id="861">861</span>
+<span id="862">862</span>
+<span id="863">863</span>
+<span id="864">864</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -964,16 +972,24 @@
 		<span class="ident">Remove</span>
 	}
 
+	<span class="doccomment">/// Returns `true` when the balance of `account` can be increased by `amount`.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// - `id`: The id of the asset that should be increased.</span>
+	<span class="doccomment">/// - `who`: The account of which the balance should be increased.</span>
+	<span class="doccomment">/// - `amount`: The amount by which the balance should be increased.</span>
+	<span class="doccomment">/// - `increase_supply`: Will the supply of the asset be increased by `amount` at the same time</span>
+	<span class="doccomment">///   as crediting the `account`.</span>
 	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">can_increase</span>(
 		<span class="ident">id</span>: <span class="ident">T::AssetId</span>,
 		<span class="ident">who</span>: <span class="kw-2">&amp;</span><span class="ident">T::AccountId</span>,
 		<span class="ident">amount</span>: <span class="ident">T::Balance</span>,
+		<span class="ident">increase_supply</span>: <span class="ident">bool</span>,
 	) -&gt; <span class="ident">DepositConsequence</span> {
 		<span class="kw">let</span> <span class="ident">details</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">Asset</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">id</span>) {
 			<span class="prelude-val">Some</span>(<span class="ident">details</span>) =&gt; <span class="ident">details</span>,
 			<span class="prelude-val">None</span> =&gt; <span class="kw">return</span> <span class="ident">DepositConsequence::UnknownAsset</span>,
 		};
-		<span class="kw">if</span> <span class="ident">details</span>.<span class="ident">supply</span>.<span class="ident">checked_add</span>(<span class="kw-2">&amp;</span><span class="ident">amount</span>).<span class="ident">is_none</span>() {
+		<span class="kw">if</span> <span class="ident">increase_supply</span> <span class="op">&amp;&amp;</span> <span class="ident">details</span>.<span class="ident">supply</span>.<span class="ident">checked_add</span>(<span class="kw-2">&amp;</span><span class="ident">amount</span>).<span class="ident">is_none</span>() {
 			<span class="kw">return</span> <span class="ident">DepositConsequence::Overflow</span>
 		}
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">balance</span>) <span class="op">=</span> <span class="ident"><span class="self">Self</span>::maybe_balance</span>(<span class="ident">id</span>, <span class="ident">who</span>) {
@@ -1144,7 +1160,7 @@
 			(<span class="bool-val">true</span>, <span class="prelude-val">Some</span>(<span class="ident">dust</span>)) =&gt; (<span class="ident">amount</span>, <span class="prelude-val">Some</span>(<span class="ident">dust</span>)),
 			<span class="kw">_</span> =&gt; (<span class="ident">debit</span>, <span class="prelude-val">None</span>),
 		};
-		<span class="ident"><span class="self">Self</span>::can_increase</span>(<span class="ident">id</span>, <span class="kw-2">&amp;</span><span class="ident">dest</span>, <span class="ident">credit</span>).<span class="ident">into_result</span>()<span class="question-mark">?</span>;
+		<span class="ident"><span class="self">Self</span>::can_increase</span>(<span class="ident">id</span>, <span class="kw-2">&amp;</span><span class="ident">dest</span>, <span class="ident">credit</span>, <span class="bool-val">false</span>).<span class="ident">into_result</span>()<span class="question-mark">?</span>;
 		<span class="prelude-val">Ok</span>((<span class="ident">credit</span>, <span class="ident">maybe_burn</span>))
 	}
 
@@ -1240,7 +1256,7 @@
 			<span class="kw">return</span> <span class="prelude-val">Ok</span>(())
 		}
 
-		<span class="ident"><span class="self">Self</span>::can_increase</span>(<span class="ident">id</span>, <span class="ident">beneficiary</span>, <span class="ident">amount</span>).<span class="ident">into_result</span>()<span class="question-mark">?</span>;
+		<span class="ident"><span class="self">Self</span>::can_increase</span>(<span class="ident">id</span>, <span class="ident">beneficiary</span>, <span class="ident">amount</span>, <span class="bool-val">true</span>).<span class="ident">into_result</span>()<span class="question-mark">?</span>;
 		<span class="ident">Asset</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::try_mutate</span>(<span class="ident">id</span>, <span class="op">|</span><span class="ident">maybe_details</span><span class="op">|</span> -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">details</span> <span class="op">=</span> <span class="ident">maybe_details</span>.<span class="ident">as_mut</span>().<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::Unknown</span>)<span class="question-mark">?</span>;
 
