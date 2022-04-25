@@ -213,6 +213,10 @@
 <span id="208">208</span>
 <span id="209">209</span>
 <span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -421,6 +425,10 @@
 		<span class="prelude-val">Some</span>(<span class="ident">Subcommand::TryRuntime</span>) =&gt; <span class="prelude-val">Err</span>(<span class="string">&quot;TryRuntime wasn&#39;t enabled when building the node. \
 				You can enable it with `--features try-runtime`.&quot;</span>
 			.<span class="ident">into</span>()),
+		<span class="prelude-val">Some</span>(<span class="ident">Subcommand::ChainInfo</span>(<span class="ident">cmd</span>)) =&gt; {
+			<span class="kw">let</span> <span class="ident">runner</span> <span class="op">=</span> <span class="ident">cli</span>.<span class="ident">create_runner</span>(<span class="ident">cmd</span>)<span class="question-mark">?</span>;
+			<span class="ident">runner</span>.<span class="ident">sync_run</span>(<span class="op">|</span><span class="ident">config</span><span class="op">|</span> <span class="ident">cmd</span>.<span class="ident">run</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>))
+		},
 	}
 }
 </code></pre></div>

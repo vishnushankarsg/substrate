@@ -53,6 +53,9 @@
 <span id="48">48</span>
 <span id="49">49</span>
 <span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">sc_cli::RunCmd</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">clap::Parser</span>)]</span>
@@ -102,6 +105,9 @@
 	<span class="doccomment">/// Try some command against runtime state. Note: `try-runtime` feature must be enabled.</span>
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;try-runtime&quot;</span>))]</span>
 	<span class="ident">TryRuntime</span>,
+
+	<span class="doccomment">/// Db meta columns information.</span>
+	<span class="ident">ChainInfo</span>(<span class="ident">sc_cli::ChainInfoCmd</span>),
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="node_template" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (e745b4ddb 2022-04-07)" ></div>
