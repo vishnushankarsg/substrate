@@ -451,6 +451,7 @@
 <span id="446">446</span>
 <span id="447">447</span>
 <span id="448">448</span>
+<span id="449">449</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2021 Parity Technologies (UK) Ltd.</span>
@@ -471,20 +472,21 @@
 
 <span class="doccomment">//! Wasmer specific impls for sandbox</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::{
-	<span class="ident">error</span>::{<span class="ident">Error</span>, <span class="prelude-ty">Result</span>},
-	<span class="ident">sandbox::Memory</span>,
-	<span class="ident">util</span>::{<span class="ident">checked_range</span>, <span class="ident">MemoryTransfer</span>},
-};
-<span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
-<span class="kw">use</span> <span class="ident">sp_core::sandbox::HostError</span>;
-<span class="kw">use</span> <span class="ident">sp_wasm_interface</span>::{<span class="ident">FunctionContext</span>, <span class="ident">Pointer</span>, <span class="ident">ReturnValue</span>, <span class="ident">Value</span>, <span class="ident">WordSize</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">cell::RefCell</span>, <span class="ident">collections::HashMap</span>, <span class="ident">rc::Rc</span>};
+
 <span class="kw">use</span> <span class="ident">wasmer::RuntimeError</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::sandbox</span>::{
-	<span class="ident">BackendInstance</span>, <span class="ident">GuestEnvironment</span>, <span class="ident">InstantiationError</span>, <span class="ident">SandboxContext</span>, <span class="ident">SandboxInstance</span>,
-	<span class="ident">SupervisorFuncIndex</span>,
+<span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
+<span class="kw">use</span> <span class="ident">sp_sandbox::HostError</span>;
+<span class="kw">use</span> <span class="ident">sp_wasm_interface</span>::{<span class="ident">FunctionContext</span>, <span class="ident">Pointer</span>, <span class="ident">ReturnValue</span>, <span class="ident">Value</span>, <span class="ident">WordSize</span>};
+
+<span class="kw">use</span> <span class="kw">crate</span>::{
+	<span class="ident">error</span>::{<span class="ident">Error</span>, <span class="prelude-ty">Result</span>},
+	<span class="ident">sandbox</span>::{
+		<span class="ident">BackendInstance</span>, <span class="ident">GuestEnvironment</span>, <span class="ident">InstantiationError</span>, <span class="ident">Memory</span>, <span class="ident">SandboxContext</span>,
+		<span class="ident">SandboxInstance</span>, <span class="ident">SupervisorFuncIndex</span>,
+	},
+	<span class="ident">util</span>::{<span class="ident">checked_range</span>, <span class="ident">MemoryTransfer</span>},
 };
 
 <span class="macro">environmental::environmental!</span>(<span class="ident">SandboxContextStore</span>: <span class="kw">trait</span> <span class="ident">SandboxContext</span>);
