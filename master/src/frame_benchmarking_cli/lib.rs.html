@@ -134,7 +134,7 @@
 <span class="kw">mod</span> <span class="ident">storage</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">block::BlockCmd</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">machine::MachineCmd</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">machine</span>::{<span class="ident">MachineCmd</span>, <span class="ident">Requirements</span>, <span class="ident">SUBSTRATE_REFERENCE_HARDWARE</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">overhead</span>::{<span class="ident">ExtrinsicBuilder</span>, <span class="ident">OverheadCmd</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">pallet::PalletCmd</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">storage::StorageCmd</span>;

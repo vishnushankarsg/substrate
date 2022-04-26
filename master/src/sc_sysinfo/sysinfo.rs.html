@@ -455,6 +455,32 @@
 <span id="450">450</span>
 <span id="451">451</span>
 <span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2022 Parity Technologies (UK) Ltd.</span>
@@ -698,10 +724,16 @@
 	<span class="ident">buffer</span>
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">benchmark_disk_sequential_writes</span>(<span class="ident">directory</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u64</span>, <span class="ident">String</span><span class="op">&gt;</span> {
+<span class="doccomment">/// A default [`ExecutionLimit`] that can be used to call [`benchmark_disk_sequential_writes`]</span>
+<span class="doccomment">/// and [`benchmark_disk_random_writes`].</span>
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DEFAULT_DISK_EXECUTION_LIMIT</span>: <span class="ident">ExecutionLimit</span> <span class="op">=</span>
+	<span class="ident">ExecutionLimit::Both</span> { <span class="ident">max_iterations</span>: <span class="number">32</span>, <span class="ident">max_duration</span>: <span class="ident">Duration::from_millis</span>(<span class="number">300</span>) };
+
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">benchmark_disk_sequential_writes</span>(
+	<span class="ident">limit</span>: <span class="ident">ExecutionLimit</span>,
+	<span class="ident">directory</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>,
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u64</span>, <span class="ident">String</span><span class="op">&gt;</span> {
 	<span class="kw">const</span> <span class="ident">SIZE</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">64</span> <span class="op">*</span> <span class="number">1024</span> <span class="op">*</span> <span class="number">1024</span>;
-	<span class="kw">const</span> <span class="ident">MAX_ITERATIONS</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">32</span>;
-	<span class="kw">const</span> <span class="ident">MAX_DURATION</span>: <span class="ident">Duration</span> <span class="op">=</span> <span class="ident">Duration::from_millis</span>(<span class="number">300</span>);
 
 	<span class="kw">let</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">random_data</span>(<span class="ident">SIZE</span>);
 	<span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">directory</span>.<span class="ident">join</span>(<span class="string">&quot;.disk_bench_seq_wr.tmp&quot;</span>);
@@ -730,14 +762,21 @@
 		<span class="prelude-val">Ok</span>(())
 	};
 
-	<span class="ident">benchmark</span>(<span class="string">&quot;disk sequential write score&quot;</span>, <span class="ident">SIZE</span>, <span class="ident">MAX_ITERATIONS</span>, <span class="ident">MAX_DURATION</span>, <span class="ident">run</span>)
-		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span> <span class="kw">as</span> <span class="ident">u64</span>)
+	<span class="ident">benchmark</span>(
+		<span class="string">&quot;disk sequential write score&quot;</span>,
+		<span class="ident">SIZE</span>,
+		<span class="ident">limit</span>.<span class="ident">max_iterations</span>(),
+		<span class="ident">limit</span>.<span class="ident">max_duration</span>(),
+		<span class="ident">run</span>,
+	)
+	.<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span> <span class="kw">as</span> <span class="ident">u64</span>)
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">benchmark_disk_random_writes</span>(<span class="ident">directory</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u64</span>, <span class="ident">String</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">benchmark_disk_random_writes</span>(
+	<span class="ident">limit</span>: <span class="ident">ExecutionLimit</span>,
+	<span class="ident">directory</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>,
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u64</span>, <span class="ident">String</span><span class="op">&gt;</span> {
 	<span class="kw">const</span> <span class="ident">SIZE</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">64</span> <span class="op">*</span> <span class="number">1024</span> <span class="op">*</span> <span class="number">1024</span>;
-	<span class="kw">const</span> <span class="ident">MAX_ITERATIONS</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">32</span>;
-	<span class="kw">const</span> <span class="ident">MAX_DURATION</span>: <span class="ident">Duration</span> <span class="op">=</span> <span class="ident">Duration::from_millis</span>(<span class="number">300</span>);
 
 	<span class="kw">let</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">random_data</span>(<span class="ident">SIZE</span>);
 	<span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">directory</span>.<span class="ident">join</span>(<span class="string">&quot;.disk_bench_rand_wr.tmp&quot;</span>);
@@ -790,8 +829,14 @@
 	};
 
 	<span class="comment">// We only wrote half of the bytes hence `SIZE / 2`.</span>
-	<span class="ident">benchmark</span>(<span class="string">&quot;disk random write score&quot;</span>, <span class="ident">SIZE</span> <span class="op">/</span> <span class="number">2</span>, <span class="ident">MAX_ITERATIONS</span>, <span class="ident">MAX_DURATION</span>, <span class="ident">run</span>)
-		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span> <span class="kw">as</span> <span class="ident">u64</span>)
+	<span class="ident">benchmark</span>(
+		<span class="string">&quot;disk random write score&quot;</span>,
+		<span class="ident">SIZE</span> <span class="op">/</span> <span class="number">2</span>,
+		<span class="ident">limit</span>.<span class="ident">max_iterations</span>(),
+		<span class="ident">limit</span>.<span class="ident">max_duration</span>(),
+		<span class="ident">run</span>,
+	)
+	.<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span> <span class="kw">as</span> <span class="ident">u64</span>)
 }
 
 <span class="doccomment">/// Benchmarks the verification speed of sr25519 signatures.</span>
@@ -846,7 +891,8 @@
 
 	<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">scratch_directory</span>) <span class="op">=</span> <span class="ident">scratch_directory</span> {
 		<span class="ident">hwbench</span>.<span class="ident">disk_sequential_write_score</span> <span class="op">=</span>
-			<span class="kw">match</span> <span class="ident">benchmark_disk_sequential_writes</span>(<span class="ident">scratch_directory</span>) {
+			<span class="kw">match</span> <span class="ident">benchmark_disk_sequential_writes</span>(<span class="ident">DEFAULT_DISK_EXECUTION_LIMIT</span>, <span class="ident">scratch_directory</span>)
+			{
 				<span class="prelude-val">Ok</span>(<span class="ident">score</span>) =&gt; <span class="prelude-val">Some</span>(<span class="ident">score</span>),
 				<span class="prelude-val">Err</span>(<span class="ident">error</span>) =&gt; {
 					<span class="macro">log::warn!</span>(<span class="string">&quot;Failed to run the sequential write disk benchmark: {}&quot;</span>, <span class="ident">error</span>);
@@ -854,13 +900,14 @@
 				},
 			};
 
-		<span class="ident">hwbench</span>.<span class="ident">disk_random_write_score</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">benchmark_disk_random_writes</span>(<span class="ident">scratch_directory</span>) {
-			<span class="prelude-val">Ok</span>(<span class="ident">score</span>) =&gt; <span class="prelude-val">Some</span>(<span class="ident">score</span>),
-			<span class="prelude-val">Err</span>(<span class="ident">error</span>) =&gt; {
-				<span class="macro">log::warn!</span>(<span class="string">&quot;Failed to run the random write disk benchmark: {}&quot;</span>, <span class="ident">error</span>);
-				<span class="prelude-val">None</span>
-			},
-		};
+		<span class="ident">hwbench</span>.<span class="ident">disk_random_write_score</span> <span class="op">=</span>
+			<span class="kw">match</span> <span class="ident">benchmark_disk_random_writes</span>(<span class="ident">DEFAULT_DISK_EXECUTION_LIMIT</span>, <span class="ident">scratch_directory</span>) {
+				<span class="prelude-val">Ok</span>(<span class="ident">score</span>) =&gt; <span class="prelude-val">Some</span>(<span class="ident">score</span>),
+				<span class="prelude-val">Err</span>(<span class="ident">error</span>) =&gt; {
+					<span class="macro">log::warn!</span>(<span class="string">&quot;Failed to run the random write disk benchmark: {}&quot;</span>, <span class="ident">error</span>);
+					<span class="prelude-val">None</span>
+				},
+			};
 	}
 
 	<span class="ident">hwbench</span>
@@ -894,12 +941,17 @@
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">test_benchmark_disk_sequential_writes</span>() {
-		<span class="macro">assert!</span>(<span class="ident">benchmark_disk_sequential_writes</span>(<span class="string">&quot;./&quot;</span>.<span class="ident">as_ref</span>()).<span class="ident">unwrap</span>() <span class="op">&gt;</span> <span class="number">0</span>);
+		<span class="macro">assert!</span>(
+			<span class="ident">benchmark_disk_sequential_writes</span>(<span class="ident">DEFAULT_DISK_EXECUTION_LIMIT</span>, <span class="string">&quot;./&quot;</span>.<span class="ident">as_ref</span>()).<span class="ident">unwrap</span>() <span class="op">&gt;</span>
+				<span class="number">0</span>
+		);
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">test_benchmark_disk_random_writes</span>() {
-		<span class="macro">assert!</span>(<span class="ident">benchmark_disk_random_writes</span>(<span class="string">&quot;./&quot;</span>.<span class="ident">as_ref</span>()).<span class="ident">unwrap</span>() <span class="op">&gt;</span> <span class="number">0</span>);
+		<span class="macro">assert!</span>(
+			<span class="ident">benchmark_disk_random_writes</span>(<span class="ident">DEFAULT_DISK_EXECUTION_LIMIT</span>, <span class="string">&quot;./&quot;</span>.<span class="ident">as_ref</span>()).<span class="ident">unwrap</span>() <span class="op">&gt;</span> <span class="number">0</span>
+		);
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>

@@ -179,13 +179,14 @@
 <span id="174">174</span>
 <span id="175">175</span>
 <span id="176">176</span>
+<span id="177">177</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{
 	<span class="ident">chain_spec</span>,
 	<span class="ident">cli</span>::{<span class="ident">Cli</span>, <span class="ident">Subcommand</span>},
 	<span class="ident">command_helper</span>::{<span class="ident">inherent_benchmark_data</span>, <span class="ident">BenchmarkExtrinsicBuilder</span>},
 	<span class="ident">service</span>,
 };
-<span class="kw">use</span> <span class="ident">frame_benchmarking_cli::BenchmarkCmd</span>;
+<span class="kw">use</span> <span class="ident">frame_benchmarking_cli</span>::{<span class="ident">BenchmarkCmd</span>, <span class="ident">SUBSTRATE_REFERENCE_HARDWARE</span>};
 <span class="kw">use</span> <span class="ident">node_template_runtime::Block</span>;
 <span class="kw">use</span> <span class="ident">sc_cli</span>::{<span class="ident">ChainSpec</span>, <span class="ident">RuntimeVersion</span>, <span class="ident">SubstrateCli</span>};
 <span class="kw">use</span> <span class="ident">sc_service::PartialComponents</span>;
@@ -322,7 +323,8 @@
 
 						<span class="ident">cmd</span>.<span class="ident">run</span>(<span class="ident">config</span>, <span class="ident">client</span>, <span class="ident">inherent_benchmark_data</span>()<span class="question-mark">?</span>, <span class="ident">Arc::new</span>(<span class="ident">ext_builder</span>))
 					},
-					<span class="ident">BenchmarkCmd::Machine</span>(<span class="ident">cmd</span>) =&gt; <span class="ident">cmd</span>.<span class="ident">run</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>),
+					<span class="ident">BenchmarkCmd::Machine</span>(<span class="ident">cmd</span>) =&gt;
+						<span class="ident">cmd</span>.<span class="ident">run</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>, <span class="ident">SUBSTRATE_REFERENCE_HARDWARE</span>.<span class="ident">clone</span>()),
 				}
 			})
 		},

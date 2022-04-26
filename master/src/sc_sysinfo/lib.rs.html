@@ -150,6 +150,11 @@
 <span id="145">145</span>
 <span id="146">146</span>
 <span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2022 Parity Technologies (UK) Ltd.</span>
@@ -218,6 +223,11 @@
 }
 
 <span class="kw">impl</span> <span class="ident">ExecutionLimit</span> {
+	<span class="doccomment">/// Creates a new execution limit with the passed seconds as duration limit.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_secs_f32</span>(<span class="ident">secs</span>: <span class="ident">f32</span>) -&gt; <span class="self">Self</span> {
+		<span class="ident"><span class="self">Self</span>::MaxDuration</span>(<span class="ident">Duration::from_secs_f32</span>(<span class="ident">secs</span>))
+	}
+
 	<span class="doccomment">/// Returns the duration limit or `MAX` if none is present.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">max_duration</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Duration</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
