@@ -57,6 +57,84 @@
 <span id="52">52</span>
 <span id="53">53</span>
 <span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -78,6 +156,7 @@
 
 <span class="doccomment">//! A crate which contains primitives that are useful for implementation that uses staking</span>
 <span class="doccomment">//! approaches in general. Definitions related to sessions, slashing, etc go here.</span>
+<span class="kw">use</span> <span class="ident">sp_runtime</span>::{<span class="ident">DispatchError</span>, <span class="ident">DispatchResult</span>};
 <span class="kw">use</span> <span class="ident">sp_std::collections::btree_map::BTreeMap</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">offence</span>;
@@ -97,7 +176,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// * `stash` - The stash of the staker whom the slash was applied to.</span>
 	<span class="doccomment">/// * `slashed_active` - The new bonded balance of the staker after the slash was applied.</span>
-	<span class="doccomment">/// * `slashed_unlocking` - a map of slashed eras, and the balance of that unlocking chunk after</span>
+	<span class="doccomment">/// * `slashed_unlocking` - A map of slashed eras, and the balance of that unlocking chunk after</span>
 	<span class="doccomment">///   the slash is applied. Any era not present in the map is not affected at all.</span>
 	<span class="kw">fn</span> <span class="ident">on_slash</span>(
 		<span class="ident">stash</span>: <span class="kw-2">&amp;</span><span class="ident">AccountId</span>,
@@ -110,6 +189,83 @@
 	<span class="kw">fn</span> <span class="ident">on_slash</span>(<span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="ident">AccountId</span>, <span class="kw">_</span>: <span class="ident">Balance</span>, <span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">EraIndex</span>, <span class="ident">Balance</span><span class="op">&gt;</span>) {
 		<span class="comment">// Nothing to do here</span>
 	}
+}
+
+<span class="doccomment">/// Trait for communication with the staking pallet.</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">StakingInterface</span> {
+	<span class="doccomment">/// Balance type used by the staking system.</span>
+	<span class="kw">type</span> <span class="ident">Balance</span>;
+
+	<span class="doccomment">/// AccountId type used by the staking system</span>
+	<span class="kw">type</span> <span class="ident">AccountId</span>;
+
+	<span class="doccomment">/// The minimum amount required to bond in order to be a nominator. This does not necessarily</span>
+	<span class="doccomment">/// mean the nomination will be counted in an election, but instead just enough to be stored as</span>
+	<span class="doccomment">/// a nominator. In other words, this is the minimum amount to register the intention to</span>
+	<span class="doccomment">/// nominate.</span>
+	<span class="kw">fn</span> <span class="ident">minimum_bond</span>() -&gt; <span class="ident"><span class="self">Self</span>::Balance</span>;
+
+	<span class="doccomment">/// Number of eras that staked funds must remain bonded for.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Note</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// This must be strictly greater than the staking systems slash deffer duration.</span>
+	<span class="kw">fn</span> <span class="ident">bonding_duration</span>() -&gt; <span class="ident">EraIndex</span>;
+
+	<span class="doccomment">/// The current era index.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// This should be the latest planned era that the staking system knows about.</span>
+	<span class="kw">fn</span> <span class="ident">current_era</span>() -&gt; <span class="ident">EraIndex</span>;
+
+	<span class="doccomment">/// The amount of active stake that `controller` has in the staking system.</span>
+	<span class="kw">fn</span> <span class="ident">active_stake</span>(<span class="ident">controller</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::AccountId</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Balance</span><span class="op">&gt;</span>;
+
+	<span class="doccomment">/// The total stake that `controller` has in the staking system. This includes the</span>
+	<span class="doccomment">/// [`Self::active_stake`], and any funds currently in the process of unbonding via</span>
+	<span class="doccomment">/// [`Self::unbond`].</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Note</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// This is only guaranteed to reflect the amount locked by the staking system. If there are</span>
+	<span class="doccomment">/// non-staking locks on the bonded pair&#39;s balance this may not be accurate.</span>
+	<span class="kw">fn</span> <span class="ident">total_stake</span>(<span class="ident">controller</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::AccountId</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Balance</span><span class="op">&gt;</span>;
+
+	<span class="doccomment">/// Bond (lock) `value` of `stash`&#39;s balance. `controller` will be set as the account</span>
+	<span class="doccomment">/// controlling `stash`. This creates what is referred to as &quot;bonded pair&quot;.</span>
+	<span class="kw">fn</span> <span class="ident">bond</span>(
+		<span class="ident">stash</span>: <span class="ident"><span class="self">Self</span>::AccountId</span>,
+		<span class="ident">controller</span>: <span class="ident"><span class="self">Self</span>::AccountId</span>,
+		<span class="ident">value</span>: <span class="ident"><span class="self">Self</span>::Balance</span>,
+		<span class="ident">payee</span>: <span class="ident"><span class="self">Self</span>::AccountId</span>,
+	) -&gt; <span class="ident">DispatchResult</span>;
+
+	<span class="doccomment">/// Have `controller` nominate `validators`.</span>
+	<span class="kw">fn</span> <span class="ident">nominate</span>(
+		<span class="ident">controller</span>: <span class="ident"><span class="self">Self</span>::AccountId</span>,
+		<span class="ident">validators</span>: <span class="ident">sp_std::vec::Vec</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>,
+	) -&gt; <span class="ident">DispatchResult</span>;
+
+	<span class="doccomment">/// Bond some extra amount in the _Stash_&#39;s free balance against the active bonded balance of</span>
+	<span class="doccomment">/// the account. The amount extra actually bonded will never be more than the _Stash_&#39;s free</span>
+	<span class="doccomment">/// balance.</span>
+	<span class="kw">fn</span> <span class="ident">bond_extra</span>(<span class="ident">controller</span>: <span class="ident"><span class="self">Self</span>::AccountId</span>, <span class="ident">extra</span>: <span class="ident"><span class="self">Self</span>::Balance</span>) -&gt; <span class="ident">DispatchResult</span>;
+
+	<span class="doccomment">/// Schedule a portion of the active bonded balance to be unlocked at era</span>
+	<span class="doccomment">/// [Self::current_era] + [`Self::bonding_duration`].</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Once the unlock era has been reached, [`Self::withdraw_unbonded`] can be called to unlock</span>
+	<span class="doccomment">/// the funds.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// The amount of times this can be successfully called is limited based on how many distinct</span>
+	<span class="doccomment">/// eras funds are schedule to unlock in. Calling [`Self::withdraw_unbonded`] after some unlock</span>
+	<span class="doccomment">/// schedules have reached their unlocking era should allow more calls to this function.</span>
+	<span class="kw">fn</span> <span class="ident">unbond</span>(<span class="ident">controller</span>: <span class="ident"><span class="self">Self</span>::AccountId</span>, <span class="ident">value</span>: <span class="ident"><span class="self">Self</span>::Balance</span>) -&gt; <span class="ident">DispatchResult</span>;
+
+	<span class="doccomment">/// Unlock any funds schedule to unlock before or at the current era.</span>
+	<span class="kw">fn</span> <span class="ident">withdraw_unbonded</span>(
+		<span class="ident">controller</span>: <span class="ident"><span class="self">Self</span>::AccountId</span>,
+		<span class="ident">num_slashing_spans</span>: <span class="ident">u32</span>,
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u64</span>, <span class="ident">DispatchError</span><span class="op">&gt;</span>;
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="sp_staking" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (e745b4ddb 2022-04-07)" ></div>

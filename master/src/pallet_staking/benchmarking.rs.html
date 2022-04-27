@@ -1119,7 +1119,7 @@
 
 <span class="comment">// Add slashing spans to a user account. Not relevant for actual use, only to benchmark</span>
 <span class="comment">// read and write operations.</span>
-<span class="kw">fn</span> <span class="ident">add_slashing_spans</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">who</span>: <span class="kw-2">&amp;</span><span class="ident">T::AccountId</span>, <span class="ident">spans</span>: <span class="ident">u32</span>) {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_slashing_spans</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">who</span>: <span class="kw-2">&amp;</span><span class="ident">T::AccountId</span>, <span class="ident">spans</span>: <span class="ident">u32</span>) {
 	<span class="kw">if</span> <span class="ident">spans</span> <span class="op">==</span> <span class="number">0</span> {
 		<span class="kw">return</span>
 	}

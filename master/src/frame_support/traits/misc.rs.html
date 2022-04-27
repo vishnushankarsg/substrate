@@ -1001,6 +1001,17 @@
 <span id="996">996</span>
 <span id="997">997</span>
 <span id="998">998</span>
+<span id="999">999</span>
+<span id="1000">1000</span>
+<span id="1001">1001</span>
+<span id="1002">1002</span>
+<span id="1003">1003</span>
+<span id="1004">1004</span>
+<span id="1005">1005</span>
+<span id="1006">1006</span>
+<span id="1007">1007</span>
+<span id="1008">1008</span>
+<span id="1009">1009</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -1132,8 +1143,12 @@
 	<span class="doccomment">/// if `None`, which should never happen.</span>
 	<span class="kw">fn</span> <span class="ident">defensive_map_or_else</span><span class="op">&lt;</span><span class="ident">U</span>, <span class="ident">D</span>: <span class="ident">FnOnce</span>() -&gt; <span class="ident">U</span>, <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="ident">T</span>) -&gt; <span class="ident">U</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">default</span>: <span class="ident">D</span>, <span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="ident">U</span>;
 
-	<span class="doccomment">/// Defensively transform this option to a result.</span>
+	<span class="doccomment">/// Defensively transform this option to a result, mapping `None` to the return value of an</span>
+	<span class="doccomment">/// error closure.</span>
 	<span class="kw">fn</span> <span class="ident">defensive_ok_or_else</span><span class="op">&lt;</span><span class="ident">E</span>, <span class="ident">F</span>: <span class="ident">FnOnce</span>() -&gt; <span class="ident">E</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">err</span>: <span class="ident">F</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>;
+
+	<span class="doccomment">/// Defensively transform this option to a result, mapping `None` to a default value.</span>
+	<span class="kw">fn</span> <span class="ident">defensive_ok_or</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">err</span>: <span class="ident">E</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Exactly the same as `map`, but it prints the appropriate warnings if the value being mapped</span>
 	<span class="doccomment">/// is `None`.</span>
@@ -1284,6 +1299,13 @@
 		<span class="self">self</span>.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> {
 			<span class="macro">defensive!</span>();
 			<span class="ident">err</span>()
+		})
+	}
+
+	<span class="kw">fn</span> <span class="ident">defensive_ok_or</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">err</span>: <span class="ident">E</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> {
+			<span class="macro">defensive!</span>();
+			<span class="ident">err</span>
 		})
 	}
 

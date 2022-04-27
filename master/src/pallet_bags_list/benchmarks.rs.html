@@ -372,13 +372,13 @@
 			<span class="macro">vec!</span>[<span class="ident">heavier</span>, <span class="ident">lighter</span>, <span class="ident">heavier_prev</span>, <span class="ident">heavier_next</span>]
 		)
 	}
-}
 
-<span class="macro">frame_benchmarking::impl_benchmark_test_suite!</span>(
-	<span class="ident">Pallet</span>,
-	<span class="ident"><span class="kw">crate</span>::mock::ExtBuilder::default</span>().<span class="ident">skip_genesis_ids</span>().<span class="ident">build</span>(),
-	<span class="ident"><span class="kw">crate</span>::mock::Runtime</span>
-);
+	<span class="macro">impl_benchmark_test_suite!</span>(
+		<span class="ident">Pallet</span>,
+		<span class="ident"><span class="kw">crate</span>::mock::ExtBuilder::default</span>().<span class="ident">skip_genesis_ids</span>().<span class="ident">build</span>(),
+		<span class="ident"><span class="kw">crate</span>::mock::Runtime</span>
+	);
+}
 </code></pre></div>
 </section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pallet_bags_list" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (e745b4ddb 2022-04-07)" ></div>
 </body></html>
