@@ -123,8 +123,8 @@
 <span class="kw">impl</span> <span class="ident">std::error::Error</span> <span class="kw">for</span> <span class="ident">UnsafeRpcError</span> {}
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">UnsafeRpcError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">rpc::Error</span> {
-	<span class="kw">fn</span> <span class="ident">from</span>(<span class="kw">_</span>: <span class="ident">UnsafeRpcError</span>) -&gt; <span class="ident">rpc::Error</span> {
-		<span class="ident">rpc::Error::method_not_found</span>()
+	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">error</span>: <span class="ident">UnsafeRpcError</span>) -&gt; <span class="ident">rpc::Error</span> {
+		<span class="ident">rpc::Error</span> { <span class="ident">code</span>: <span class="ident">rpc::ErrorCode::MethodNotFound</span>, <span class="ident">message</span>: <span class="ident">error</span>.<span class="ident">to_string</span>(), <span class="ident">data</span>: <span class="prelude-val">None</span> }
 	}
 }
 </code></pre></div>

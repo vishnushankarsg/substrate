@@ -626,7 +626,7 @@
 		<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">accounts</span>.<span class="ident">dry_run</span>(<span class="macro">vec!</span>[].<span class="ident">into</span>(), <span class="prelude-val">None</span>);
 
 		<span class="comment">// then</span>
-		<span class="macro">assert_eq!</span>(<span class="ident">block_on</span>(<span class="ident">res</span>), <span class="prelude-val">Err</span>(<span class="ident">RpcError::method_not_found</span>()));
+		<span class="macro">assert_eq!</span>(<span class="ident">block_on</span>(<span class="ident">res</span>), <span class="prelude-val">Err</span>(<span class="ident">sc_rpc_api::UnsafeRpcError</span>.<span class="ident">into</span>()));
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>

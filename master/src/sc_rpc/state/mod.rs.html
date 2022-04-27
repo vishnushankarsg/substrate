@@ -539,6 +539,14 @@
 <span id="534">534</span>
 <span id="535">535</span>
 <span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -873,7 +881,15 @@
 		<span class="ident">subscriber</span>: <span class="ident">Subscriber</span><span class="op">&lt;</span><span class="ident">StorageChangeSet</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 		<span class="ident">keys</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StorageKey</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	) {
-		<span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">subscribe_storage</span>(<span class="ident">meta</span>, <span class="ident">subscriber</span>, <span class="ident">keys</span>);
+		<span class="kw">if</span> <span class="ident">keys</span>.<span class="ident">is_none</span>() {
+			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">deny_unsafe</span>.<span class="ident">check_if_safe</span>() {
+				<span class="ident">subscriber</span>.<span class="ident">reject</span>(<span class="ident">err</span>.<span class="ident">into</span>())
+				    .<span class="ident">expect</span>(<span class="string">&quot;subscription rejection can only fail if it&#39;s been already rejected, and we&#39;re rejecting it for the first time; qed&quot;</span>);
+				<span class="kw">return</span>
+			}
+		}
+
+		<span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">subscribe_storage</span>(<span class="ident">meta</span>, <span class="ident">subscriber</span>, <span class="ident">keys</span>)
 	}
 
 	<span class="kw">fn</span> <span class="ident">unsubscribe_storage</span>(
