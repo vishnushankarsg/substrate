@@ -521,6 +521,43 @@
 <span id="516">516</span>
 <span id="517">517</span>
 <span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -573,6 +610,7 @@
 <span class="doccomment">//! - `propose_spend` - Make a spending proposal and stake the required deposit.</span>
 <span class="doccomment">//! - `reject_proposal` - Reject a proposal, slashing the deposit.</span>
 <span class="doccomment">//! - `approve_proposal` - Accept the proposal, returning the deposit.</span>
+<span class="doccomment">//! - `remove_approval` - Remove an approval, the deposit will no longer be returned.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## GenesisConfig</span>
 <span class="doccomment">//!</span>
@@ -812,6 +850,8 @@
 		<span class="ident">InvalidIndex</span>,
 		<span class="doccomment">/// Too many approvals in the queue.</span>
 		<span class="ident">TooManyApprovals</span>,
+		<span class="doccomment">/// Proposal has not been approved.</span>
+		<span class="ident">ProposalNotApproved</span>,
 	}
 
 	<span class="attribute">#[<span class="ident">pallet::hooks</span>]</span>
@@ -914,6 +954,40 @@
 			<span class="macro">ensure!</span>(<span class="op">&lt;</span><span class="ident">Proposals</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::contains_key</span>(<span class="ident">proposal_id</span>), <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::InvalidIndex</span>);
 			<span class="ident">Approvals</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::try_append</span>(<span class="ident">proposal_id</span>)
 				.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::TooManyApprovals</span>)<span class="question-mark">?</span>;
+			<span class="prelude-val">Ok</span>(())
+		}
+
+		<span class="doccomment">/// Force a previously approved proposal to be removed from the approval queue.</span>
+		<span class="doccomment">/// The original deposit will no longer be returned.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// May only be called from `T::RejectOrigin`.</span>
+		<span class="doccomment">/// - `proposal_id`: The index of a proposal</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// # &lt;weight&gt;</span>
+		<span class="doccomment">/// - Complexity: O(A) where `A` is the number of approvals</span>
+		<span class="doccomment">/// - Db reads and writes: `Approvals`</span>
+		<span class="doccomment">/// # &lt;/weight&gt;</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// Errors:</span>
+		<span class="doccomment">/// - `ProposalNotApproved`: The `proposal_id` supplied was not found in the approval queue,</span>
+		<span class="doccomment">/// i.e., the proposal has not been approved. This could also mean the proposal does not</span>
+		<span class="doccomment">/// exist altogether, thus there is no way it would have been approved in the first place.</span>
+		<span class="attribute">#[<span class="ident">pallet::weight</span>((<span class="ident">T::WeightInfo::remove_approval</span>(), <span class="ident">DispatchClass::Operational</span>))]</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remove_approval</span>(
+			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">proposal_id</span>: <span class="ident">ProposalIndex</span>,
+		) -&gt; <span class="ident">DispatchResult</span> {
+			<span class="ident">T::RejectOrigin::ensure_origin</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
+
+			<span class="ident">Approvals</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::try_mutate</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> -&gt; <span class="ident">DispatchResult</span> {
+				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">index</span>) <span class="op">=</span> <span class="ident">v</span>.<span class="ident">iter</span>().<span class="ident">position</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span> <span class="op">==</span> <span class="kw-2">&amp;</span><span class="ident">proposal_id</span>) {
+					<span class="ident">v</span>.<span class="ident">remove</span>(<span class="ident">index</span>);
+					<span class="prelude-val">Ok</span>(())
+				} <span class="kw">else</span> {
+					<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ProposalNotApproved</span>.<span class="ident">into</span>())
+				}
+			})<span class="question-mark">?</span>;
+
 			<span class="prelude-val">Ok</span>(())
 		}
 	}
