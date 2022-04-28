@@ -1340,6 +1340,11 @@
 <span id="1335">1335</span>
 <span id="1336">1336</span>
 <span id="1337">1337</span>
+<span id="1338">1338</span>
+<span id="1339">1339</span>
+<span id="1340">1340</span>
+<span id="1341">1341</span>
+<span id="1342">1342</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1385,7 +1390,7 @@
 
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
 <span class="kw">use</span> <span class="ident">frame_support::traits</span>::{
-	<span class="ident">BalanceStatus::Reserved</span>, <span class="ident">Currency</span>, <span class="ident">EnsureOriginWithArg</span>, <span class="ident">ReservableCurrency</span>,
+	<span class="ident">tokens::Locker</span>, <span class="ident">BalanceStatus::Reserved</span>, <span class="ident">Currency</span>, <span class="ident">EnsureOriginWithArg</span>, <span class="ident">ReservableCurrency</span>,
 };
 <span class="kw">use</span> <span class="ident">frame_system::Config</span> <span class="kw">as</span> <span class="ident">SystemConfig</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
@@ -1449,6 +1454,9 @@
 			<span class="ident"><span class="self">Self</span>::Origin</span>,
 			<span class="ident"><span class="self">Self</span>::ClassId</span>,
 		<span class="op">&gt;</span>;
+
+		<span class="doccomment">/// Locker trait to enable Locking mechanism downstream.</span>
+		<span class="kw">type</span> <span class="ident">Locker</span>: <span class="ident">Locker</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::ClassId</span>, <span class="ident"><span class="self">Self</span>::InstanceId</span><span class="op">&gt;</span>;
 
 		<span class="doccomment">/// The basic amount of funds that must be reserved for an asset class.</span>
 		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
@@ -1694,6 +1702,8 @@
 		<span class="ident">Unapproved</span>,
 		<span class="doccomment">/// The named owner has not signed ownership of the class is acceptable.</span>
 		<span class="ident">Unaccepted</span>,
+		<span class="doccomment">/// The asset instance is locked.</span>
+		<span class="ident">Locked</span>,
 	}
 
 	<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span> {
