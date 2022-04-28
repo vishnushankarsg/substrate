@@ -748,7 +748,7 @@
 
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">borrow::Cow</span>, <span class="ident">iter::Iterator</span>, <span class="ident">marker::PhantomData</span>, <span class="ident">mem</span>, <span class="ident">result</span>, <span class="ident">vec</span>, <span class="ident">vec::Vec</span>};
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;wasmi&quot;</span>)]</span>
 <span class="kw">mod</span> <span class="ident">wasmi_impl</span>;
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;wasmtime&quot;</span>)))]</span>
