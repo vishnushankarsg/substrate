@@ -533,8 +533,6 @@
 <span id="528">528</span>
 <span id="529">529</span>
 <span id="530">530</span>
-<span id="531">531</span>
-<span id="532">532</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>), <span class="ident">no_std</span>)]</span>
 <span class="comment">// `construct_runtime!` does a lot of recursion and requires us to increase the limit to 256.</span>
 <span class="attribute">#![<span class="ident">recursion_limit</span> <span class="op">=</span> <span class="string">&quot;256&quot;</span>]</span>
@@ -563,7 +561,9 @@
 <span class="comment">// A few exports that help ease life for downstream crates.</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">construct_runtime</span>, <span class="ident">parameter_types</span>,
-	<span class="ident">traits</span>::{<span class="ident">ConstU128</span>, <span class="ident">ConstU32</span>, <span class="ident">ConstU8</span>, <span class="ident">KeyOwnerProofSystem</span>, <span class="ident">Randomness</span>, <span class="ident">StorageInfo</span>},
+	<span class="ident">traits</span>::{
+		<span class="ident">ConstU128</span>, <span class="ident">ConstU32</span>, <span class="ident">ConstU64</span>, <span class="ident">ConstU8</span>, <span class="ident">KeyOwnerProofSystem</span>, <span class="ident">Randomness</span>, <span class="ident">StorageInfo</span>,
+	},
 	<span class="ident">weights</span>::{
 		<span class="ident">constants</span>::{<span class="ident">BlockExecutionWeight</span>, <span class="ident">ExtrinsicBaseWeight</span>, <span class="ident">RocksDbWeight</span>, <span class="ident">WEIGHT_PER_SECOND</span>},
 		<span class="ident">IdentityFee</span>, <span class="ident">Weight</span>,
@@ -669,8 +669,8 @@
 <span class="kw">const</span> <span class="ident">NORMAL_DISPATCH_RATIO</span>: <span class="ident">Perbill</span> <span class="op">=</span> <span class="ident">Perbill::from_percent</span>(<span class="number">75</span>);
 
 <span class="macro">parameter_types!</span> {
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Version</span>: <span class="ident">RuntimeVersion</span> <span class="op">=</span> <span class="ident">VERSION</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BlockHashCount</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">2400</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Version</span>: <span class="ident">RuntimeVersion</span> <span class="op">=</span> <span class="ident">VERSION</span>;
 	<span class="doccomment">/// We allow for 2 seconds of compute with a 6 second average block time.</span>
 	<span class="kw">pub</span> <span class="ident">BlockWeights</span>: <span class="ident">frame_system::limits::BlockWeights</span> <span class="op">=</span> <span class="ident">frame_system::limits::BlockWeights</span>
 		<span class="ident">::with_sensible_defaults</span>(<span class="number">2</span> <span class="op">*</span> <span class="ident">WEIGHT_PER_SECOND</span>, <span class="ident">NORMAL_DISPATCH_RATIO</span>);
@@ -761,15 +761,11 @@
 	<span class="kw">type</span> <span class="ident">MaxAuthorities</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">32</span><span class="op">&gt;</span>;
 }
 
-<span class="macro">parameter_types!</span> {
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MinimumPeriod</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="ident">SLOT_DURATION</span> <span class="op">/</span> <span class="number">2</span>;
-}
-
 <span class="kw">impl</span> <span class="ident">pallet_timestamp::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
 	<span class="doccomment">/// A timestamp: milliseconds since the unix epoch.</span>
 	<span class="kw">type</span> <span class="ident">Moment</span> <span class="op">=</span> <span class="ident">u64</span>;
 	<span class="kw">type</span> <span class="ident">OnTimestampSet</span> <span class="op">=</span> <span class="ident">Aura</span>;
-	<span class="kw">type</span> <span class="ident">MinimumPeriod</span> <span class="op">=</span> <span class="ident">MinimumPeriod</span>;
+	<span class="kw">type</span> <span class="ident">MinimumPeriod</span> <span class="op">=</span> <span class="ident">ConstU64</span><span class="op">&lt;</span>{ <span class="ident">SLOT_DURATION</span> <span class="op">/</span> <span class="number">2</span> }<span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> ();
 }
 
