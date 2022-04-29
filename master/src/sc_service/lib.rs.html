@@ -584,6 +584,21 @@
 <span id="579">579</span>
 <span id="580">580</span>
 <span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -625,8 +640,10 @@
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
 <span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">Future</span>, <span class="ident">FutureExt</span>, <span class="ident">StreamExt</span>};
 <span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">debug</span>, <span class="ident">error</span>, <span class="ident">warn</span>};
+<span class="kw">use</span> <span class="ident">sc_client_api</span>::{<span class="ident">BlockBackend</span>, <span class="ident">ProofProvider</span>};
 <span class="kw">use</span> <span class="ident">sc_network::PeerId</span>;
 <span class="kw">use</span> <span class="ident">sc_utils::mpsc::TracingUnboundedReceiver</span>;
+<span class="kw">use</span> <span class="ident">sp_blockchain::HeaderMetadata</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
 	<span class="ident">generic::BlockId</span>,
 	<span class="ident">traits</span>::{<span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>, <span class="ident">Header</span> <span class="kw">as</span> <span class="ident">HeaderT</span>},
@@ -721,11 +738,18 @@
 <span class="doccomment">/// The `status_sink` contain a list of senders to send a periodic network status to.</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">build_network_future</span><span class="op">&lt;</span>
 	<span class="ident">B</span>: <span class="ident">BlockT</span>,
-	<span class="ident">C</span>: <span class="ident">BlockchainEvents</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+	<span class="ident">C</span>: <span class="ident">BlockchainEvents</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>
+		<span class="op">+</span> <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>
+		<span class="op">+</span> <span class="ident">BlockBackend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>
+		<span class="op">+</span> <span class="ident">HeaderMetadata</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Error</span> <span class="op">=</span> <span class="ident">sp_blockchain::Error</span><span class="op">&gt;</span>
+		<span class="op">+</span> <span class="ident">ProofProvider</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>
+		<span class="op">+</span> <span class="ident">Send</span>
+		<span class="op">+</span> <span class="ident">Sync</span>
+		<span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="ident">H</span>: <span class="ident">sc_network::ExHashT</span>,
 <span class="op">&gt;</span>(
 	<span class="ident">role</span>: <span class="ident">Role</span>,
-	<span class="kw-2">mut</span> <span class="ident">network</span>: <span class="ident">sc_network::NetworkWorker</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">H</span><span class="op">&gt;</span>,
+	<span class="kw-2">mut</span> <span class="ident">network</span>: <span class="ident">sc_network::NetworkWorker</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">H</span>, <span class="ident">C</span><span class="op">&gt;</span>,
 	<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>,
 	<span class="kw-2">mut</span> <span class="ident">rpc_rx</span>: <span class="ident">TracingUnboundedReceiver</span><span class="op">&lt;</span><span class="ident">sc_rpc::system::Request</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="ident">should_have_peers</span>: <span class="ident">bool</span>,
@@ -1047,7 +1071,13 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">H</span>, <span class="ident">C</span>, <span class="ident">Pool</span>, <span class="ident">E</span><span class="op">&gt;</span> <span class="ident">sc_network::config::TransactionPool</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">B</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TransactionPoolAdapter</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">Pool</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">C</span>: <span class="ident">sc_network::config::Client</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
+	<span class="ident">C</span>: <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>
+		<span class="op">+</span> <span class="ident">BlockBackend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>
+		<span class="op">+</span> <span class="ident">HeaderMetadata</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Error</span> <span class="op">=</span> <span class="ident">sp_blockchain::Error</span><span class="op">&gt;</span>
+		<span class="op">+</span> <span class="ident">ProofProvider</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>
+		<span class="op">+</span> <span class="ident">Send</span>
+		<span class="op">+</span> <span class="ident">Sync</span>
+		<span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="ident">Pool</span>: <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">TransactionPool</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="op">=</span> <span class="ident">B</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="ident">H</span>, <span class="ident">Error</span> <span class="op">=</span> <span class="ident">E</span><span class="op">&gt;</span>,
 	<span class="ident">B</span>: <span class="ident">BlockT</span>,
 	<span class="ident">H</span>: <span class="ident">std::hash::Hash</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">sp_runtime::traits::Member</span> <span class="op">+</span> <span class="ident">sp_runtime::traits::MaybeSerialize</span>,

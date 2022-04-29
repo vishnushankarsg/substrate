@@ -856,6 +856,9 @@
 <span id="851">851</span>
 <span id="852">852</span>
 <span id="853">853</span>
+<span id="854">854</span>
+<span id="855">855</span>
+<span id="856">856</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -880,7 +883,6 @@
 <span class="doccomment">//! See the documentation of [`Params`].</span>
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::{
-	<span class="ident">chain::Client</span>,
 	<span class="ident">request_responses</span>::{
 		<span class="ident">IncomingRequest</span>, <span class="ident">OutgoingResponse</span>, <span class="ident">ProtocolConfig</span> <span class="kw">as</span> <span class="ident">RequestResponseConfig</span>,
 	},
@@ -922,7 +924,11 @@
 <span class="kw">use</span> <span class="ident">zeroize::Zeroize</span>;
 
 <span class="doccomment">/// Network initialization parameters.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Params</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span>, <span class="ident">H</span>: <span class="ident">ExHashT</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Params</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">H</span>, <span class="ident">Client</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+	<span class="ident">B</span>: <span class="ident">BlockT</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+	<span class="ident">H</span>: <span class="ident">ExHashT</span>,
+{
 	<span class="doccomment">/// Assigned role for our node (full, light, ...).</span>
 	<span class="kw">pub</span> <span class="ident">role</span>: <span class="ident">Role</span>,
 
@@ -937,7 +943,7 @@
 	<span class="kw">pub</span> <span class="ident">network_config</span>: <span class="ident">NetworkConfiguration</span>,
 
 	<span class="doccomment">/// Client that contains the blockchain.</span>
-	<span class="kw">pub</span> <span class="ident">chain</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Client</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">chain</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Pool of transactions.</span>
 	<span class="doccomment">///</span>

@@ -3237,22 +3237,6 @@
 <span id="3232">3232</span>
 <span id="3233">3233</span>
 <span id="3234">3234</span>
-<span id="3235">3235</span>
-<span id="3236">3236</span>
-<span id="3237">3237</span>
-<span id="3238">3238</span>
-<span id="3239">3239</span>
-<span id="3240">3240</span>
-<span id="3241">3241</span>
-<span id="3242">3242</span>
-<span id="3243">3243</span>
-<span id="3244">3244</span>
-<span id="3245">3245</span>
-<span id="3246">3246</span>
-<span id="3247">3247</span>
-<span id="3248">3248</span>
-<span id="3249">3249</span>
-<span id="3250">3250</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -3294,9 +3278,10 @@
 <span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">stream::FuturesUnordered</span>, <span class="ident">task::Poll</span>, <span class="ident">Future</span>, <span class="ident">FutureExt</span>, <span class="ident">StreamExt</span>};
 <span class="kw">use</span> <span class="ident">libp2p::PeerId</span>;
 <span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">debug</span>, <span class="ident">error</span>, <span class="ident">info</span>, <span class="ident">trace</span>, <span class="ident">warn</span>};
+<span class="kw">use</span> <span class="ident">sc_client_api</span>::{<span class="ident">BlockBackend</span>, <span class="ident">ProofProvider</span>};
 <span class="kw">use</span> <span class="ident">sc_consensus</span>::{<span class="ident">BlockImportError</span>, <span class="ident">BlockImportStatus</span>, <span class="ident">IncomingBlock</span>};
 <span class="kw">use</span> <span class="ident">sp_arithmetic::traits::Saturating</span>;
-<span class="kw">use</span> <span class="ident">sp_blockchain</span>::{<span class="ident">Error</span> <span class="kw">as</span> <span class="ident">ClientError</span>, <span class="ident">HeaderMetadata</span>};
+<span class="kw">use</span> <span class="ident">sp_blockchain</span>::{<span class="ident">Error</span> <span class="kw">as</span> <span class="ident">ClientError</span>, <span class="ident">HeaderBackend</span>, <span class="ident">HeaderMetadata</span>};
 <span class="kw">use</span> <span class="ident">sp_consensus</span>::{
 	<span class="ident">block_validation</span>::{<span class="ident">BlockAnnounceValidator</span>, <span class="ident">Validation</span>},
 	<span class="ident">BlockOrigin</span>, <span class="ident">BlockStatus</span>,
@@ -3309,6 +3294,7 @@
 	},
 	<span class="ident">EncodedJustification</span>, <span class="ident">Justifications</span>,
 };
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">state::StateDownloadProgress</span>;
 <span class="kw">use</span> <span class="ident">state::StateSync</span>;
 <span class="kw">use</span> <span class="ident">std</span>::{
 	<span class="ident">collections</span>::{<span class="ident">hash_map::Entry</span>, <span class="ident">HashMap</span>, <span class="ident">HashSet</span>},
@@ -3318,6 +3304,7 @@
 	<span class="ident">sync::Arc</span>,
 };
 <span class="kw">use</span> <span class="ident">warp</span>::{<span class="ident">WarpProofRequest</span>, <span class="ident">WarpSync</span>, <span class="ident">WarpSyncProvider</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">warp</span>::{<span class="ident">WarpSyncPhase</span>, <span class="ident">WarpSyncProgress</span>};
 
 <span class="kw">mod</span> <span class="ident">blocks</span>;
 <span class="kw">mod</span> <span class="ident">extra_requests</span>;
@@ -3449,9 +3436,9 @@
 
 <span class="doccomment">/// The main data structure which contains all the state for a chains</span>
 <span class="doccomment">/// active syncing strategy.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ChainSync</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ChainSync</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span>, <span class="ident">Client</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Chain client.</span>
-	<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident"><span class="kw">crate</span>::chain::Client</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// The active peers that we are using to sync and their PeerSync status</span>
 	<span class="ident">peers</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">PeerId</span>, <span class="ident">PeerSync</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// A `BlockCollection` of blocks that are being downloaded from peers</span>
@@ -3483,9 +3470,9 @@
 	<span class="doccomment">/// Stats per peer about the number of concurrent block announce validations.</span>
 	<span class="ident">block_announce_validation_per_peer_stats</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">PeerId</span>, <span class="ident">usize</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// State sync in progress, if any.</span>
-	<span class="ident">state_sync</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StateSync</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="ident">state_sync</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StateSync</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Client</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Warp sync in progress, if any.</span>
-	<span class="ident">warp_sync</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">WarpSync</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="ident">warp_sync</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">WarpSync</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Client</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Warp sync provider.</span>
 	<span class="ident">warp_sync_provider</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">WarpSyncProvider</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Enable importing existing blocks. This is used used after the state download to</span>
@@ -3584,30 +3571,6 @@
 	<span class="ident">Downloading</span>,
 }
 
-<span class="doccomment">/// Reported state download progress.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StateDownloadProgress</span> {
-	<span class="doccomment">/// Estimated download percentage.</span>
-	<span class="kw">pub</span> <span class="ident">percentage</span>: <span class="ident">u32</span>,
-	<span class="doccomment">/// Total state size in bytes downloaded so far.</span>
-	<span class="kw">pub</span> <span class="ident">size</span>: <span class="ident">u64</span>,
-}
-
-<span class="doccomment">/// Reported warp sync phase.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">WarpSyncPhase</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> {
-	<span class="doccomment">/// Waiting for peers to connect.</span>
-	<span class="ident">AwaitingPeers</span>,
-	<span class="doccomment">/// Downloading and verifying grandpa warp proofs.</span>
-	<span class="ident">DownloadingWarpProofs</span>,
-	<span class="doccomment">/// Downloading state data.</span>
-	<span class="ident">DownloadingState</span>,
-	<span class="doccomment">/// Importing state.</span>
-	<span class="ident">ImportingState</span>,
-	<span class="doccomment">/// Downloading block history.</span>
-	<span class="ident">DownloadingBlocks</span>(<span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>),
-}
-
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">WarpSyncPhase</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span>) -&gt; <span class="ident">fmt::Result</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
@@ -3618,15 +3581,6 @@
 			<span class="ident"><span class="self">Self</span>::DownloadingBlocks</span>(<span class="ident">n</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Downloading block history (#{})&quot;</span>, <span class="ident">n</span>),
 		}
 	}
-}
-
-<span class="doccomment">/// Reported warp sync progress.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WarpSyncProgress</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> {
-	<span class="doccomment">/// Estimated download percentage.</span>
-	<span class="kw">pub</span> <span class="ident">phase</span>: <span class="ident">WarpSyncPhase</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
-	<span class="doccomment">/// Total bytes downloaded so far.</span>
-	<span class="kw">pub</span> <span class="ident">total_bytes</span>: <span class="ident">u64</span>,
 }
 
 <span class="doccomment">/// Syncing status and statistics.</span>
@@ -3789,11 +3743,21 @@
 	<span class="ident">MaximumPeerSlotsReached</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> <span class="ident">ChainSync</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Client</span><span class="op">&gt;</span> <span class="ident">ChainSync</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Client</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+	<span class="ident">B</span>: <span class="ident">BlockT</span>,
+	<span class="ident">Client</span>: <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>
+		<span class="op">+</span> <span class="ident">BlockBackend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>
+		<span class="op">+</span> <span class="ident">HeaderMetadata</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Error</span> <span class="op">=</span> <span class="ident">sp_blockchain::Error</span><span class="op">&gt;</span>
+		<span class="op">+</span> <span class="ident">ProofProvider</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>
+		<span class="op">+</span> <span class="ident">Send</span>
+		<span class="op">+</span> <span class="ident">Sync</span>
+		<span class="op">+</span> <span class="lifetime">&#39;static</span>,
+{
 	<span class="doccomment">/// Create a new instance.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
 		<span class="ident">mode</span>: <span class="ident">SyncMode</span>,
-		<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident"><span class="kw">crate</span>::chain::Client</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+		<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>,
 		<span class="ident">block_announce_validator</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">BlockAnnounceValidator</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span>,
 		<span class="ident">max_parallel_downloads</span>: <span class="ident">u32</span>,
 		<span class="ident">warp_sync_provider</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">WarpSyncProvider</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
@@ -5996,7 +5960,11 @@
 	}
 
 	<span class="doccomment">/// Send a block annoucnement for the given `header`.</span>
-	<span class="kw">fn</span> <span class="ident">send_block_announce</span>(<span class="ident">header</span>: <span class="ident">Header</span>, <span class="ident">peer_id</span>: <span class="kw-2">&amp;</span><span class="ident">PeerId</span>, <span class="ident">sync</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ChainSync</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>) {
+	<span class="kw">fn</span> <span class="ident">send_block_announce</span>(
+		<span class="ident">header</span>: <span class="ident">Header</span>,
+		<span class="ident">peer_id</span>: <span class="kw-2">&amp;</span><span class="ident">PeerId</span>,
+		<span class="ident">sync</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ChainSync</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">TestClient</span><span class="op">&gt;</span>,
+	) {
 		<span class="kw">let</span> <span class="ident">block_annnounce</span> <span class="op">=</span> <span class="ident">BlockAnnounce</span> {
 			<span class="ident">header</span>: <span class="ident">header</span>.<span class="ident">clone</span>(),
 			<span class="ident">state</span>: <span class="prelude-val">Some</span>(<span class="ident">BlockState::Best</span>),
@@ -6035,7 +6003,7 @@
 
 	<span class="doccomment">/// Get a block request from `sync` and check that is matches the expected request.</span>
 	<span class="kw">fn</span> <span class="ident">get_block_request</span>(
-		<span class="ident">sync</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ChainSync</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
+		<span class="ident">sync</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ChainSync</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">TestClient</span><span class="op">&gt;</span>,
 		<span class="ident">from</span>: <span class="ident">FromBlock</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">u64</span><span class="op">&gt;</span>,
 		<span class="ident">max</span>: <span class="ident">u32</span>,
 		<span class="ident">peer</span>: <span class="kw-2">&amp;</span><span class="ident">PeerId</span>,

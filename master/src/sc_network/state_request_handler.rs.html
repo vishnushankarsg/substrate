@@ -263,6 +263,10 @@
 <span id="258">258</span>
 <span id="259">259</span>
 <span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Substrate.</span>
 
@@ -283,7 +287,6 @@
 <span class="doccomment">//! `crate::request_responses::RequestResponsesBehaviour`.</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-	<span class="ident">chain::Client</span>,
 	<span class="ident">config::ProtocolId</span>,
 	<span class="ident">request_responses</span>::{<span class="ident">IncomingRequest</span>, <span class="ident">OutgoingResponse</span>, <span class="ident">ProtocolConfig</span>},
 	<span class="ident">schema::v1</span>::{<span class="ident">KeyValueStateEntry</span>, <span class="ident">StateEntry</span>, <span class="ident">StateRequest</span>, <span class="ident">StateResponse</span>},
@@ -297,6 +300,7 @@
 <span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">debug</span>, <span class="ident">trace</span>};
 <span class="kw">use</span> <span class="ident">lru::LruCache</span>;
 <span class="kw">use</span> <span class="ident">prost::Message</span>;
+<span class="kw">use</span> <span class="ident">sc_client_api::ProofProvider</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{<span class="ident">generic::BlockId</span>, <span class="ident">traits::Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{
 	<span class="ident">hash</span>::{<span class="ident">Hash</span>, <span class="ident">Hasher</span>},
@@ -361,8 +365,8 @@
 }
 
 <span class="doccomment">/// Handler for incoming block requests from a remote peer.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StateRequestHandler</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> {
-	<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Client</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StateRequestHandler</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span>, <span class="ident">Client</span><span class="op">&gt;</span> {
+	<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>,
 	<span class="ident">request_receiver</span>: <span class="ident">mpsc::Receiver</span><span class="op">&lt;</span><span class="ident">IncomingRequest</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Maps from request to number of times we have seen this request.</span>
 	<span class="doccomment">///</span>
@@ -370,11 +374,15 @@
 	<span class="ident">seen_requests</span>: <span class="ident">LruCache</span><span class="op">&lt;</span><span class="ident">SeenRequestsKey</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">SeenRequestsValue</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> <span class="ident">StateRequestHandler</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Client</span><span class="op">&gt;</span> <span class="ident">StateRequestHandler</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Client</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+	<span class="ident">B</span>: <span class="ident">BlockT</span>,
+	<span class="ident">Client</span>: <span class="ident">ProofProvider</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+{
 	<span class="doccomment">/// Create a new [`StateRequestHandler`].</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
 		<span class="ident">protocol_id</span>: <span class="kw-2">&amp;</span><span class="ident">ProtocolId</span>,
-		<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Client</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+		<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>,
 		<span class="ident">num_peer_hint</span>: <span class="ident">usize</span>,
 	) -&gt; (<span class="self">Self</span>, <span class="ident">ProtocolConfig</span>) {
 		<span class="comment">// Reserve enough request slots for one request per peer when we are at the maximum</span>
