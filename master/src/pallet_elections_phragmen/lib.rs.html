@@ -3187,9 +3187,6 @@
 <span id="3182">3182</span>
 <span id="3183">3183</span>
 <span id="3184">3184</span>
-<span id="3185">3185</span>
-<span id="3186">3186</span>
-<span id="3187">3187</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -3760,9 +3757,6 @@
 			<span class="ident">amount</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 		},
 	}
-
-	<span class="attribute">#[<span class="ident">deprecated</span>(<span class="ident">note</span> <span class="op">=</span> <span class="string">&quot;use `Event` instead&quot;</span>)]</span>
-	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">RawEvent</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Event</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
 
 	<span class="attribute">#[<span class="ident">pallet::error</span>]</span>
 	<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {

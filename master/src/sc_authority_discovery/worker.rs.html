@@ -836,7 +836,7 @@
 <span class="kw">use</span> <span class="ident">ip_network::IpNetwork</span>;
 <span class="kw">use</span> <span class="ident">libp2p</span>::{
 	<span class="ident">core::multiaddr</span>,
-	<span class="ident">multihash</span>::{<span class="ident">Hasher</span>, <span class="ident">Multihash</span>},
+	<span class="ident">multihash</span>::{<span class="ident">Multihash</span>, <span class="ident">MultihashDigest</span>},
 };
 <span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">debug</span>, <span class="ident">error</span>, <span class="ident">log_enabled</span>};
 <span class="kw">use</span> <span class="ident">prometheus_endpoint</span>::{<span class="ident">register</span>, <span class="ident">Counter</span>, <span class="ident">CounterVec</span>, <span class="ident">Gauge</span>, <span class="ident">Opts</span>, <span class="ident">U64</span>};
@@ -1437,7 +1437,7 @@
 }
 
 <span class="kw">fn</span> <span class="ident">hash_authority_id</span>(<span class="ident">id</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="ident">sc_network::KademliaKey</span> {
-	<span class="ident">sc_network::KademliaKey::new</span>(<span class="kw-2">&amp;</span><span class="ident">libp2p::multihash::Sha2_256::digest</span>(<span class="ident">id</span>))
+	<span class="ident">sc_network::KademliaKey::new</span>(<span class="kw-2">&amp;</span><span class="ident">libp2p::multihash::Code::Sha2_256</span>.<span class="ident">digest</span>(<span class="ident">id</span>).<span class="ident">digest</span>())
 }
 
 <span class="comment">// Makes sure all values are the same and returns it</span>

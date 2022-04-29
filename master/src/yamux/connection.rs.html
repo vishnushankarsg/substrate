@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/yamux-0.9.0/src/connection.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>connection.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/yamux-0.10.1/src/connection.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>connection.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../yamux/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -954,6 +954,163 @@
 <span id="949">949</span>
 <span id="950">950</span>
 <span id="951">951</span>
+<span id="952">952</span>
+<span id="953">953</span>
+<span id="954">954</span>
+<span id="955">955</span>
+<span id="956">956</span>
+<span id="957">957</span>
+<span id="958">958</span>
+<span id="959">959</span>
+<span id="960">960</span>
+<span id="961">961</span>
+<span id="962">962</span>
+<span id="963">963</span>
+<span id="964">964</span>
+<span id="965">965</span>
+<span id="966">966</span>
+<span id="967">967</span>
+<span id="968">968</span>
+<span id="969">969</span>
+<span id="970">970</span>
+<span id="971">971</span>
+<span id="972">972</span>
+<span id="973">973</span>
+<span id="974">974</span>
+<span id="975">975</span>
+<span id="976">976</span>
+<span id="977">977</span>
+<span id="978">978</span>
+<span id="979">979</span>
+<span id="980">980</span>
+<span id="981">981</span>
+<span id="982">982</span>
+<span id="983">983</span>
+<span id="984">984</span>
+<span id="985">985</span>
+<span id="986">986</span>
+<span id="987">987</span>
+<span id="988">988</span>
+<span id="989">989</span>
+<span id="990">990</span>
+<span id="991">991</span>
+<span id="992">992</span>
+<span id="993">993</span>
+<span id="994">994</span>
+<span id="995">995</span>
+<span id="996">996</span>
+<span id="997">997</span>
+<span id="998">998</span>
+<span id="999">999</span>
+<span id="1000">1000</span>
+<span id="1001">1001</span>
+<span id="1002">1002</span>
+<span id="1003">1003</span>
+<span id="1004">1004</span>
+<span id="1005">1005</span>
+<span id="1006">1006</span>
+<span id="1007">1007</span>
+<span id="1008">1008</span>
+<span id="1009">1009</span>
+<span id="1010">1010</span>
+<span id="1011">1011</span>
+<span id="1012">1012</span>
+<span id="1013">1013</span>
+<span id="1014">1014</span>
+<span id="1015">1015</span>
+<span id="1016">1016</span>
+<span id="1017">1017</span>
+<span id="1018">1018</span>
+<span id="1019">1019</span>
+<span id="1020">1020</span>
+<span id="1021">1021</span>
+<span id="1022">1022</span>
+<span id="1023">1023</span>
+<span id="1024">1024</span>
+<span id="1025">1025</span>
+<span id="1026">1026</span>
+<span id="1027">1027</span>
+<span id="1028">1028</span>
+<span id="1029">1029</span>
+<span id="1030">1030</span>
+<span id="1031">1031</span>
+<span id="1032">1032</span>
+<span id="1033">1033</span>
+<span id="1034">1034</span>
+<span id="1035">1035</span>
+<span id="1036">1036</span>
+<span id="1037">1037</span>
+<span id="1038">1038</span>
+<span id="1039">1039</span>
+<span id="1040">1040</span>
+<span id="1041">1041</span>
+<span id="1042">1042</span>
+<span id="1043">1043</span>
+<span id="1044">1044</span>
+<span id="1045">1045</span>
+<span id="1046">1046</span>
+<span id="1047">1047</span>
+<span id="1048">1048</span>
+<span id="1049">1049</span>
+<span id="1050">1050</span>
+<span id="1051">1051</span>
+<span id="1052">1052</span>
+<span id="1053">1053</span>
+<span id="1054">1054</span>
+<span id="1055">1055</span>
+<span id="1056">1056</span>
+<span id="1057">1057</span>
+<span id="1058">1058</span>
+<span id="1059">1059</span>
+<span id="1060">1060</span>
+<span id="1061">1061</span>
+<span id="1062">1062</span>
+<span id="1063">1063</span>
+<span id="1064">1064</span>
+<span id="1065">1065</span>
+<span id="1066">1066</span>
+<span id="1067">1067</span>
+<span id="1068">1068</span>
+<span id="1069">1069</span>
+<span id="1070">1070</span>
+<span id="1071">1071</span>
+<span id="1072">1072</span>
+<span id="1073">1073</span>
+<span id="1074">1074</span>
+<span id="1075">1075</span>
+<span id="1076">1076</span>
+<span id="1077">1077</span>
+<span id="1078">1078</span>
+<span id="1079">1079</span>
+<span id="1080">1080</span>
+<span id="1081">1081</span>
+<span id="1082">1082</span>
+<span id="1083">1083</span>
+<span id="1084">1084</span>
+<span id="1085">1085</span>
+<span id="1086">1086</span>
+<span id="1087">1087</span>
+<span id="1088">1088</span>
+<span id="1089">1089</span>
+<span id="1090">1090</span>
+<span id="1091">1091</span>
+<span id="1092">1092</span>
+<span id="1093">1093</span>
+<span id="1094">1094</span>
+<span id="1095">1095</span>
+<span id="1096">1096</span>
+<span id="1097">1097</span>
+<span id="1098">1098</span>
+<span id="1099">1099</span>
+<span id="1100">1100</span>
+<span id="1101">1101</span>
+<span id="1102">1102</span>
+<span id="1103">1103</span>
+<span id="1104">1104</span>
+<span id="1105">1105</span>
+<span id="1106">1106</span>
+<span id="1107">1107</span>
+<span id="1108">1108</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright (c) 2018-2019 Parity Technologies (UK) Ltd.</span>
 <span class="comment">//</span>
 <span class="comment">// Licensed under the Apache License, Version 2.0 or MIT license, at your option.</span>
@@ -1047,22 +1204,25 @@
 <span class="kw">mod</span> <span class="ident">stream</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">Config</span>,
-    <span class="ident">DEFAULT_CREDIT</span>,
-    <span class="ident">WindowUpdateMode</span>,
     <span class="ident">error::ConnectionError</span>,
+    <span class="ident">frame::header</span>::{<span class="self">self</span>, <span class="ident">Data</span>, <span class="ident">GoAway</span>, <span class="ident">Header</span>, <span class="ident">Ping</span>, <span class="ident">StreamId</span>, <span class="ident">Tag</span>, <span class="ident">WindowUpdate</span>, <span class="ident">CONNECTION_ID</span>},
     <span class="ident">frame</span>::{<span class="self">self</span>, <span class="ident">Frame</span>},
-    <span class="ident">frame::header</span>::{<span class="self">self</span>, <span class="ident">CONNECTION_ID</span>, <span class="ident">Data</span>, <span class="ident">GoAway</span>, <span class="ident">Header</span>, <span class="ident">Ping</span>, <span class="ident">StreamId</span>, <span class="ident">Tag</span>, <span class="ident">WindowUpdate</span>},
-    <span class="ident">pause::Pausable</span>
+    <span class="ident">pause::Pausable</span>,
+    <span class="ident">Config</span>, <span class="ident">WindowUpdateMode</span>, <span class="ident">DEFAULT_CREDIT</span>,
 };
 <span class="kw">use</span> <span class="ident">futures</span>::{
     <span class="ident">channel</span>::{<span class="ident">mpsc</span>, <span class="ident">oneshot</span>},
     <span class="ident">future</span>::{<span class="self">self</span>, <span class="ident">Either</span>},
     <span class="ident">prelude</span>::<span class="kw-2">*</span>,
-    <span class="ident">stream</span>::{<span class="ident">Fuse</span>, <span class="ident">FusedStream</span>}
+    <span class="ident">sink::SinkExt</span>,
+    <span class="ident">stream</span>::{<span class="ident">Fuse</span>, <span class="ident">FusedStream</span>},
 };
 <span class="kw">use</span> <span class="ident">nohash_hasher::IntMap</span>;
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>, <span class="ident">sync::Arc</span>, <span class="ident">task</span>::{<span class="ident">Context</span>, <span class="ident">Poll</span>}};
+<span class="kw">use</span> <span class="ident">std</span>::{
+    <span class="ident">fmt</span>, <span class="ident">io</span>,
+    <span class="ident">sync::Arc</span>,
+    <span class="ident">task</span>::{<span class="ident">Context</span>, <span class="ident">Poll</span>},
+};
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">control::Control</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">stream</span>::{<span class="ident">Packet</span>, <span class="ident">State</span>, <span class="ident">Stream</span>};
@@ -1081,7 +1241,7 @@
     <span class="doccomment">/// Client to server connection.</span>
     <span class="ident">Client</span>,
     <span class="doccomment">/// Server to client connection.</span>
-    <span class="ident">Server</span>
+    <span class="ident">Server</span>,
 }
 
 <span class="doccomment">/// The connection identifier.</span>
@@ -1127,7 +1287,7 @@
     <span class="ident">stream_receiver</span>: <span class="ident">mpsc::Receiver</span><span class="op">&lt;</span><span class="ident">StreamCommand</span><span class="op">&gt;</span>,
     <span class="ident">garbage</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StreamId</span><span class="op">&gt;</span>, <span class="comment">// see `Connection::garbage_collect()`</span>
     <span class="ident">shutdown</span>: <span class="ident">Shutdown</span>,
-    <span class="ident">is_closed</span>: <span class="ident">bool</span>
+    <span class="ident">is_closed</span>: <span class="ident">bool</span>,
 }
 
 <span class="doccomment">/// `Control` to `Connection` commands.</span>
@@ -1136,7 +1296,7 @@
     <span class="doccomment">/// Open a new stream to the remote end.</span>
     <span class="ident">OpenStream</span>(<span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Stream</span><span class="op">&gt;</span><span class="op">&gt;</span>),
     <span class="doccomment">/// Close the whole connection.</span>
-    <span class="ident">CloseConnection</span>(<span class="ident">oneshot::Sender</span><span class="op">&lt;</span>()<span class="op">&gt;</span>)
+    <span class="ident">CloseConnection</span>(<span class="ident">oneshot::Sender</span><span class="op">&lt;</span>()<span class="op">&gt;</span>),
 }
 
 <span class="doccomment">/// `Stream` to `Connection` commands.</span>
@@ -1145,7 +1305,7 @@
     <span class="doccomment">/// A new frame should be sent to the remote.</span>
     <span class="ident">SendFrame</span>(<span class="ident">Frame</span><span class="op">&lt;</span><span class="ident">Either</span><span class="op">&lt;</span><span class="ident">Data</span>, <span class="ident">WindowUpdate</span><span class="op">&gt;</span><span class="op">&gt;</span>),
     <span class="doccomment">/// Close a stream.</span>
-    <span class="ident">CloseStream</span> { <span class="ident">id</span>: <span class="ident">StreamId</span>, <span class="ident">ack</span>: <span class="ident">bool</span> }
+    <span class="ident">CloseStream</span> { <span class="ident">id</span>: <span class="ident">StreamId</span>, <span class="ident">ack</span>: <span class="ident">bool</span> },
 }
 
 <span class="doccomment">/// Possible actions as a result of incoming frame handling.</span>
@@ -1162,7 +1322,7 @@
     <span class="doccomment">/// A stream should be reset.</span>
     <span class="ident">Reset</span>(<span class="ident">Frame</span><span class="op">&lt;</span><span class="ident">Data</span><span class="op">&gt;</span>),
     <span class="doccomment">/// The connection should be terminated.</span>
-    <span class="ident">Terminate</span>(<span class="ident">Frame</span><span class="op">&lt;</span><span class="ident">GoAway</span><span class="op">&gt;</span>)
+    <span class="ident">Terminate</span>(<span class="ident">Frame</span><span class="op">&lt;</span><span class="ident">GoAway</span><span class="op">&gt;</span>),
 }
 
 <span class="doccomment">/// This enum captures the various stages of shutting down the connection.</span>
@@ -1174,7 +1334,7 @@
     <span class="doccomment">/// down operations. The `Sender` will be informed once we are done.</span>
     <span class="ident">InProgress</span>(<span class="ident">oneshot::Sender</span><span class="op">&lt;</span>()<span class="op">&gt;</span>),
     <span class="doccomment">/// The shutdown is complete and we are closed for good.</span>
-    <span class="ident">Complete</span>
+    <span class="ident">Complete</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Shutdown</span> {
@@ -1217,7 +1377,13 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">Connection</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span>) -&gt; <span class="ident">fmt::Result</span> {
-        <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;(Connection {} {:?} (streams {}))&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="self">self</span>.<span class="ident">mode</span>, <span class="self">self</span>.<span class="ident">streams</span>.<span class="ident">len</span>())
+        <span class="macro">write!</span>(
+            <span class="ident">f</span>,
+            <span class="string">&quot;(Connection {} {:?} (streams {}))&quot;</span>,
+            <span class="self">self</span>.<span class="ident">id</span>,
+            <span class="self">self</span>.<span class="ident">mode</span>,
+            <span class="self">self</span>.<span class="ident">streams</span>.<span class="ident">len</span>()
+        )
     }
 }
 
@@ -1241,11 +1407,11 @@
             <span class="ident">stream_receiver</span>,
             <span class="ident">next_id</span>: <span class="kw">match</span> <span class="ident">mode</span> {
                 <span class="ident">Mode::Client</span> =&gt; <span class="number">1</span>,
-                <span class="ident">Mode::Server</span> =&gt; <span class="number">2</span>
+                <span class="ident">Mode::Server</span> =&gt; <span class="number">2</span>,
             },
             <span class="ident">garbage</span>: <span class="ident">Vec::new</span>(),
             <span class="ident">shutdown</span>: <span class="ident">Shutdown::NotStarted</span>,
-            <span class="ident">is_closed</span>: <span class="bool-val">false</span>
+            <span class="ident">is_closed</span>: <span class="bool-val">false</span>,
         }
     }
 
@@ -1268,13 +1434,13 @@
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">next_stream</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Stream</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_closed</span> {
             <span class="macro">log::debug!</span>(<span class="string">&quot;{}: connection is closed&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>);
-            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
+            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>);
         }
 
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">next</span>().<span class="kw">await</span>;
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="kw">_</span>)) <span class="op">=</span> <span class="ident">result</span> {
-            <span class="kw">return</span> <span class="ident">result</span>
+            <span class="kw">return</span> <span class="ident">result</span>;
         }
 
         <span class="self">self</span>.<span class="ident">is_closed</span> <span class="op">=</span> <span class="bool-val">true</span>;
@@ -1311,7 +1477,7 @@
         }
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>) <span class="op">=</span> <span class="ident">result</span> {
-            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
+            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>);
         }
 
         <span class="ident">result</span>
@@ -1326,10 +1492,46 @@
         <span class="kw">loop</span> {
             <span class="self">self</span>.<span class="ident">garbage_collect</span>().<span class="kw">await</span><span class="question-mark">?</span>;
 
-            <span class="comment">// For each channel and the socket we create a future that gets</span>
-            <span class="comment">// the next item. We will poll each future and if any one of them</span>
-            <span class="comment">// yields an item, we return the tuple of poll results which are</span>
-            <span class="comment">// then all processed.</span>
+            <span class="comment">// Wait for the frame sink to be ready or, if there is a pending</span>
+            <span class="comment">// write, for an incoming frame. I.e. as long as there is a pending</span>
+            <span class="comment">// write, we only read, unless a read results in needing to send a</span>
+            <span class="comment">// frame, in which case we must wait for the pending write to</span>
+            <span class="comment">// complete. When the frame sink is ready, we can proceed with</span>
+            <span class="comment">// waiting for a new stream or control command or another inbound</span>
+            <span class="comment">// frame.</span>
+            <span class="kw">let</span> <span class="ident">next_io_event</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">socket</span>.<span class="ident">is_terminated</span>() {
+                <span class="ident">Either::Left</span>(<span class="ident">future::pending</span>())
+            } <span class="kw">else</span> {
+                <span class="kw">let</span> <span class="ident">socket</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">socket</span>;
+                <span class="kw">let</span> <span class="ident">io</span> <span class="op">=</span> <span class="ident">future::poll_fn</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">cx</span><span class="op">|</span> {
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Poll::Ready</span>(<span class="ident">res</span>) <span class="op">=</span> <span class="ident">socket</span>.<span class="ident">poll_ready_unpin</span>(<span class="ident">cx</span>) {
+                        <span class="ident">res</span>.<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>;
+                        <span class="kw">return</span> <span class="ident">Poll::Ready</span>(<span class="ident">Result::Ok</span>(<span class="ident">IoEvent::OutboundReady</span>));
+                    }
+
+                    <span class="comment">// At this point we know the socket sink has a pending</span>
+                    <span class="comment">// write, so we try to read the next frame instead.</span>
+                    <span class="kw">let</span> <span class="ident">next_frame</span> <span class="op">=</span> <span class="macro">futures::ready!</span>(<span class="ident">socket</span>.<span class="ident">poll_next_unpin</span>(<span class="ident">cx</span>))
+                        .<span class="ident">transpose</span>()
+                        .<span class="ident">map_err</span>(<span class="ident">ConnectionError::from</span>);
+                    <span class="ident">Poll::Ready</span>(<span class="prelude-val">Ok</span>(<span class="ident">IoEvent::Inbound</span>(<span class="ident">next_frame</span>)))
+                });
+                <span class="ident">Either::Right</span>(<span class="ident">io</span>)
+            };
+
+            <span class="kw">if</span> <span class="kw">let</span> <span class="ident">IoEvent::Inbound</span>(<span class="ident">frame</span>) <span class="op">=</span> <span class="ident">next_io_event</span>.<span class="kw">await</span><span class="question-mark">?</span> {
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">stream</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">on_frame</span>(<span class="ident">frame</span>).<span class="kw">await</span><span class="question-mark">?</span> {
+                    <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">stream</span>));
+                }
+                <span class="kw">continue</span>; <span class="comment">// The socket sink still has a pending write.</span>
+            }
+
+            <span class="comment">// Getting this far implies that the socket is ready to accept</span>
+            <span class="comment">// a new frame, so we can now listen for new commands while waiting</span>
+            <span class="comment">// for the next inbound frame. To that end, for each channel and the</span>
+            <span class="comment">// socket we create a future that gets the next item. We will poll</span>
+            <span class="comment">// each future and if any one of them yields an item, we return the</span>
+            <span class="comment">// tuple of poll results which are then all processed.</span>
             <span class="comment">//</span>
             <span class="comment">// For terminated sources we create non-finishing futures.</span>
             <span class="comment">// This guarantees that if the remaining futures are pending</span>
@@ -1338,47 +1540,67 @@
 
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">num_terminated</span> <span class="op">=</span> <span class="number">0</span>;
 
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">next_inbound_frame</span> <span class="op">=</span>
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">socket</span>.<span class="ident">is_terminated</span>() {
-                    <span class="ident">num_terminated</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-                    <span class="ident">Either::Left</span>(<span class="ident">future::pending</span>())
-                } <span class="kw">else</span> {
-                    <span class="ident">Either::Right</span>(<span class="self">self</span>.<span class="ident">socket</span>.<span class="ident">try_next</span>().<span class="ident">err_into</span>())
-                };
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">next_frame</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">socket</span>.<span class="ident">is_terminated</span>() {
+                <span class="ident">num_terminated</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+                <span class="ident">Either::Left</span>(<span class="ident">future::pending</span>())
+            } <span class="kw">else</span> {
+                <span class="comment">// Poll socket for next incoming frame, but also make sure any pending writes are properly flushed.</span>
+                <span class="kw">let</span> <span class="ident">socket</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">socket</span>;
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">flush_done</span> <span class="op">=</span> <span class="bool-val">false</span>;
+                <span class="kw">let</span> <span class="ident">next_frame</span> <span class="op">=</span> <span class="ident">future::poll_fn</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">cx</span><span class="op">|</span> {
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Poll::Ready</span>(<span class="ident">res</span>) <span class="op">=</span> <span class="ident">socket</span>.<span class="ident">poll_next_unpin</span>(<span class="ident">cx</span>) {
+                        <span class="kw">return</span> <span class="ident">Poll::Ready</span>(<span class="ident">res</span>);
+                    }
 
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">next_stream_command</span> <span class="op">=</span>
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">stream_receiver</span>.<span class="ident">is_terminated</span>() {
-                    <span class="ident">num_terminated</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-                    <span class="ident">Either::Left</span>(<span class="ident">future::pending</span>())
-                } <span class="kw">else</span> {
-                    <span class="ident">Either::Right</span>(<span class="self">self</span>.<span class="ident">stream_receiver</span>.<span class="ident">next</span>())
-                };
+                    <span class="comment">// Prevent calling potentially heavy `flush` once it has completed.</span>
+                    <span class="kw">if</span> <span class="op">!</span><span class="ident">flush_done</span> {
+                        <span class="kw">match</span> <span class="ident">socket</span>.<span class="ident">poll_flush_unpin</span>(<span class="ident">cx</span>) {
+                            <span class="ident">Poll::Ready</span>(<span class="prelude-val">Ok</span>(<span class="kw">_</span>)) =&gt; {
+                                <span class="ident">flush_done</span> <span class="op">=</span> <span class="bool-val">true</span>;
+                            }
+                            <span class="ident">Poll::Ready</span>(<span class="prelude-val">Err</span>(<span class="ident">err</span>)) =&gt; {
+                                <span class="kw">return</span> <span class="ident">Poll::Ready</span>(<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="ident">err</span>.<span class="ident">into</span>())));
+                            }
+                            <span class="ident">Poll::Pending</span> =&gt; {}
+                        }
+                    }
 
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">next_control_command</span> <span class="op">=</span>
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">control_receiver</span>.<span class="ident">is_terminated</span>() {
-                    <span class="ident">num_terminated</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-                    <span class="ident">Either::Left</span>(<span class="ident">future::pending</span>())
-                } <span class="kw">else</span> {
-                    <span class="ident">Either::Right</span>(<span class="self">self</span>.<span class="ident">control_receiver</span>.<span class="ident">next</span>())
-                };
+                    <span class="ident">Poll::Pending</span>
+                });
+
+                <span class="ident">Either::Right</span>(<span class="ident">next_frame</span>)
+            };
+
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">next_stream_command</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">stream_receiver</span>.<span class="ident">is_terminated</span>() {
+                <span class="ident">num_terminated</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+                <span class="ident">Either::Left</span>(<span class="ident">future::pending</span>())
+            } <span class="kw">else</span> {
+                <span class="ident">Either::Right</span>(<span class="self">self</span>.<span class="ident">stream_receiver</span>.<span class="ident">next</span>())
+            };
+
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">next_control_command</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">control_receiver</span>.<span class="ident">is_terminated</span>() {
+                <span class="ident">num_terminated</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+                <span class="ident">Either::Left</span>(<span class="ident">future::pending</span>())
+            } <span class="kw">else</span> {
+                <span class="ident">Either::Right</span>(<span class="self">self</span>.<span class="ident">control_receiver</span>.<span class="ident">next</span>())
+            };
 
             <span class="kw">if</span> <span class="ident">num_terminated</span> <span class="op">==</span> <span class="number">3</span> {
                 <span class="macro">log::debug!</span>(<span class="string">&quot;{}: socket and channels are terminated&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>);
-                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>)
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>);
             }
 
-            <span class="kw">let</span> <span class="ident">next_item</span> <span class="op">=</span>
-                <span class="ident">future::poll_fn</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">cx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span><span class="op">|</span> {
-                    <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">next_stream_command</span>.<span class="ident">poll_unpin</span>(<span class="ident">cx</span>);
-                    <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">next_control_command</span>.<span class="ident">poll_unpin</span>(<span class="ident">cx</span>);
-                    <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">next_inbound_frame</span>.<span class="ident">poll_unpin</span>(<span class="ident">cx</span>);
-                    <span class="kw">if</span> <span class="ident">a</span>.<span class="ident">is_pending</span>() <span class="op">&amp;&amp;</span> <span class="ident">b</span>.<span class="ident">is_pending</span>() <span class="op">&amp;&amp;</span> <span class="ident">c</span>.<span class="ident">is_pending</span>() {
-                        <span class="kw">return</span> <span class="ident">Poll::Pending</span>
-                    }
-                    <span class="ident">Poll::Ready</span>((<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>))
-                });
+            <span class="kw">let</span> <span class="ident">next_item</span> <span class="op">=</span> <span class="ident">future::poll_fn</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">cx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span><span class="op">|</span> {
+                <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">next_stream_command</span>.<span class="ident">poll_unpin</span>(<span class="ident">cx</span>);
+                <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">next_control_command</span>.<span class="ident">poll_unpin</span>(<span class="ident">cx</span>);
+                <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">next_frame</span>.<span class="ident">poll_unpin</span>(<span class="ident">cx</span>);
+                <span class="kw">if</span> <span class="ident">a</span>.<span class="ident">is_pending</span>() <span class="op">&amp;&amp;</span> <span class="ident">b</span>.<span class="ident">is_pending</span>() <span class="op">&amp;&amp;</span> <span class="ident">c</span>.<span class="ident">is_pending</span>() {
+                    <span class="kw">return</span> <span class="ident">Poll::Pending</span>;
+                }
+                <span class="ident">Poll::Ready</span>((<span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">c</span>))
+            });
 
-            <span class="kw">let</span> (<span class="ident">stream_command</span>, <span class="ident">control_command</span>, <span class="ident">inbound_frame</span>) <span class="op">=</span> <span class="ident">next_item</span>.<span class="kw">await</span>;
+            <span class="kw">let</span> (<span class="ident">stream_command</span>, <span class="ident">control_command</span>, <span class="ident">frame</span>) <span class="op">=</span> <span class="ident">next_item</span>.<span class="kw">await</span>;
 
             <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Poll::Ready</span>(<span class="ident">cmd</span>) <span class="op">=</span> <span class="ident">control_command</span> {
                 <span class="self">self</span>.<span class="ident">on_control_command</span>(<span class="ident">cmd</span>).<span class="kw">await</span><span class="question-mark">?</span>
@@ -1388,14 +1610,11 @@
                 <span class="self">self</span>.<span class="ident">on_stream_command</span>(<span class="ident">cmd</span>).<span class="kw">await</span><span class="question-mark">?</span>
             }
 
-            <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Poll::Ready</span>(<span class="ident">frame</span>) <span class="op">=</span> <span class="ident">inbound_frame</span> {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">stream</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">on_frame</span>(<span class="ident">frame</span>).<span class="kw">await</span><span class="question-mark">?</span> {
-                    <span class="self">self</span>.<span class="ident">socket</span>.<span class="ident">get_mut</span>().<span class="ident">flush</span>().<span class="kw">await</span>.<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>;
-                    <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">stream</span>))
+            <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Poll::Ready</span>(<span class="ident">frame</span>) <span class="op">=</span> <span class="ident">frame</span> {
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">stream</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">on_frame</span>(<span class="ident">frame</span>.<span class="ident">transpose</span>().<span class="ident">map_err</span>(<span class="ident">Into::into</span>)).<span class="kw">await</span><span class="question-mark">?</span> {
+                    <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">stream</span>));
                 }
             }
-
-            <span class="self">self</span>.<span class="ident">socket</span>.<span class="ident">get_mut</span>().<span class="ident">flush</span>().<span class="kw">await</span>.<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>
         }
     }
 
@@ -1410,12 +1629,12 @@
                 <span class="kw">if</span> <span class="self">self</span>.<span class="ident">shutdown</span>.<span class="ident">is_complete</span>() {
                     <span class="comment">// We are already closed so just inform the control.</span>
                     <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">reply</span>.<span class="ident">send</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>));
-                    <span class="kw">return</span> <span class="prelude-val">Ok</span>(())
+                    <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
                 }
                 <span class="kw">if</span> <span class="self">self</span>.<span class="ident">streams</span>.<span class="ident">len</span>() <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">max_num_streams</span> {
                     <span class="macro">log::error!</span>(<span class="string">&quot;{}: maximum number of streams reached&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>);
                     <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">reply</span>.<span class="ident">send</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::TooManyStreams</span>));
-                    <span class="kw">return</span> <span class="prelude-val">Ok</span>(())
+                    <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
                 }
                 <span class="macro">log::trace!</span>(<span class="string">&quot;{}: creating new outbound stream&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>);
                 <span class="kw">let</span> <span class="ident">id</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">next_stream_id</span>()<span class="question-mark">?</span>;
@@ -1423,14 +1642,18 @@
                 <span class="kw">if</span> <span class="ident">extra_credit</span> <span class="op">&gt;</span> <span class="number">0</span> {
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">frame</span> <span class="op">=</span> <span class="ident">Frame::window_update</span>(<span class="ident">id</span>, <span class="ident">extra_credit</span>);
                     <span class="ident">frame</span>.<span class="ident">header_mut</span>().<span class="ident">syn</span>();
-                    <span class="macro">log::trace!</span>(<span class="string">&quot;{}: sending initial {}&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">frame</span>.<span class="ident">header</span>());
-                    <span class="self">self</span>.<span class="ident">socket</span>.<span class="ident">get_mut</span>().<span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="ident">frame</span>).<span class="kw">await</span>.<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>
+                    <span class="macro">log::trace!</span>(<span class="string">&quot;{}/{}: sending initial {}&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">id</span>, <span class="ident">frame</span>.<span class="ident">header</span>());
+                    <span class="self">self</span>.<span class="ident">socket</span>
+                        .<span class="ident">feed</span>(<span class="ident">frame</span>.<span class="ident">into</span>())
+                        .<span class="kw">await</span>
+                        .<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>
                 }
                 <span class="kw">let</span> <span class="ident">stream</span> <span class="op">=</span> {
                     <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">clone</span>();
                     <span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">stream_sender</span>.<span class="ident">clone</span>();
                     <span class="kw">let</span> <span class="ident">window</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">receive_window</span>;
-                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stream</span> <span class="op">=</span> <span class="ident">Stream::new</span>(<span class="ident">id</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">config</span>, <span class="ident">window</span>, <span class="ident">DEFAULT_CREDIT</span>, <span class="ident">sender</span>);
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stream</span> <span class="op">=</span>
+                        <span class="ident">Stream::new</span>(<span class="ident">id</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">config</span>, <span class="ident">window</span>, <span class="ident">DEFAULT_CREDIT</span>, <span class="ident">sender</span>);
                     <span class="kw">if</span> <span class="ident">extra_credit</span> <span class="op">==</span> <span class="number">0</span> {
                         <span class="ident">stream</span>.<span class="ident">set_flag</span>(<span class="ident">stream::Flag::Syn</span>)
                     }
@@ -1445,7 +1668,11 @@
                         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">header</span> <span class="op">=</span> <span class="ident">Header::data</span>(<span class="ident">id</span>, <span class="number">0</span>);
                         <span class="ident">header</span>.<span class="ident">rst</span>();
                         <span class="kw">let</span> <span class="ident">frame</span> <span class="op">=</span> <span class="ident">Frame::new</span>(<span class="ident">header</span>);
-                        <span class="self">self</span>.<span class="ident">socket</span>.<span class="ident">get_mut</span>().<span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="ident">frame</span>).<span class="kw">await</span>.<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>
+                        <span class="macro">log::trace!</span>(<span class="string">&quot;{}/{}: sending reset&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">id</span>);
+                        <span class="self">self</span>.<span class="ident">socket</span>
+                            .<span class="ident">feed</span>(<span class="ident">frame</span>.<span class="ident">into</span>())
+                            .<span class="kw">await</span>
+                            .<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>
                     }
                 }
             }
@@ -1453,9 +1680,11 @@
                 <span class="kw">if</span> <span class="self">self</span>.<span class="ident">shutdown</span>.<span class="ident">is_complete</span>() {
                     <span class="comment">// We are already closed so just inform the control.</span>
                     <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">reply</span>.<span class="ident">send</span>(());
-                    <span class="kw">return</span> <span class="prelude-val">Ok</span>(())
+                    <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
                 }
-                <span class="comment">// Handle initial close command.</span>
+                <span class="comment">// Handle initial close command by pausing the control command</span>
+                <span class="comment">// receiver and closing the stream command receiver. I.e. we</span>
+                <span class="comment">// wait for the stream commands to drain.</span>
                 <span class="macro">debug_assert!</span>(<span class="self">self</span>.<span class="ident">shutdown</span>.<span class="ident">has_not_started</span>());
                 <span class="self">self</span>.<span class="ident">shutdown</span> <span class="op">=</span> <span class="ident">Shutdown::InProgress</span>(<span class="ident">reply</span>);
                 <span class="macro">log::trace!</span>(<span class="string">&quot;{}: shutting down connection&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>);
@@ -1467,8 +1696,12 @@
                 <span class="comment">// No further processing of commands of any kind or incoming frames</span>
                 <span class="comment">// will happen.</span>
                 <span class="macro">debug_assert!</span>(<span class="self">self</span>.<span class="ident">shutdown</span>.<span class="ident">is_complete</span>());
-                <span class="self">self</span>.<span class="ident">socket</span>.<span class="ident">get_mut</span>().<span class="ident">close</span>().<span class="kw">await</span>.<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>;
-                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>)
+                <span class="self">self</span>.<span class="ident">socket</span>
+                    .<span class="ident">get_mut</span>()
+                    .<span class="ident">close</span>()
+                    .<span class="kw">await</span>
+                    .<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>;
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>);
             }
         }
         <span class="prelude-val">Ok</span>(())
@@ -1478,27 +1711,43 @@
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">on_stream_command</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">cmd</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StreamCommand</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">cmd</span> {
             <span class="prelude-val">Some</span>(<span class="ident">StreamCommand::SendFrame</span>(<span class="ident">frame</span>)) =&gt; {
-                <span class="macro">log::trace!</span>(<span class="string">&quot;{}: sending: {}&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">frame</span>.<span class="ident">header</span>());
-                <span class="self">self</span>.<span class="ident">socket</span>.<span class="ident">get_mut</span>().<span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="ident">frame</span>).<span class="kw">await</span>.<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>
+                <span class="macro">log::trace!</span>(
+                    <span class="string">&quot;{}/{}: sending: {}&quot;</span>,
+                    <span class="self">self</span>.<span class="ident">id</span>,
+                    <span class="ident">frame</span>.<span class="ident">header</span>().<span class="ident">stream_id</span>(),
+                    <span class="ident">frame</span>.<span class="ident">header</span>()
+                );
+                <span class="self">self</span>.<span class="ident">socket</span>
+                    .<span class="ident">feed</span>(<span class="ident">frame</span>.<span class="ident">into</span>())
+                    .<span class="kw">await</span>
+                    .<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>
             }
             <span class="prelude-val">Some</span>(<span class="ident">StreamCommand::CloseStream</span> { <span class="ident">id</span>, <span class="ident">ack</span> }) =&gt; {
-                <span class="macro">log::trace!</span>(<span class="string">&quot;{}: closing stream {} of {}&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">id</span>, <span class="self">self</span>);
+                <span class="macro">log::trace!</span>(<span class="string">&quot;{}/{}: sending close&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">id</span>);
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">header</span> <span class="op">=</span> <span class="ident">Header::data</span>(<span class="ident">id</span>, <span class="number">0</span>);
                 <span class="ident">header</span>.<span class="ident">fin</span>();
-                <span class="kw">if</span> <span class="ident">ack</span> { <span class="ident">header</span>.<span class="ident">ack</span>() }
+                <span class="kw">if</span> <span class="ident">ack</span> {
+                    <span class="ident">header</span>.<span class="ident">ack</span>()
+                }
                 <span class="kw">let</span> <span class="ident">frame</span> <span class="op">=</span> <span class="ident">Frame::new</span>(<span class="ident">header</span>);
-                <span class="self">self</span>.<span class="ident">socket</span>.<span class="ident">get_mut</span>().<span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="ident">frame</span>).<span class="kw">await</span>.<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>
+                <span class="self">self</span>.<span class="ident">socket</span>
+                    .<span class="ident">feed</span>(<span class="ident">frame</span>.<span class="ident">into</span>())
+                    .<span class="kw">await</span>
+                    .<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>
             }
             <span class="prelude-val">None</span> =&gt; {
                 <span class="comment">// We only get to this point when `self.stream_receiver`</span>
                 <span class="comment">// was closed which only happens in response to a close control</span>
                 <span class="comment">// command. Now that we are at the end of the stream command queue,</span>
                 <span class="comment">// we send the final term frame to the remote and complete the</span>
-                <span class="comment">// closure.</span>
+                <span class="comment">// closure by closing the already paused control command receiver.</span>
                 <span class="macro">debug_assert!</span>(<span class="self">self</span>.<span class="ident">shutdown</span>.<span class="ident">is_in_progress</span>());
-                <span class="macro">log::debug!</span>(<span class="string">&quot;{}: closing {}&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="self">self</span>);
+                <span class="macro">log::debug!</span>(<span class="string">&quot;{}: sending term&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>);
                 <span class="kw">let</span> <span class="ident">frame</span> <span class="op">=</span> <span class="ident">Frame::term</span>();
-                <span class="self">self</span>.<span class="ident">socket</span>.<span class="ident">get_mut</span>().<span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="ident">frame</span>).<span class="kw">await</span>.<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">socket</span>
+                    .<span class="ident">feed</span>(<span class="ident">frame</span>.<span class="ident">into</span>())
+                    .<span class="kw">await</span>
+                    .<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>;
                 <span class="kw">let</span> <span class="ident">shutdown</span> <span class="op">=</span> <span class="ident">std::mem::replace</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">shutdown</span>, <span class="ident">Shutdown::Complete</span>);
                 <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Shutdown::InProgress</span>(<span class="ident">tx</span>) <span class="op">=</span> <span class="ident">shutdown</span> {
                     <span class="comment">// Inform the `Control` that initiated the shutdown.</span>
@@ -1526,7 +1775,7 @@
                     <span class="ident">Tag::Data</span> =&gt; <span class="self">self</span>.<span class="ident">on_data</span>(<span class="ident">frame</span>.<span class="ident">into_data</span>()),
                     <span class="ident">Tag::WindowUpdate</span> =&gt; <span class="self">self</span>.<span class="ident">on_window_update</span>(<span class="kw-2">&amp;</span><span class="ident">frame</span>.<span class="ident">into_window_update</span>()),
                     <span class="ident">Tag::Ping</span> =&gt; <span class="self">self</span>.<span class="ident">on_ping</span>(<span class="kw-2">&amp;</span><span class="ident">frame</span>.<span class="ident">into_ping</span>()),
-                    <span class="ident">Tag::GoAway</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>)
+                    <span class="ident">Tag::GoAway</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>),
                 };
                 <span class="kw">match</span> <span class="ident">action</span> {
                     <span class="ident">Action::None</span> =&gt; {}
@@ -1534,25 +1783,40 @@
                         <span class="macro">log::trace!</span>(<span class="string">&quot;{}: new inbound {} of {}&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">stream</span>, <span class="self">self</span>);
                         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">f</span>) <span class="op">=</span> <span class="ident">update</span> {
                             <span class="macro">log::trace!</span>(<span class="string">&quot;{}/{}: sending update&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">f</span>.<span class="ident">header</span>().<span class="ident">stream_id</span>());
-                            <span class="self">self</span>.<span class="ident">socket</span>.<span class="ident">get_mut</span>().<span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="ident">f</span>).<span class="kw">await</span>.<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>
+                            <span class="self">self</span>.<span class="ident">socket</span>
+                                .<span class="ident">feed</span>(<span class="ident">f</span>.<span class="ident">into</span>())
+                                .<span class="kw">await</span>
+                                .<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>
                         }
-                        <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">stream</span>))
+                        <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">stream</span>));
                     }
                     <span class="ident">Action::Update</span>(<span class="ident">f</span>) =&gt; {
-                        <span class="macro">log::trace!</span>(<span class="string">&quot;{}/{}: sending update&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">f</span>.<span class="ident">header</span>().<span class="ident">stream_id</span>());
-                        <span class="self">self</span>.<span class="ident">socket</span>.<span class="ident">get_mut</span>().<span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="ident">f</span>).<span class="kw">await</span>.<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>
+                        <span class="macro">log::trace!</span>(<span class="string">&quot;{}: sending update: {:?}&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">f</span>.<span class="ident">header</span>());
+                        <span class="self">self</span>.<span class="ident">socket</span>
+                            .<span class="ident">feed</span>(<span class="ident">f</span>.<span class="ident">into</span>())
+                            .<span class="kw">await</span>
+                            .<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>
                     }
                     <span class="ident">Action::Ping</span>(<span class="ident">f</span>) =&gt; {
                         <span class="macro">log::trace!</span>(<span class="string">&quot;{}/{}: pong&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">f</span>.<span class="ident">header</span>().<span class="ident">stream_id</span>());
-                        <span class="self">self</span>.<span class="ident">socket</span>.<span class="ident">get_mut</span>().<span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="ident">f</span>).<span class="kw">await</span>.<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>
+                        <span class="self">self</span>.<span class="ident">socket</span>
+                            .<span class="ident">feed</span>(<span class="ident">f</span>.<span class="ident">into</span>())
+                            .<span class="kw">await</span>
+                            .<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>
                     }
                     <span class="ident">Action::Reset</span>(<span class="ident">f</span>) =&gt; {
                         <span class="macro">log::trace!</span>(<span class="string">&quot;{}/{}: sending reset&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">f</span>.<span class="ident">header</span>().<span class="ident">stream_id</span>());
-                        <span class="self">self</span>.<span class="ident">socket</span>.<span class="ident">get_mut</span>().<span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="ident">f</span>).<span class="kw">await</span>.<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>
+                        <span class="self">self</span>.<span class="ident">socket</span>
+                            .<span class="ident">feed</span>(<span class="ident">f</span>.<span class="ident">into</span>())
+                            .<span class="kw">await</span>
+                            .<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>
                     }
                     <span class="ident">Action::Terminate</span>(<span class="ident">f</span>) =&gt; {
                         <span class="macro">log::trace!</span>(<span class="string">&quot;{}: sending term&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>);
-                        <span class="self">self</span>.<span class="ident">socket</span>.<span class="ident">get_mut</span>().<span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="ident">f</span>).<span class="kw">await</span>.<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>
+                        <span class="self">self</span>.<span class="ident">socket</span>
+                            .<span class="ident">feed</span>(<span class="ident">f</span>.<span class="ident">into</span>())
+                            .<span class="kw">await</span>
+                            .<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>
                     }
                 }
                 <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
@@ -1561,7 +1825,7 @@
                 <span class="macro">log::debug!</span>(<span class="string">&quot;{}: socket eof&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>);
                 <span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>)
             }
-            <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="kw">if</span> <span class="ident">e</span>.<span class="ident">io_kind</span>() <span class="op">==</span> <span class="prelude-val">Some</span>(<span class="ident">std::io::ErrorKind::ConnectionReset</span>) =&gt; {
+            <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="kw">if</span> <span class="ident">e</span>.<span class="ident">io_kind</span>() <span class="op">==</span> <span class="prelude-val">Some</span>(<span class="ident">io::ErrorKind::ConnectionReset</span>) =&gt; {
                 <span class="macro">log::debug!</span>(<span class="string">&quot;{}: connection reset&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>);
                 <span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>)
             }
@@ -1575,7 +1839,8 @@
     <span class="kw">fn</span> <span class="ident">on_data</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">frame</span>: <span class="ident">Frame</span><span class="op">&lt;</span><span class="ident">Data</span><span class="op">&gt;</span>) -&gt; <span class="ident">Action</span> {
         <span class="kw">let</span> <span class="ident">stream_id</span> <span class="op">=</span> <span class="ident">frame</span>.<span class="ident">header</span>().<span class="ident">stream_id</span>();
 
-        <span class="kw">if</span> <span class="ident">frame</span>.<span class="ident">header</span>().<span class="ident">flags</span>().<span class="ident">contains</span>(<span class="ident">header::RST</span>) { <span class="comment">// stream reset</span>
+        <span class="kw">if</span> <span class="ident">frame</span>.<span class="ident">header</span>().<span class="ident">flags</span>().<span class="ident">contains</span>(<span class="ident">header::RST</span>) {
+            <span class="comment">// stream reset</span>
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">s</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">streams</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">stream_id</span>) {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">shared</span>();
                 <span class="ident">shared</span>.<span class="ident">update_state</span>(<span class="self">self</span>.<span class="ident">id</span>, <span class="ident">stream_id</span>, <span class="ident">State::Closed</span>);
@@ -1586,27 +1851,32 @@
                     <span class="ident">w</span>.<span class="ident">wake</span>()
                 }
             }
-            <span class="kw">return</span> <span class="ident">Action::None</span>
+            <span class="kw">return</span> <span class="ident">Action::None</span>;
         }
 
         <span class="kw">let</span> <span class="ident">is_finish</span> <span class="op">=</span> <span class="ident">frame</span>.<span class="ident">header</span>().<span class="ident">flags</span>().<span class="ident">contains</span>(<span class="ident">header::FIN</span>); <span class="comment">// half-close</span>
 
-        <span class="kw">if</span> <span class="ident">frame</span>.<span class="ident">header</span>().<span class="ident">flags</span>().<span class="ident">contains</span>(<span class="ident">header::SYN</span>) { <span class="comment">// new stream</span>
+        <span class="kw">if</span> <span class="ident">frame</span>.<span class="ident">header</span>().<span class="ident">flags</span>().<span class="ident">contains</span>(<span class="ident">header::SYN</span>) {
+            <span class="comment">// new stream</span>
             <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_valid_remote_id</span>(<span class="ident">stream_id</span>, <span class="ident">Tag::Data</span>) {
                 <span class="macro">log::error!</span>(<span class="string">&quot;{}: invalid stream id {}&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">stream_id</span>);
-                <span class="kw">return</span> <span class="ident">Action::Terminate</span>(<span class="ident">Frame::protocol_error</span>())
+                <span class="kw">return</span> <span class="ident">Action::Terminate</span>(<span class="ident">Frame::protocol_error</span>());
             }
             <span class="kw">if</span> <span class="ident">frame</span>.<span class="ident">body</span>().<span class="ident">len</span>() <span class="op">&gt;</span> <span class="ident">DEFAULT_CREDIT</span> <span class="kw">as</span> <span class="ident">usize</span> {
-                <span class="macro">log::error!</span>(<span class="string">&quot;{}/{}: 1st body of stream exceeds default credit&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">stream_id</span>);
-                <span class="kw">return</span> <span class="ident">Action::Terminate</span>(<span class="ident">Frame::protocol_error</span>())
+                <span class="macro">log::error!</span>(
+                    <span class="string">&quot;{}/{}: 1st body of stream exceeds default credit&quot;</span>,
+                    <span class="self">self</span>.<span class="ident">id</span>,
+                    <span class="ident">stream_id</span>
+                );
+                <span class="kw">return</span> <span class="ident">Action::Terminate</span>(<span class="ident">Frame::protocol_error</span>());
             }
             <span class="kw">if</span> <span class="self">self</span>.<span class="ident">streams</span>.<span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">stream_id</span>) {
                 <span class="macro">log::error!</span>(<span class="string">&quot;{}/{}: stream already exists&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">stream_id</span>);
-                <span class="kw">return</span> <span class="ident">Action::Terminate</span>(<span class="ident">Frame::protocol_error</span>())
+                <span class="kw">return</span> <span class="ident">Action::Terminate</span>(<span class="ident">Frame::protocol_error</span>());
             }
             <span class="kw">if</span> <span class="self">self</span>.<span class="ident">streams</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">max_num_streams</span> {
                 <span class="macro">log::error!</span>(<span class="string">&quot;{}: maximum number of streams reached&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>);
-                <span class="kw">return</span> <span class="ident">Action::Terminate</span>(<span class="ident">Frame::internal_error</span>())
+                <span class="kw">return</span> <span class="ident">Action::Terminate</span>(<span class="ident">Frame::internal_error</span>());
             }
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stream</span> <span class="op">=</span> {
                 <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">clone</span>();
@@ -1636,24 +1906,32 @@
                 <span class="ident">stream</span>.<span class="ident">set_flag</span>(<span class="ident">stream::Flag::Ack</span>)
             }
             <span class="self">self</span>.<span class="ident">streams</span>.<span class="ident">insert</span>(<span class="ident">stream_id</span>, <span class="ident">stream</span>.<span class="ident">clone</span>());
-            <span class="kw">return</span> <span class="ident">Action::New</span>(<span class="ident">stream</span>, <span class="ident">window_update</span>)
+            <span class="kw">return</span> <span class="ident">Action::New</span>(<span class="ident">stream</span>, <span class="ident">window_update</span>);
         }
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">stream</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">streams</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">stream_id</span>) {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">stream</span>.<span class="ident">shared</span>();
             <span class="kw">if</span> <span class="ident">frame</span>.<span class="ident">body</span>().<span class="ident">len</span>() <span class="op">&gt;</span> <span class="ident">shared</span>.<span class="ident">window</span> <span class="kw">as</span> <span class="ident">usize</span> {
-                <span class="macro">log::error!</span>(<span class="string">&quot;{}/{}: frame body larger than window of stream&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">stream_id</span>);
-                <span class="kw">return</span> <span class="ident">Action::Terminate</span>(<span class="ident">Frame::protocol_error</span>())
+                <span class="macro">log::error!</span>(
+                    <span class="string">&quot;{}/{}: frame body larger than window of stream&quot;</span>,
+                    <span class="self">self</span>.<span class="ident">id</span>,
+                    <span class="ident">stream_id</span>
+                );
+                <span class="kw">return</span> <span class="ident">Action::Terminate</span>(<span class="ident">Frame::protocol_error</span>());
             }
             <span class="kw">if</span> <span class="ident">is_finish</span> {
                 <span class="ident">shared</span>.<span class="ident">update_state</span>(<span class="self">self</span>.<span class="ident">id</span>, <span class="ident">stream_id</span>, <span class="ident">State::RecvClosed</span>);
             }
             <span class="kw">let</span> <span class="ident">max_buffer_size</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">max_buffer_size</span>;
             <span class="kw">if</span> <span class="ident">shared</span>.<span class="ident">buffer</span>.<span class="ident">len</span>() <span class="op">&gt;</span><span class="op">=</span> <span class="ident">max_buffer_size</span> {
-                <span class="macro">log::error!</span>(<span class="string">&quot;{}/{}: buffer of stream grows beyond limit&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">stream_id</span>);
+                <span class="macro">log::error!</span>(
+                    <span class="string">&quot;{}/{}: buffer of stream grows beyond limit&quot;</span>,
+                    <span class="self">self</span>.<span class="ident">id</span>,
+                    <span class="ident">stream_id</span>
+                );
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">header</span> <span class="op">=</span> <span class="ident">Header::data</span>(<span class="ident">stream_id</span>, <span class="number">0</span>);
                 <span class="ident">header</span>.<span class="ident">rst</span>();
-                <span class="kw">return</span> <span class="ident">Action::Reset</span>(<span class="ident">Frame::new</span>(<span class="ident">header</span>))
+                <span class="kw">return</span> <span class="ident">Action::Reset</span>(<span class="ident">Frame::new</span>(<span class="ident">header</span>));
             }
             <span class="ident">shared</span>.<span class="ident">window</span> <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">window</span>.<span class="ident">saturating_sub</span>(<span class="ident">frame</span>.<span class="ident">body_len</span>());
             <span class="ident">shared</span>.<span class="ident">buffer</span>.<span class="ident">push</span>(<span class="ident">frame</span>.<span class="ident">into_body</span>());
@@ -1664,11 +1942,16 @@
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">credit</span>) <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">next_window_update</span>() {
                     <span class="ident">shared</span>.<span class="ident">window</span> <span class="op">+</span><span class="op">=</span> <span class="ident">credit</span>;
                     <span class="kw">let</span> <span class="ident">frame</span> <span class="op">=</span> <span class="ident">Frame::window_update</span>(<span class="ident">stream_id</span>, <span class="ident">credit</span>);
-                    <span class="kw">return</span> <span class="ident">Action::Update</span>(<span class="ident">frame</span>)
+                    <span class="kw">return</span> <span class="ident">Action::Update</span>(<span class="ident">frame</span>);
                 }
             }
         } <span class="kw">else</span> {
-            <span class="macro">log::debug!</span>(<span class="string">&quot;{}/{}: data for unknown stream, ignoring&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">stream_id</span>);
+            <span class="macro">log::trace!</span>(
+                <span class="string">&quot;{}/{}: data frame for unknown stream, possibly dropped earlier: {:?}&quot;</span>,
+                <span class="self">self</span>.<span class="ident">id</span>,
+                <span class="ident">stream_id</span>,
+                <span class="ident">frame</span>
+            );
             <span class="comment">// We do not consider this a protocol violation and thus do not send a stream reset</span>
             <span class="comment">// because we may still be processing pending `StreamCommand`s of this stream that were</span>
             <span class="comment">// sent before it has been dropped and &quot;garbage collected&quot;. Such a stream reset would</span>
@@ -1684,7 +1967,8 @@
     <span class="kw">fn</span> <span class="ident">on_window_update</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">frame</span>: <span class="kw-2">&amp;</span><span class="ident">Frame</span><span class="op">&lt;</span><span class="ident">WindowUpdate</span><span class="op">&gt;</span>) -&gt; <span class="ident">Action</span> {
         <span class="kw">let</span> <span class="ident">stream_id</span> <span class="op">=</span> <span class="ident">frame</span>.<span class="ident">header</span>().<span class="ident">stream_id</span>();
 
-        <span class="kw">if</span> <span class="ident">frame</span>.<span class="ident">header</span>().<span class="ident">flags</span>().<span class="ident">contains</span>(<span class="ident">header::RST</span>) { <span class="comment">// stream reset</span>
+        <span class="kw">if</span> <span class="ident">frame</span>.<span class="ident">header</span>().<span class="ident">flags</span>().<span class="ident">contains</span>(<span class="ident">header::RST</span>) {
+            <span class="comment">// stream reset</span>
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">s</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">streams</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">stream_id</span>) {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">shared</span>();
                 <span class="ident">shared</span>.<span class="ident">update_state</span>(<span class="self">self</span>.<span class="ident">id</span>, <span class="ident">stream_id</span>, <span class="ident">State::Closed</span>);
@@ -1695,37 +1979,41 @@
                     <span class="ident">w</span>.<span class="ident">wake</span>()
                 }
             }
-            <span class="kw">return</span> <span class="ident">Action::None</span>
+            <span class="kw">return</span> <span class="ident">Action::None</span>;
         }
 
         <span class="kw">let</span> <span class="ident">is_finish</span> <span class="op">=</span> <span class="ident">frame</span>.<span class="ident">header</span>().<span class="ident">flags</span>().<span class="ident">contains</span>(<span class="ident">header::FIN</span>); <span class="comment">// half-close</span>
 
-        <span class="kw">if</span> <span class="ident">frame</span>.<span class="ident">header</span>().<span class="ident">flags</span>().<span class="ident">contains</span>(<span class="ident">header::SYN</span>) { <span class="comment">// new stream</span>
+        <span class="kw">if</span> <span class="ident">frame</span>.<span class="ident">header</span>().<span class="ident">flags</span>().<span class="ident">contains</span>(<span class="ident">header::SYN</span>) {
+            <span class="comment">// new stream</span>
             <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_valid_remote_id</span>(<span class="ident">stream_id</span>, <span class="ident">Tag::WindowUpdate</span>) {
                 <span class="macro">log::error!</span>(<span class="string">&quot;{}: invalid stream id {}&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">stream_id</span>);
-                <span class="kw">return</span> <span class="ident">Action::Terminate</span>(<span class="ident">Frame::protocol_error</span>())
+                <span class="kw">return</span> <span class="ident">Action::Terminate</span>(<span class="ident">Frame::protocol_error</span>());
             }
             <span class="kw">if</span> <span class="self">self</span>.<span class="ident">streams</span>.<span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">stream_id</span>) {
                 <span class="macro">log::error!</span>(<span class="string">&quot;{}/{}: stream already exists&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">stream_id</span>);
-                <span class="kw">return</span> <span class="ident">Action::Terminate</span>(<span class="ident">Frame::protocol_error</span>())
+                <span class="kw">return</span> <span class="ident">Action::Terminate</span>(<span class="ident">Frame::protocol_error</span>());
             }
             <span class="kw">if</span> <span class="self">self</span>.<span class="ident">streams</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">max_num_streams</span> {
                 <span class="macro">log::error!</span>(<span class="string">&quot;{}: maximum number of streams reached&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>);
-                <span class="kw">return</span> <span class="ident">Action::Terminate</span>(<span class="ident">Frame::protocol_error</span>())
+                <span class="kw">return</span> <span class="ident">Action::Terminate</span>(<span class="ident">Frame::protocol_error</span>());
             }
             <span class="kw">let</span> <span class="ident">stream</span> <span class="op">=</span> {
                 <span class="kw">let</span> <span class="ident">credit</span> <span class="op">=</span> <span class="ident">frame</span>.<span class="ident">header</span>().<span class="ident">credit</span>() <span class="op">+</span> <span class="ident">DEFAULT_CREDIT</span>;
                 <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">clone</span>();
                 <span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">stream_sender</span>.<span class="ident">clone</span>();
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stream</span> <span class="op">=</span> <span class="ident">Stream::new</span>(<span class="ident">stream_id</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">config</span>, <span class="ident">DEFAULT_CREDIT</span>, <span class="ident">credit</span>, <span class="ident">sender</span>);
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stream</span> <span class="op">=</span>
+                    <span class="ident">Stream::new</span>(<span class="ident">stream_id</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">config</span>, <span class="ident">DEFAULT_CREDIT</span>, <span class="ident">credit</span>, <span class="ident">sender</span>);
                 <span class="ident">stream</span>.<span class="ident">set_flag</span>(<span class="ident">stream::Flag::Ack</span>);
                 <span class="ident">stream</span>
             };
             <span class="kw">if</span> <span class="ident">is_finish</span> {
-                <span class="ident">stream</span>.<span class="ident">shared</span>().<span class="ident">update_state</span>(<span class="self">self</span>.<span class="ident">id</span>, <span class="ident">stream_id</span>, <span class="ident">State::RecvClosed</span>);
+                <span class="ident">stream</span>
+                    .<span class="ident">shared</span>()
+                    .<span class="ident">update_state</span>(<span class="self">self</span>.<span class="ident">id</span>, <span class="ident">stream_id</span>, <span class="ident">State::RecvClosed</span>);
             }
             <span class="self">self</span>.<span class="ident">streams</span>.<span class="ident">insert</span>(<span class="ident">stream_id</span>, <span class="ident">stream</span>.<span class="ident">clone</span>());
-            <span class="kw">return</span> <span class="ident">Action::New</span>(<span class="ident">stream</span>, <span class="prelude-val">None</span>)
+            <span class="kw">return</span> <span class="ident">Action::New</span>(<span class="ident">stream</span>, <span class="prelude-val">None</span>);
         }
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">stream</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">streams</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">stream_id</span>) {
@@ -1738,7 +2026,12 @@
                 <span class="ident">w</span>.<span class="ident">wake</span>()
             }
         } <span class="kw">else</span> {
-            <span class="macro">log::debug!</span>(<span class="string">&quot;{}/{}: window update for unknown stream, ignoring&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">stream_id</span>);
+            <span class="macro">log::trace!</span>(
+                <span class="string">&quot;{}/{}: window update for unknown stream, possibly dropped earlier: {:?}&quot;</span>,
+                <span class="self">self</span>.<span class="ident">id</span>,
+                <span class="ident">stream_id</span>,
+                <span class="ident">frame</span>
+            );
             <span class="comment">// We do not consider this a protocol violation and thus do not send a stream reset</span>
             <span class="comment">// because we may still be processing pending `StreamCommand`s of this stream that were</span>
             <span class="comment">// sent before it has been dropped and &quot;garbage collected&quot;. Such a stream reset would</span>
@@ -1753,15 +2046,21 @@
 
     <span class="kw">fn</span> <span class="ident">on_ping</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">frame</span>: <span class="kw-2">&amp;</span><span class="ident">Frame</span><span class="op">&lt;</span><span class="ident">Ping</span><span class="op">&gt;</span>) -&gt; <span class="ident">Action</span> {
         <span class="kw">let</span> <span class="ident">stream_id</span> <span class="op">=</span> <span class="ident">frame</span>.<span class="ident">header</span>().<span class="ident">stream_id</span>();
-        <span class="kw">if</span> <span class="ident">frame</span>.<span class="ident">header</span>().<span class="ident">flags</span>().<span class="ident">contains</span>(<span class="ident">header::ACK</span>) { <span class="comment">// pong</span>
-            <span class="kw">return</span> <span class="ident">Action::None</span>
+        <span class="kw">if</span> <span class="ident">frame</span>.<span class="ident">header</span>().<span class="ident">flags</span>().<span class="ident">contains</span>(<span class="ident">header::ACK</span>) {
+            <span class="comment">// pong</span>
+            <span class="kw">return</span> <span class="ident">Action::None</span>;
         }
         <span class="kw">if</span> <span class="ident">stream_id</span> <span class="op">==</span> <span class="ident">CONNECTION_ID</span> <span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">streams</span>.<span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">stream_id</span>) {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hdr</span> <span class="op">=</span> <span class="ident">Header::ping</span>(<span class="ident">frame</span>.<span class="ident">header</span>().<span class="ident">nonce</span>());
             <span class="ident">hdr</span>.<span class="ident">ack</span>();
-            <span class="kw">return</span> <span class="ident">Action::Ping</span>(<span class="ident">Frame::new</span>(<span class="ident">hdr</span>))
+            <span class="kw">return</span> <span class="ident">Action::Ping</span>(<span class="ident">Frame::new</span>(<span class="ident">hdr</span>));
         }
-        <span class="macro">log::debug!</span>(<span class="string">&quot;{}/{}: ping for unknown stream&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">stream_id</span>);
+        <span class="macro">log::trace!</span>(
+            <span class="string">&quot;{}/{}: ping for unknown stream, possibly dropped earlier: {:?}&quot;</span>,
+            <span class="self">self</span>.<span class="ident">id</span>,
+            <span class="ident">stream_id</span>,
+            <span class="ident">frame</span>
+        );
         <span class="comment">// We do not consider this a protocol violation and thus do not send a stream reset because</span>
         <span class="comment">// we may still be processing pending `StreamCommand`s of this stream that were sent before</span>
         <span class="comment">// it has been dropped and &quot;garbage collected&quot;. Such a stream reset would interfere with the</span>
@@ -1774,10 +2073,13 @@
 
     <span class="kw">fn</span> <span class="ident">next_stream_id</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">StreamId</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">proposed</span> <span class="op">=</span> <span class="ident">StreamId::new</span>(<span class="self">self</span>.<span class="ident">next_id</span>);
-        <span class="self">self</span>.<span class="ident">next_id</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">next_id</span>.<span class="ident">checked_add</span>(<span class="number">2</span>).<span class="ident">ok_or</span>(<span class="ident">ConnectionError::NoMoreStreamIds</span>)<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">next_id</span> <span class="op">=</span> <span class="self">self</span>
+            .<span class="ident">next_id</span>
+            .<span class="ident">checked_add</span>(<span class="number">2</span>)
+            .<span class="ident">ok_or</span>(<span class="ident">ConnectionError::NoMoreStreamIds</span>)<span class="question-mark">?</span>;
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">mode</span> {
             <span class="ident">Mode::Client</span> =&gt; <span class="macro">assert!</span>(<span class="ident">proposed</span>.<span class="ident">is_client</span>()),
-            <span class="ident">Mode::Server</span> =&gt; <span class="macro">assert!</span>(<span class="ident">proposed</span>.<span class="ident">is_server</span>())
+            <span class="ident">Mode::Server</span> =&gt; <span class="macro">assert!</span>(<span class="ident">proposed</span>.<span class="ident">is_server</span>()),
         }
         <span class="prelude-val">Ok</span>(<span class="ident">proposed</span>)
     }
@@ -1785,11 +2087,11 @@
     <span class="comment">// Check if the given stream ID is valid w.r.t. the provided tag and our connection mode.</span>
     <span class="kw">fn</span> <span class="ident">is_valid_remote_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">StreamId</span>, <span class="ident">tag</span>: <span class="ident">Tag</span>) -&gt; <span class="ident">bool</span> {
         <span class="kw">if</span> <span class="ident">tag</span> <span class="op">==</span> <span class="ident">Tag::Ping</span> <span class="op">|</span><span class="op">|</span> <span class="ident">tag</span> <span class="op">==</span> <span class="ident">Tag::GoAway</span> {
-            <span class="kw">return</span> <span class="ident">id</span>.<span class="ident">is_session</span>()
+            <span class="kw">return</span> <span class="ident">id</span>.<span class="ident">is_session</span>();
         }
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">mode</span> {
             <span class="ident">Mode::Client</span> =&gt; <span class="ident">id</span>.<span class="ident">is_server</span>(),
-            <span class="ident">Mode::Server</span> =&gt; <span class="ident">id</span>.<span class="ident">is_client</span>()
+            <span class="ident">Mode::Server</span> =&gt; <span class="ident">id</span>.<span class="ident">is_client</span>(),
         }
     }
 
@@ -1802,7 +2104,7 @@
         <span class="kw">let</span> <span class="ident">win_update_mode</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">window_update_mode</span>;
         <span class="kw">for</span> <span class="ident">stream</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">streams</span>.<span class="ident">values_mut</span>() {
             <span class="kw">if</span> <span class="ident">stream</span>.<span class="ident">strong_count</span>() <span class="op">&gt;</span> <span class="number">1</span> {
-                <span class="kw">continue</span>
+                <span class="kw">continue</span>;
             }
             <span class="macro">log::trace!</span>(<span class="string">&quot;{}: removing dropped {}&quot;</span>, <span class="ident">conn_id</span>, <span class="ident">stream</span>);
             <span class="kw">let</span> <span class="ident">stream_id</span> <span class="op">=</span> <span class="ident">stream</span>.<span class="ident">id</span>();
@@ -1828,7 +2130,7 @@
                     <span class="comment">// or will at some later point send our FIN frame.</span>
                     <span class="comment">// The remote may be out of credit though and blocked on</span>
                     <span class="comment">// writing more data. We may need to reset the stream.</span>
-                    <span class="ident">State::SendClosed</span> =&gt;
+                    <span class="ident">State::SendClosed</span> =&gt; {
                         <span class="kw">if</span> <span class="ident">win_update_mode</span> <span class="op">==</span> <span class="ident">WindowUpdateMode::OnRead</span> <span class="op">&amp;&amp;</span> <span class="ident">shared</span>.<span class="ident">window</span> <span class="op">==</span> <span class="number">0</span> {
                             <span class="comment">// The remote may be waiting for a window update</span>
                             <span class="comment">// which we will never send, so reset the stream now.</span>
@@ -1844,10 +2146,11 @@
                             <span class="comment">// because the stream will no longer be known.</span>
                             <span class="prelude-val">None</span>
                         }
+                    }
                     <span class="comment">// The stream was properly closed. We either already have</span>
                     <span class="comment">// or will at some later point send our FIN frame. The</span>
                     <span class="comment">// remote end has already done so in the past.</span>
-                    <span class="ident">State::Closed</span> =&gt; <span class="prelude-val">None</span>
+                    <span class="ident">State::Closed</span> =&gt; <span class="prelude-val">None</span>,
                 };
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">w</span>) <span class="op">=</span> <span class="ident">shared</span>.<span class="ident">reader</span>.<span class="ident">take</span>() {
                     <span class="ident">w</span>.<span class="ident">wake</span>()
@@ -1858,8 +2161,11 @@
                 <span class="ident">frame</span>
             };
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">f</span>) <span class="op">=</span> <span class="ident">frame</span> {
-                <span class="macro">log::trace!</span>(<span class="string">&quot;{}: sending: {}&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">f</span>.<span class="ident">header</span>());
-                <span class="self">self</span>.<span class="ident">socket</span>.<span class="ident">get_mut</span>().<span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="ident">f</span>).<span class="kw">await</span>.<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>
+                <span class="macro">log::trace!</span>(<span class="string">&quot;{}/{}: sending: {}&quot;</span>, <span class="self">self</span>.<span class="ident">id</span>, <span class="ident">stream_id</span>, <span class="ident">f</span>.<span class="ident">header</span>());
+                <span class="self">self</span>.<span class="ident">socket</span>
+                    .<span class="ident">feed</span>(<span class="ident">f</span>.<span class="ident">into</span>())
+                    .<span class="kw">await</span>
+                    .<span class="ident">or</span>(<span class="prelude-val">Err</span>(<span class="ident">ConnectionError::Closed</span>))<span class="question-mark">?</span>
             }
             <span class="self">self</span>.<span class="ident">garbage</span>.<span class="ident">push</span>(<span class="ident">stream_id</span>)
         }
@@ -1892,16 +2198,24 @@
     }
 }
 
+<span class="doccomment">/// Events related to reading from or writing to the underlying socket.</span>
+<span class="kw">enum</span> <span class="ident">IoEvent</span> {
+    <span class="doccomment">/// A new inbound frame arrived.</span>
+    <span class="ident">Inbound</span>(<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Frame</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>),
+    <span class="doccomment">/// We can continue sending frames.</span>
+    <span class="ident">OutboundReady</span>,
+}
+
 <span class="doccomment">/// Turn a Yamux [`Connection`] into a [`futures::Stream`].</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_stream</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">c</span>: <span class="ident">Connection</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) -&gt; <span class="kw">impl</span> <span class="ident">futures::stream::Stream</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Stream</span><span class="op">&gt;</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">AsyncRead</span> <span class="op">+</span> <span class="ident">AsyncWrite</span> <span class="op">+</span> <span class="ident">Unpin</span>
+    <span class="ident">T</span>: <span class="ident">AsyncRead</span> <span class="op">+</span> <span class="ident">AsyncWrite</span> <span class="op">+</span> <span class="ident">Unpin</span>,
 {
     <span class="ident">futures::stream::unfold</span>(<span class="ident">c</span>, <span class="op">|</span><span class="kw-2">mut</span> <span class="ident">c</span><span class="op">|</span> <span class="kw">async</span> {
         <span class="kw">match</span> <span class="ident">c</span>.<span class="ident">next_stream</span>().<span class="kw">await</span> {
             <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>) =&gt; <span class="prelude-val">None</span>,
             <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">stream</span>)) =&gt; <span class="prelude-val">Some</span>((<span class="prelude-val">Ok</span>(<span class="ident">stream</span>), <span class="ident">c</span>)),
-            <span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; <span class="prelude-val">Some</span>((<span class="prelude-val">Err</span>(<span class="ident">e</span>), <span class="ident">c</span>))
+            <span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; <span class="prelude-val">Some</span>((<span class="prelude-val">Err</span>(<span class="ident">e</span>), <span class="ident">c</span>)),
         }
     })
 }

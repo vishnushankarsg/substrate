@@ -868,7 +868,7 @@
 			<span class="comment">// Check if there might be multiple instances benchmarked.</span>
 			<span class="kw">if</span> <span class="ident">all_results</span>.<span class="ident">keys</span>().<span class="ident">any</span>(<span class="op">|</span>(<span class="ident">p</span>, <span class="ident">i</span>)<span class="op">|</span> <span class="ident">p</span> <span class="op">==</span> <span class="ident">pallet</span> <span class="op">&amp;&amp;</span> <span class="ident">i</span> <span class="op">!</span><span class="op">=</span> <span class="ident">instance</span>) {
 				<span class="comment">// Create new file: &quot;path/to/pallet_name_instance_name.rs&quot;.</span>
-				<span class="ident">file_path</span>.<span class="ident">push</span>(<span class="ident">pallet</span>.<span class="ident">clone</span>() <span class="op">+</span> <span class="string">&quot;_&quot;</span> <span class="op">+</span> <span class="kw-2">&amp;</span><span class="ident">instance</span>.<span class="ident">to_snake_case</span>());
+				<span class="ident">file_path</span>.<span class="ident">push</span>(<span class="ident">pallet</span>.<span class="ident">clone</span>() <span class="op">+</span> <span class="string">&quot;_&quot;</span> <span class="op">+</span> <span class="ident">instance</span>.<span class="ident">to_snake_case</span>().<span class="ident">as_str</span>());
 			} <span class="kw">else</span> {
 				<span class="comment">// Create new file: &quot;path/to/pallet_name.rs&quot;.</span>
 				<span class="ident">file_path</span>.<span class="ident">push</span>(<span class="ident">pallet</span>.<span class="ident">clone</span>());

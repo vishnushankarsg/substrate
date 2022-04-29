@@ -104,6 +104,29 @@
 <span id="99">99</span>
 <span id="100">100</span>
 <span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -126,7 +149,10 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! **Warning**: These APIs are not stable.</span>
 
-<span class="kw">use</span> <span class="ident">libp2p</span>::{<span class="ident">core::ConnectedPoint</span>, <span class="ident">Multiaddr</span>};
+<span class="kw">use</span> <span class="ident">libp2p</span>::{
+	<span class="ident">core</span>::{<span class="ident">ConnectedPoint</span>, <span class="ident">Endpoint</span> <span class="kw">as</span> <span class="ident">CoreEndpoint</span>},
+	<span class="ident">Multiaddr</span>,
+};
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{
 	<span class="ident">collections</span>::{<span class="ident">HashMap</span>, <span class="ident">HashSet</span>},
@@ -186,7 +212,7 @@
 <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;camelCase&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">PeerEndpoint</span> {
 	<span class="doccomment">/// We are dialing the given address.</span>
-	<span class="ident">Dialing</span>(<span class="ident">Multiaddr</span>),
+	<span class="ident">Dialing</span>(<span class="ident">Multiaddr</span>, <span class="ident">Endpoint</span>),
 	<span class="doccomment">/// We are listening.</span>
 	<span class="ident">Listening</span> {
 		<span class="doccomment">/// Local address of the connection.</span>
@@ -196,12 +222,32 @@
 	},
 }
 
+<span class="doccomment">/// Part of the `NetworkState` struct. Unstable.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
+<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;camelCase&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Endpoint</span> {
+	<span class="doccomment">/// The socket comes from a dialer.</span>
+	<span class="ident">Dialer</span>,
+	<span class="doccomment">/// The socket comes from a listener.</span>
+	<span class="ident">Listener</span>,
+}
+
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ConnectedPoint</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">PeerEndpoint</span> {
 	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">endpoint</span>: <span class="ident">ConnectedPoint</span>) -&gt; <span class="self">Self</span> {
 		<span class="kw">match</span> <span class="ident">endpoint</span> {
-			<span class="ident">ConnectedPoint::Dialer</span> { <span class="ident">address</span> } =&gt; <span class="ident"><span class="self">Self</span>::Dialing</span>(<span class="ident">address</span>),
+			<span class="ident">ConnectedPoint::Dialer</span> { <span class="ident">address</span>, <span class="ident">role_override</span> } =&gt;
+				<span class="ident"><span class="self">Self</span>::Dialing</span>(<span class="ident">address</span>, <span class="ident">role_override</span>.<span class="ident">into</span>()),
 			<span class="ident">ConnectedPoint::Listener</span> { <span class="ident">local_addr</span>, <span class="ident">send_back_addr</span> } =&gt;
 				<span class="ident"><span class="self">Self</span>::Listening</span> { <span class="ident">local_addr</span>, <span class="ident">send_back_addr</span> },
+		}
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">CoreEndpoint</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Endpoint</span> {
+	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">endpoint</span>: <span class="ident">CoreEndpoint</span>) -&gt; <span class="self">Self</span> {
+		<span class="kw">match</span> <span class="ident">endpoint</span> {
+			<span class="ident">CoreEndpoint::Dialer</span> =&gt; <span class="ident"><span class="self">Self</span>::Dialer</span>,
+			<span class="ident">CoreEndpoint::Listener</span> =&gt; <span class="ident"><span class="self">Self</span>::Listener</span>,
 		}
 	}
 }

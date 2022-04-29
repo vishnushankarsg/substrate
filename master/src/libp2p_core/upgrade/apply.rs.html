@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/libp2p-core-0.30.0/src/upgrade/apply.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>apply.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/libp2p-core-0.32.1/src/upgrade/apply.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>apply.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../libp2p_core/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -259,6 +259,8 @@
 <span id="254">254</span>
 <span id="255">255</span>
 <span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2018 Parity Technologies (UK) Ltd.</span>
 <span class="comment">//</span>
 <span class="comment">// Permission is hereby granted, free of charge, to any person obtaining a</span>
@@ -280,7 +282,7 @@
 <span class="comment">// DEALINGS IN THE SOFTWARE.</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::upgrade</span>::{<span class="ident">InboundUpgrade</span>, <span class="ident">OutboundUpgrade</span>, <span class="ident">ProtocolName</span>, <span class="ident">UpgradeError</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">ConnectedPoint</span>, <span class="ident">Negotiated</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">connection::ConnectedPoint</span>, <span class="ident">Negotiated</span>};
 <span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">future::Either</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>};
 <span class="kw">use</span> <span class="ident">log::debug</span>;
 <span class="kw">use</span> <span class="ident">multistream_select</span>::{<span class="self">self</span>, <span class="ident">DialerSelectFuture</span>, <span class="ident">ListenerSelectFuture</span>};
@@ -288,6 +290,7 @@
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">multistream_select::Version</span>;
 
+<span class="comment">// TODO: Still needed?</span>
 <span class="doccomment">/// Applies an upgrade to the inbound and outbound direction of a connection or substream.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">apply</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">U</span><span class="op">&gt;</span>(
     <span class="ident">conn</span>: <span class="ident">C</span>,
@@ -299,10 +302,11 @@
     <span class="ident">C</span>: <span class="ident">AsyncRead</span> <span class="op">+</span> <span class="ident">AsyncWrite</span> <span class="op">+</span> <span class="ident">Unpin</span>,
     <span class="ident">U</span>: <span class="ident">InboundUpgrade</span><span class="op">&lt;</span><span class="ident">Negotiated</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">OutboundUpgrade</span><span class="op">&lt;</span><span class="ident">Negotiated</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 {
-    <span class="kw">if</span> <span class="ident">cp</span>.<span class="ident">is_listener</span>() {
-        <span class="ident">Either::Left</span>(<span class="ident">apply_inbound</span>(<span class="ident">conn</span>, <span class="ident">up</span>))
-    } <span class="kw">else</span> {
-        <span class="ident">Either::Right</span>(<span class="ident">apply_outbound</span>(<span class="ident">conn</span>, <span class="ident">up</span>, <span class="ident">v</span>))
+    <span class="kw">match</span> <span class="ident">cp</span> {
+        <span class="ident">ConnectedPoint::Dialer</span> { <span class="ident">role_override</span>, .. } <span class="kw">if</span> <span class="ident">role_override</span>.<span class="ident">is_dialer</span>() =&gt; {
+            <span class="ident">Either::Right</span>(<span class="ident">apply_outbound</span>(<span class="ident">conn</span>, <span class="ident">up</span>, <span class="ident">v</span>))
+        }
+        <span class="kw">_</span> =&gt; <span class="ident">Either::Left</span>(<span class="ident">apply_inbound</span>(<span class="ident">conn</span>, <span class="ident">up</span>)),
     }
 }
 
