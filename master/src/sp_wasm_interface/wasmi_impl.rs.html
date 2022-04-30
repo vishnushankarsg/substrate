@@ -101,8 +101,8 @@
 <span class="comment">// limitations under the License.</span>
 
 <span class="doccomment">//! Implementation of conversions between Substrate and wasmi types.</span>
-
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Signature</span>, <span class="ident">Value</span>, <span class="ident">ValueType</span>};
+<span class="kw">use</span> <span class="ident">sp_std::vec::Vec</span>;
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">wasmi::RuntimeValue</span> {
 	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">value</span>: <span class="ident">Value</span>) -&gt; <span class="self">Self</span> {
