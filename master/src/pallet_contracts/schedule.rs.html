@@ -1463,7 +1463,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">Schedule</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">rules</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">module</span>: <span class="kw-2">&amp;</span><span class="ident">elements::Module</span>) -&gt; <span class="kw">impl</span> <span class="ident">gas_metering::Rules</span> <span class="op">+</span> <span class="lifetime">&#39;_</span> {
 		<span class="ident">ScheduleRules</span> {
-			<span class="ident">schedule</span>: <span class="kw-2">&amp;</span><span class="self">self</span>,
+			<span class="ident">schedule</span>: <span class="self">self</span>,
 			<span class="ident">params</span>: <span class="ident">module</span>
 				.<span class="ident">type_section</span>()
 				.<span class="ident">iter</span>()

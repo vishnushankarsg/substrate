@@ -411,7 +411,7 @@
 		<span class="comment">// Here we use inner memory reference only to resolve the imports</span>
 		<span class="comment">// without accessing the memory contents. All subsequent memory accesses</span>
 		<span class="comment">// should happen through the wrapper, that enforces the memory access protocol.</span>
-		<span class="kw">let</span> <span class="ident">mem</span> <span class="op">=</span> <span class="ident">wrapper</span>.<span class="number">0</span>.<span class="ident">clone</span>();
+		<span class="kw">let</span> <span class="ident">mem</span> <span class="op">=</span> <span class="ident">wrapper</span>.<span class="number">0</span>;
 
 		<span class="prelude-val">Ok</span>(<span class="ident">mem</span>)
 	}
@@ -580,7 +580,7 @@
 				<span class="ident">serialized_result_val_ptr</span>,
 				<span class="string">&quot;Can&#39;t deallocate memory for dispatch thunk&#39;s result&quot;</span>,
 			)
-			.<span class="ident">and_then</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">serialized_result_val</span>)
+			.<span class="ident">and</span>(<span class="ident">serialized_result_val</span>)
 			.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">serialized_result_val</span><span class="op">|</span> {
 				<span class="kw">let</span> <span class="ident">result_val</span> <span class="op">=</span> <span class="ident">std::result::Result</span>::<span class="op">&lt;</span><span class="ident">ReturnValue</span>, <span class="ident">HostError</span><span class="op">&gt;</span><span class="ident">::decode</span>(<span class="kw-2">&amp;mut</span> <span class="ident">serialized_result_val</span>.<span class="ident">as_slice</span>())
 					.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">trap</span>(<span class="string">&quot;Decoding Result&lt;ReturnValue, HostError&gt; failed!&quot;</span>))<span class="question-mark">?</span>;

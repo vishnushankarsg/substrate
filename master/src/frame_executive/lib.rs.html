@@ -1752,7 +1752,7 @@
 			<span class="kw">let</span> <span class="ident">new_header</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">frame_system::Pallet</span><span class="op">&lt;</span><span class="ident">System</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::finalize</span>();
 			<span class="kw">let</span> <span class="ident">items_zip</span> <span class="op">=</span> <span class="ident">header</span>.<span class="ident">digest</span>().<span class="ident">logs</span>().<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">new_header</span>.<span class="ident">digest</span>().<span class="ident">logs</span>().<span class="ident">iter</span>());
 			<span class="kw">for</span> (<span class="ident">header_item</span>, <span class="ident">computed_item</span>) <span class="kw">in</span> <span class="ident">items_zip</span> {
-				<span class="ident">header_item</span>.<span class="ident">check_equal</span>(<span class="kw-2">&amp;</span><span class="ident">computed_item</span>);
+				<span class="ident">header_item</span>.<span class="ident">check_equal</span>(<span class="ident">computed_item</span>);
 				<span class="macro">assert!</span>(<span class="ident">header_item</span> <span class="op">==</span> <span class="ident">computed_item</span>, <span class="string">&quot;Digest item must match that calculated.&quot;</span>);
 			}
 
@@ -1782,7 +1782,7 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">initialize_block</span>(<span class="ident">header</span>: <span class="kw-2">&amp;</span><span class="ident">System::Header</span>) {
 		<span class="ident">sp_io::init_tracing</span>();
 		<span class="macro">sp_tracing::enter_span!</span>(<span class="ident">sp_tracing::Level::TRACE</span>, <span class="string">&quot;init_block&quot;</span>);
-		<span class="kw">let</span> <span class="ident">digests</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::extract_pre_digest</span>(<span class="kw-2">&amp;</span><span class="ident">header</span>);
+		<span class="kw">let</span> <span class="ident">digests</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::extract_pre_digest</span>(<span class="ident">header</span>);
 		<span class="ident"><span class="self">Self</span>::initialize_block_impl</span>(<span class="ident">header</span>.<span class="ident">number</span>(), <span class="ident">header</span>.<span class="ident">parent_hash</span>(), <span class="kw-2">&amp;</span><span class="ident">digests</span>);
 	}
 
@@ -1845,7 +1845,7 @@
 		<span class="kw">let</span> <span class="ident">header</span> <span class="op">=</span> <span class="ident">block</span>.<span class="ident">header</span>();
 
 		<span class="comment">// Check that `parent_hash` is correct.</span>
-		<span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">header</span>.<span class="ident">number</span>().<span class="ident">clone</span>();
+		<span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">header</span>.<span class="ident">number</span>();
 		<span class="macro">assert!</span>(
 			<span class="ident">n</span> <span class="op">&gt;</span> <span class="ident">System::BlockNumber::zero</span>() <span class="op">&amp;&amp;</span>
 				<span class="op">&lt;</span><span class="ident">frame_system::Pallet</span><span class="op">&lt;</span><span class="ident">System</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::block_hash</span>(<span class="ident">n</span> <span class="op">-</span> <span class="ident">System::BlockNumber::one</span>()) <span class="op">==</span>
@@ -1985,13 +1985,13 @@
 		);
 		<span class="kw">let</span> <span class="ident">items_zip</span> <span class="op">=</span> <span class="ident">header</span>.<span class="ident">digest</span>().<span class="ident">logs</span>().<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">new_header</span>.<span class="ident">digest</span>().<span class="ident">logs</span>().<span class="ident">iter</span>());
 		<span class="kw">for</span> (<span class="ident">header_item</span>, <span class="ident">computed_item</span>) <span class="kw">in</span> <span class="ident">items_zip</span> {
-			<span class="ident">header_item</span>.<span class="ident">check_equal</span>(<span class="kw-2">&amp;</span><span class="ident">computed_item</span>);
+			<span class="ident">header_item</span>.<span class="ident">check_equal</span>(<span class="ident">computed_item</span>);
 			<span class="macro">assert!</span>(<span class="ident">header_item</span> <span class="op">==</span> <span class="ident">computed_item</span>, <span class="string">&quot;Digest item must match that calculated.&quot;</span>);
 		}
 
 		<span class="comment">// check storage root.</span>
 		<span class="kw">let</span> <span class="ident">storage_root</span> <span class="op">=</span> <span class="ident">new_header</span>.<span class="ident">state_root</span>();
-		<span class="ident">header</span>.<span class="ident">state_root</span>().<span class="ident">check_equal</span>(<span class="kw-2">&amp;</span><span class="ident">storage_root</span>);
+		<span class="ident">header</span>.<span class="ident">state_root</span>().<span class="ident">check_equal</span>(<span class="ident">storage_root</span>);
 		<span class="macro">assert!</span>(<span class="ident">header</span>.<span class="ident">state_root</span>() <span class="op">==</span> <span class="ident">storage_root</span>, <span class="string">&quot;Storage root must match that calculated.&quot;</span>);
 
 		<span class="macro">assert!</span>(

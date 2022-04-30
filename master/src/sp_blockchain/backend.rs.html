@@ -476,7 +476,7 @@
 			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">max_number</span>) <span class="op">=</span> <span class="ident">maybe_max_number</span> {
 				<span class="kw">loop</span> {
 					<span class="kw">let</span> <span class="ident">current_header</span> <span class="op">=</span> <span class="self">self</span>
-						.<span class="ident">header</span>(<span class="ident">BlockId::Hash</span>(<span class="ident">current_hash</span>.<span class="ident">clone</span>()))<span class="question-mark">?</span>
+						.<span class="ident">header</span>(<span class="ident">BlockId::Hash</span>(<span class="ident">current_hash</span>))<span class="question-mark">?</span>
 						.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error::MissingHeader</span>(<span class="ident">current_hash</span>.<span class="ident">to_string</span>()))<span class="question-mark">?</span>;
 
 					<span class="kw">if</span> <span class="ident">current_header</span>.<span class="ident">number</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">max_number</span> {
@@ -496,7 +496,7 @@
 				}
 
 				<span class="kw">let</span> <span class="ident">current_header</span> <span class="op">=</span> <span class="self">self</span>
-					.<span class="ident">header</span>(<span class="ident">BlockId::Hash</span>(<span class="ident">current_hash</span>.<span class="ident">clone</span>()))<span class="question-mark">?</span>
+					.<span class="ident">header</span>(<span class="ident">BlockId::Hash</span>(<span class="ident">current_hash</span>))<span class="question-mark">?</span>
 					.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error::MissingHeader</span>(<span class="ident">current_hash</span>.<span class="ident">to_string</span>()))<span class="question-mark">?</span>;
 
 				<span class="comment">// stop search in this chain once we go below the target&#39;s block number</span>

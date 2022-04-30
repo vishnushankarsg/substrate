@@ -1081,7 +1081,6 @@
 <span id="1076">1076</span>
 <span id="1077">1077</span>
 <span id="1078">1078</span>
-<span id="1079">1079</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -1301,8 +1300,7 @@
 
 	<span class="doccomment">/// Take the value under a key.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">take</span><span class="op">&lt;</span><span class="ident">KeyArg</span>: <span class="ident">EncodeLike</span><span class="op">&lt;</span><span class="ident">Key</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span><span class="op">&gt;</span>(<span class="ident">key</span>: <span class="ident">KeyArg</span>) -&gt; <span class="ident">QueryKind::Query</span> {
-		<span class="kw">let</span> <span class="ident">removed_value</span> <span class="op">=</span>
-			<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MapWrapper</span><span class="op">&gt;</span><span class="ident">::Map::mutate_exists</span>(<span class="ident">key</span>, <span class="op">|</span><span class="ident">value</span><span class="op">|</span> <span class="ident">core::mem::replace</span>(<span class="ident">value</span>, <span class="prelude-val">None</span>));
+		<span class="kw">let</span> <span class="ident">removed_value</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MapWrapper</span><span class="op">&gt;</span><span class="ident">::Map::mutate_exists</span>(<span class="ident">key</span>, <span class="op">|</span><span class="ident">value</span><span class="op">|</span> <span class="ident">value</span>.<span class="ident">take</span>());
 		<span class="kw">if</span> <span class="ident">removed_value</span>.<span class="ident">is_some</span>() {
 			<span class="ident">CounterFor</span>::<span class="op">&lt;</span><span class="ident">Prefix</span><span class="op">&gt;</span><span class="ident">::mutate</span>(<span class="op">|</span><span class="ident">value</span><span class="op">|</span> <span class="ident">value</span>.<span class="ident">saturating_dec</span>());
 		}
@@ -1513,7 +1511,7 @@
 			<span class="kw">if</span> <span class="macro">cfg!</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;no-metadata-docs&quot;</span>) {
 				<span class="macro">vec!</span>[]
 			} <span class="kw">else</span> {
-				<span class="macro">vec!</span>[<span class="kw-2">&amp;</span><span class="string">&quot;Counter for the related counted storage map&quot;</span>]
+				<span class="macro">vec!</span>[<span class="string">&quot;Counter for the related counted storage map&quot;</span>]
 			},
 			<span class="ident">entries</span>,
 		);

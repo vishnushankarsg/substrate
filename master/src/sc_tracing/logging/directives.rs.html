@@ -202,7 +202,7 @@
 	<span class="macro">log::debug!</span>(<span class="ident">target</span>: <span class="string">&quot;tracing&quot;</span>, <span class="string">&quot;Reloading log filter with: {}&quot;</span>, <span class="ident">env_filter</span>);
 	<span class="ident">FILTER_RELOAD_HANDLE</span>
 		.<span class="ident">get</span>()
-		.<span class="ident">ok_or</span>(<span class="string">&quot;No reload handle present&quot;</span>.<span class="ident">to_string</span>())<span class="question-mark">?</span>
+		.<span class="ident">ok_or</span>(<span class="string">&quot;No reload handle present&quot;</span>)<span class="question-mark">?</span>
 		.<span class="ident">reload</span>(<span class="ident">env_filter</span>)
 		.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">e</span>))
 }

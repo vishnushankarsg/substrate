@@ -292,7 +292,7 @@
 		<span class="kw">match</span> <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">phase</span> {
 			<span class="ident">Phase::WarpProof</span> { .. } =&gt; {
 				<span class="macro">log::debug!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;Unexpected state response&quot;</span>);
-				<span class="kw">return</span> <span class="ident">ImportResult::BadResponse</span>
+				<span class="ident">ImportResult::BadResponse</span>
 			},
 			<span class="ident">Phase::State</span>(<span class="ident">sync</span>) =&gt; <span class="ident">sync</span>.<span class="ident">import</span>(<span class="ident">response</span>),
 		}
@@ -309,13 +309,13 @@
 				<span class="kw">match</span> <span class="self">self</span>.<span class="ident">warp_sync_provider</span>.<span class="ident">verify</span>(<span class="kw-2">&amp;</span><span class="ident">response</span>, <span class="kw-2">*</span><span class="ident">set_id</span>, <span class="ident">authorities</span>.<span class="ident">clone</span>()) {
 					<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
 						<span class="macro">log::debug!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;Bad warp proof response: {}&quot;</span>, <span class="ident">e</span>);
-						<span class="kw">return</span> <span class="ident">WarpProofImportResult::BadResponse</span>
+						<span class="ident">WarpProofImportResult::BadResponse</span>
 					},
 					<span class="prelude-val">Ok</span>(<span class="ident">VerificationResult::Partial</span>(<span class="ident">new_set_id</span>, <span class="ident">new_authorities</span>, <span class="ident">new_last_hash</span>)) =&gt; {
 						<span class="macro">log::debug!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;Verified partial proof, set_id={:?}&quot;</span>, <span class="ident">new_set_id</span>);
 						<span class="kw-2">*</span><span class="ident">set_id</span> <span class="op">=</span> <span class="ident">new_set_id</span>;
 						<span class="kw-2">*</span><span class="ident">authorities</span> <span class="op">=</span> <span class="ident">new_authorities</span>;
-						<span class="kw-2">*</span><span class="ident">last_hash</span> <span class="op">=</span> <span class="ident">new_last_hash</span>.<span class="ident">clone</span>();
+						<span class="kw-2">*</span><span class="ident">last_hash</span> <span class="op">=</span> <span class="ident">new_last_hash</span>;
 						<span class="self">self</span>.<span class="ident">total_proof_bytes</span> <span class="op">+</span><span class="op">=</span> <span class="ident">response</span>.<span class="number">0</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u64</span>;
 						<span class="ident">WarpProofImportResult::Success</span>
 					},

@@ -1235,7 +1235,7 @@
 <span class="doccomment">/// Derive a single hard junction.</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;full_crypto&quot;</span>)]</span>
 <span class="kw">fn</span> <span class="ident">derive_hard_junction</span>(<span class="ident">secret_seed</span>: <span class="kw-2">&amp;</span><span class="ident">Seed</span>, <span class="ident">cc</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>; <span class="number">32</span>]) -&gt; <span class="ident">Seed</span> {
-	(<span class="string">&quot;Secp256k1HDKD&quot;</span>, <span class="ident">secret_seed</span>, <span class="ident">cc</span>).<span class="ident">using_encoded</span>(<span class="op">|</span><span class="ident">data</span><span class="op">|</span> <span class="ident">sp_core_hashing::blake2_256</span>(<span class="ident">data</span>))
+	(<span class="string">&quot;Secp256k1HDKD&quot;</span>, <span class="ident">secret_seed</span>, <span class="ident">cc</span>).<span class="ident">using_encoded</span>(<span class="ident">sp_core_hashing::blake2_256</span>)
 }
 
 <span class="doccomment">/// An error when deriving a key.</span>
@@ -1634,12 +1634,12 @@
 			<span class="ident">set_default_ss58_version</span>(<span class="ident">Ss58AddressFormat::custom</span>(<span class="number">200</span>));
 			<span class="comment">// custom addr encoded by version 200</span>
 			<span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="string">&quot;4pbsSkWcBaYoFHrKJZp5fDVUKbqSYD9dhZZGvpp3vQ5ysVs5ybV&quot;</span>;
-			<span class="ident">Public::from_ss58check</span>(<span class="kw-2">&amp;</span><span class="ident">addr</span>).<span class="ident">unwrap</span>();
+			<span class="ident">Public::from_ss58check</span>(<span class="ident">addr</span>).<span class="ident">unwrap</span>();
 
 			<span class="ident">set_default_ss58_version</span>(<span class="ident">default_format</span>);
 			<span class="comment">// set current ss58 version to default version</span>
 			<span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="string">&quot;KWAfgC2aRG5UVD6CpbPQXCx4YZZUhvWqqAJE6qcYc9Rtr6g5C&quot;</span>;
-			<span class="ident">Public::from_ss58check</span>(<span class="kw-2">&amp;</span><span class="ident">addr</span>).<span class="ident">unwrap</span>();
+			<span class="ident">Public::from_ss58check</span>(<span class="ident">addr</span>).<span class="ident">unwrap</span>();
 
 			<span class="macro">println!</span>(<span class="string">&quot;CUSTOM_FORMAT_SUCCESSFUL&quot;</span>);
 		} <span class="kw">else</span> {

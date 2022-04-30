@@ -1114,7 +1114,7 @@
 <span class="doccomment">/// Derive a single hard junction.</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;full_crypto&quot;</span>)]</span>
 <span class="kw">fn</span> <span class="ident">derive_hard_junction</span>(<span class="ident">secret_seed</span>: <span class="kw-2">&amp;</span><span class="ident">Seed</span>, <span class="ident">cc</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>; <span class="number">32</span>]) -&gt; <span class="ident">Seed</span> {
-	(<span class="string">&quot;Ed25519HDKD&quot;</span>, <span class="ident">secret_seed</span>, <span class="ident">cc</span>).<span class="ident">using_encoded</span>(<span class="op">|</span><span class="ident">data</span><span class="op">|</span> <span class="ident">sp_core_hashing::blake2_256</span>(<span class="ident">data</span>))
+	(<span class="string">&quot;Ed25519HDKD&quot;</span>, <span class="ident">secret_seed</span>, <span class="ident">cc</span>).<span class="ident">using_encoded</span>(<span class="ident">sp_core_hashing::blake2_256</span>)
 }
 
 <span class="doccomment">/// An error when deriving a key.</span>

@@ -2177,9 +2177,6 @@
 <span id="2172">2172</span>
 <span id="2173">2173</span>
 <span id="2174">2174</span>
-<span id="2175">2175</span>
-<span id="2176">2176</span>
-<span id="2177">2177</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -2446,7 +2443,7 @@
 <span class="attribute">#[<span class="ident">macro_use</span>]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">helpers</span>;
 
-<span class="kw">const</span> <span class="ident">LOG_TARGET</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;runtime::election-provider&quot;</span>;
+<span class="kw">const</span> <span class="ident">LOG_TARGET</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;runtime::election-provider&quot;</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">signed</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">unsigned</span>;
@@ -3628,7 +3625,7 @@
 		<span class="macro">ensure!</span>(<span class="ident">winners</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span> <span class="op">==</span> <span class="ident">desired_targets</span>, <span class="ident">FeasibilityError::WrongWinnerCount</span>);
 
 		<span class="comment">// Ensure that the solution&#39;s score can pass absolute min-score.</span>
-		<span class="kw">let</span> <span class="ident">submitted_score</span> <span class="op">=</span> <span class="ident">raw_solution</span>.<span class="ident">score</span>.<span class="ident">clone</span>();
+		<span class="kw">let</span> <span class="ident">submitted_score</span> <span class="op">=</span> <span class="ident">raw_solution</span>.<span class="ident">score</span>;
 		<span class="macro">ensure!</span>(
 			<span class="ident"><span class="self">Self</span>::minimum_untrusted_score</span>().<span class="ident">map_or</span>(<span class="bool-val">true</span>, <span class="op">|</span><span class="ident">min_score</span><span class="op">|</span> {
 				<span class="ident">submitted_score</span>.<span class="ident">strict_threshold_better</span>(<span class="ident">min_score</span>, <span class="ident">Perbill::zero</span>())
@@ -3653,29 +3650,26 @@
 			.<span class="ident">map_err</span>::<span class="op">&lt;</span><span class="ident">FeasibilityError</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">Into::into</span>)<span class="question-mark">?</span>;
 
 		<span class="comment">// Ensure that assignments is correct.</span>
-		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">assignments</span>
-			.<span class="ident">iter</span>()
-			.<span class="ident">map</span>(<span class="op">|</span><span class="kw-2">ref</span> <span class="ident">assignment</span><span class="op">|</span> {
-				<span class="comment">// Check that assignment.who is actually a voter (defensive-only).</span>
-				<span class="comment">// NOTE: while using the index map from `voter_index` is better than a blind linear</span>
-				<span class="comment">// search, this *still* has room for optimization. Note that we had the index when</span>
-				<span class="comment">// we did `solution -&gt; assignment` and we lost it. Ideal is to keep the index</span>
-				<span class="comment">// around.</span>
+		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">assignments</span>.<span class="ident">iter</span>().<span class="ident">try_for_each</span>(<span class="op">|</span><span class="ident">assignment</span><span class="op">|</span> {
+			<span class="comment">// Check that assignment.who is actually a voter (defensive-only).</span>
+			<span class="comment">// NOTE: while using the index map from `voter_index` is better than a blind linear</span>
+			<span class="comment">// search, this *still* has room for optimization. Note that we had the index when</span>
+			<span class="comment">// we did `solution -&gt; assignment` and we lost it. Ideal is to keep the index</span>
+			<span class="comment">// around.</span>
 
-				<span class="comment">// Defensive-only: must exist in the snapshot.</span>
-				<span class="kw">let</span> <span class="ident">snapshot_index</span> <span class="op">=</span>
-					<span class="ident">voter_index</span>(<span class="kw-2">&amp;</span><span class="ident">assignment</span>.<span class="ident">who</span>).<span class="ident">ok_or</span>(<span class="ident">FeasibilityError::InvalidVoter</span>)<span class="question-mark">?</span>;
-				<span class="comment">// Defensive-only: index comes from the snapshot, must exist.</span>
-				<span class="kw">let</span> (<span class="ident">_voter</span>, <span class="ident">_stake</span>, <span class="ident">targets</span>) <span class="op">=</span>
-					<span class="ident">snapshot_voters</span>.<span class="ident">get</span>(<span class="ident">snapshot_index</span>).<span class="ident">ok_or</span>(<span class="ident">FeasibilityError::InvalidVoter</span>)<span class="question-mark">?</span>;
+			<span class="comment">// Defensive-only: must exist in the snapshot.</span>
+			<span class="kw">let</span> <span class="ident">snapshot_index</span> <span class="op">=</span>
+				<span class="ident">voter_index</span>(<span class="kw-2">&amp;</span><span class="ident">assignment</span>.<span class="ident">who</span>).<span class="ident">ok_or</span>(<span class="ident">FeasibilityError::InvalidVoter</span>)<span class="question-mark">?</span>;
+			<span class="comment">// Defensive-only: index comes from the snapshot, must exist.</span>
+			<span class="kw">let</span> (<span class="ident">_voter</span>, <span class="ident">_stake</span>, <span class="ident">targets</span>) <span class="op">=</span>
+				<span class="ident">snapshot_voters</span>.<span class="ident">get</span>(<span class="ident">snapshot_index</span>).<span class="ident">ok_or</span>(<span class="ident">FeasibilityError::InvalidVoter</span>)<span class="question-mark">?</span>;
 
-				<span class="comment">// Check that all of the targets are valid based on the snapshot.</span>
-				<span class="kw">if</span> <span class="ident">assignment</span>.<span class="ident">distribution</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span>(<span class="ident">d</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="op">!</span><span class="ident">targets</span>.<span class="ident">contains</span>(<span class="ident">d</span>)) {
-					<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">FeasibilityError::InvalidVote</span>)
-				}
-				<span class="prelude-val">Ok</span>(())
-			})
-			.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">FeasibilityError</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
+			<span class="comment">// Check that all of the targets are valid based on the snapshot.</span>
+			<span class="kw">if</span> <span class="ident">assignment</span>.<span class="ident">distribution</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span>(<span class="ident">d</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="op">!</span><span class="ident">targets</span>.<span class="ident">contains</span>(<span class="ident">d</span>)) {
+				<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">FeasibilityError::InvalidVote</span>)
+			}
+			<span class="prelude-val">Ok</span>(())
+		})<span class="question-mark">?</span>;
 
 		<span class="comment">// ----- Start building support. First, we need one more closure.</span>
 		<span class="kw">let</span> <span class="ident">stake_of</span> <span class="op">=</span> <span class="ident">helpers::stake_of_fn</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">snapshot_voters</span>, <span class="kw-2">&amp;</span><span class="ident">cache</span>);

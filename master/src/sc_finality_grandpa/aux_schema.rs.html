@@ -1221,7 +1221,7 @@
 		<span class="comment">// reset.</span>
 		<span class="kw">let</span> <span class="ident">set_state</span> <span class="op">=</span> <span class="ident">VoterSetState</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::live</span>(
 			<span class="ident">new_set</span>.<span class="ident">set_id</span>,
-			<span class="kw-2">&amp;</span><span class="ident">set</span>,
+			<span class="ident">set</span>,
 			(<span class="ident">new_set</span>.<span class="ident">canon_hash</span>, <span class="ident">new_set</span>.<span class="ident">canon_number</span>),
 		);
 		<span class="kw">let</span> <span class="ident">encoded</span> <span class="op">=</span> <span class="ident">set_state</span>.<span class="ident">encode</span>();

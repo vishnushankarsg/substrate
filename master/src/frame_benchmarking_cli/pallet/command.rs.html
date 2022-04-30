@@ -621,9 +621,9 @@ not created by a node that was compiled with the flag&quot;</span>;
 		<span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="ident">config</span>.<span class="ident">chain_spec</span>;
 		<span class="kw">let</span> <span class="ident">wasm_method</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">wasm_method</span>.<span class="ident">into</span>();
 		<span class="kw">let</span> <span class="ident">strategy</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">execution</span>.<span class="ident">unwrap_or</span>(<span class="ident">ExecutionStrategy::Native</span>);
-		<span class="kw">let</span> <span class="ident">pallet</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pallet</span>.<span class="ident">clone</span>().<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">String::new</span>());
+		<span class="kw">let</span> <span class="ident">pallet</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pallet</span>.<span class="ident">clone</span>().<span class="ident">unwrap_or_default</span>();
 		<span class="kw">let</span> <span class="ident">pallet</span> <span class="op">=</span> <span class="ident">pallet</span>.<span class="ident">as_bytes</span>();
-		<span class="kw">let</span> <span class="ident">extrinsic</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">extrinsic</span>.<span class="ident">clone</span>().<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">String::new</span>());
+		<span class="kw">let</span> <span class="ident">extrinsic</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">extrinsic</span>.<span class="ident">clone</span>().<span class="ident">unwrap_or_default</span>();
 		<span class="kw">let</span> <span class="ident">extrinsic_split</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">extrinsic</span>.<span class="ident">split</span>(<span class="string">&#39;,&#39;</span>).<span class="ident">collect</span>();
 		<span class="kw">let</span> <span class="ident">extrinsics</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">extrinsic_split</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">trim</span>().<span class="ident">as_bytes</span>()).<span class="ident">collect</span>();
 
@@ -653,7 +653,7 @@ not created by a node that was compiled with the flag&quot;</span>;
 			<span class="ident">extensions</span>.<span class="ident">register</span>(<span class="ident">OffchainWorkerExt::new</span>(<span class="ident">offchain</span>.<span class="ident">clone</span>()));
 			<span class="ident">extensions</span>.<span class="ident">register</span>(<span class="ident">OffchainDbExt::new</span>(<span class="ident">offchain</span>));
 			<span class="ident">extensions</span>.<span class="ident">register</span>(<span class="ident">TransactionPoolExt::new</span>(<span class="ident">pool</span>));
-			<span class="kw">return</span> <span class="ident">extensions</span>
+			<span class="ident">extensions</span>
 		};
 
 		<span class="comment">// Get Benchmark List</span>
@@ -837,7 +837,7 @@ not created by a node that was compiled with the flag&quot;</span>;
 					<span class="ident">batches</span>.<span class="ident">extend</span>(<span class="ident">batch</span>);
 
 					<span class="comment">// Show progress information</span>
-					<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">elapsed</span>) <span class="op">=</span> <span class="ident">timer</span>.<span class="ident">elapsed</span>().<span class="ident">ok</span>() {
+					<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">elapsed</span>) <span class="op">=</span> <span class="ident">timer</span>.<span class="ident">elapsed</span>() {
 						<span class="kw">if</span> <span class="ident">elapsed</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">time::Duration::from_secs</span>(<span class="number">5</span>) {
 							<span class="ident">timer</span> <span class="op">=</span> <span class="ident">time::SystemTime::now</span>();
 							<span class="macro">log::info!</span>(
@@ -899,7 +899,7 @@ not created by a node that was compiled with the flag&quot;</span>;
 		<span class="ident">batches</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">BenchmarkBatchSplitResults</span><span class="op">&gt;</span>,
 		<span class="ident">storage_info</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StorageInfo</span><span class="op">&gt;</span>,
 	) {
-		<span class="kw">for</span> <span class="ident">batch</span> <span class="kw">in</span> <span class="ident">batches</span>.<span class="ident">into_iter</span>() {
+		<span class="kw">for</span> <span class="ident">batch</span> <span class="kw">in</span> <span class="ident">batches</span>.<span class="ident">iter</span>() {
 			<span class="comment">// Print benchmark metadata</span>
 			<span class="macro">println!</span>(
 					<span class="string">&quot;Pallet: {:?}, Extrinsic: {:?}, Lowest values: {:?}, Highest values: {:?}, Steps: {:?}, Repeat: {:?}&quot;</span>,
@@ -918,12 +918,12 @@ not created by a node that was compiled with the flag&quot;</span>;
 
 			<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">no_storage_info</span> {
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">comments</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Default::default</span>();
-				<span class="ident">writer::add_storage_comments</span>(<span class="kw-2">&amp;mut</span> <span class="ident">comments</span>, <span class="kw-2">&amp;</span><span class="ident">batch</span>.<span class="ident">db_results</span>, <span class="kw-2">&amp;</span><span class="ident">storage_info</span>);
+				<span class="ident">writer::add_storage_comments</span>(<span class="kw-2">&amp;mut</span> <span class="ident">comments</span>, <span class="kw-2">&amp;</span><span class="ident">batch</span>.<span class="ident">db_results</span>, <span class="ident">storage_info</span>);
 				<span class="macro">println!</span>(<span class="string">&quot;Raw Storage Info\n========&quot;</span>);
 				<span class="kw">for</span> <span class="ident">comment</span> <span class="kw">in</span> <span class="ident">comments</span> {
 					<span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">comment</span>);
 				}
-				<span class="macro">println!</span>(<span class="string">&quot;&quot;</span>);
+				<span class="macro">println!</span>();
 			}
 
 			<span class="comment">// Conduct analysis.</span>
@@ -944,7 +944,7 @@ not created by a node that was compiled with the flag&quot;</span>;
 				{
 					<span class="macro">println!</span>(<span class="string">&quot;Writes = {:?}&quot;</span>, <span class="ident">analysis</span>);
 				}
-				<span class="macro">println!</span>(<span class="string">&quot;&quot;</span>);
+				<span class="macro">println!</span>();
 			}
 			<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">no_min_squares</span> {
 				<span class="macro">println!</span>(<span class="string">&quot;Min Squares Analysis\n========&quot;</span>);
@@ -963,7 +963,7 @@ not created by a node that was compiled with the flag&quot;</span>;
 				{
 					<span class="macro">println!</span>(<span class="string">&quot;Writes = {:?}&quot;</span>, <span class="ident">analysis</span>);
 				}
-				<span class="macro">println!</span>(<span class="string">&quot;&quot;</span>);
+				<span class="macro">println!</span>();
 			}
 		}
 	}

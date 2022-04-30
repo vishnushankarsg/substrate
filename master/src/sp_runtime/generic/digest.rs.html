@@ -817,7 +817,7 @@
 	<span class="doccomment">/// Cast this digest item into `PreRuntime`</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_pre_runtime</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">ConsensusEngineId</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>])<span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::PreRuntime</span>(<span class="ident">consensus_engine_id</span>, <span class="kw-2">ref</span> <span class="ident">data</span>) =&gt; <span class="prelude-val">Some</span>((<span class="kw-2">*</span><span class="ident">consensus_engine_id</span>, <span class="ident">data</span>)),
+			<span class="ident"><span class="self">Self</span>::PreRuntime</span>(<span class="ident">consensus_engine_id</span>, <span class="ident">data</span>) =&gt; <span class="prelude-val">Some</span>((<span class="kw-2">*</span><span class="ident">consensus_engine_id</span>, <span class="ident">data</span>)),
 			<span class="kw">_</span> =&gt; <span class="prelude-val">None</span>,
 		}
 	}
@@ -825,7 +825,7 @@
 	<span class="doccomment">/// Cast this digest item into `Consensus`</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_consensus</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">ConsensusEngineId</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>])<span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::Consensus</span>(<span class="ident">consensus_engine_id</span>, <span class="kw-2">ref</span> <span class="ident">data</span>) =&gt; <span class="prelude-val">Some</span>((<span class="kw-2">*</span><span class="ident">consensus_engine_id</span>, <span class="ident">data</span>)),
+			<span class="ident"><span class="self">Self</span>::Consensus</span>(<span class="ident">consensus_engine_id</span>, <span class="ident">data</span>) =&gt; <span class="prelude-val">Some</span>((<span class="kw-2">*</span><span class="ident">consensus_engine_id</span>, <span class="ident">data</span>)),
 			<span class="kw">_</span> =&gt; <span class="prelude-val">None</span>,
 		}
 	}
@@ -833,7 +833,7 @@
 	<span class="doccomment">/// Cast this digest item into `Seal`</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_seal</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">ConsensusEngineId</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>])<span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::Seal</span>(<span class="ident">consensus_engine_id</span>, <span class="kw-2">ref</span> <span class="ident">data</span>) =&gt; <span class="prelude-val">Some</span>((<span class="kw-2">*</span><span class="ident">consensus_engine_id</span>, <span class="ident">data</span>)),
+			<span class="ident"><span class="self">Self</span>::Seal</span>(<span class="ident">consensus_engine_id</span>, <span class="ident">data</span>) =&gt; <span class="prelude-val">Some</span>((<span class="kw-2">*</span><span class="ident">consensus_engine_id</span>, <span class="ident">data</span>)),
 			<span class="kw">_</span> =&gt; <span class="prelude-val">None</span>,
 		}
 	}
@@ -841,7 +841,7 @@
 	<span class="doccomment">/// Cast this digest item into `PreRuntime`</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_other</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>]<span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::Other</span>(<span class="kw-2">ref</span> <span class="ident">data</span>) =&gt; <span class="prelude-val">Some</span>(<span class="ident">data</span>),
+			<span class="ident"><span class="self">Self</span>::Other</span>(<span class="ident">data</span>) =&gt; <span class="prelude-val">Some</span>(<span class="ident">data</span>),
 			<span class="kw">_</span> =&gt; <span class="prelude-val">None</span>,
 		}
 	}

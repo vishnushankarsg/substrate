@@ -1424,7 +1424,7 @@
 								<span class="prelude-val">Some</span>(<span class="ident">sender</span>) <span class="kw">if</span> <span class="ident">sender</span> <span class="op">==</span> <span class="kw-2">*</span><span class="ident">curator</span> =&gt; {
 									<span class="comment">// This is the child-bounty curator, willingly giving up their</span>
 									<span class="comment">// role. Give back their deposit.</span>
-									<span class="ident">T::Currency::unreserve</span>(<span class="kw-2">&amp;</span><span class="ident">curator</span>, <span class="ident">child_bounty</span>.<span class="ident">curator_deposit</span>);
+									<span class="ident">T::Currency::unreserve</span>(<span class="ident">curator</span>, <span class="ident">child_bounty</span>.<span class="ident">curator_deposit</span>);
 									<span class="comment">// Reset curator deposit.</span>
 									<span class="ident">child_bounty</span>.<span class="ident">curator_deposit</span> <span class="op">=</span> <span class="ident">Zero::zero</span>();
 									<span class="comment">// Continue to change bounty status below.</span>
@@ -1585,13 +1585,13 @@
 						<span class="comment">// Unreserve the curator deposit. Should not fail</span>
 						<span class="comment">// because the deposit is always reserved when curator is</span>
 						<span class="comment">// assigned.</span>
-						<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">T::Currency::unreserve</span>(<span class="kw-2">&amp;</span><span class="ident">curator</span>, <span class="ident">child_bounty</span>.<span class="ident">curator_deposit</span>);
+						<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">T::Currency::unreserve</span>(<span class="ident">curator</span>, <span class="ident">child_bounty</span>.<span class="ident">curator_deposit</span>);
 
 						<span class="comment">// Make payout to child-bounty curator.</span>
 						<span class="comment">// Should not fail because curator fee is always less than bounty value.</span>
 						<span class="kw">let</span> <span class="ident">fee_transfer_result</span> <span class="op">=</span> <span class="ident">T::Currency::transfer</span>(
 							<span class="kw-2">&amp;</span><span class="ident">child_bounty_account</span>,
-							<span class="kw-2">&amp;</span><span class="ident">curator</span>,
+							<span class="ident">curator</span>,
 							<span class="ident">curator_fee</span>,
 							<span class="ident">AllowDeath</span>,
 						);

@@ -1226,7 +1226,7 @@
 			<span class="ident">state_cache_child_ratio</span>: <span class="ident">config</span>.<span class="ident">state_cache_child_ratio</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> (<span class="ident">v</span>, <span class="number">100</span>)),
 			<span class="ident">state_pruning</span>: <span class="ident">config</span>.<span class="ident">state_pruning</span>.<span class="ident">clone</span>(),
 			<span class="ident">source</span>: <span class="ident">config</span>.<span class="ident">database</span>.<span class="ident">clone</span>(),
-			<span class="ident">keep_blocks</span>: <span class="ident">config</span>.<span class="ident">keep_blocks</span>.<span class="ident">clone</span>(),
+			<span class="ident">keep_blocks</span>: <span class="ident">config</span>.<span class="ident">keep_blocks</span>,
 		};
 
 		<span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">new_db_backend</span>(<span class="ident">db_config</span>)<span class="question-mark">?</span>;
@@ -1384,10 +1384,10 @@
 			<span class="prelude-val">Some</span>(<span class="string">&quot;offchain-worker&quot;</span>),
 			<span class="ident">sc_offchain::notification_future</span>(
 				<span class="ident">config</span>.<span class="ident">role</span>.<span class="ident">is_authority</span>(),
-				<span class="ident">client</span>.<span class="ident">clone</span>(),
+				<span class="ident">client</span>,
 				<span class="ident">offchain</span>,
 				<span class="ident">Clone::clone</span>(<span class="kw-2">&amp;</span><span class="ident">spawn_handle</span>),
-				<span class="ident">network</span>.<span class="ident">clone</span>(),
+				<span class="ident">network</span>,
 			),
 		);
 	}
@@ -1480,7 +1480,7 @@
 	<span class="kw">let</span> <span class="ident">metrics_service</span> <span class="op">=</span>
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">PrometheusConfig</span> { <span class="ident">port</span>, <span class="ident">registry</span> }) <span class="op">=</span> <span class="ident">config</span>.<span class="ident">prometheus_config</span>.<span class="ident">clone</span>() {
 			<span class="comment">// Set static metrics.</span>
-			<span class="kw">let</span> <span class="ident">metrics</span> <span class="op">=</span> <span class="ident">MetricsService::with_prometheus</span>(<span class="ident">telemetry</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="ident">registry</span>, <span class="kw-2">&amp;</span><span class="ident">config</span>)<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="ident">metrics</span> <span class="op">=</span> <span class="ident">MetricsService::with_prometheus</span>(<span class="ident">telemetry</span>, <span class="kw-2">&amp;</span><span class="ident">registry</span>, <span class="kw-2">&amp;</span><span class="ident">config</span>)<span class="question-mark">?</span>;
 			<span class="ident">spawn_handle</span>.<span class="ident">spawn</span>(
 				<span class="string">&quot;prometheus-endpoint&quot;</span>,
 				<span class="prelude-val">None</span>,
@@ -1489,7 +1489,7 @@
 
 			<span class="ident">metrics</span>
 		} <span class="kw">else</span> {
-			<span class="ident">MetricsService::new</span>(<span class="ident">telemetry</span>.<span class="ident">clone</span>())
+			<span class="ident">MetricsService::new</span>(<span class="ident">telemetry</span>)
 		};
 
 	<span class="comment">// Periodically updated metrics and telemetry updates.</span>
@@ -1535,7 +1535,7 @@
 		<span class="prelude-val">None</span>,
 		<span class="ident">sc_informant::build</span>(
 			<span class="ident">client</span>.<span class="ident">clone</span>(),
-			<span class="ident">network</span>.<span class="ident">clone</span>(),
+			<span class="ident">network</span>,
 			<span class="ident">transaction_pool</span>.<span class="ident">clone</span>(),
 			<span class="ident">config</span>.<span class="ident">informant_output_format</span>,
 		),

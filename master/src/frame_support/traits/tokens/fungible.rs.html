@@ -438,7 +438,7 @@
 		<span class="kw">let</span> <span class="ident">extra</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::can_withdraw</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>, <span class="ident">amount</span>).<span class="ident">into_result</span>()<span class="question-mark">?</span>;
 		<span class="comment">// As we first burn and then mint, we don&#39;t need to check if `mint` fits into the supply.</span>
 		<span class="comment">// If we can withdraw/burn it, we can also mint it again.</span>
-		<span class="ident"><span class="self">Self</span>::can_deposit</span>(<span class="kw-2">&amp;</span><span class="ident">dest</span>, <span class="ident">amount</span>.<span class="ident">saturating_add</span>(<span class="ident">extra</span>), <span class="bool-val">false</span>).<span class="ident">into_result</span>()<span class="question-mark">?</span>;
+		<span class="ident"><span class="self">Self</span>::can_deposit</span>(<span class="ident">dest</span>, <span class="ident">amount</span>.<span class="ident">saturating_add</span>(<span class="ident">extra</span>), <span class="bool-val">false</span>).<span class="ident">into_result</span>()<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">actual</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::burn_from</span>(<span class="ident">source</span>, <span class="ident">amount</span>)<span class="question-mark">?</span>;
 		<span class="macro">debug_assert!</span>(
 			<span class="ident">actual</span> <span class="op">==</span> <span class="ident">amount</span>.<span class="ident">saturating_add</span>(<span class="ident">extra</span>),

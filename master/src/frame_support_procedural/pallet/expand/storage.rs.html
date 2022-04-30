@@ -496,8 +496,6 @@
 <span id="491">491</span>
 <span id="492">492</span>
 <span id="493">493</span>
-<span id="494">494</span>
-<span id="495">495</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -574,9 +572,7 @@
 			),
 		);
 
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">other_dup_err</span>) <span class="op">=</span>
-			<span class="ident">used_prefixes</span>.<span class="ident">insert</span>(<span class="ident">counter_prefix</span>.<span class="ident">clone</span>(), <span class="ident">counter_dup_err</span>.<span class="ident">clone</span>())
-		{
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">other_dup_err</span>) <span class="op">=</span> <span class="ident">used_prefixes</span>.<span class="ident">insert</span>(<span class="ident">counter_prefix</span>, <span class="ident">counter_dup_err</span>.<span class="ident">clone</span>()) {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">counter_dup_err</span>;
 			<span class="ident">err</span>.<span class="ident">combine</span>(<span class="ident">other_dup_err</span>);
 			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>)
@@ -613,7 +609,7 @@
 			<span class="kw">_</span> =&gt; <span class="macro">unreachable!</span>(<span class="string">&quot;Checked by def&quot;</span>),
 		};
 
-		<span class="kw">let</span> <span class="ident">prefix_ident</span> <span class="op">=</span> <span class="ident">prefix_ident</span>(<span class="kw-2">&amp;</span><span class="ident">storage_def</span>);
+		<span class="kw">let</span> <span class="ident">prefix_ident</span> <span class="op">=</span> <span class="ident">prefix_ident</span>(<span class="ident">storage_def</span>);
 		<span class="kw">let</span> <span class="ident">type_use_gen</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">def</span>.<span class="ident">config</span>.<span class="ident">has_instance</span> {
 			<span class="macro">quote::quote_spanned!</span>(<span class="ident">storage_def</span>.<span class="ident">attr_span</span> =&gt; <span class="ident">T</span>, <span class="ident">I</span>)
 		} <span class="kw">else</span> {
@@ -715,7 +711,7 @@
 <span class="doccomment">/// * generate metadatas</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">expand_storages</span>(<span class="ident">def</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Def</span>) -&gt; <span class="ident">proc_macro2::TokenStream</span> {
 	<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">process_generics</span>(<span class="ident">def</span>) {
-		<span class="kw">return</span> <span class="ident">e</span>.<span class="ident">into_compile_error</span>().<span class="ident">into</span>()
+		<span class="kw">return</span> <span class="ident">e</span>.<span class="ident">into_compile_error</span>()
 	}
 
 	<span class="comment">// Check for duplicate prefixes</span>
@@ -893,7 +889,7 @@
 	<span class="kw">let</span> <span class="ident">prefix_structs</span> <span class="op">=</span> <span class="ident">def</span>.<span class="ident">storages</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">storage_def</span><span class="op">|</span> {
 		<span class="kw">let</span> <span class="ident">type_impl_gen</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">def</span>.<span class="ident">type_impl_generics</span>(<span class="ident">storage_def</span>.<span class="ident">attr_span</span>);
 		<span class="kw">let</span> <span class="ident">type_use_gen</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">def</span>.<span class="ident">type_use_generics</span>(<span class="ident">storage_def</span>.<span class="ident">attr_span</span>);
-		<span class="kw">let</span> <span class="ident">prefix_struct_ident</span> <span class="op">=</span> <span class="ident">prefix_ident</span>(<span class="kw-2">&amp;</span><span class="ident">storage_def</span>);
+		<span class="kw">let</span> <span class="ident">prefix_struct_ident</span> <span class="op">=</span> <span class="ident">prefix_ident</span>(<span class="ident">storage_def</span>);
 		<span class="kw">let</span> <span class="ident">prefix_struct_vis</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">storage_def</span>.<span class="ident">vis</span>;
 		<span class="kw">let</span> <span class="ident">prefix_struct_const</span> <span class="op">=</span> <span class="ident">storage_def</span>.<span class="ident">prefix</span>();
 		<span class="kw">let</span> <span class="ident">config_where_clause</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">def</span>.<span class="ident">config</span>.<span class="ident">where_clause</span>;

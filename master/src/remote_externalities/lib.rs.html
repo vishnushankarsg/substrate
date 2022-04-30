@@ -1195,7 +1195,6 @@
 <span id="1190">1190</span>
 <span id="1191">1191</span>
 <span id="1192">1192</span>
-<span id="1193">1193</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -1473,8 +1472,8 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span> <span class="op">+</span> <span class="ident">DeserializeOwned</span><span class="op">&gt;</span> <span class="ident">Builder</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">as_online</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">OnlineConfig</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">mode</span> {
-			<span class="ident">Mode::Online</span>(<span class="ident">config</span>) =&gt; <span class="kw-2">&amp;</span><span class="ident">config</span>,
-			<span class="ident">Mode::OfflineOrElseOnline</span>(<span class="kw">_</span>, <span class="ident">config</span>) =&gt; <span class="kw-2">&amp;</span><span class="ident">config</span>,
+			<span class="ident">Mode::Online</span>(<span class="ident">config</span>) =&gt; <span class="ident">config</span>,
+			<span class="ident">Mode::OfflineOrElseOnline</span>(<span class="kw">_</span>, <span class="ident">config</span>) =&gt; <span class="ident">config</span>,
 			<span class="kw">_</span> =&gt; <span class="macro">panic!</span>(<span class="string">&quot;Unexpected mode: Online&quot;</span>),
 		}
 	}
@@ -1578,7 +1577,7 @@
 				<span class="macro">log::error!</span>(
 					<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
 					<span class="string">&quot;failed to execute batch: {:?}. Error: {:?}&quot;</span>,
-					<span class="ident">chunk_keys</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">HexDisplay::from</span>(<span class="ident">k</span>)).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
+					<span class="ident">chunk_keys</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="ident">HexDisplay::from</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
 					<span class="ident">e</span>
 				);
 				<span class="string">&quot;batch failed.&quot;</span>
@@ -1586,7 +1585,7 @@
 
 			<span class="macro">assert_eq!</span>(<span class="ident">chunk_keys</span>.<span class="ident">len</span>(), <span class="ident">values</span>.<span class="ident">len</span>());
 
-			<span class="kw">for</span> (<span class="ident">idx</span>, <span class="ident">key</span>) <span class="kw">in</span> <span class="ident">chunk_keys</span>.<span class="ident">into_iter</span>().<span class="ident">enumerate</span>() {
+			<span class="kw">for</span> (<span class="ident">idx</span>, <span class="ident">key</span>) <span class="kw">in</span> <span class="ident">chunk_keys</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
 				<span class="kw">let</span> <span class="ident">maybe_value</span> <span class="op">=</span> <span class="ident">values</span>[<span class="ident">idx</span>].<span class="ident">clone</span>();
 				<span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">maybe_value</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> {
 					<span class="macro">log::warn!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="string">&quot;key {:?} had none corresponding value.&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">key</span>);
@@ -1650,7 +1649,7 @@
 
 			<span class="macro">assert_eq!</span>(<span class="ident">batch_child_key</span>.<span class="ident">len</span>(), <span class="ident">batch_response</span>.<span class="ident">len</span>());
 
-			<span class="kw">for</span> (<span class="ident">idx</span>, <span class="ident">key</span>) <span class="kw">in</span> <span class="ident">batch_child_key</span>.<span class="ident">into_iter</span>().<span class="ident">enumerate</span>() {
+			<span class="kw">for</span> (<span class="ident">idx</span>, <span class="ident">key</span>) <span class="kw">in</span> <span class="ident">batch_child_key</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
 				<span class="kw">let</span> <span class="ident">maybe_value</span> <span class="op">=</span> <span class="ident">batch_response</span>[<span class="ident">idx</span>].<span class="ident">clone</span>();
 				<span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">maybe_value</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> {
 					<span class="macro">log::warn!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="string">&quot;key {:?} had none corresponding value.&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">key</span>);
@@ -1769,7 +1768,7 @@
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">top_kv</span>: <span class="kw-2">&amp;</span>[<span class="ident">KeyValue</span>],
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ChildKeyValues</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">child_kv</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">load_child_remote</span>(<span class="kw-2">&amp;</span><span class="ident">top_kv</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">child_kv</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">load_child_remote</span>(<span class="ident">top_kv</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">c</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">as_online</span>().<span class="ident">state_snapshot</span> {
 			<span class="self">self</span>.<span class="ident">save_child_snapshot</span>(<span class="kw-2">&amp;</span><span class="ident">child_kv</span>, <span class="kw-2">&amp;</span><span class="ident">c</span>.<span class="ident">path</span>)<span class="question-mark">?</span>;
 		}
@@ -1810,7 +1809,7 @@
 				},
 			};
 
-			<span class="ident">child_kv</span>.<span class="ident">push</span>((<span class="ident">ChildInfo::new_default</span>(<span class="kw-2">&amp;</span><span class="ident">un_prefixed</span>), <span class="ident">child_kv_inner</span>));
+			<span class="ident">child_kv</span>.<span class="ident">push</span>((<span class="ident">ChildInfo::new_default</span>(<span class="ident">un_prefixed</span>), <span class="ident">child_kv_inner</span>));
 		}
 
 		<span class="prelude-val">Ok</span>(<span class="ident">child_kv</span>)
@@ -1822,8 +1821,7 @@
 		<span class="kw">let</span> <span class="ident">at</span> <span class="op">=</span> <span class="self">self</span>
 			.<span class="ident">as_online</span>()
 			.<span class="ident">at</span>
-			.<span class="ident">expect</span>(<span class="string">&quot;online config must be initialized by this point; qed.&quot;</span>)
-			.<span class="ident">clone</span>();
+			.<span class="ident">expect</span>(<span class="string">&quot;online config must be initialized by this point; qed.&quot;</span>);
 		<span class="macro">log::info!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="string">&quot;scraping key-pairs from remote @ {:?}&quot;</span>, <span class="ident">at</span>);
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">keys_and_values</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">config</span>.<span class="ident">pallets</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">0</span> {
@@ -2046,7 +2044,7 @@
 		<span class="macro">info!</span>(
 			<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
 			<span class="string">&quot;injecting a total of {} child keys&quot;</span>,
-			<span class="ident">child_kv</span>.<span class="ident">iter</span>().<span class="ident">flat_map</span>(<span class="op">|</span>(<span class="kw">_</span>, <span class="ident">kv</span>)<span class="op">|</span> <span class="ident">kv</span>).<span class="ident">count</span>(),
+			<span class="ident">child_kv</span>.<span class="ident">iter</span>().<span class="ident">flat_map</span>(<span class="op">|</span>(<span class="kw">_</span>, <span class="ident">kv</span>)<span class="op">|</span> <span class="ident">kv</span>).<span class="ident">count</span>()
 		);
 
 		<span class="kw">for</span> (<span class="ident">info</span>, <span class="ident">key_values</span>) <span class="kw">in</span> <span class="ident">child_kv</span> {

@@ -877,10 +877,10 @@
 	}
 
 	<span class="doccomment">/// Pick the schedules that this action dictates should continue vesting undisturbed.</span>
-	<span class="kw">fn</span> <span class="ident">pick_schedules</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(
-		<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>,
+	<span class="kw">fn</span> <span class="ident">pick_schedules</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(
+		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">schedules</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">VestingInfo</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T::BlockNumber</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-	) -&gt; <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">VestingInfo</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T::BlockNumber</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
+	) -&gt; <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">VestingInfo</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T::BlockNumber</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;_</span> {
 		<span class="ident">schedules</span>.<span class="ident">into_iter</span>().<span class="ident">enumerate</span>().<span class="ident">filter_map</span>(<span class="kw">move</span> <span class="op">|</span>(<span class="ident">index</span>, <span class="ident">schedule</span>)<span class="op">|</span> {
 			<span class="kw">if</span> <span class="self">self</span>.<span class="ident">should_remove</span>(<span class="ident">index</span>) {
 				<span class="prelude-val">None</span>
@@ -1466,7 +1466,7 @@
 		<span class="kw">let</span> (<span class="ident">schedules</span>, <span class="ident">locked_now</span>) <span class="op">=</span>
 			<span class="ident"><span class="self">Self</span>::exec_action</span>(<span class="ident">schedules</span>.<span class="ident">to_vec</span>(), <span class="ident">VestingAction::Passive</span>)<span class="question-mark">?</span>;
 
-		<span class="ident"><span class="self">Self</span>::write_vesting</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">schedules</span>)<span class="question-mark">?</span>;
+		<span class="ident"><span class="self">Self</span>::write_vesting</span>(<span class="ident">who</span>, <span class="ident">schedules</span>)<span class="question-mark">?</span>;
 		<span class="ident"><span class="self">Self</span>::write_lock</span>(<span class="ident">who</span>, <span class="ident">locked_now</span>);
 
 		<span class="prelude-val">Ok</span>(())
@@ -1500,7 +1500,7 @@
 
 		<span class="kw">let</span> (<span class="ident">schedules</span>, <span class="ident">locked_now</span>) <span class="op">=</span> <span class="ident"><span class="self">Self</span>::exec_action</span>(<span class="ident">schedules</span>.<span class="ident">to_vec</span>(), <span class="ident">remove_action</span>)<span class="question-mark">?</span>;
 
-		<span class="ident"><span class="self">Self</span>::write_vesting</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">schedules</span>)<span class="question-mark">?</span>;
+		<span class="ident"><span class="self">Self</span>::write_vesting</span>(<span class="ident">who</span>, <span class="ident">schedules</span>)<span class="question-mark">?</span>;
 		<span class="ident"><span class="self">Self</span>::write_lock</span>(<span class="ident">who</span>, <span class="ident">locked_now</span>);
 		<span class="prelude-val">Ok</span>(())
 	}

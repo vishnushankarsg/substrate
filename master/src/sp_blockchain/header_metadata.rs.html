@@ -565,11 +565,11 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Block</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> <span class="ident">From</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Block::Header</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">CachedHeaderMetadata</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">header</span>: <span class="kw-2">&amp;</span><span class="ident">Block::Header</span>) -&gt; <span class="self">Self</span> {
 		<span class="ident">CachedHeaderMetadata</span> {
-			<span class="ident">hash</span>: <span class="ident">header</span>.<span class="ident">hash</span>().<span class="ident">clone</span>(),
-			<span class="ident">number</span>: <span class="ident">header</span>.<span class="ident">number</span>().<span class="ident">clone</span>(),
-			<span class="ident">parent</span>: <span class="ident">header</span>.<span class="ident">parent_hash</span>().<span class="ident">clone</span>(),
-			<span class="ident">state_root</span>: <span class="ident">header</span>.<span class="ident">state_root</span>().<span class="ident">clone</span>(),
-			<span class="ident">ancestor</span>: <span class="ident">header</span>.<span class="ident">parent_hash</span>().<span class="ident">clone</span>(),
+			<span class="ident">hash</span>: <span class="ident">header</span>.<span class="ident">hash</span>(),
+			<span class="ident">number</span>: <span class="kw-2">*</span><span class="ident">header</span>.<span class="ident">number</span>(),
+			<span class="ident">parent</span>: <span class="kw-2">*</span><span class="ident">header</span>.<span class="ident">parent_hash</span>(),
+			<span class="ident">state_root</span>: <span class="kw-2">*</span><span class="ident">header</span>.<span class="ident">state_root</span>(),
+			<span class="ident">ancestor</span>: <span class="kw-2">*</span><span class="ident">header</span>.<span class="ident">parent_hash</span>(),
 		}
 	}
 }

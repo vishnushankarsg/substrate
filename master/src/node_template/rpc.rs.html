@@ -102,7 +102,7 @@
 
 	<span class="ident">io</span>.<span class="ident">extend_with</span>(<span class="ident">SystemApi::to_delegate</span>(<span class="ident">FullSystem::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="ident">pool</span>, <span class="ident">deny_unsafe</span>)));
 
-	<span class="ident">io</span>.<span class="ident">extend_with</span>(<span class="ident">TransactionPaymentApi::to_delegate</span>(<span class="ident">TransactionPayment::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>())));
+	<span class="ident">io</span>.<span class="ident">extend_with</span>(<span class="ident">TransactionPaymentApi::to_delegate</span>(<span class="ident">TransactionPayment::new</span>(<span class="ident">client</span>)));
 
 	<span class="comment">// Extend this RPC with a custom API by using the following syntax.</span>
 	<span class="comment">// `YourRpcStruct` should have a reference to a client, which is needed</span>

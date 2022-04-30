@@ -696,7 +696,7 @@
 		<span class="ident">AnnouncementSummary</span> {
 			<span class="ident">block_hash</span>: <span class="self">self</span>.<span class="ident">header</span>.<span class="ident">hash</span>(),
 			<span class="ident">number</span>: <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">header</span>.<span class="ident">number</span>(),
-			<span class="ident">parent_hash</span>: <span class="self">self</span>.<span class="ident">header</span>.<span class="ident">parent_hash</span>().<span class="ident">clone</span>(),
+			<span class="ident">parent_hash</span>: <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">header</span>.<span class="ident">parent_hash</span>(),
 			<span class="ident">state</span>: <span class="self">self</span>.<span class="ident">state</span>,
 		}
 	}

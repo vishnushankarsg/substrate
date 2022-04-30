@@ -669,6 +669,7 @@
 <span id="664">664</span>
 <span id="665">665</span>
 <span id="666">666</span>
+<span id="667">667</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -748,7 +749,7 @@
 <span class="attribute">#[<span class="ident">frame_support::pallet</span>]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">pallet</span> {
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-	<span class="kw">use</span> <span class="ident">frame_support::pallet_prelude</span>::<span class="kw-2">*</span>;
+	<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">dispatch::DispatchResult</span>, <span class="ident">pallet_prelude</span>::<span class="kw-2">*</span>};
 	<span class="kw">use</span> <span class="ident">frame_system::pallet_prelude</span>::<span class="kw-2">*</span>;
 
 	<span class="attribute">#[<span class="ident">pallet::pallet</span>]</span>
@@ -915,10 +916,11 @@
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">delay</span>: <span class="ident">T::BlockNumber</span>,
 			<span class="ident">best_finalized_block_number</span>: <span class="ident">T::BlockNumber</span>,
-		) -&gt; <span class="ident">DispatchResultWithPostInfo</span> {
+		) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="ident">ensure_root</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 
-			<span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::on_stalled</span>(<span class="ident">delay</span>, <span class="ident">best_finalized_block_number</span>).<span class="ident">into</span>())
+			<span class="ident"><span class="self">Self</span>::on_stalled</span>(<span class="ident">delay</span>, <span class="ident">best_finalized_block_number</span>);
+			<span class="prelude-val">Ok</span>(())
 		}
 	}
 
@@ -1094,7 +1096,7 @@
 
 			<span class="prelude-val">Ok</span>(())
 		} <span class="kw">else</span> {
-			<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::PauseFailed</span>)<span class="question-mark">?</span>
+			<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::PauseFailed</span>.<span class="ident">into</span>())
 		}
 	}
 
@@ -1106,7 +1108,7 @@
 
 			<span class="prelude-val">Ok</span>(())
 		} <span class="kw">else</span> {
-			<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ResumeFailed</span>)<span class="question-mark">?</span>
+			<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ResumeFailed</span>.<span class="ident">into</span>())
 		}
 	}
 
@@ -1132,9 +1134,9 @@
 		<span class="kw">if</span> <span class="op">!</span><span class="op">&lt;</span><span class="ident">PendingChange</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::exists</span>() {
 			<span class="kw">let</span> <span class="ident">scheduled_at</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">frame_system::Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::block_number</span>();
 
-			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="ident">forced</span> {
+			<span class="kw">if</span> <span class="ident">forced</span>.<span class="ident">is_some</span>() {
 				<span class="kw">if</span> <span class="ident"><span class="self">Self</span>::next_forced</span>().<span class="ident">map_or</span>(<span class="bool-val">false</span>, <span class="op">|</span><span class="ident">next</span><span class="op">|</span> <span class="ident">next</span> <span class="op">&gt;</span> <span class="ident">scheduled_at</span>) {
-					<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::TooSoon</span>)<span class="question-mark">?</span>
+					<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::TooSoon</span>.<span class="ident">into</span>())
 				}
 
 				<span class="comment">// only allow the next forced change when twice the window has passed since</span>
@@ -1159,7 +1161,7 @@
 
 			<span class="prelude-val">Ok</span>(())
 		} <span class="kw">else</span> {
-			<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ChangePending</span>)<span class="question-mark">?</span>
+			<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ChangePending</span>.<span class="ident">into</span>())
 		}
 	}
 
@@ -1215,14 +1217,14 @@
 		<span class="kw">let</span> <span class="ident">previous_set_id_session_index</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">set_id</span> <span class="op">==</span> <span class="number">0</span> {
 			<span class="prelude-val">None</span>
 		} <span class="kw">else</span> {
-			<span class="kw">let</span> <span class="ident">session_index</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::session_for_set</span>(<span class="ident">set_id</span> <span class="op">-</span> <span class="number">1</span>)
-				.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::InvalidEquivocationProof</span>)<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="ident">session_index</span> <span class="op">=</span>
+				<span class="ident"><span class="self">Self</span>::session_for_set</span>(<span class="ident">set_id</span> <span class="op">-</span> <span class="number">1</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::InvalidEquivocationProof</span>)<span class="question-mark">?</span>;
 
 			<span class="prelude-val">Some</span>(<span class="ident">session_index</span>)
 		};
 
 		<span class="kw">let</span> <span class="ident">set_id_session_index</span> <span class="op">=</span>
-			<span class="ident"><span class="self">Self</span>::session_for_set</span>(<span class="ident">set_id</span>).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::InvalidEquivocationProof</span>)<span class="question-mark">?</span>;
+			<span class="ident"><span class="self">Self</span>::session_for_set</span>(<span class="ident">set_id</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::InvalidEquivocationProof</span>)<span class="question-mark">?</span>;
 
 		<span class="comment">// check that the session id for the membership proof is within the</span>
 		<span class="comment">// bounds of the set id reported in the equivocation.</span>

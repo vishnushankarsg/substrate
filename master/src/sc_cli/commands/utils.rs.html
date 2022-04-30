@@ -406,7 +406,7 @@
 {
 	<span class="kw">let</span> <span class="ident">password</span> <span class="op">=</span> <span class="ident">password</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">expose_secret</span>().<span class="ident">as_str</span>());
 	<span class="kw">let</span> <span class="ident">network_id</span> <span class="op">=</span> <span class="ident">String::from</span>(<span class="ident">unwrap_or_default_ss58_version</span>(<span class="ident">network_override</span>));
-	<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>((<span class="ident">pair</span>, <span class="ident">seed</span>)) <span class="op">=</span> <span class="ident">Pair::from_phrase</span>(<span class="ident">uri</span>, <span class="ident">password</span>.<span class="ident">clone</span>()) {
+	<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>((<span class="ident">pair</span>, <span class="ident">seed</span>)) <span class="op">=</span> <span class="ident">Pair::from_phrase</span>(<span class="ident">uri</span>, <span class="ident">password</span>) {
 		<span class="kw">let</span> <span class="ident">public_key</span> <span class="op">=</span> <span class="ident">pair</span>.<span class="ident">public</span>();
 		<span class="kw">let</span> <span class="ident">network_override</span> <span class="op">=</span> <span class="ident">unwrap_or_default_ss58_version</span>(<span class="ident">network_override</span>);
 
@@ -445,7 +445,7 @@
 				);
 			},
 		}
-	} <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>((<span class="ident">pair</span>, <span class="ident">seed</span>)) <span class="op">=</span> <span class="ident">Pair::from_string_with_seed</span>(<span class="ident">uri</span>, <span class="ident">password</span>.<span class="ident">clone</span>()) {
+	} <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>((<span class="ident">pair</span>, <span class="ident">seed</span>)) <span class="op">=</span> <span class="ident">Pair::from_string_with_seed</span>(<span class="ident">uri</span>, <span class="ident">password</span>) {
 		<span class="kw">let</span> <span class="ident">public_key</span> <span class="op">=</span> <span class="ident">pair</span>.<span class="ident">public</span>();
 		<span class="kw">let</span> <span class="ident">network_override</span> <span class="op">=</span> <span class="ident">unwrap_or_default_ss58_version</span>(<span class="ident">network_override</span>);
 

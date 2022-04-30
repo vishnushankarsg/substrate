@@ -3187,6 +3187,14 @@
 <span id="3182">3182</span>
 <span id="3183">3183</span>
 <span id="3184">3184</span>
+<span id="3185">3185</span>
+<span id="3186">3186</span>
+<span id="3187">3187</span>
+<span id="3188">3188</span>
+<span id="3189">3189</span>
+<span id="3190">3190</span>
+<span id="3191">3191</span>
+<span id="3192">3192</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -3692,7 +3700,7 @@
 
 			<span class="kw">let</span> <span class="ident">had_replacement</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::remove_and_replace_member</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
 			<span class="macro">debug_assert_eq!</span>(<span class="ident">has_replacement</span>, <span class="ident">had_replacement</span>);
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::MemberKicked</span> { <span class="ident">member</span>: <span class="ident">who</span>.<span class="ident">clone</span>() });
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::MemberKicked</span> { <span class="ident">member</span>: <span class="ident">who</span> });
 
 			<span class="kw">if</span> <span class="op">!</span><span class="ident">had_replacement</span> {
 				<span class="ident"><span class="self">Self</span>::do_phragmen</span>();
@@ -3971,7 +3979,7 @@
 		})<span class="question-mark">?</span>;
 
 		<span class="kw">let</span> <span class="ident">remaining_member_ids_sorted</span> <span class="op">=</span>
-			<span class="ident"><span class="self">Self</span>::members</span>().<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">who</span>.<span class="ident">clone</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+			<span class="ident"><span class="self">Self</span>::members</span>().<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">who</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 		<span class="kw">let</span> <span class="ident">outgoing</span> <span class="op">=</span> <span class="kw-2">&amp;</span>[<span class="ident">who</span>.<span class="ident">clone</span>()];
 		<span class="kw">let</span> <span class="ident">maybe_current_prime</span> <span class="op">=</span> <span class="ident">T::ChangeMembers::get_prime</span>();
 		<span class="kw">let</span> <span class="ident">return_value</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">maybe_replacement</span> {
@@ -4050,7 +4058,7 @@
 	<span class="doccomment">/// Reads Members, RunnersUp, Candidates and Voting(who) from database.</span>
 	<span class="kw">fn</span> <span class="ident">is_defunct_voter</span>(<span class="ident">votes</span>: <span class="kw-2">&amp;</span>[<span class="ident">T::AccountId</span>]) -&gt; <span class="ident">bool</span> {
 		<span class="ident">votes</span>.<span class="ident">iter</span>().<span class="ident">all</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> {
-			<span class="op">!</span><span class="ident"><span class="self">Self</span>::is_member</span>(<span class="ident">v</span>) <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident"><span class="self">Self</span>::is_runner_up</span>(<span class="ident">v</span>) <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident"><span class="self">Self</span>::is_candidate</span>(<span class="ident">v</span>).<span class="ident">is_ok</span>()
+			<span class="op">!</span><span class="ident"><span class="self">Self</span>::is_member</span>(<span class="ident">v</span>) <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident"><span class="self">Self</span>::is_runner_up</span>(<span class="ident">v</span>) <span class="op">&amp;&amp;</span> <span class="ident"><span class="self">Self</span>::is_candidate</span>(<span class="ident">v</span>).<span class="ident">is_err</span>()
 		})
 	}
 
@@ -4112,148 +4120,156 @@
 		<span class="kw">let</span> <span class="ident">weight_candidates</span> <span class="op">=</span> <span class="ident">candidates_and_deposit</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>;
 		<span class="kw">let</span> <span class="ident">weight_voters</span> <span class="op">=</span> <span class="ident">voters_and_votes</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>;
 		<span class="kw">let</span> <span class="ident">weight_edges</span> <span class="op">=</span> <span class="ident">num_edges</span>;
-		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">sp_npos_elections::seq_phragmen</span>(
-			<span class="ident">num_to_elect</span>,
-			<span class="ident">candidate_ids</span>,
-			<span class="ident">voters_and_votes</span>.<span class="ident">clone</span>(),
-			<span class="prelude-val">None</span>,
-		)
-		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ElectionResult</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span>, <span class="ident">Perbill</span><span class="op">&gt;</span> { <span class="ident">winners</span>, <span class="ident">assignments</span>: <span class="kw">_</span> }<span class="op">|</span> {
-			<span class="comment">// this is already sorted by id.</span>
-			<span class="kw">let</span> <span class="ident">old_members_ids_sorted</span> <span class="op">=</span>
-				<span class="op">&lt;</span><span class="ident">Members</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::take</span>().<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">m</span><span class="op">|</span> <span class="ident">m</span>.<span class="ident">who</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span>();
-			<span class="comment">// this one needs a sort by id.</span>
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">old_runners_up_ids_sorted</span> <span class="op">=</span>
-				<span class="op">&lt;</span><span class="ident">RunnersUp</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::take</span>().<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="ident">r</span>.<span class="ident">who</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span>();
-			<span class="ident">old_runners_up_ids_sorted</span>.<span class="ident">sort</span>();
+		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span>
+			<span class="ident">sp_npos_elections::seq_phragmen</span>(<span class="ident">num_to_elect</span>, <span class="ident">candidate_ids</span>, <span class="ident">voters_and_votes</span>, <span class="prelude-val">None</span>)
+				.<span class="ident">map</span>(<span class="op">|</span><span class="ident">ElectionResult</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span>, <span class="ident">Perbill</span><span class="op">&gt;</span> { <span class="ident">winners</span>, <span class="ident">assignments</span>: <span class="kw">_</span> }<span class="op">|</span> {
+					<span class="comment">// this is already sorted by id.</span>
+					<span class="kw">let</span> <span class="ident">old_members_ids_sorted</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Members</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::take</span>()
+						.<span class="ident">into_iter</span>()
+						.<span class="ident">map</span>(<span class="op">|</span><span class="ident">m</span><span class="op">|</span> <span class="ident">m</span>.<span class="ident">who</span>)
+						.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+					<span class="comment">// this one needs a sort by id.</span>
+					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">old_runners_up_ids_sorted</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">RunnersUp</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::take</span>()
+						.<span class="ident">into_iter</span>()
+						.<span class="ident">map</span>(<span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="ident">r</span>.<span class="ident">who</span>)
+						.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+					<span class="ident">old_runners_up_ids_sorted</span>.<span class="ident">sort</span>();
 
-			<span class="comment">// filter out those who end up with no backing stake.</span>
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_set_with_stake</span> <span class="op">=</span> <span class="ident">winners</span>
-				.<span class="ident">into_iter</span>()
-				.<span class="ident">filter_map</span>(<span class="op">|</span>(<span class="ident">m</span>, <span class="ident">b</span>)<span class="op">|</span> <span class="kw">if</span> <span class="ident">b</span>.<span class="ident">is_zero</span>() { <span class="prelude-val">None</span> } <span class="kw">else</span> { <span class="prelude-val">Some</span>((<span class="ident">m</span>, <span class="ident">to_balance</span>(<span class="ident">b</span>))) })
-				.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">T::AccountId</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)<span class="op">&gt;</span><span class="op">&gt;</span>();
+					<span class="comment">// filter out those who end up with no backing stake.</span>
+					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_set_with_stake</span> <span class="op">=</span> <span class="ident">winners</span>
+						.<span class="ident">into_iter</span>()
+						.<span class="ident">filter_map</span>(
+							<span class="op">|</span>(<span class="ident">m</span>, <span class="ident">b</span>)<span class="op">|</span> <span class="kw">if</span> <span class="ident">b</span>.<span class="ident">is_zero</span>() { <span class="prelude-val">None</span> } <span class="kw">else</span> { <span class="prelude-val">Some</span>((<span class="ident">m</span>, <span class="ident">to_balance</span>(<span class="ident">b</span>))) },
+						)
+						.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">T::AccountId</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)<span class="op">&gt;</span><span class="op">&gt;</span>();
 
-			<span class="comment">// OPTIMIZATION NOTE: we could bail out here if `new_set.len() == 0`. There isn&#39;t</span>
-			<span class="comment">// much left to do. Yet, re-arranging the code would require duplicating the</span>
-			<span class="comment">// slashing of exposed candidates, cleaning any previous members, and so on. For</span>
-			<span class="comment">// now, in favor of readability and veracity, we keep it simple.</span>
+					<span class="comment">// OPTIMIZATION NOTE: we could bail out here if `new_set.len() == 0`. There</span>
+					<span class="comment">// isn&#39;t much left to do. Yet, re-arranging the code would require duplicating</span>
+					<span class="comment">// the slashing of exposed candidates, cleaning any previous members, and so on.</span>
+					<span class="comment">// For now, in favor of readability and veracity, we keep it simple.</span>
 
-			<span class="comment">// split new set into winners and runners up.</span>
-			<span class="kw">let</span> <span class="ident">split_point</span> <span class="op">=</span> <span class="ident">desired_seats</span>.<span class="ident">min</span>(<span class="ident">new_set_with_stake</span>.<span class="ident">len</span>());
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_members_sorted_by_id</span> <span class="op">=</span>
-				<span class="ident">new_set_with_stake</span>.<span class="ident">drain</span>(..<span class="ident">split_point</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
-			<span class="ident">new_members_sorted_by_id</span>.<span class="ident">sort_by</span>(<span class="op">|</span><span class="ident">i</span>, <span class="ident">j</span><span class="op">|</span> <span class="ident">i</span>.<span class="number">0</span>.<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">j</span>.<span class="number">0</span>));
+					<span class="comment">// split new set into winners and runners up.</span>
+					<span class="kw">let</span> <span class="ident">split_point</span> <span class="op">=</span> <span class="ident">desired_seats</span>.<span class="ident">min</span>(<span class="ident">new_set_with_stake</span>.<span class="ident">len</span>());
+					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_members_sorted_by_id</span> <span class="op">=</span>
+						<span class="ident">new_set_with_stake</span>.<span class="ident">drain</span>(..<span class="ident">split_point</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+					<span class="ident">new_members_sorted_by_id</span>.<span class="ident">sort_by</span>(<span class="op">|</span><span class="ident">i</span>, <span class="ident">j</span><span class="op">|</span> <span class="ident">i</span>.<span class="number">0</span>.<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">j</span>.<span class="number">0</span>));
 
-			<span class="comment">// all the rest will be runners-up</span>
-			<span class="ident">new_set_with_stake</span>.<span class="ident">reverse</span>();
-			<span class="kw">let</span> <span class="ident">new_runners_up_sorted_by_rank</span> <span class="op">=</span> <span class="ident">new_set_with_stake</span>;
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_runners_up_ids_sorted</span> <span class="op">=</span>
-				<span class="ident">new_runners_up_sorted_by_rank</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">r</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="ident">r</span>.<span class="ident">clone</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
-			<span class="ident">new_runners_up_ids_sorted</span>.<span class="ident">sort</span>();
+					<span class="comment">// all the rest will be runners-up</span>
+					<span class="ident">new_set_with_stake</span>.<span class="ident">reverse</span>();
+					<span class="kw">let</span> <span class="ident">new_runners_up_sorted_by_rank</span> <span class="op">=</span> <span class="ident">new_set_with_stake</span>;
+					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_runners_up_ids_sorted</span> <span class="op">=</span> <span class="ident">new_runners_up_sorted_by_rank</span>
+						.<span class="ident">iter</span>()
+						.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">r</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="ident">r</span>.<span class="ident">clone</span>())
+						.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+					<span class="ident">new_runners_up_ids_sorted</span>.<span class="ident">sort</span>();
 
-			<span class="comment">// Now we select a prime member using a [Borda</span>
-			<span class="comment">// count](https://en.wikipedia.org/wiki/Borda_count). We weigh everyone&#39;s vote for</span>
-			<span class="comment">// that new member by a multiplier based on the order of the votes. i.e. the first</span>
-			<span class="comment">// person a voter votes for gets a 16x multiplier, the next person gets a 15x</span>
-			<span class="comment">// multiplier, an so on... (assuming `MAXIMUM_VOTE` = 16)</span>
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">prime_votes</span> <span class="op">=</span> <span class="ident">new_members_sorted_by_id</span>
-				.<span class="ident">iter</span>()
-				.<span class="ident">map</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> (<span class="kw-2">&amp;</span><span class="ident">c</span>.<span class="number">0</span>, <span class="ident">BalanceOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::zero</span>()))
-				.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
-			<span class="kw">for</span> (<span class="kw">_</span>, <span class="ident">stake</span>, <span class="ident">votes</span>) <span class="kw">in</span> <span class="ident">voters_and_stakes</span>.<span class="ident">into_iter</span>() {
-				<span class="kw">for</span> (<span class="ident">vote_multiplier</span>, <span class="ident">who</span>) <span class="kw">in</span> <span class="ident">votes</span>
-					.<span class="ident">iter</span>()
-					.<span class="ident">enumerate</span>()
-					.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">vote_position</span>, <span class="ident">who</span>)<span class="op">|</span> ((<span class="ident">MAXIMUM_VOTE</span> <span class="op">-</span> <span class="ident">vote_position</span>) <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">who</span>))
-				{
-					<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">i</span>) <span class="op">=</span> <span class="ident">prime_votes</span>.<span class="ident">binary_search_by_key</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">k</span>.<span class="number">0</span>) {
-						<span class="ident">prime_votes</span>[<span class="ident">i</span>].<span class="number">1</span> <span class="op">=</span> <span class="ident">prime_votes</span>[<span class="ident">i</span>]
-							.<span class="number">1</span>
-							.<span class="ident">saturating_add</span>(<span class="ident">stake</span>.<span class="ident">saturating_mul</span>(<span class="ident">vote_multiplier</span>.<span class="ident">into</span>()));
+					<span class="comment">// Now we select a prime member using a [Borda</span>
+					<span class="comment">// count](https://en.wikipedia.org/wiki/Borda_count). We weigh everyone&#39;s vote for</span>
+					<span class="comment">// that new member by a multiplier based on the order of the votes. i.e. the</span>
+					<span class="comment">// first person a voter votes for gets a 16x multiplier, the next person gets a</span>
+					<span class="comment">// 15x multiplier, an so on... (assuming `MAXIMUM_VOTE` = 16)</span>
+					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">prime_votes</span> <span class="op">=</span> <span class="ident">new_members_sorted_by_id</span>
+						.<span class="ident">iter</span>()
+						.<span class="ident">map</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> (<span class="kw-2">&amp;</span><span class="ident">c</span>.<span class="number">0</span>, <span class="ident">BalanceOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::zero</span>()))
+						.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+					<span class="kw">for</span> (<span class="kw">_</span>, <span class="ident">stake</span>, <span class="ident">votes</span>) <span class="kw">in</span> <span class="ident">voters_and_stakes</span>.<span class="ident">into_iter</span>() {
+						<span class="kw">for</span> (<span class="ident">vote_multiplier</span>, <span class="ident">who</span>) <span class="kw">in</span>
+							<span class="ident">votes</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">vote_position</span>, <span class="ident">who</span>)<span class="op">|</span> {
+								((<span class="ident">MAXIMUM_VOTE</span> <span class="op">-</span> <span class="ident">vote_position</span>) <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">who</span>)
+							}) {
+							<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">i</span>) <span class="op">=</span> <span class="ident">prime_votes</span>.<span class="ident">binary_search_by_key</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">k</span>.<span class="number">0</span>) {
+								<span class="ident">prime_votes</span>[<span class="ident">i</span>].<span class="number">1</span> <span class="op">=</span> <span class="ident">prime_votes</span>[<span class="ident">i</span>]
+									.<span class="number">1</span>
+									.<span class="ident">saturating_add</span>(<span class="ident">stake</span>.<span class="ident">saturating_mul</span>(<span class="ident">vote_multiplier</span>.<span class="ident">into</span>()));
+							}
+						}
 					}
-				}
-			}
-			<span class="comment">// We then select the new member with the highest weighted stake. In the case of a tie,</span>
-			<span class="comment">// the last person in the list with the tied score is selected. This is the person with</span>
-			<span class="comment">// the &quot;highest&quot; account id based on the sort above.</span>
-			<span class="kw">let</span> <span class="ident">prime</span> <span class="op">=</span> <span class="ident">prime_votes</span>.<span class="ident">into_iter</span>().<span class="ident">max_by_key</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="number">1</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="number">0</span>.<span class="ident">clone</span>());
+					<span class="comment">// We then select the new member with the highest weighted stake. In the case of</span>
+					<span class="comment">// a tie, the last person in the list with the tied score is selected. This is</span>
+					<span class="comment">// the person with the &quot;highest&quot; account id based on the sort above.</span>
+					<span class="kw">let</span> <span class="ident">prime</span> <span class="op">=</span> <span class="ident">prime_votes</span>.<span class="ident">into_iter</span>().<span class="ident">max_by_key</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="number">1</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="number">0</span>.<span class="ident">clone</span>());
 
-			<span class="comment">// new_members_sorted_by_id is sorted by account id.</span>
-			<span class="kw">let</span> <span class="ident">new_members_ids_sorted</span> <span class="op">=</span> <span class="ident">new_members_sorted_by_id</span>
-				.<span class="ident">iter</span>()
-				.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">m</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="ident">m</span>.<span class="ident">clone</span>())
-				.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+					<span class="comment">// new_members_sorted_by_id is sorted by account id.</span>
+					<span class="kw">let</span> <span class="ident">new_members_ids_sorted</span> <span class="op">=</span> <span class="ident">new_members_sorted_by_id</span>
+						.<span class="ident">iter</span>()
+						.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">m</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="ident">m</span>.<span class="ident">clone</span>())
+						.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 
-			<span class="comment">// report member changes. We compute diff because we need the outgoing list.</span>
-			<span class="kw">let</span> (<span class="ident">incoming</span>, <span class="ident">outgoing</span>) <span class="op">=</span> <span class="ident">T::ChangeMembers::compute_members_diff_sorted</span>(
-				<span class="kw-2">&amp;</span><span class="ident">new_members_ids_sorted</span>,
-				<span class="kw-2">&amp;</span><span class="ident">old_members_ids_sorted</span>,
-			);
-			<span class="ident">T::ChangeMembers::change_members_sorted</span>(<span class="kw-2">&amp;</span><span class="ident">incoming</span>, <span class="kw-2">&amp;</span><span class="ident">outgoing</span>, <span class="kw-2">&amp;</span><span class="ident">new_members_ids_sorted</span>);
-			<span class="ident">T::ChangeMembers::set_prime</span>(<span class="ident">prime</span>);
+					<span class="comment">// report member changes. We compute diff because we need the outgoing list.</span>
+					<span class="kw">let</span> (<span class="ident">incoming</span>, <span class="ident">outgoing</span>) <span class="op">=</span> <span class="ident">T::ChangeMembers::compute_members_diff_sorted</span>(
+						<span class="kw-2">&amp;</span><span class="ident">new_members_ids_sorted</span>,
+						<span class="kw-2">&amp;</span><span class="ident">old_members_ids_sorted</span>,
+					);
+					<span class="ident">T::ChangeMembers::change_members_sorted</span>(
+						<span class="kw-2">&amp;</span><span class="ident">incoming</span>,
+						<span class="kw-2">&amp;</span><span class="ident">outgoing</span>,
+						<span class="kw-2">&amp;</span><span class="ident">new_members_ids_sorted</span>,
+					);
+					<span class="ident">T::ChangeMembers::set_prime</span>(<span class="ident">prime</span>);
 
-			<span class="comment">// All candidates/members/runners-up who are no longer retaining a position as a</span>
-			<span class="comment">// seat holder will lose their bond.</span>
-			<span class="ident">candidates_and_deposit</span>.<span class="ident">iter</span>().<span class="ident">for_each</span>(<span class="op">|</span>(<span class="ident">c</span>, <span class="ident">d</span>)<span class="op">|</span> {
-				<span class="kw">if</span> <span class="ident">new_members_ids_sorted</span>.<span class="ident">binary_search</span>(<span class="ident">c</span>).<span class="ident">is_err</span>() <span class="op">&amp;&amp;</span>
-					<span class="ident">new_runners_up_ids_sorted</span>.<span class="ident">binary_search</span>(<span class="ident">c</span>).<span class="ident">is_err</span>()
-				{
-					<span class="kw">let</span> (<span class="ident">imbalance</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">T::Currency::slash_reserved</span>(<span class="ident">c</span>, <span class="kw-2">*</span><span class="ident">d</span>);
-					<span class="ident">T::LoserCandidate::on_unbalanced</span>(<span class="ident">imbalance</span>);
-					<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::CandidateSlashed</span> {
-						<span class="ident">candidate</span>: <span class="ident">c</span>.<span class="ident">clone</span>(),
-						<span class="ident">amount</span>: <span class="kw-2">*</span><span class="ident">d</span>,
+					<span class="comment">// All candidates/members/runners-up who are no longer retaining a position as a</span>
+					<span class="comment">// seat holder will lose their bond.</span>
+					<span class="ident">candidates_and_deposit</span>.<span class="ident">iter</span>().<span class="ident">for_each</span>(<span class="op">|</span>(<span class="ident">c</span>, <span class="ident">d</span>)<span class="op">|</span> {
+						<span class="kw">if</span> <span class="ident">new_members_ids_sorted</span>.<span class="ident">binary_search</span>(<span class="ident">c</span>).<span class="ident">is_err</span>() <span class="op">&amp;&amp;</span>
+							<span class="ident">new_runners_up_ids_sorted</span>.<span class="ident">binary_search</span>(<span class="ident">c</span>).<span class="ident">is_err</span>()
+						{
+							<span class="kw">let</span> (<span class="ident">imbalance</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">T::Currency::slash_reserved</span>(<span class="ident">c</span>, <span class="kw-2">*</span><span class="ident">d</span>);
+							<span class="ident">T::LoserCandidate::on_unbalanced</span>(<span class="ident">imbalance</span>);
+							<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::CandidateSlashed</span> {
+								<span class="ident">candidate</span>: <span class="ident">c</span>.<span class="ident">clone</span>(),
+								<span class="ident">amount</span>: <span class="kw-2">*</span><span class="ident">d</span>,
+							});
+						}
 					});
-				}
-			});
 
-			<span class="comment">// write final values to storage.</span>
-			<span class="kw">let</span> <span class="ident">deposit_of_candidate</span> <span class="op">=</span> <span class="op">|</span><span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">T::AccountId</span><span class="op">|</span> -&gt; <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-				<span class="comment">// defensive-only. This closure is used against the new members and new runners-up,</span>
-				<span class="comment">// both of which are phragmen winners and thus must have deposit.</span>
-				<span class="ident">candidates_and_deposit</span>
-					.<span class="ident">iter</span>()
-					.<span class="ident">find_map</span>(<span class="op">|</span>(<span class="ident">c</span>, <span class="ident">d</span>)<span class="op">|</span> <span class="kw">if</span> <span class="ident">c</span> <span class="op">==</span> <span class="ident">x</span> { <span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="ident">d</span>) } <span class="kw">else</span> { <span class="prelude-val">None</span> })
-					.<span class="ident">defensive_unwrap_or_default</span>()
-			};
-			<span class="comment">// fetch deposits from the one recorded one. This will make sure that a candidate who</span>
-			<span class="comment">// submitted candidacy before a change to candidacy deposit will have the correct amount</span>
-			<span class="comment">// recorded.</span>
-			<span class="op">&lt;</span><span class="ident">Members</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::put</span>(
-				<span class="ident">new_members_sorted_by_id</span>
-					.<span class="ident">iter</span>()
-					.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">who</span>, <span class="ident">stake</span>)<span class="op">|</span> <span class="ident">SeatHolder</span> {
-						<span class="ident">deposit</span>: <span class="ident">deposit_of_candidate</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>),
-						<span class="ident">who</span>: <span class="ident">who</span>.<span class="ident">clone</span>(),
-						<span class="ident">stake</span>: <span class="ident">stake</span>.<span class="ident">clone</span>(),
-					})
-					.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
-			);
-			<span class="op">&lt;</span><span class="ident">RunnersUp</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::put</span>(
-				<span class="ident">new_runners_up_sorted_by_rank</span>
-					.<span class="ident">into_iter</span>()
-					.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">who</span>, <span class="ident">stake</span>)<span class="op">|</span> <span class="ident">SeatHolder</span> {
-						<span class="ident">deposit</span>: <span class="ident">deposit_of_candidate</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>),
-						<span class="ident">who</span>,
-						<span class="ident">stake</span>,
-					})
-					.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
-			);
+					<span class="comment">// write final values to storage.</span>
+					<span class="kw">let</span> <span class="ident">deposit_of_candidate</span> <span class="op">=</span> <span class="op">|</span><span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">T::AccountId</span><span class="op">|</span> -&gt; <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+						<span class="comment">// defensive-only. This closure is used against the new members and new</span>
+						<span class="comment">// runners-up, both of which are phragmen winners and thus must have</span>
+						<span class="comment">// deposit.</span>
+						<span class="ident">candidates_and_deposit</span>
+							.<span class="ident">iter</span>()
+							.<span class="ident">find_map</span>(<span class="op">|</span>(<span class="ident">c</span>, <span class="ident">d</span>)<span class="op">|</span> <span class="kw">if</span> <span class="ident">c</span> <span class="op">==</span> <span class="ident">x</span> { <span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="ident">d</span>) } <span class="kw">else</span> { <span class="prelude-val">None</span> })
+							.<span class="ident">defensive_unwrap_or_default</span>()
+					};
+					<span class="comment">// fetch deposits from the one recorded one. This will make sure that a</span>
+					<span class="comment">// candidate who submitted candidacy before a change to candidacy deposit will</span>
+					<span class="comment">// have the correct amount recorded.</span>
+					<span class="op">&lt;</span><span class="ident">Members</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::put</span>(
+						<span class="ident">new_members_sorted_by_id</span>
+							.<span class="ident">iter</span>()
+							.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">who</span>, <span class="ident">stake</span>)<span class="op">|</span> <span class="ident">SeatHolder</span> {
+								<span class="ident">deposit</span>: <span class="ident">deposit_of_candidate</span>(<span class="ident">who</span>),
+								<span class="ident">who</span>: <span class="ident">who</span>.<span class="ident">clone</span>(),
+								<span class="ident">stake</span>: <span class="kw-2">*</span><span class="ident">stake</span>,
+							})
+							.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
+					);
+					<span class="op">&lt;</span><span class="ident">RunnersUp</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::put</span>(
+						<span class="ident">new_runners_up_sorted_by_rank</span>
+							.<span class="ident">into_iter</span>()
+							.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">who</span>, <span class="ident">stake</span>)<span class="op">|</span> <span class="ident">SeatHolder</span> {
+								<span class="ident">deposit</span>: <span class="ident">deposit_of_candidate</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>),
+								<span class="ident">who</span>,
+								<span class="ident">stake</span>,
+							})
+							.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
+					);
 
-			<span class="comment">// clean candidates.</span>
-			<span class="op">&lt;</span><span class="ident">Candidates</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::kill</span>();
+					<span class="comment">// clean candidates.</span>
+					<span class="op">&lt;</span><span class="ident">Candidates</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::kill</span>();
 
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::NewTerm</span> { <span class="ident">new_members</span>: <span class="ident">new_members_sorted_by_id</span> });
-			<span class="op">&lt;</span><span class="ident">ElectionRounds</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::mutate</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">v</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>);
-		})
-		.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
-			<span class="macro">log::error!</span>(
-				<span class="ident">target</span>: <span class="string">&quot;runtime::elections-phragmen&quot;</span>,
-				<span class="string">&quot;Failed to run election [{:?}].&quot;</span>,
-				<span class="ident">e</span>,
-			);
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::ElectionError</span>);
-		});
+					<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::NewTerm</span> { <span class="ident">new_members</span>: <span class="ident">new_members_sorted_by_id</span> });
+					<span class="op">&lt;</span><span class="ident">ElectionRounds</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::mutate</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">v</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>);
+				})
+				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
+					<span class="macro">log::error!</span>(
+						<span class="ident">target</span>: <span class="string">&quot;runtime::elections-phragmen&quot;</span>,
+						<span class="string">&quot;Failed to run election [{:?}].&quot;</span>,
+						<span class="ident">e</span>,
+					);
+					<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::ElectionError</span>);
+				});
 
 		<span class="ident">T::WeightInfo::election_phragmen</span>(<span class="ident">weight_candidates</span>, <span class="ident">weight_voters</span>, <span class="ident">weight_edges</span>)
 	}

@@ -863,7 +863,7 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">tests</span>;
 
-<span class="kw">const</span> <span class="ident">LOG_TARGET</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;sub-authority-discovery&quot;</span>;
+<span class="kw">const</span> <span class="ident">LOG_TARGET</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;sub-authority-discovery&quot;</span>;
 
 <span class="doccomment">/// Maximum number of addresses cached per authority. Additional addresses are discarded.</span>
 <span class="kw">const</span> <span class="ident">MAX_ADDRESSES_PER_AUTHORITY</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">10</span>;
@@ -1309,7 +1309,7 @@
 				<span class="comment">// Ignore [`Multiaddr`]s without [`PeerId`] or with own addresses.</span>
 				<span class="kw">let</span> <span class="ident">addresses</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Multiaddr</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">addresses</span>
 					.<span class="ident">into_iter</span>()
-					.<span class="ident">filter</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">get_peer_id</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>).<span class="ident">filter</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">p</span> <span class="op">!</span><span class="op">=</span> <span class="ident">local_peer_id</span>).<span class="ident">is_some</span>())
+					.<span class="ident">filter</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">get_peer_id</span>(<span class="ident">a</span>).<span class="ident">filter</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">p</span> <span class="op">!</span><span class="op">=</span> <span class="ident">local_peer_id</span>).<span class="ident">is_some</span>())
 					.<span class="ident">collect</span>();
 
 				<span class="kw">let</span> <span class="ident">remote_peer_id</span> <span class="op">=</span> <span class="ident">single</span>(<span class="ident">addresses</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="ident">get_peer_id</span>))
@@ -1324,7 +1324,7 @@
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">peer_signature</span>) <span class="op">=</span> <span class="ident">peer_signature</span> {
 					<span class="kw">let</span> <span class="ident">public_key</span> <span class="op">=</span>
 						<span class="ident">sc_network::PublicKey::from_protobuf_encoding</span>(<span class="kw-2">&amp;</span><span class="ident">peer_signature</span>.<span class="ident">public_key</span>)
-							.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">Error::ParsingLibp2pIdentity</span>(<span class="ident">e</span>))<span class="question-mark">?</span>;
+							.<span class="ident">map_err</span>(<span class="ident">Error::ParsingLibp2pIdentity</span>)<span class="question-mark">?</span>;
 					<span class="kw">let</span> <span class="ident">signature</span> <span class="op">=</span>
 						<span class="ident">sc_network::Signature</span> { <span class="ident">public_key</span>, <span class="ident">bytes</span>: <span class="ident">peer_signature</span>.<span class="ident">signature</span> };
 

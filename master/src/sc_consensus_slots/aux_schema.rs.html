@@ -291,7 +291,7 @@
 	<span class="ident">P</span>: <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Encode</span> <span class="op">+</span> <span class="ident">Decode</span> <span class="op">+</span> <span class="ident">PartialEq</span>,
 {
 	<span class="comment">// We don&#39;t check equivocations for old headers out of our capacity.</span>
-	<span class="kw">if</span> <span class="ident">slot_now</span>.<span class="ident">saturating_sub</span>(<span class="kw-2">*</span><span class="ident">slot</span>) <span class="op">&gt;</span> <span class="ident">Slot::from</span>(<span class="ident">MAX_SLOT_CAPACITY</span>) {
+	<span class="kw">if</span> <span class="ident">slot_now</span>.<span class="ident">saturating_sub</span>(<span class="kw-2">*</span><span class="ident">slot</span>) <span class="op">&gt;</span> <span class="ident">MAX_SLOT_CAPACITY</span> {
 		<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
 	}
 

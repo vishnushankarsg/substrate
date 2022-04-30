@@ -1316,8 +1316,8 @@
 		<span class="doccomment">/// - One event.</span>
 		<span class="doccomment">/// # &lt;/weight&gt;</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>( <span class="ident">T::WeightInfo::set_identity</span>(
-			<span class="ident">T::MaxRegistrars::get</span>().<span class="ident">into</span>(), <span class="comment">// R</span>
-			<span class="ident">T::MaxAdditionalFields::get</span>().<span class="ident">into</span>(), <span class="comment">// X</span>
+			<span class="ident">T::MaxRegistrars::get</span>(), <span class="comment">// R</span>
+			<span class="ident">T::MaxAdditionalFields::get</span>(), <span class="comment">// X</span>
 		))]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_identity</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
@@ -1408,7 +1408,7 @@
 			<span class="kw">let</span> <span class="ident">new_deposit</span> <span class="op">=</span> <span class="ident">T::SubAccountDeposit::get</span>() <span class="op">*</span> <span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="ident">subs</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>);
 
 			<span class="kw">let</span> <span class="ident">not_other_sub</span> <span class="op">=</span>
-				<span class="ident">subs</span>.<span class="ident">iter</span>().<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">SuperOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">i</span>.<span class="number">0</span>)).<span class="ident">all</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">i</span>.<span class="number">0</span> <span class="op">==</span> <span class="kw-2">&amp;</span><span class="ident">sender</span>);
+				<span class="ident">subs</span>.<span class="ident">iter</span>().<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">SuperOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">i</span>.<span class="number">0</span>)).<span class="ident">all</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">i</span>.<span class="number">0</span> <span class="op">==</span> <span class="ident">sender</span>);
 			<span class="macro">ensure!</span>(<span class="ident">not_other_sub</span>, <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::AlreadyClaimed</span>);
 
 			<span class="kw">if</span> <span class="ident">old_deposit</span> <span class="op">&lt;</span> <span class="ident">new_deposit</span> {
@@ -1462,9 +1462,9 @@
 		<span class="doccomment">/// - One event.</span>
 		<span class="doccomment">/// # &lt;/weight&gt;</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::clear_identity</span>(
-			<span class="ident">T::MaxRegistrars::get</span>().<span class="ident">into</span>(), <span class="comment">// R</span>
-			<span class="ident">T::MaxSubAccounts::get</span>().<span class="ident">into</span>(), <span class="comment">// S</span>
-			<span class="ident">T::MaxAdditionalFields::get</span>().<span class="ident">into</span>(), <span class="comment">// X</span>
+			<span class="ident">T::MaxRegistrars::get</span>(), <span class="comment">// R</span>
+			<span class="ident">T::MaxSubAccounts::get</span>(), <span class="comment">// S</span>
+			<span class="ident">T::MaxAdditionalFields::get</span>(), <span class="comment">// X</span>
 		))]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">clear_identity</span>(<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) -&gt; <span class="ident">DispatchResultWithPostInfo</span> {
 			<span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
@@ -1476,7 +1476,7 @@
 				<span class="op">&lt;</span><span class="ident">SuperOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::remove</span>(<span class="ident">sub</span>);
 			}
 
-			<span class="kw">let</span> <span class="ident">err_amount</span> <span class="op">=</span> <span class="ident">T::Currency::unreserve</span>(<span class="kw-2">&amp;</span><span class="ident">sender</span>, <span class="ident">deposit</span>.<span class="ident">clone</span>());
+			<span class="kw">let</span> <span class="ident">err_amount</span> <span class="op">=</span> <span class="ident">T::Currency::unreserve</span>(<span class="kw-2">&amp;</span><span class="ident">sender</span>, <span class="ident">deposit</span>);
 			<span class="macro">debug_assert!</span>(<span class="ident">err_amount</span>.<span class="ident">is_zero</span>());
 
 			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::IdentityCleared</span> { <span class="ident">who</span>: <span class="ident">sender</span>, <span class="ident">deposit</span> });
@@ -1513,8 +1513,8 @@
 		<span class="doccomment">/// - One event.</span>
 		<span class="doccomment">/// # &lt;/weight&gt;</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::request_judgement</span>(
-			<span class="ident">T::MaxRegistrars::get</span>().<span class="ident">into</span>(), <span class="comment">// R</span>
-			<span class="ident">T::MaxAdditionalFields::get</span>().<span class="ident">into</span>(), <span class="comment">// X</span>
+			<span class="ident">T::MaxRegistrars::get</span>(), <span class="comment">// R</span>
+			<span class="ident">T::MaxAdditionalFields::get</span>(), <span class="comment">// X</span>
 		))]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">request_judgement</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
@@ -1534,7 +1534,7 @@
 			<span class="kw">match</span> <span class="ident">id</span>.<span class="ident">judgements</span>.<span class="ident">binary_search_by_key</span>(<span class="kw-2">&amp;</span><span class="ident">reg_index</span>, <span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="number">0</span>) {
 				<span class="prelude-val">Ok</span>(<span class="ident">i</span>) =&gt;
 					<span class="kw">if</span> <span class="ident">id</span>.<span class="ident">judgements</span>[<span class="ident">i</span>].<span class="number">1</span>.<span class="ident">is_sticky</span>() {
-						<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::StickyJudgement</span>)<span class="question-mark">?</span>
+						<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::StickyJudgement</span>.<span class="ident">into</span>())
 					} <span class="kw">else</span> {
 						<span class="ident">id</span>.<span class="ident">judgements</span>[<span class="ident">i</span>] <span class="op">=</span> <span class="ident">item</span>
 					},
@@ -1575,8 +1575,8 @@
 		<span class="doccomment">/// - One event</span>
 		<span class="doccomment">/// # &lt;/weight&gt;</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::cancel_request</span>(
-			<span class="ident">T::MaxRegistrars::get</span>().<span class="ident">into</span>(), <span class="comment">// R</span>
-			<span class="ident">T::MaxAdditionalFields::get</span>().<span class="ident">into</span>(), <span class="comment">// X</span>
+			<span class="ident">T::MaxRegistrars::get</span>(), <span class="comment">// R</span>
+			<span class="ident">T::MaxAdditionalFields::get</span>(), <span class="comment">// X</span>
 		))]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cancel_request</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
@@ -1592,7 +1592,7 @@
 			<span class="kw">let</span> <span class="ident">fee</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Judgement::FeePaid</span>(<span class="ident">fee</span>) <span class="op">=</span> <span class="ident">id</span>.<span class="ident">judgements</span>.<span class="ident">remove</span>(<span class="ident">pos</span>).<span class="number">1</span> {
 				<span class="ident">fee</span>
 			} <span class="kw">else</span> {
-				<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::JudgementGiven</span>)<span class="question-mark">?</span>
+				<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::JudgementGiven</span>.<span class="ident">into</span>())
 			};
 
 			<span class="kw">let</span> <span class="ident">err_amount</span> <span class="op">=</span> <span class="ident">T::Currency::unreserve</span>(<span class="kw-2">&amp;</span><span class="ident">sender</span>, <span class="ident">fee</span>);
@@ -1746,8 +1746,8 @@
 		<span class="doccomment">/// - One event.</span>
 		<span class="doccomment">/// # &lt;/weight&gt;</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::provide_judgement</span>(
-			<span class="ident">T::MaxRegistrars::get</span>().<span class="ident">into</span>(), <span class="comment">// R</span>
-			<span class="ident">T::MaxAdditionalFields::get</span>().<span class="ident">into</span>(), <span class="comment">// X</span>
+			<span class="ident">T::MaxRegistrars::get</span>(), <span class="comment">// R</span>
+			<span class="ident">T::MaxAdditionalFields::get</span>(), <span class="comment">// X</span>
 		))]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">provide_judgement</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
@@ -1813,9 +1813,9 @@
 		<span class="doccomment">/// - One event.</span>
 		<span class="doccomment">/// # &lt;/weight&gt;</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::kill_identity</span>(
-			<span class="ident">T::MaxRegistrars::get</span>().<span class="ident">into</span>(), <span class="comment">// R</span>
-			<span class="ident">T::MaxSubAccounts::get</span>().<span class="ident">into</span>(), <span class="comment">// S</span>
-			<span class="ident">T::MaxAdditionalFields::get</span>().<span class="ident">into</span>(), <span class="comment">// X</span>
+			<span class="ident">T::MaxRegistrars::get</span>(), <span class="comment">// R</span>
+			<span class="ident">T::MaxSubAccounts::get</span>(), <span class="comment">// S</span>
+			<span class="ident">T::MaxAdditionalFields::get</span>(), <span class="comment">// X</span>
 		))]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">kill_identity</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,

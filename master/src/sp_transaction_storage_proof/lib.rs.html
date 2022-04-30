@@ -405,7 +405,7 @@
 		<span class="ident">B</span>: <span class="ident">BlockT</span>,
 		<span class="ident">C</span>: <span class="ident">IndexedBody</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 	{
-		<span class="kw">let</span> <span class="ident">parent_number</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">number</span>(<span class="ident">parent</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>.<span class="ident">unwrap_or</span>(<span class="ident">Zero::zero</span>());
+		<span class="kw">let</span> <span class="ident">parent_number</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">number</span>(<span class="kw-2">*</span><span class="ident">parent</span>)<span class="question-mark">?</span>.<span class="ident">unwrap_or</span>(<span class="ident">Zero::zero</span>());
 		<span class="kw">let</span> <span class="ident">number</span> <span class="op">=</span> <span class="ident">parent_number</span>
 			.<span class="ident">saturating_add</span>(<span class="ident">One::one</span>())
 			.<span class="ident">saturating_sub</span>(<span class="ident">DEFAULT_STORAGE_PERIOD</span>.<span class="ident">into</span>());
@@ -465,10 +465,10 @@
 				<span class="ident">trie</span>.<span class="ident">commit</span>();
 			}
 			<span class="kw">if</span> <span class="ident">target_chunk</span>.<span class="ident">is_some</span>() <span class="op">&amp;&amp;</span> <span class="ident">target_root</span> <span class="op">==</span> <span class="ident">Default::default</span>() {
-				<span class="ident">target_root</span> <span class="op">=</span> <span class="ident">transaction_root</span>.<span class="ident">clone</span>();
+				<span class="ident">target_root</span> <span class="op">=</span> <span class="ident">transaction_root</span>;
 				<span class="ident">chunk_proof</span> <span class="op">=</span> <span class="ident">sp_trie::generate_trie_proof</span>::<span class="op">&lt;</span><span class="ident">TrieLayout</span>, <span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(
 					<span class="kw-2">&amp;</span><span class="ident">db</span>,
-					<span class="ident">transaction_root</span>.<span class="ident">clone</span>(),
+					<span class="ident">transaction_root</span>,
 					<span class="kw-2">&amp;</span>[<span class="ident">target_chunk_key</span>.<span class="ident">clone</span>()],
 				)
 				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">Error::Application</span>(<span class="ident">Box::new</span>(<span class="ident">e</span>)))<span class="question-mark">?</span>;

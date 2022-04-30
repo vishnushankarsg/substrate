@@ -770,7 +770,7 @@
 	) -&gt; <span class="self">Self</span> {
 		<span class="kw">let</span> <span class="ident">is_generic</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">storage_def</span>.<span class="ident">storage_type</span> {
 			<span class="ident">StorageLineTypeDef::Simple</span>(<span class="ident">value</span>) =&gt;
-				<span class="ident">ext::type_contains_ident</span>(<span class="kw-2">&amp;</span><span class="ident">value</span>, <span class="kw-2">&amp;</span><span class="ident">def</span>.<span class="ident">module_runtime_generic</span>),
+				<span class="ident">ext::type_contains_ident</span>(<span class="ident">value</span>, <span class="kw-2">&amp;</span><span class="ident">def</span>.<span class="ident">module_runtime_generic</span>),
 			<span class="ident">StorageLineTypeDef::Map</span>(<span class="ident">map</span>) =&gt;
 				<span class="ident">ext::type_contains_ident</span>(<span class="kw-2">&amp;</span><span class="ident">map</span>.<span class="ident">key</span>, <span class="kw-2">&amp;</span><span class="ident">def</span>.<span class="ident">module_runtime_generic</span>) <span class="op">|</span><span class="op">|</span>
 					<span class="ident">ext::type_contains_ident</span>(<span class="kw-2">&amp;</span><span class="ident">map</span>.<span class="ident">value</span>, <span class="kw-2">&amp;</span><span class="ident">def</span>.<span class="ident">module_runtime_generic</span>),

@@ -748,7 +748,6 @@
 <span id="743">743</span>
 <span id="744">744</span>
 <span id="745">745</span>
-<span id="746">746</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -1181,7 +1180,7 @@
 
 		<span class="kw">let</span> <span class="ident">validated</span> <span class="op">=</span> <span class="ident">ValidatedTransaction::valid_at</span>(
 			<span class="ident">block_number</span>.<span class="ident">saturated_into</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>(),
-			<span class="ident">hash</span>.<span class="ident">clone</span>(),
+			<span class="ident">hash</span>,
 			<span class="ident">TransactionSource::Local</span>,
 			<span class="ident">xt</span>,
 			<span class="ident">bytes</span>,
@@ -1289,7 +1288,7 @@
 		})
 		.<span class="ident">unwrap_or_default</span>();
 
-	<span class="kw">let</span> <span class="ident">hashes</span> <span class="op">=</span> <span class="ident">extrinsics</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">tx</span><span class="op">|</span> <span class="ident">pool</span>.<span class="ident">hash_of</span>(<span class="kw-2">&amp;</span><span class="ident">tx</span>)).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+	<span class="kw">let</span> <span class="ident">hashes</span> <span class="op">=</span> <span class="ident">extrinsics</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">tx</span><span class="op">|</span> <span class="ident">pool</span>.<span class="ident">hash_of</span>(<span class="ident">tx</span>)).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 
 	<span class="macro">log::trace!</span>(<span class="ident">target</span>: <span class="string">&quot;txpool&quot;</span>, <span class="string">&quot;Pruning transactions: {:?}&quot;</span>, <span class="ident">hashes</span>);
 
@@ -1360,11 +1359,11 @@
 					<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">tree_route</span>) <span class="op">=</span> <span class="ident">tree_route</span> {
 						<span class="kw">for</span> <span class="ident">retracted</span> <span class="kw">in</span> <span class="ident">tree_route</span>.<span class="ident">retracted</span>() {
 							<span class="comment">// notify txs awaiting finality that it has been retracted</span>
-							<span class="ident">pool</span>.<span class="ident">validated_pool</span>().<span class="ident">on_block_retracted</span>(<span class="ident">retracted</span>.<span class="ident">hash</span>.<span class="ident">clone</span>());
+							<span class="ident">pool</span>.<span class="ident">validated_pool</span>().<span class="ident">on_block_retracted</span>(<span class="ident">retracted</span>.<span class="ident">hash</span>);
 						}
 
 						<span class="ident">future::join_all</span>(<span class="ident">tree_route</span>.<span class="ident">enacted</span>().<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> {
-							<span class="ident">prune_known_txs_for_block</span>(<span class="ident">BlockId::Hash</span>(<span class="ident">h</span>.<span class="ident">hash</span>.<span class="ident">clone</span>()), <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">api</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">pool</span>)
+							<span class="ident">prune_known_txs_for_block</span>(<span class="ident">BlockId::Hash</span>(<span class="ident">h</span>.<span class="ident">hash</span>), <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">api</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">pool</span>)
 						}))
 						.<span class="kw">await</span>
 						.<span class="ident">into_iter</span>()
@@ -1373,7 +1372,7 @@
 						})
 					}
 
-					<span class="ident">pruned_log</span>.<span class="ident">extend</span>(<span class="ident">prune_known_txs_for_block</span>(<span class="ident">id</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">api</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">pool</span>).<span class="kw">await</span>);
+					<span class="ident">pruned_log</span>.<span class="ident">extend</span>(<span class="ident">prune_known_txs_for_block</span>(<span class="ident">id</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">api</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">pool</span>).<span class="kw">await</span>);
 
 					<span class="ident">metrics</span>.<span class="ident">report</span>(<span class="op">|</span><span class="ident">metrics</span><span class="op">|</span> {
 						<span class="ident">metrics</span>.<span class="ident">block_transactions_pruned</span>.<span class="ident">inc_by</span>(<span class="ident">pruned_log</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u64</span>)
@@ -1383,7 +1382,7 @@
 						<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">resubmit_transactions</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
 
 						<span class="kw">for</span> <span class="ident">retracted</span> <span class="kw">in</span> <span class="ident">tree_route</span>.<span class="ident">retracted</span>() {
-							<span class="kw">let</span> <span class="ident">hash</span> <span class="op">=</span> <span class="ident">retracted</span>.<span class="ident">hash</span>.<span class="ident">clone</span>();
+							<span class="kw">let</span> <span class="ident">hash</span> <span class="op">=</span> <span class="ident">retracted</span>.<span class="ident">hash</span>;
 
 							<span class="kw">let</span> <span class="ident">block_transactions</span> <span class="op">=</span> <span class="ident">api</span>
 								.<span class="ident">block_body</span>(<span class="kw-2">&amp;</span><span class="ident">BlockId::hash</span>(<span class="ident">hash</span>))
@@ -1400,7 +1399,7 @@
 
 							<span class="ident">resubmit_transactions</span>.<span class="ident">extend</span>(<span class="ident">block_transactions</span>.<span class="ident">into_iter</span>().<span class="ident">filter</span>(
 								<span class="op">|</span><span class="ident">tx</span><span class="op">|</span> {
-									<span class="kw">let</span> <span class="ident">tx_hash</span> <span class="op">=</span> <span class="ident">pool</span>.<span class="ident">hash_of</span>(<span class="kw-2">&amp;</span><span class="ident">tx</span>);
+									<span class="kw">let</span> <span class="ident">tx_hash</span> <span class="op">=</span> <span class="ident">pool</span>.<span class="ident">hash_of</span>(<span class="ident">tx</span>);
 									<span class="kw">let</span> <span class="ident">contains</span> <span class="op">=</span> <span class="ident">pruned_log</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">tx_hash</span>);
 
 									<span class="comment">// need to count all transactions, not just filtered, here</span>
@@ -1450,8 +1449,7 @@
 					});
 
 					<span class="kw">if</span> <span class="ident">next_action</span>.<span class="ident">revalidate</span> {
-						<span class="kw">let</span> <span class="ident">hashes</span> <span class="op">=</span>
-							<span class="ident">pool</span>.<span class="ident">validated_pool</span>().<span class="ident">ready</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">tx</span><span class="op">|</span> <span class="ident">tx</span>.<span class="ident">hash</span>.<span class="ident">clone</span>()).<span class="ident">collect</span>();
+						<span class="kw">let</span> <span class="ident">hashes</span> <span class="op">=</span> <span class="ident">pool</span>.<span class="ident">validated_pool</span>().<span class="ident">ready</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">tx</span><span class="op">|</span> <span class="ident">tx</span>.<span class="ident">hash</span>).<span class="ident">collect</span>();
 						<span class="ident">revalidation_queue</span>.<span class="ident">revalidate_later</span>(<span class="ident">block_number</span>, <span class="ident">hashes</span>).<span class="kw">await</span>;
 
 						<span class="ident">revalidation_strategy</span>.<span class="ident">lock</span>().<span class="ident">clear</span>();

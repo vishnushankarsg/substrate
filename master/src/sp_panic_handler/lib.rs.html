@@ -408,7 +408,7 @@ This is a bug. Please report it at:
 		},
 	};
 
-	<span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">strip_control_codes</span>(<span class="kw-2">&amp;</span><span class="ident">msg</span>);
+	<span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">strip_control_codes</span>(<span class="ident">msg</span>);
 
 	<span class="kw">let</span> <span class="ident">thread</span> <span class="op">=</span> <span class="ident">thread::current</span>();
 	<span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">thread</span>.<span class="ident">name</span>().<span class="ident">unwrap_or</span>(<span class="string">&quot;&lt;unnamed&gt;&quot;</span>);
@@ -417,13 +417,13 @@ This is a bug. Please report it at:
 
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stderr</span> <span class="op">=</span> <span class="ident">io::stderr</span>();
 
-	<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="macro">writeln!</span>(<span class="ident">stderr</span>, <span class="string">&quot;&quot;</span>);
+	<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="macro">writeln!</span>(<span class="ident">stderr</span>);
 	<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="macro">writeln!</span>(<span class="ident">stderr</span>, <span class="string">&quot;====================&quot;</span>);
-	<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="macro">writeln!</span>(<span class="ident">stderr</span>, <span class="string">&quot;&quot;</span>);
+	<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="macro">writeln!</span>(<span class="ident">stderr</span>);
 	<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="macro">writeln!</span>(<span class="ident">stderr</span>, <span class="string">&quot;Version: {}&quot;</span>, <span class="ident">version</span>);
-	<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="macro">writeln!</span>(<span class="ident">stderr</span>, <span class="string">&quot;&quot;</span>);
+	<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="macro">writeln!</span>(<span class="ident">stderr</span>);
 	<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="macro">writeln!</span>(<span class="ident">stderr</span>, <span class="string">&quot;{:?}&quot;</span>, <span class="ident">backtrace</span>);
-	<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="macro">writeln!</span>(<span class="ident">stderr</span>, <span class="string">&quot;&quot;</span>);
+	<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="macro">writeln!</span>(<span class="ident">stderr</span>);
 	<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="macro">writeln!</span>(<span class="ident">stderr</span>, <span class="string">&quot;Thread &#39;{}&#39; panicked at &#39;{}&#39;, {}:{}&quot;</span>, <span class="ident">name</span>, <span class="ident">msg</span>, <span class="ident">file</span>, <span class="ident">line</span>);
 
 	<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="macro">writeln!</span>(<span class="ident">stderr</span>, <span class="macro">ABOUT_PANIC!</span>(), <span class="ident">report_url</span>);

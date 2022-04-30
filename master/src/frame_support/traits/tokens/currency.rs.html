@@ -389,7 +389,7 @@
 	<span class="doccomment">/// This is just the same as burning and issuing the same amount and has no effect on the</span>
 	<span class="doccomment">/// total issuance.</span>
 	<span class="kw">fn</span> <span class="ident">pair</span>(<span class="ident">amount</span>: <span class="ident"><span class="self">Self</span>::Balance</span>) -&gt; (<span class="ident"><span class="self">Self</span>::PositiveImbalance</span>, <span class="ident"><span class="self">Self</span>::NegativeImbalance</span>) {
-		(<span class="ident"><span class="self">Self</span>::burn</span>(<span class="ident">amount</span>.<span class="ident">clone</span>()), <span class="ident"><span class="self">Self</span>::issue</span>(<span class="ident">amount</span>))
+		(<span class="ident"><span class="self">Self</span>::burn</span>(<span class="ident">amount</span>), <span class="ident"><span class="self">Self</span>::issue</span>(<span class="ident">amount</span>))
 	}
 
 	<span class="doccomment">/// The &#39;free&#39; balance of a given account.</span>

@@ -412,12 +412,6 @@
 <span id="407">407</span>
 <span id="408">408</span>
 <span id="409">409</span>
-<span id="410">410</span>
-<span id="411">411</span>
-<span id="412">412</span>
-<span id="413">413</span>
-<span id="414">414</span>
-<span id="415">415</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -459,11 +453,7 @@
 		<span class="kw">let</span> <span class="ident">registrar</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;registrar&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
 		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">registrar</span>, <span class="ident">BalanceOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::max_value</span>());
 		<span class="ident">Identity</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::add_registrar</span>(<span class="ident">RawOrigin::Root</span>.<span class="ident">into</span>(), <span class="ident">registrar</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
-		<span class="ident">Identity</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::set_fee</span>(
-			<span class="ident">RawOrigin::Signed</span>(<span class="ident">registrar</span>.<span class="ident">clone</span>()).<span class="ident">into</span>(),
-			<span class="ident">i</span>.<span class="ident">into</span>(),
-			<span class="number">10u32</span>.<span class="ident">into</span>(),
-		)<span class="question-mark">?</span>;
+		<span class="ident">Identity</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::set_fee</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">registrar</span>.<span class="ident">clone</span>()).<span class="ident">into</span>(), <span class="ident">i</span>, <span class="number">10u32</span>.<span class="ident">into</span>())<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">fields</span> <span class="op">=</span>
 			<span class="ident">IdentityFields</span>(
 				<span class="ident">IdentityField::Display</span> <span class="op">|</span>
@@ -472,7 +462,7 @@
 					<span class="ident">IdentityField::PgpFingerprint</span> <span class="op">|</span>
 					<span class="ident">IdentityField::Image</span> <span class="op">|</span> <span class="ident">IdentityField::Twitter</span>,
 			);
-		<span class="ident">Identity</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::set_fields</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">registrar</span>.<span class="ident">clone</span>()).<span class="ident">into</span>(), <span class="ident">i</span>.<span class="ident">into</span>(), <span class="ident">fields</span>)<span class="question-mark">?</span>;
+		<span class="ident">Identity</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::set_fields</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">registrar</span>.<span class="ident">clone</span>()).<span class="ident">into</span>(), <span class="ident">i</span>, <span class="ident">fields</span>)<span class="question-mark">?</span>;
 	}
 
 	<span class="macro">assert_eq!</span>(<span class="ident">Registrars</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>().<span class="ident">len</span>(), <span class="ident">r</span> <span class="kw">as</span> <span class="ident">usize</span>);
@@ -495,9 +485,9 @@
 	}
 
 	<span class="comment">// Set identity so `set_subs` does not fail.</span>
-	<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">BalanceOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::max_value</span>() <span class="op">/</span> <span class="number">2u32</span>.<span class="ident">into</span>());
+	<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">T::Currency::make_free_balance_be</span>(<span class="ident">who</span>, <span class="ident">BalanceOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::max_value</span>() <span class="op">/</span> <span class="number">2u32</span>.<span class="ident">into</span>());
 	<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">create_identity_info</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="number">1</span>);
-	<span class="ident">Identity</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::set_identity</span>(<span class="ident">who_origin</span>.<span class="ident">clone</span>().<span class="ident">into</span>(), <span class="ident">Box::new</span>(<span class="ident">info</span>))<span class="question-mark">?</span>;
+	<span class="ident">Identity</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::set_identity</span>(<span class="ident">who_origin</span>.<span class="ident">into</span>(), <span class="ident">Box::new</span>(<span class="ident">info</span>))<span class="question-mark">?</span>;
 
 	<span class="prelude-val">Ok</span>(<span class="ident">subs</span>)
 }
@@ -521,7 +511,7 @@
 <span class="kw">fn</span> <span class="ident">create_identity_info</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">num_fields</span>: <span class="ident">u32</span>) -&gt; <span class="ident">IdentityInfo</span><span class="op">&lt;</span><span class="ident">T::MaxAdditionalFields</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">Data::Raw</span>(<span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">32</span>].<span class="ident">try_into</span>().<span class="ident">unwrap</span>());
 
-	<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">IdentityInfo</span> {
+	<span class="ident">IdentityInfo</span> {
 		<span class="ident">additional</span>: <span class="macro">vec!</span>[(<span class="ident">data</span>.<span class="ident">clone</span>(), <span class="ident">data</span>.<span class="ident">clone</span>()); <span class="ident">num_fields</span> <span class="kw">as</span> <span class="ident">usize</span>].<span class="ident">try_into</span>().<span class="ident">unwrap</span>(),
 		<span class="ident">display</span>: <span class="ident">data</span>.<span class="ident">clone</span>(),
 		<span class="ident">legal</span>: <span class="ident">data</span>.<span class="ident">clone</span>(),
@@ -530,10 +520,8 @@
 		<span class="ident">email</span>: <span class="ident">data</span>.<span class="ident">clone</span>(),
 		<span class="ident">pgp_fingerprint</span>: <span class="prelude-val">Some</span>([<span class="number">0</span>; <span class="number">20</span>]),
 		<span class="ident">image</span>: <span class="ident">data</span>.<span class="ident">clone</span>(),
-		<span class="ident">twitter</span>: <span class="ident">data</span>.<span class="ident">clone</span>(),
-	};
-
-	<span class="kw">return</span> <span class="ident">info</span>
+		<span class="ident">twitter</span>: <span class="ident">data</span>,
+	}
 }
 
 <span class="macro">benchmarks!</span> {
@@ -702,7 +690,7 @@
 
 		<span class="ident">Identity</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::add_registrar</span>(<span class="ident">RawOrigin::Root</span>.<span class="ident">into</span>(), <span class="ident">caller</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">registrars</span> <span class="op">=</span> <span class="ident">Registrars</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>();
-		<span class="macro">ensure!</span>(<span class="ident">registrars</span>[<span class="ident">r</span> <span class="kw">as</span> <span class="ident">usize</span>].<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">account</span> <span class="op">==</span> <span class="ident">caller</span>.<span class="ident">clone</span>(), <span class="string">&quot;id not set.&quot;</span>);
+		<span class="macro">ensure!</span>(<span class="ident">registrars</span>[<span class="ident">r</span> <span class="kw">as</span> <span class="ident">usize</span>].<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">account</span> <span class="op">==</span> <span class="ident">caller</span>, <span class="string">&quot;id not set.&quot;</span>);
 	}: <span class="kw">_</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">r</span>, <span class="ident">account</span>(<span class="string">&quot;new&quot;</span>, <span class="number">0</span>, <span class="ident">SEED</span>))
 	<span class="ident">verify</span> {
 		<span class="kw">let</span> <span class="ident">registrars</span> <span class="op">=</span> <span class="ident">Registrars</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>();
@@ -745,7 +733,7 @@
 		};
 
 		<span class="ident">Identity</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::add_registrar</span>(<span class="ident">RawOrigin::Root</span>.<span class="ident">into</span>(), <span class="ident">caller</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
-		<span class="ident">Identity</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::request_judgement</span>(<span class="ident">user_origin</span>.<span class="ident">clone</span>(), <span class="ident">r</span>, <span class="number">10u32</span>.<span class="ident">into</span>())<span class="question-mark">?</span>;
+		<span class="ident">Identity</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::request_judgement</span>(<span class="ident">user_origin</span>, <span class="ident">r</span>, <span class="number">10u32</span>.<span class="ident">into</span>())<span class="question-mark">?</span>;
 	}: <span class="kw">_</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">r</span>, <span class="ident">user_lookup</span>, <span class="ident">Judgement::Reasonable</span>)
 	<span class="ident">verify</span> {
 		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::JudgementGiven</span> { <span class="ident">target</span>: <span class="ident">user</span>, <span class="ident">registrar_index</span>: <span class="ident">r</span> }.<span class="ident">into</span>())

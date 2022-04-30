@@ -569,7 +569,7 @@
 					},
 				},
 				<span class="ident">NodeSocket::WaitingReconnect</span>(<span class="kw-2">mut</span> <span class="ident">s</span>) =&gt; {
-					<span class="kw">if</span> <span class="kw">let</span> <span class="ident">Poll::Ready</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="ident">Future::poll</span>(<span class="ident">Pin::new</span>(<span class="kw-2">&amp;mut</span> <span class="ident">s</span>), <span class="ident">cx</span>) {
+					<span class="kw">if</span> <span class="ident">Future::poll</span>(<span class="ident">Pin::new</span>(<span class="kw-2">&amp;mut</span> <span class="ident">s</span>), <span class="ident">cx</span>).<span class="ident">is_ready</span>() {
 						<span class="ident">socket</span> <span class="op">=</span> <span class="ident">NodeSocket::ReconnectNow</span>;
 					} <span class="kw">else</span> {
 						<span class="kw">break</span> <span class="ident">NodeSocket::WaitingReconnect</span>(<span class="ident">s</span>)

@@ -854,8 +854,8 @@
 				<span class="kw">let</span> <span class="ident">memory_ref</span> <span class="op">=</span> <span class="ident">memories</span>
 					.<span class="ident">get</span>(<span class="ident">memory_idx</span> <span class="kw">as</span> <span class="ident">usize</span>)
 					.<span class="ident">cloned</span>()
-					.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">InstantiationError::EnvironmentDefinitionCorrupted</span>)<span class="question-mark">?</span>
-					.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">InstantiationError::EnvironmentDefinitionCorrupted</span>)<span class="question-mark">?</span>;
+					.<span class="ident">ok_or</span>(<span class="ident">InstantiationError::EnvironmentDefinitionCorrupted</span>)<span class="question-mark">?</span>
+					.<span class="ident">ok_or</span>(<span class="ident">InstantiationError::EnvironmentDefinitionCorrupted</span>)<span class="question-mark">?</span>;
 				<span class="ident">memories_map</span>.<span class="ident">insert</span>((<span class="ident">module</span>, <span class="ident">field</span>), <span class="ident">memory_ref</span>);
 			},
 		}
@@ -1048,7 +1048,7 @@
 		};
 
 		<span class="kw">let</span> <span class="ident">mem_idx</span> <span class="op">=</span> <span class="ident">memories</span>.<span class="ident">len</span>();
-		<span class="ident">memories</span>.<span class="ident">push</span>(<span class="prelude-val">Some</span>(<span class="ident">memory</span>.<span class="ident">clone</span>()));
+		<span class="ident">memories</span>.<span class="ident">push</span>(<span class="prelude-val">Some</span>(<span class="ident">memory</span>));
 
 		<span class="prelude-val">Ok</span>(<span class="ident">mem_idx</span> <span class="kw">as</span> <span class="ident">u32</span>)
 	}
@@ -1062,7 +1062,7 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">instance</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">instance_idx</span>: <span class="ident">u32</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">SandboxInstance</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">instances</span>
 			.<span class="ident">get</span>(<span class="ident">instance_idx</span> <span class="kw">as</span> <span class="ident">usize</span>)
-			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;Trying to access a non-existent instance&quot;</span>)<span class="question-mark">?</span>
+			.<span class="ident">ok_or</span>(<span class="string">&quot;Trying to access a non-existent instance&quot;</span>)<span class="question-mark">?</span>
 			.<span class="ident">as_ref</span>()
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="number">0</span>.<span class="ident">clone</span>())
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;Trying to access a torndown instance&quot;</span>.<span class="ident">into</span>())
@@ -1078,7 +1078,7 @@
 		<span class="self">self</span>.<span class="ident">instances</span>
 			.<span class="ident">get</span>(<span class="ident">instance_idx</span> <span class="kw">as</span> <span class="ident">usize</span>)
 			.<span class="ident">as_ref</span>()
-			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;Trying to access a non-existent instance&quot;</span>)<span class="question-mark">?</span>
+			.<span class="ident">ok_or</span>(<span class="string">&quot;Trying to access a non-existent instance&quot;</span>)<span class="question-mark">?</span>
 			.<span class="ident">as_ref</span>()
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="number">1</span>.<span class="ident">clone</span>())
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;Trying to access a torndown instance&quot;</span>.<span class="ident">into</span>())
@@ -1094,7 +1094,7 @@
 		<span class="self">self</span>.<span class="ident">memories</span>
 			.<span class="ident">get</span>(<span class="ident">memory_idx</span> <span class="kw">as</span> <span class="ident">usize</span>)
 			.<span class="ident">cloned</span>()
-			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;Trying to access a non-existent sandboxed memory&quot;</span>)<span class="question-mark">?</span>
+			.<span class="ident">ok_or</span>(<span class="string">&quot;Trying to access a non-existent sandboxed memory&quot;</span>)<span class="question-mark">?</span>
 			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;Trying to access a torndown sandboxed memory&quot;</span>.<span class="ident">into</span>())
 	}
 
@@ -1154,7 +1154,7 @@
 
 			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;wasmer-sandbox&quot;</span>)]</span>
 			<span class="ident">BackendContext::Wasmer</span>(<span class="kw-2">ref</span> <span class="ident">context</span>) =&gt;
-				<span class="ident">wasmer_instantiate</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="ident">wasm</span>, <span class="ident">guest_env</span>, <span class="ident">state</span>, <span class="ident">sandbox_context</span>)<span class="question-mark">?</span>,
+				<span class="ident">wasmer_instantiate</span>(<span class="ident">context</span>, <span class="ident">wasm</span>, <span class="ident">guest_env</span>, <span class="ident">state</span>, <span class="ident">sandbox_context</span>)<span class="question-mark">?</span>,
 		};
 
 		<span class="prelude-val">Ok</span>(<span class="ident">UnregisteredInstance</span> { <span class="ident">sandbox_instance</span> })

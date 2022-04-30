@@ -671,10 +671,6 @@
 <span id="666">666</span>
 <span id="667">667</span>
 <span id="668">668</span>
-<span id="669">669</span>
-<span id="670">670</span>
-<span id="671">671</span>
-<span id="672">672</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -1119,7 +1115,7 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">extrinsics_tags</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hashes</span>: <span class="kw-2">&amp;</span>[<span class="ident">ExtrinsicHash</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>]) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Tag</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">pool</span>
 			.<span class="ident">read</span>()
-			.<span class="ident">by_hashes</span>(<span class="kw-2">&amp;</span><span class="ident">hashes</span>)
+			.<span class="ident">by_hashes</span>(<span class="ident">hashes</span>)
 			.<span class="ident">into_iter</span>()
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">existing_in_pool</span><span class="op">|</span> {
 				<span class="ident">existing_in_pool</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">transaction</span><span class="op">|</span> <span class="ident">transaction</span>.<span class="ident">provides</span>.<span class="ident">to_vec</span>())
@@ -1223,7 +1219,7 @@
 		<span class="kw">let</span> <span class="ident">now</span> <span class="op">=</span> <span class="ident">Instant::now</span>();
 		<span class="kw">let</span> <span class="ident">to_remove</span> <span class="op">=</span> {
 			<span class="self">self</span>.<span class="ident">ready</span>()
-				.<span class="ident">filter</span>(<span class="op">|</span><span class="ident">tx</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">rotator</span>.<span class="ident">ban_if_stale</span>(<span class="kw-2">&amp;</span><span class="ident">now</span>, <span class="ident">block_number</span>, <span class="kw-2">&amp;</span><span class="ident">tx</span>))
+				.<span class="ident">filter</span>(<span class="op">|</span><span class="ident">tx</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">rotator</span>.<span class="ident">ban_if_stale</span>(<span class="kw-2">&amp;</span><span class="ident">now</span>, <span class="ident">block_number</span>, <span class="ident">tx</span>))
 				.<span class="ident">map</span>(<span class="op">|</span><span class="ident">tx</span><span class="op">|</span> <span class="ident">tx</span>.<span class="ident">hash</span>)
 				.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()
 		};
@@ -1231,7 +1227,7 @@
 			<span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pool</span>.<span class="ident">read</span>();
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hashes</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
 			<span class="kw">for</span> <span class="ident">tx</span> <span class="kw">in</span> <span class="ident">p</span>.<span class="ident">futures</span>() {
-				<span class="kw">if</span> <span class="self">self</span>.<span class="ident">rotator</span>.<span class="ident">ban_if_stale</span>(<span class="kw-2">&amp;</span><span class="ident">now</span>, <span class="ident">block_number</span>, <span class="kw-2">&amp;</span><span class="ident">tx</span>) {
+				<span class="kw">if</span> <span class="self">self</span>.<span class="ident">rotator</span>.<span class="ident">ban_if_stale</span>(<span class="kw-2">&amp;</span><span class="ident">now</span>, <span class="ident">block_number</span>, <span class="ident">tx</span>) {
 					<span class="ident">hashes</span>.<span class="ident">push</span>(<span class="ident">tx</span>.<span class="ident">hash</span>);
 				}
 			}
@@ -1307,11 +1303,7 @@
 
 	<span class="doccomment">/// Returns a Vec of hashes and extrinsics in the future pool.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">futures</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">ExtrinsicHash</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">ExtrinsicFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">pool</span>
-			.<span class="ident">read</span>()
-			.<span class="ident">futures</span>()
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">tx</span><span class="op">|</span> (<span class="ident">tx</span>.<span class="ident">hash</span>.<span class="ident">clone</span>(), <span class="ident">tx</span>.<span class="ident">data</span>.<span class="ident">clone</span>()))
-			.<span class="ident">collect</span>()
+		<span class="self">self</span>.<span class="ident">pool</span>.<span class="ident">read</span>().<span class="ident">futures</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">tx</span><span class="op">|</span> (<span class="ident">tx</span>.<span class="ident">hash</span>, <span class="ident">tx</span>.<span class="ident">data</span>.<span class="ident">clone</span>())).<span class="ident">collect</span>()
 	}
 
 	<span class="doccomment">/// Returns pool status.</span>
@@ -1340,9 +1332,9 @@
 	<span class="kw">match</span> <span class="kw-2">*</span><span class="ident">imported</span> {
 		<span class="ident">base::Imported::Ready</span> { <span class="kw-2">ref</span> <span class="ident">promoted</span>, <span class="kw-2">ref</span> <span class="ident">failed</span>, <span class="kw-2">ref</span> <span class="ident">removed</span>, <span class="kw-2">ref</span> <span class="ident">hash</span> } =&gt; {
 			<span class="ident">listener</span>.<span class="ident">ready</span>(<span class="ident">hash</span>, <span class="prelude-val">None</span>);
-			<span class="ident">failed</span>.<span class="ident">into_iter</span>().<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">f</span><span class="op">|</span> <span class="ident">listener</span>.<span class="ident">invalid</span>(<span class="ident">f</span>));
-			<span class="ident">removed</span>.<span class="ident">into_iter</span>().<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="ident">listener</span>.<span class="ident">dropped</span>(<span class="kw-2">&amp;</span><span class="ident">r</span>.<span class="ident">hash</span>, <span class="prelude-val">Some</span>(<span class="ident">hash</span>)));
-			<span class="ident">promoted</span>.<span class="ident">into_iter</span>().<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">listener</span>.<span class="ident">ready</span>(<span class="ident">p</span>, <span class="prelude-val">None</span>));
+			<span class="ident">failed</span>.<span class="ident">iter</span>().<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">f</span><span class="op">|</span> <span class="ident">listener</span>.<span class="ident">invalid</span>(<span class="ident">f</span>));
+			<span class="ident">removed</span>.<span class="ident">iter</span>().<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="ident">listener</span>.<span class="ident">dropped</span>(<span class="kw-2">&amp;</span><span class="ident">r</span>.<span class="ident">hash</span>, <span class="prelude-val">Some</span>(<span class="ident">hash</span>)));
+			<span class="ident">promoted</span>.<span class="ident">iter</span>().<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">listener</span>.<span class="ident">ready</span>(<span class="ident">p</span>, <span class="prelude-val">None</span>));
 		},
 		<span class="ident">base::Imported::Future</span> { <span class="kw-2">ref</span> <span class="ident">hash</span> } =&gt; <span class="ident">listener</span>.<span class="ident">future</span>(<span class="ident">hash</span>),
 	}

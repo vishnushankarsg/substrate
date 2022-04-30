@@ -373,13 +373,13 @@
 				.<span class="ident">const_label</span>(<span class="string">&quot;name&quot;</span>, <span class="ident">name</span>)
 				.<span class="ident">const_label</span>(<span class="string">&quot;version&quot;</span>, <span class="ident">version</span>),
 			)<span class="question-mark">?</span>,
-			<span class="kw-2">&amp;</span><span class="ident">registry</span>,
+			<span class="ident">registry</span>,
 		)<span class="question-mark">?</span>
 		.<span class="ident">set</span>(<span class="number">1</span>);
 
 		<span class="ident">register</span>(
 			<span class="ident">Gauge</span>::<span class="op">&lt;</span><span class="ident">U64</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="string">&quot;substrate_node_roles&quot;</span>, <span class="string">&quot;The roles the node is running as&quot;</span>)<span class="question-mark">?</span>,
-			<span class="kw-2">&amp;</span><span class="ident">registry</span>,
+			<span class="ident">registry</span>,
 		)<span class="question-mark">?</span>
 		.<span class="ident">set</span>(<span class="ident">roles</span>);
 

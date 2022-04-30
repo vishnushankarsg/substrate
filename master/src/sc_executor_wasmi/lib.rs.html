@@ -916,7 +916,7 @@
 
 		<span class="kw">match</span> <span class="ident">result</span> {
 			<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">RuntimeValue::I64</span>(<span class="ident">val</span>))) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">val</span>),
-			<span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Supervisor function returned unexpected result!&quot;</span>.<span class="ident">into</span>()),
+			<span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="string">&quot;Supervisor function returned unexpected result!&quot;</span>.<span class="ident">into</span>()),
 			<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::Sandbox</span>(<span class="ident">err</span>.<span class="ident">to_string</span>())),
 		}
 	}
@@ -974,7 +974,7 @@
 			<span class="prelude-val">Ok</span>(<span class="ident">buffer</span>) =&gt; <span class="ident">buffer</span>,
 		};
 
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">memory</span>.<span class="ident">set</span>(<span class="ident">buf_ptr</span>.<span class="ident">into</span>(), <span class="kw-2">&amp;</span><span class="ident">buffer</span>) {
+		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">memory</span>.<span class="ident">set</span>(<span class="ident">buf_ptr</span>.<span class="ident">into</span>(), <span class="kw-2">&amp;</span><span class="ident">buffer</span>).<span class="ident">is_err</span>() {
 			<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">sandbox_env::ERR_OUT_OF_BOUNDS</span>)
 		}
 
@@ -998,7 +998,7 @@
 			<span class="prelude-val">Ok</span>(<span class="ident">buffer</span>) =&gt; <span class="ident">buffer</span>,
 		};
 
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="ident">sandboxed_memory</span>.<span class="ident">write_from</span>(<span class="ident">Pointer::new</span>(<span class="ident">offset</span> <span class="kw">as</span> <span class="ident">u32</span>), <span class="kw-2">&amp;</span><span class="ident">buffer</span>) {
+		<span class="kw">if</span> <span class="ident">sandboxed_memory</span>.<span class="ident">write_from</span>(<span class="ident">Pointer::new</span>(<span class="ident">offset</span> <span class="kw">as</span> <span class="ident">u32</span>), <span class="kw-2">&amp;</span><span class="ident">buffer</span>).<span class="ident">is_err</span>() {
 			<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">sandbox_env::ERR_OUT_OF_BOUNDS</span>)
 		}
 
@@ -1054,9 +1054,9 @@
 			<span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">sandbox_env::ERR_OK</span>),
 			<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">val</span>)) =&gt; {
 				<span class="comment">// Serialize return value and write it back into the memory.</span>
-				<span class="ident">sp_wasm_interface::ReturnValue::Value</span>(<span class="ident">val</span>.<span class="ident">into</span>()).<span class="ident">using_encoded</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> {
+				<span class="ident">sp_wasm_interface::ReturnValue::Value</span>(<span class="ident">val</span>).<span class="ident">using_encoded</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> {
 					<span class="kw">if</span> <span class="ident">val</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="ident">return_val_len</span> <span class="kw">as</span> <span class="ident">usize</span> {
-						<span class="prelude-val">Err</span>(<span class="string">&quot;Return value buffer is too small&quot;</span>)<span class="question-mark">?</span>;
+						<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Return value buffer is too small&quot;</span>.<span class="ident">into</span>())
 					}
 					<span class="self">self</span>.<span class="ident">write_memory</span>(<span class="ident">return_val</span>, <span class="ident">val</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;Return value buffer is OOB&quot;</span>)<span class="question-mark">?</span>;
 					<span class="prelude-val">Ok</span>(<span class="ident">sandbox_env::ERR_OK</span>)
@@ -1085,11 +1085,11 @@
 			<span class="kw">let</span> <span class="ident">table</span> <span class="op">=</span> <span class="self">self</span>
 				.<span class="ident">table</span>
 				.<span class="ident">as_ref</span>()
-				.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;Runtime doesn&#39;t have a table; sandbox is unavailable&quot;</span>)<span class="question-mark">?</span>;
+				.<span class="ident">ok_or</span>(<span class="string">&quot;Runtime doesn&#39;t have a table; sandbox is unavailable&quot;</span>)<span class="question-mark">?</span>;
 			<span class="ident">table</span>
 				.<span class="ident">get</span>(<span class="ident">dispatch_thunk_id</span>)
 				.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;dispatch_thunk_idx is out of the table bounds&quot;</span>)<span class="question-mark">?</span>
-				.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;dispatch_thunk_idx points on an empty table entry&quot;</span>)<span class="question-mark">?</span>
+				.<span class="ident">ok_or</span>(<span class="string">&quot;dispatch_thunk_idx points on an empty table entry&quot;</span>)<span class="question-mark">?</span>
 		};
 
 		<span class="kw">let</span> <span class="ident">guest_env</span> <span class="op">=</span>
@@ -1271,9 +1271,9 @@
 <span class="kw">fn</span> <span class="ident">get_mem_instance</span>(<span class="ident">module</span>: <span class="kw-2">&amp;</span><span class="ident">ModuleRef</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">MemoryRef</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
 	<span class="prelude-val">Ok</span>(<span class="ident">module</span>
 		.<span class="ident">export_by_name</span>(<span class="string">&quot;memory&quot;</span>)
-		.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error::InvalidMemoryReference</span>)<span class="question-mark">?</span>
+		.<span class="ident">ok_or</span>(<span class="ident">Error::InvalidMemoryReference</span>)<span class="question-mark">?</span>
 		.<span class="ident">as_memory</span>()
-		.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error::InvalidMemoryReference</span>)<span class="question-mark">?</span>
+		.<span class="ident">ok_or</span>(<span class="ident">Error::InvalidMemoryReference</span>)<span class="question-mark">?</span>
 		.<span class="ident">clone</span>())
 }
 
@@ -1282,9 +1282,9 @@
 <span class="kw">fn</span> <span class="ident">get_heap_base</span>(<span class="ident">module</span>: <span class="kw-2">&amp;</span><span class="ident">ModuleRef</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> <span class="ident">heap_base_val</span> <span class="op">=</span> <span class="ident">module</span>
 		.<span class="ident">export_by_name</span>(<span class="string">&quot;__heap_base&quot;</span>)
-		.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error::HeapBaseNotFoundOrInvalid</span>)<span class="question-mark">?</span>
+		.<span class="ident">ok_or</span>(<span class="ident">Error::HeapBaseNotFoundOrInvalid</span>)<span class="question-mark">?</span>
 		.<span class="ident">as_global</span>()
-		.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error::HeapBaseNotFoundOrInvalid</span>)<span class="question-mark">?</span>
+		.<span class="ident">ok_or</span>(<span class="ident">Error::HeapBaseNotFoundOrInvalid</span>)<span class="question-mark">?</span>
 		.<span class="ident">get</span>();
 
 	<span class="kw">match</span> <span class="ident">heap_base_val</span> {
@@ -1377,7 +1377,7 @@
 	<span class="kw">match</span> <span class="ident">result</span> {
 		<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">I64</span>(<span class="ident">r</span>))) =&gt; {
 			<span class="kw">let</span> (<span class="ident">ptr</span>, <span class="ident">length</span>) <span class="op">=</span> <span class="ident">unpack_ptr_and_len</span>(<span class="ident">r</span> <span class="kw">as</span> <span class="ident">u64</span>);
-			<span class="ident">memory</span>.<span class="ident">get</span>(<span class="ident">ptr</span>.<span class="ident">into</span>(), <span class="ident">length</span> <span class="kw">as</span> <span class="ident">usize</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">Error::Runtime</span>)
+			<span class="ident">memory</span>.<span class="ident">get</span>(<span class="ident">ptr</span>, <span class="ident">length</span> <span class="kw">as</span> <span class="ident">usize</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">Error::Runtime</span>)
 		},
 		<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
 			<span class="macro">trace!</span>(
@@ -1385,7 +1385,7 @@
 				<span class="string">&quot;Failed to execute code with {} pages&quot;</span>,
 				<span class="ident">memory</span>.<span class="ident">current_size</span>().<span class="number">0</span>,
 			);
-			<span class="prelude-val">Err</span>(<span class="ident">e</span>.<span class="ident">into</span>())
+			<span class="prelude-val">Err</span>(<span class="ident">e</span>)
 		},
 		<span class="kw">_</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::InvalidReturn</span>),
 	}

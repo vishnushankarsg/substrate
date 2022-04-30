@@ -1175,7 +1175,7 @@
 		<span class="kw">if</span> <span class="op">!</span><span class="ident">signer</span>.<span class="ident">can_sign</span>() {
 			<span class="kw">return</span> <span class="prelude-val">Err</span>(
 				<span class="string">&quot;No local accounts available. Consider adding one via `author_insertKey` RPC.&quot;</span>,
-			)<span class="question-mark">?</span>
+			)
 		}
 		<span class="comment">// Make an external HTTP request to fetch the current price.</span>
 		<span class="comment">// Note this call will block until response is received.</span>
@@ -1369,7 +1369,7 @@
 			<span class="kw">_</span> =&gt; <span class="kw">return</span> <span class="prelude-val">None</span>,
 		};
 
-		<span class="kw">let</span> <span class="ident">exp</span> <span class="op">=</span> <span class="ident">price</span>.<span class="ident">fraction_length</span>.<span class="ident">checked_sub</span>(<span class="number">2</span>).<span class="ident">unwrap_or</span>(<span class="number">0</span>);
+		<span class="kw">let</span> <span class="ident">exp</span> <span class="op">=</span> <span class="ident">price</span>.<span class="ident">fraction_length</span>.<span class="ident">saturating_sub</span>(<span class="number">2</span>);
 		<span class="prelude-val">Some</span>(<span class="ident">price</span>.<span class="ident">integer</span> <span class="kw">as</span> <span class="ident">u32</span> <span class="op">*</span> <span class="number">100</span> <span class="op">+</span> (<span class="ident">price</span>.<span class="ident">fraction</span> <span class="op">/</span> <span class="number">10_u64</span>.<span class="ident">pow</span>(<span class="ident">exp</span>)) <span class="kw">as</span> <span class="ident">u32</span>)
 	}
 

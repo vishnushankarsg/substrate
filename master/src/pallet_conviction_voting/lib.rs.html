@@ -652,6 +652,7 @@
 <span id="647">647</span>
 <span id="648">648</span>
 <span id="649">649</span>
+<span id="650">650</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1207,7 +1208,8 @@
 					}),
 				);
 				<span class="kw">match</span> <span class="ident">old</span> {
-					<span class="ident">Voting::Delegating</span>(<span class="ident">Delegating</span> { .. }) =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::AlreadyDelegating</span>)<span class="question-mark">?</span>,
+					<span class="ident">Voting::Delegating</span>(<span class="ident">Delegating</span> { .. }) =&gt;
+						<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::AlreadyDelegating</span>.<span class="ident">into</span>()),
 					<span class="ident">Voting::Casting</span>(<span class="ident">Casting</span> { <span class="ident">votes</span>, <span class="ident">delegations</span>, <span class="ident">prior</span> }) =&gt; {
 						<span class="comment">// here we just ensure that we&#39;re currently idling with no votes recorded.</span>
 						<span class="macro">ensure!</span>(<span class="ident">votes</span>.<span class="ident">is_empty</span>(), <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::AlreadyVoting</span>);

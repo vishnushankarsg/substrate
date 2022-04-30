@@ -1456,7 +1456,7 @@
 					<span class="macro">error!</span>(
 						<span class="string">&quot;❌️ Mandatory inherent extrinsic returned error. Block cannot be produced.&quot;</span>
 					);
-					<span class="prelude-val">Err</span>(<span class="ident">ApplyExtrinsicFailed</span>(<span class="ident">Validity</span>(<span class="ident">e</span>)))<span class="question-mark">?</span>
+					<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ApplyExtrinsicFailed</span>(<span class="ident">Validity</span>(<span class="ident">e</span>)))
 				},
 				<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
 					<span class="macro">warn!</span>(<span class="string">&quot;❗️ Inherent extrinsic returned unexpected error: {}. Dropping.&quot;</span>, <span class="ident">e</span>);

@@ -380,7 +380,6 @@
 <span id="375">375</span>
 <span id="376">376</span>
 <span id="377">377</span>
-<span id="378">378</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -626,7 +625,7 @@
 				<span class="comment">// Serialize return value and write it back into the memory.</span>
 				<span class="ident">sp_wasm_interface::ReturnValue::Value</span>(<span class="ident">val</span>.<span class="ident">into</span>()).<span class="ident">using_encoded</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> {
 					<span class="kw">if</span> <span class="ident">val</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="ident">return_val_len</span> <span class="kw">as</span> <span class="ident">usize</span> {
-						<span class="prelude-val">Err</span>(<span class="string">&quot;Return value buffer is too small&quot;</span>)<span class="question-mark">?</span>;
+						<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Return value buffer is too small&quot;</span>.<span class="ident">into</span>())
 					}
 					<span class="op">&lt;</span><span class="ident">HostContext</span> <span class="kw">as</span> <span class="ident">FunctionContext</span><span class="op">&gt;</span><span class="ident">::write_memory</span>(<span class="self">self</span>, <span class="ident">return_val</span>, <span class="ident">val</span>)
 						.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;can&#39;t write return value&quot;</span>)<span class="question-mark">?</span>;
@@ -656,19 +655,18 @@
 				.<span class="ident">caller</span>
 				.<span class="ident">data</span>()
 				.<span class="ident">table</span>()
-				.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;Runtime doesn&#39;t have a table; sandbox is unavailable&quot;</span>)<span class="question-mark">?</span>;
+				.<span class="ident">ok_or</span>(<span class="string">&quot;Runtime doesn&#39;t have a table; sandbox is unavailable&quot;</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">table_item</span> <span class="op">=</span> <span class="ident">table</span>.<span class="ident">get</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">caller</span>, <span class="ident">dispatch_thunk_id</span>);
 
 			<span class="ident">table_item</span>
-				.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;dispatch_thunk_id is out of bounds&quot;</span>)<span class="question-mark">?</span>
+				.<span class="ident">ok_or</span>(<span class="string">&quot;dispatch_thunk_id is out of bounds&quot;</span>)<span class="question-mark">?</span>
 				.<span class="ident">funcref</span>()
-				.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;dispatch_thunk_idx should be a funcref&quot;</span>)<span class="question-mark">?</span>
-				.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;dispatch_thunk_idx should point to actual func&quot;</span>)<span class="question-mark">?</span>
+				.<span class="ident">ok_or</span>(<span class="string">&quot;dispatch_thunk_idx should be a funcref&quot;</span>)<span class="question-mark">?</span>
+				.<span class="ident">ok_or</span>(<span class="string">&quot;dispatch_thunk_idx should point to actual func&quot;</span>)<span class="question-mark">?</span>
 				.<span class="ident">clone</span>()
 		};
 
-		<span class="kw">let</span> <span class="ident">guest_env</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">sandbox::GuestEnvironment::decode</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">sandbox_store</span>(), <span class="ident">raw_env_def</span>)
-		{
+		<span class="kw">let</span> <span class="ident">guest_env</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">sandbox::GuestEnvironment::decode</span>(<span class="self">self</span>.<span class="ident">sandbox_store</span>(), <span class="ident">raw_env_def</span>) {
 			<span class="prelude-val">Ok</span>(<span class="ident">guest_env</span>) =&gt; <span class="ident">guest_env</span>,
 			<span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">sandbox_env::ERR_MODULE</span> <span class="kw">as</span> <span class="ident">u32</span>),
 		};
@@ -687,7 +685,7 @@
 				<span class="ident">wasm</span>,
 				<span class="ident">guest_env</span>,
 				<span class="ident">state</span>,
-				<span class="kw-2">&amp;mut</span> <span class="ident">SandboxContext</span> { <span class="ident">host_context</span>: <span class="self">self</span>, <span class="ident">dispatch_thunk</span>: <span class="ident">dispatch_thunk</span>.<span class="ident">clone</span>() },
+				<span class="kw-2">&amp;mut</span> <span class="ident">SandboxContext</span> { <span class="ident">host_context</span>: <span class="self">self</span>, <span class="ident">dispatch_thunk</span> },
 			)
 		}));
 
@@ -699,7 +697,7 @@
 		};
 
 		<span class="kw">let</span> <span class="ident">instance_idx_or_err_code</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">result</span> {
-			<span class="prelude-val">Ok</span>(<span class="ident">instance</span>) =&gt; <span class="ident">instance</span>.<span class="ident">register</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">sandbox_store_mut</span>(), <span class="ident">dispatch_thunk</span>),
+			<span class="prelude-val">Ok</span>(<span class="ident">instance</span>) =&gt; <span class="ident">instance</span>.<span class="ident">register</span>(<span class="self">self</span>.<span class="ident">sandbox_store_mut</span>(), <span class="ident">dispatch_thunk</span>),
 			<span class="prelude-val">Err</span>(<span class="ident">sandbox::InstantiationError::StartTrapped</span>) =&gt; <span class="ident">sandbox_env::ERR_EXECUTION</span>,
 			<span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="ident">sandbox_env::ERR_MODULE</span>,
 		};
@@ -749,7 +747,7 @@
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">ret_val</span>) <span class="op">=</span> <span class="ident">ret_vals</span>[<span class="number">0</span>].<span class="ident">i64</span>() {
 					<span class="prelude-val">Ok</span>(<span class="ident">ret_val</span>)
 				} <span class="kw">else</span> {
-					<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Supervisor function returned unexpected result!&quot;</span>.<span class="ident">into</span>())
+					<span class="prelude-val">Err</span>(<span class="string">&quot;Supervisor function returned unexpected result!&quot;</span>.<span class="ident">into</span>())
 				},
 			<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">err</span>.<span class="ident">to_string</span>().<span class="ident">into</span>()),
 		}

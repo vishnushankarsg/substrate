@@ -168,9 +168,6 @@
 <span id="163">163</span>
 <span id="164">164</span>
 <span id="165">165</span>
-<span id="166">166</span>
-<span id="167">167</span>
-<span id="168">168</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// SPDX-License-Identifier: Apache-2.0</span>
 
@@ -300,15 +297,12 @@
 		<span class="kw">let</span> <span class="ident">converted_fee</span> <span class="op">=</span> <span class="ident">CON::to_asset_balance</span>(<span class="ident">fee</span>, <span class="ident">asset_id</span>)
 			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">TransactionValidityError::from</span>(<span class="ident">InvalidTransaction::Payment</span>))<span class="question-mark">?</span>
 			.<span class="ident">max</span>(<span class="ident">min_converted_fee</span>);
-		<span class="kw">let</span> <span class="ident">can_withdraw</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T::Fungibles</span> <span class="kw">as</span> <span class="ident">Inspect</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::can_withdraw</span>(
-			<span class="ident">asset_id</span>.<span class="ident">into</span>(),
-			<span class="ident">who</span>,
-			<span class="ident">converted_fee</span>,
-		);
+		<span class="kw">let</span> <span class="ident">can_withdraw</span> <span class="op">=</span>
+			<span class="op">&lt;</span><span class="ident">T::Fungibles</span> <span class="kw">as</span> <span class="ident">Inspect</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::can_withdraw</span>(<span class="ident">asset_id</span>, <span class="ident">who</span>, <span class="ident">converted_fee</span>);
 		<span class="kw">if</span> <span class="op">!</span><span class="macro">matches!</span>(<span class="ident">can_withdraw</span>, <span class="ident">WithdrawConsequence::Success</span>) {
 			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">InvalidTransaction::Payment</span>.<span class="ident">into</span>())
 		}
-		<span class="op">&lt;</span><span class="ident">T::Fungibles</span> <span class="kw">as</span> <span class="ident">Balanced</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::withdraw</span>(<span class="ident">asset_id</span>.<span class="ident">into</span>(), <span class="ident">who</span>, <span class="ident">converted_fee</span>)
+		<span class="op">&lt;</span><span class="ident">T::Fungibles</span> <span class="kw">as</span> <span class="ident">Balanced</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::withdraw</span>(<span class="ident">asset_id</span>, <span class="ident">who</span>, <span class="ident">converted_fee</span>)
 			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">TransactionValidityError::from</span>(<span class="ident">InvalidTransaction::Payment</span>))
 	}
 
@@ -326,7 +320,7 @@
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">TransactionValidityError</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">min_converted_fee</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">corrected_fee</span>.<span class="ident">is_zero</span>() { <span class="ident">Zero::zero</span>() } <span class="kw">else</span> { <span class="ident">One::one</span>() };
 		<span class="comment">// Convert the corrected fee into the asset used for payment.</span>
-		<span class="kw">let</span> <span class="ident">converted_fee</span> <span class="op">=</span> <span class="ident">CON::to_asset_balance</span>(<span class="ident">corrected_fee</span>, <span class="ident">paid</span>.<span class="ident">asset</span>().<span class="ident">into</span>())
+		<span class="kw">let</span> <span class="ident">converted_fee</span> <span class="op">=</span> <span class="ident">CON::to_asset_balance</span>(<span class="ident">corrected_fee</span>, <span class="ident">paid</span>.<span class="ident">asset</span>())
 			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> -&gt; <span class="ident">TransactionValidityError</span> { <span class="ident">InvalidTransaction::Payment</span>.<span class="ident">into</span>() })<span class="question-mark">?</span>
 			.<span class="ident">max</span>(<span class="ident">min_converted_fee</span>);
 		<span class="comment">// Calculate how much refund we should return.</span>

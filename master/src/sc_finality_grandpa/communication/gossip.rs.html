@@ -2559,11 +2559,6 @@
 <span id="2554">2554</span>
 <span id="2555">2555</span>
 <span id="2556">2556</span>
-<span id="2557">2557</span>
-<span id="2558">2558</span>
-<span id="2559">2559</span>
-<span id="2560">2560</span>
-<span id="2561">2561</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -3070,13 +3065,13 @@
 	<span class="kw">fn</span> <span class="ident">new_peer</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">who</span>: <span class="ident">PeerId</span>, <span class="ident">role</span>: <span class="ident">ObservedRole</span>) {
 		<span class="kw">match</span> <span class="ident">role</span> {
 			<span class="ident">ObservedRole::Authority</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">first_stage_peers</span>.<span class="ident">len</span>() <span class="op">&lt;</span> <span class="ident">LUCKY_PEERS</span> =&gt; {
-				<span class="self">self</span>.<span class="ident">first_stage_peers</span>.<span class="ident">insert</span>(<span class="ident">who</span>.<span class="ident">clone</span>());
+				<span class="self">self</span>.<span class="ident">first_stage_peers</span>.<span class="ident">insert</span>(<span class="ident">who</span>);
 			},
 			<span class="ident">ObservedRole::Authority</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">second_stage_peers</span>.<span class="ident">len</span>() <span class="op">&lt;</span> <span class="ident">LUCKY_PEERS</span> =&gt; {
-				<span class="self">self</span>.<span class="ident">second_stage_peers</span>.<span class="ident">insert</span>(<span class="ident">who</span>.<span class="ident">clone</span>());
+				<span class="self">self</span>.<span class="ident">second_stage_peers</span>.<span class="ident">insert</span>(<span class="ident">who</span>);
 			},
 			<span class="ident">ObservedRole::Light</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">lucky_light_peers</span>.<span class="ident">len</span>() <span class="op">&lt;</span> <span class="ident">LUCKY_PEERS</span> =&gt; {
-				<span class="self">self</span>.<span class="ident">lucky_light_peers</span>.<span class="ident">insert</span>(<span class="ident">who</span>.<span class="ident">clone</span>());
+				<span class="self">self</span>.<span class="ident">lucky_light_peers</span>.<span class="ident">insert</span>(<span class="ident">who</span>);
 			},
 			<span class="kw">_</span> =&gt; {},
 		}
@@ -3156,11 +3151,8 @@
 		<span class="comment">// - third set: LUCKY_PEERS random light client peers</span>
 
 		<span class="kw">let</span> <span class="ident">shuffled_peers</span> <span class="op">=</span> {
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">peers</span> <span class="op">=</span> <span class="self">self</span>
-				.<span class="ident">inner</span>
-				.<span class="ident">iter</span>()
-				.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">peer_id</span>, <span class="ident">info</span>)<span class="op">|</span> (<span class="kw-2">*</span><span class="ident">peer_id</span>, <span class="ident">info</span>.<span class="ident">clone</span>()))
-				.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">peers</span> <span class="op">=</span>
+				<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">peer_id</span>, <span class="ident">info</span>)<span class="op">|</span> (<span class="kw-2">*</span><span class="ident">peer_id</span>, <span class="ident">info</span>)).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 
 			<span class="ident">peers</span>.<span class="ident">shuffle</span>(<span class="kw-2">&amp;mut</span> <span class="ident">rand::thread_rng</span>());
 			<span class="ident">peers</span>
@@ -3669,7 +3661,7 @@
 		<span class="comment">// won&#39;t be able to reply since they don&#39;t follow the full GRANDPA</span>
 		<span class="comment">// protocol and therefore might not have the vote data available.</span>
 		<span class="kw">if</span> <span class="kw">let</span> (<span class="prelude-val">Some</span>(<span class="ident">peer</span>), <span class="prelude-val">Some</span>(<span class="ident">local_view</span>)) <span class="op">=</span> (<span class="self">self</span>.<span class="ident">peers</span>.<span class="ident">peer</span>(<span class="ident">who</span>), <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">local_view</span>) {
-			<span class="kw">if</span> <span class="self">self</span>.<span class="ident">catch_up_config</span>.<span class="ident">request_allowed</span>(<span class="kw-2">&amp;</span><span class="ident">peer</span>) <span class="op">&amp;&amp;</span>
+			<span class="kw">if</span> <span class="self">self</span>.<span class="ident">catch_up_config</span>.<span class="ident">request_allowed</span>(<span class="ident">peer</span>) <span class="op">&amp;&amp;</span>
 				<span class="ident">peer</span>.<span class="ident">view</span>.<span class="ident">set_id</span> <span class="op">==</span> <span class="ident">local_view</span>.<span class="ident">set_id</span> <span class="op">&amp;&amp;</span>
 				<span class="ident">peer</span>.<span class="ident">view</span>.<span class="ident">round</span>.<span class="number">0</span>.<span class="ident">saturating_sub</span>(<span class="ident">CATCH_UP_THRESHOLD</span>) <span class="op">&gt;</span> <span class="ident">local_view</span>.<span class="ident">round</span>.<span class="number">0</span>
 			{
@@ -3761,7 +3753,7 @@
 					<span class="kw">return</span> (<span class="bool-val">false</span>, <span class="prelude-val">None</span>)
 				} <span class="kw">else</span> {
 					<span class="comment">// report peer for timeout</span>
-					<span class="prelude-val">Some</span>((<span class="ident">peer</span>.<span class="ident">clone</span>(), <span class="ident">cost::CATCH_UP_REQUEST_TIMEOUT</span>))
+					<span class="prelude-val">Some</span>((<span class="kw-2">*</span><span class="ident">peer</span>, <span class="ident">cost::CATCH_UP_REQUEST_TIMEOUT</span>))
 				}
 			},
 			<span class="ident">PendingCatchUp::Processing</span> { <span class="ident">instant</span>, .. } =&gt; {
@@ -3775,7 +3767,7 @@
 		};
 
 		<span class="self">self</span>.<span class="ident">pending_catch_up</span> <span class="op">=</span> <span class="ident">PendingCatchUp::Requesting</span> {
-			<span class="ident">who</span>: <span class="ident">who</span>.<span class="ident">clone</span>(),
+			<span class="ident">who</span>: <span class="kw-2">*</span><span class="ident">who</span>,
 			<span class="ident">request</span>: <span class="ident">catch_up_request</span>.<span class="ident">clone</span>(),
 			<span class="ident">instant</span>: <span class="ident">Instant::now</span>(),
 		};
@@ -4054,7 +4046,7 @@
 	) {
 		<span class="kw">let</span> <span class="ident">packet</span> <span class="op">=</span> {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">write</span>();
-			<span class="ident">inner</span>.<span class="ident">peers</span>.<span class="ident">new_peer</span>(<span class="ident">who</span>.<span class="ident">clone</span>(), <span class="ident">roles</span>);
+			<span class="ident">inner</span>.<span class="ident">peers</span>.<span class="ident">new_peer</span>(<span class="kw-2">*</span><span class="ident">who</span>, <span class="ident">roles</span>);
 
 			<span class="ident">inner</span>.<span class="ident">local_view</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">NeighborPacket</span> {
 				<span class="ident">round</span>: <span class="ident">v</span>.<span class="ident">round</span>,
@@ -4092,16 +4084,16 @@
 
 		<span class="kw">match</span> <span class="ident">action</span> {
 			<span class="ident">Action::Keep</span>(<span class="ident">topic</span>, <span class="ident">cb</span>) =&gt; {
-				<span class="self">self</span>.<span class="ident">report</span>(<span class="ident">who</span>.<span class="ident">clone</span>(), <span class="ident">cb</span>);
+				<span class="self">self</span>.<span class="ident">report</span>(<span class="kw-2">*</span><span class="ident">who</span>, <span class="ident">cb</span>);
 				<span class="ident">context</span>.<span class="ident">broadcast_message</span>(<span class="ident">topic</span>, <span class="ident">data</span>.<span class="ident">to_vec</span>(), <span class="bool-val">false</span>);
 				<span class="ident">sc_network_gossip::ValidationResult::ProcessAndKeep</span>(<span class="ident">topic</span>)
 			},
 			<span class="ident">Action::ProcessAndDiscard</span>(<span class="ident">topic</span>, <span class="ident">cb</span>) =&gt; {
-				<span class="self">self</span>.<span class="ident">report</span>(<span class="ident">who</span>.<span class="ident">clone</span>(), <span class="ident">cb</span>);
+				<span class="self">self</span>.<span class="ident">report</span>(<span class="kw-2">*</span><span class="ident">who</span>, <span class="ident">cb</span>);
 				<span class="ident">sc_network_gossip::ValidationResult::ProcessAndDiscard</span>(<span class="ident">topic</span>)
 			},
 			<span class="ident">Action::Discard</span>(<span class="ident">cb</span>) =&gt; {
-				<span class="self">self</span>.<span class="ident">report</span>(<span class="ident">who</span>.<span class="ident">clone</span>(), <span class="ident">cb</span>);
+				<span class="self">self</span>.<span class="ident">report</span>(<span class="kw-2">*</span><span class="ident">who</span>, <span class="ident">cb</span>);
 				<span class="ident">sc_network_gossip::ValidationResult::Discard</span>
 			},
 		}
@@ -4138,7 +4130,7 @@
 
 			<span class="comment">// if the topic is not something we&#39;re keeping at the moment,</span>
 			<span class="comment">// do not send.</span>
-			<span class="kw">let</span> (<span class="ident">maybe_round</span>, <span class="ident">set_id</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">inner</span>.<span class="ident">live_topics</span>.<span class="ident">topic_info</span>(<span class="kw-2">&amp;</span><span class="ident">topic</span>) {
+			<span class="kw">let</span> (<span class="ident">maybe_round</span>, <span class="ident">set_id</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">inner</span>.<span class="ident">live_topics</span>.<span class="ident">topic_info</span>(<span class="ident">topic</span>) {
 				<span class="prelude-val">None</span> =&gt; <span class="kw">return</span> <span class="bool-val">false</span>,
 				<span class="prelude-val">Some</span>(<span class="ident">x</span>) =&gt; <span class="ident">x</span>,
 			};
@@ -4149,11 +4141,9 @@
 						<span class="comment">// early return if the vote message isn&#39;t allowed at this stage.</span>
 						<span class="kw">return</span> <span class="bool-val">false</span>
 					}
-				} <span class="kw">else</span> {
-					<span class="kw">if</span> <span class="op">!</span><span class="ident">inner</span>.<span class="ident">global_message_allowed</span>(<span class="ident">who</span>) {
-						<span class="comment">// early return if the global message isn&#39;t allowed at this stage.</span>
-						<span class="kw">return</span> <span class="bool-val">false</span>
-					}
+				} <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="ident">inner</span>.<span class="ident">global_message_allowed</span>(<span class="ident">who</span>) {
+					<span class="comment">// early return if the global message isn&#39;t allowed at this stage.</span>
+					<span class="kw">return</span> <span class="bool-val">false</span>
 				}
 			}
 

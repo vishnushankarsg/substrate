@@ -460,7 +460,7 @@
 }
 
 <span class="kw">fn</span> <span class="ident">generate_authority_keys_and_store</span>(<span class="ident">seeds</span>: <span class="kw-2">&amp;</span>[<span class="ident">String</span>], <span class="ident">keystore_path</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
-	<span class="kw">for</span> (<span class="ident">n</span>, <span class="ident">seed</span>) <span class="kw">in</span> <span class="ident">seeds</span>.<span class="ident">into_iter</span>().<span class="ident">enumerate</span>() {
+	<span class="kw">for</span> (<span class="ident">n</span>, <span class="ident">seed</span>) <span class="kw">in</span> <span class="ident">seeds</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
 		<span class="kw">let</span> <span class="ident">keystore</span>: <span class="ident">SyncCryptoStorePtr</span> <span class="op">=</span> <span class="ident">Arc::new</span>(
 			<span class="ident">LocalKeystore::open</span>(<span class="ident">keystore_path</span>.<span class="ident">join</span>(<span class="macro">format!</span>(<span class="string">&quot;auth-{}&quot;</span>, <span class="ident">n</span>)), <span class="prelude-val">None</span>)
 				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">err</span>.<span class="ident">to_string</span>())<span class="question-mark">?</span>,

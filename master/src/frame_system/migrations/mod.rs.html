@@ -233,7 +233,7 @@
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">migrate_from_single_u8_to_triple_ref_count</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">V2ToV3</span><span class="op">&gt;</span>() -&gt; <span class="ident">Weight</span> {
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">translated</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0</span>;
 	<span class="op">&lt;</span><span class="ident">Account</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::translate</span>::<span class="op">&lt;</span>(<span class="ident">T::Index</span>, <span class="ident">u8</span>, <span class="ident">T::AccountData</span>), <span class="kw">_</span><span class="op">&gt;</span>(<span class="op">|</span><span class="ident">_key</span>, (<span class="ident">nonce</span>, <span class="ident">rc</span>, <span class="ident">data</span>)<span class="op">|</span> {
-		<span class="ident">translated</span> <span class="op">=</span> <span class="ident">translated</span> <span class="op">+</span> <span class="number">1</span>;
+		<span class="ident">translated</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
 		<span class="prelude-val">Some</span>(<span class="ident">AccountInfo</span> { <span class="ident">nonce</span>, <span class="ident">consumers</span>: <span class="ident">rc</span> <span class="kw">as</span> <span class="ident">RefCount</span>, <span class="ident">providers</span>: <span class="number">1</span>, <span class="ident">sufficients</span>: <span class="number">0</span>, <span class="ident">data</span> })
 	});
 	<span class="macro">log::info!</span>(
@@ -251,7 +251,7 @@
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">translated</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0</span>;
 	<span class="op">&lt;</span><span class="ident">Account</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::translate</span>::<span class="op">&lt;</span>(<span class="ident">T::Index</span>, <span class="ident">RefCount</span>, <span class="ident">T::AccountData</span>), <span class="kw">_</span><span class="op">&gt;</span>(
 		<span class="op">|</span><span class="ident">_key</span>, (<span class="ident">nonce</span>, <span class="ident">consumers</span>, <span class="ident">data</span>)<span class="op">|</span> {
-			<span class="ident">translated</span> <span class="op">=</span> <span class="ident">translated</span> <span class="op">+</span> <span class="number">1</span>;
+			<span class="ident">translated</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
 			<span class="prelude-val">Some</span>(<span class="ident">AccountInfo</span> { <span class="ident">nonce</span>, <span class="ident">consumers</span>, <span class="ident">providers</span>: <span class="number">1</span>, <span class="ident">sufficients</span>: <span class="number">0</span>, <span class="ident">data</span> })
 		},
 	);
@@ -269,7 +269,7 @@
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">translated</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0</span>;
 	<span class="op">&lt;</span><span class="ident">Account</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::translate</span>::<span class="op">&lt;</span>(<span class="ident">T::Index</span>, <span class="ident">RefCount</span>, <span class="ident">RefCount</span>, <span class="ident">T::AccountData</span>), <span class="kw">_</span><span class="op">&gt;</span>(
 		<span class="op">|</span><span class="ident">_key</span>, (<span class="ident">nonce</span>, <span class="ident">consumers</span>, <span class="ident">providers</span>, <span class="ident">data</span>)<span class="op">|</span> {
-			<span class="ident">translated</span> <span class="op">=</span> <span class="ident">translated</span> <span class="op">+</span> <span class="number">1</span>;
+			<span class="ident">translated</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
 			<span class="prelude-val">Some</span>(<span class="ident">AccountInfo</span> { <span class="ident">nonce</span>, <span class="ident">consumers</span>, <span class="ident">providers</span>, <span class="ident">sufficients</span>: <span class="number">0</span>, <span class="ident">data</span> })
 		},
 	);

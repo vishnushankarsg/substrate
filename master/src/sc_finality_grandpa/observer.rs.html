@@ -538,7 +538,7 @@
 		<span class="ident">base</span>: <span class="ident">Block::Hash</span>,
 		<span class="ident">block</span>: <span class="ident">Block::Hash</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>, <span class="ident">GrandpaError</span><span class="op">&gt;</span> {
-		<span class="ident">environment::ancestry</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">client</span>, <span class="ident">base</span>, <span class="ident">block</span>)
+		<span class="ident">environment::ancestry</span>(<span class="self">self</span>.<span class="ident">client</span>, <span class="ident">base</span>, <span class="ident">block</span>)
 	}
 }
 
@@ -668,13 +668,13 @@
 	);
 
 	<span class="kw">let</span> <span class="ident">observer_work</span> <span class="op">=</span> <span class="ident">ObserverWork::new</span>(
-		<span class="ident">client</span>.<span class="ident">clone</span>(),
+		<span class="ident">client</span>,
 		<span class="ident">network</span>,
 		<span class="ident">persistent_data</span>,
 		<span class="ident">config</span>.<span class="ident">keystore</span>,
 		<span class="ident">voter_commands_rx</span>,
 		<span class="prelude-val">Some</span>(<span class="ident">justification_sender</span>),
-		<span class="ident">telemetry</span>.<span class="ident">clone</span>(),
+		<span class="ident">telemetry</span>,
 	);
 
 	<span class="kw">let</span> <span class="ident">observer_work</span> <span class="op">=</span> <span class="ident">observer_work</span>.<span class="ident">map_ok</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ()).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {

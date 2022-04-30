@@ -127,7 +127,7 @@
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">instances</span> <span class="op">=</span> <span class="macro">vec!</span>[];
 		<span class="comment">// NOTE: GenesisConfig is not allowed to be only generic on I because it is not supported</span>
 		<span class="comment">// by construct_runtime.</span>
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">u</span>) <span class="op">=</span> <span class="ident">helper::check_type_def_optional_gen</span>(<span class="kw-2">&amp;</span><span class="ident">generics</span>, <span class="ident">ident</span>.<span class="ident">span</span>())<span class="question-mark">?</span> {
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">u</span>) <span class="op">=</span> <span class="ident">helper::check_type_def_optional_gen</span>(<span class="ident">generics</span>, <span class="ident">ident</span>.<span class="ident">span</span>())<span class="question-mark">?</span> {
 			<span class="ident">instances</span>.<span class="ident">push</span>(<span class="ident">u</span>);
 		}
 

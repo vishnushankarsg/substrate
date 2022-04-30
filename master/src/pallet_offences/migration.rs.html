@@ -147,8 +147,8 @@
 	<span class="macro">log::info!</span>(<span class="ident">target</span>: <span class="string">&quot;runtime::offences&quot;</span>, <span class="string">&quot;have {} deferred offences, applying.&quot;</span>, <span class="ident">deferred</span>.<span class="ident">len</span>());
 	<span class="kw">for</span> (<span class="ident">offences</span>, <span class="ident">perbill</span>, <span class="ident">session</span>) <span class="kw">in</span> <span class="ident">deferred</span>.<span class="ident">iter</span>() {
 		<span class="kw">let</span> <span class="ident">consumed</span> <span class="op">=</span> <span class="ident">T::OnOffenceHandler::on_offence</span>(
-			<span class="kw-2">&amp;</span><span class="ident">offences</span>,
-			<span class="kw-2">&amp;</span><span class="ident">perbill</span>,
+			<span class="ident">offences</span>,
+			<span class="ident">perbill</span>,
 			<span class="kw-2">*</span><span class="ident">session</span>,
 			<span class="ident">DisableStrategy::WhenSlashed</span>,
 		);

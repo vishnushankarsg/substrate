@@ -584,7 +584,7 @@
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Balance</span>, <span class="ident">DispatchError</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">old_balance</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::balance</span>(<span class="ident">asset</span>, <span class="ident">who</span>);
 		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">new_balance</span>, <span class="kw-2">mut</span> <span class="ident">amount</span>) <span class="op">=</span> <span class="kw">if</span> <span class="ident">old_balance</span> <span class="op">&lt;</span> <span class="ident">amount</span> {
-			<span class="prelude-val">Err</span>(<span class="ident">TokenError::NoFunds</span>)<span class="question-mark">?</span>
+			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">TokenError::NoFunds</span>.<span class="ident">into</span>())
 		} <span class="kw">else</span> {
 			(<span class="ident">old_balance</span> <span class="op">-</span> <span class="ident">amount</span>, <span class="ident">amount</span>)
 		};
@@ -649,7 +649,7 @@
 		<span class="kw">let</span> <span class="ident">old_balance</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::balance</span>(<span class="ident">asset</span>, <span class="ident">who</span>);
 		<span class="kw">let</span> <span class="ident">new_balance</span> <span class="op">=</span> <span class="ident">old_balance</span>.<span class="ident">checked_add</span>(<span class="kw-2">&amp;</span><span class="ident">amount</span>).<span class="ident">ok_or</span>(<span class="ident">ArithmeticError::Overflow</span>)<span class="question-mark">?</span>;
 		<span class="kw">if</span> <span class="ident">new_balance</span> <span class="op">&lt;</span> <span class="ident"><span class="self">Self</span>::minimum_balance</span>(<span class="ident">asset</span>) {
-			<span class="prelude-val">Err</span>(<span class="ident">TokenError::BelowMinimum</span>)<span class="question-mark">?</span>
+			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">TokenError::BelowMinimum</span>.<span class="ident">into</span>())
 		}
 		<span class="kw">if</span> <span class="ident">old_balance</span> <span class="op">!</span><span class="op">=</span> <span class="ident">new_balance</span> {
 			<span class="ident"><span class="self">Self</span>::set_balance</span>(<span class="ident">asset</span>, <span class="ident">who</span>, <span class="ident">new_balance</span>)<span class="question-mark">?</span>;

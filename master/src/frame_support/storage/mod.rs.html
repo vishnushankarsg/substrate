@@ -2779,7 +2779,7 @@
 				<span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">previous_key</span>.<span class="ident">clone</span>())
 			} <span class="kw">else</span> {
 				<span class="ident">sp_io::default_child_storage::next_key</span>(
-					<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">child_info</span>.<span class="ident">storage_key</span>(),
+					<span class="self">self</span>.<span class="ident">child_info</span>.<span class="ident">storage_key</span>(),
 					<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">previous_key</span>,
 				)
 				.<span class="ident">filter</span>(<span class="op">|</span><span class="ident">n</span><span class="op">|</span> <span class="ident">n</span>.<span class="ident">starts_with</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">prefix</span>))

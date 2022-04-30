@@ -2558,13 +2558,13 @@
 			<span class="kw">return</span> <span class="kw">match</span> <span class="ident">trap_reason</span> {
 				<span class="comment">// The trap was the result of the execution `return` host function.</span>
 				<span class="ident">TrapReason::Return</span>(<span class="ident">ReturnData</span> { <span class="ident">flags</span>, <span class="ident">data</span> }) =&gt; {
-					<span class="kw">let</span> <span class="ident">flags</span> <span class="op">=</span> <span class="ident">ReturnFlags::from_bits</span>(<span class="ident">flags</span>)
-						.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::InvalidCallFlags</span>)<span class="question-mark">?</span>;
+					<span class="kw">let</span> <span class="ident">flags</span> <span class="op">=</span>
+						<span class="ident">ReturnFlags::from_bits</span>(<span class="ident">flags</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::InvalidCallFlags</span>)<span class="question-mark">?</span>;
 					<span class="prelude-val">Ok</span>(<span class="ident">ExecReturnValue</span> { <span class="ident">flags</span>, <span class="ident">data</span>: <span class="ident">Bytes</span>(<span class="ident">data</span>) })
 				},
 				<span class="ident">TrapReason::Termination</span> =&gt;
 					<span class="prelude-val">Ok</span>(<span class="ident">ExecReturnValue</span> { <span class="ident">flags</span>: <span class="ident">ReturnFlags::empty</span>(), <span class="ident">data</span>: <span class="ident">Bytes</span>(<span class="ident">Vec::new</span>()) }),
-				<span class="ident">TrapReason::SupervisorError</span>(<span class="ident">error</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">error</span>)<span class="question-mark">?</span>,
+				<span class="ident">TrapReason::SupervisorError</span>(<span class="ident">error</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">error</span>.<span class="ident">into</span>()),
 			}
 		}
 
@@ -2578,10 +2578,10 @@
 			<span class="comment">//</span>
 			<span class="comment">// Because panics are really undesirable in the runtime code, we treat this as</span>
 			<span class="comment">// a trap for now. Eventually, we might want to revisit this.</span>
-			<span class="prelude-val">Err</span>(<span class="ident">sp_sandbox::Error::Module</span>) =&gt; <span class="prelude-val">Err</span>(<span class="string">&quot;validation error&quot;</span>)<span class="question-mark">?</span>,
+			<span class="prelude-val">Err</span>(<span class="ident">sp_sandbox::Error::Module</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">&quot;validation error&quot;</span>.<span class="ident">into</span>()),
 			<span class="comment">// Any other kind of a trap should result in a failure.</span>
 			<span class="prelude-val">Err</span>(<span class="ident">sp_sandbox::Error::Execution</span>) <span class="op">|</span> <span class="prelude-val">Err</span>(<span class="ident">sp_sandbox::Error::OutOfBounds</span>) =&gt;
-				<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::ContractTrapped</span>)<span class="question-mark">?</span>,
+				<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::ContractTrapped</span>.<span class="ident">into</span>()),
 		}
 	}
 
@@ -2718,7 +2718,7 @@
 		<span class="kw">let</span> <span class="ident">len</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">read_sandbox_memory_as</span>(<span class="ident">out_len_ptr</span>)<span class="question-mark">?</span>;
 
 		<span class="kw">if</span> <span class="ident">len</span> <span class="op">&lt;</span> <span class="ident">buf_len</span> {
-			<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::OutputBufferTooSmall</span>)<span class="question-mark">?</span>
+			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::OutputBufferTooSmall</span>.<span class="ident">into</span>())
 		}
 
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">costs</span>) <span class="op">=</span> <span class="ident">create_token</span>(<span class="ident">buf_len</span>) {
@@ -2815,7 +2815,7 @@
 		<span class="kw">let</span> <span class="ident">charged</span> <span class="op">=</span> <span class="self">self</span>
 			.<span class="ident">charge_gas</span>(<span class="ident">RuntimeCosts::SetStorage</span> { <span class="ident">new_bytes</span>: <span class="ident">value_len</span>, <span class="ident">old_bytes</span>: <span class="ident">max_size</span> })<span class="question-mark">?</span>;
 		<span class="kw">if</span> <span class="ident">value_len</span> <span class="op">&gt;</span> <span class="ident">max_size</span> {
-			<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::ValueTooLarge</span>)<span class="question-mark">?</span>;
+			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::ValueTooLarge</span>.<span class="ident">into</span>())
 		}
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">key</span>: <span class="ident">StorageKey</span> <span class="op">=</span> [<span class="number">0</span>; <span class="number">32</span>];
 		<span class="self">self</span>.<span class="ident">read_sandbox_memory_into_buf</span>(<span class="ident">key_ptr</span>, <span class="kw-2">&amp;mut</span> <span class="ident">key</span>)<span class="question-mark">?</span>;
@@ -2848,11 +2848,11 @@
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ReturnCode</span>, <span class="ident">TrapReason</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">charge_gas</span>(<span class="ident">call_type</span>.<span class="ident">cost</span>())<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">input_data</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">flags</span>.<span class="ident">contains</span>(<span class="ident">CallFlags::CLONE_INPUT</span>) {
-			<span class="kw">let</span> <span class="ident">input</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">input_data</span>.<span class="ident">as_ref</span>().<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::InputForwarded</span>)<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="ident">input</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">input_data</span>.<span class="ident">as_ref</span>().<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::InputForwarded</span>)<span class="question-mark">?</span>;
 			<span class="macro">charge_gas!</span>(<span class="self">self</span>, <span class="ident">RuntimeCosts::CallInputCloned</span>(<span class="ident">input</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>))<span class="question-mark">?</span>;
 			<span class="ident">input</span>.<span class="ident">clone</span>()
 		} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">flags</span>.<span class="ident">contains</span>(<span class="ident">CallFlags::FORWARD_INPUT</span>) {
-			<span class="self">self</span>.<span class="ident">input_data</span>.<span class="ident">take</span>().<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::InputForwarded</span>)<span class="question-mark">?</span>
+			<span class="self">self</span>.<span class="ident">input_data</span>.<span class="ident">take</span>().<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::InputForwarded</span>)<span class="question-mark">?</span>
 		} <span class="kw">else</span> {
 			<span class="self">self</span>.<span class="ident">charge_gas</span>(<span class="ident">RuntimeCosts::CopyFromContract</span>(<span class="ident">input_data_len</span>))<span class="question-mark">?</span>;
 			<span class="self">self</span>.<span class="ident">read_sandbox_memory</span>(<span class="ident">input_data_ptr</span>, <span class="ident">input_data_len</span>)<span class="question-mark">?</span>
@@ -3206,7 +3206,7 @@
 		<span class="ident">output_len_ptr</span>: <span class="ident">u32</span>
 	) -&gt; <span class="ident">ReturnCode</span> =&gt; {
 		<span class="ident">ctx</span>.<span class="ident">call</span>(
-			<span class="ident">CallFlags::from_bits</span>(<span class="ident">flags</span>).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::InvalidCallFlags</span>)<span class="question-mark">?</span>,
+			<span class="ident">CallFlags::from_bits</span>(<span class="ident">flags</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::InvalidCallFlags</span>)<span class="question-mark">?</span>,
 			<span class="ident">CallType::Call</span>{<span class="ident">callee_ptr</span>, <span class="ident">value_ptr</span>, <span class="ident">gas</span>},
 			<span class="ident">input_data_ptr</span>,
 			<span class="ident">input_data_len</span>,
@@ -3249,7 +3249,7 @@
 		<span class="ident">output_len_ptr</span>: <span class="ident">u32</span>
 	) -&gt; <span class="ident">ReturnCode</span> =&gt; {
 		<span class="ident">ctx</span>.<span class="ident">call</span>(
-			<span class="ident">CallFlags::from_bits</span>(<span class="ident">flags</span>).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::InvalidCallFlags</span>)<span class="question-mark">?</span>,
+			<span class="ident">CallFlags::from_bits</span>(<span class="ident">flags</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::InvalidCallFlags</span>)<span class="question-mark">?</span>,
 			<span class="ident">CallType::DelegateCall</span>{<span class="ident">code_hash_ptr</span>},
 			<span class="ident">input_data_ptr</span>,
 			<span class="ident">input_data_len</span>,
@@ -3584,7 +3584,7 @@
 		<span class="ident">ctx</span>.<span class="ident">charge_gas</span>(<span class="ident">RuntimeCosts::GasLeft</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">gas_left</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">ctx</span>.<span class="ident">ext</span>.<span class="ident">gas_meter</span>().<span class="ident">gas_left</span>().<span class="ident">encode</span>();
 		<span class="prelude-val">Ok</span>(<span class="ident">ctx</span>.<span class="ident">write_sandbox_output</span>(
-			<span class="ident">out_ptr</span>, <span class="ident">out_len_ptr</span>, <span class="kw-2">&amp;</span><span class="ident">gas_left</span>, <span class="bool-val">false</span>, <span class="ident">already_charged</span>,
+			<span class="ident">out_ptr</span>, <span class="ident">out_len_ptr</span>, <span class="ident">gas_left</span>, <span class="bool-val">false</span>, <span class="ident">already_charged</span>,
 		)<span class="question-mark">?</span>)
 	},
 
@@ -3633,7 +3633,7 @@
 	[<span class="ident">seal0</span>] <span class="ident">seal_random</span>(<span class="ident">ctx</span>, <span class="ident">subject_ptr</span>: <span class="ident">u32</span>, <span class="ident">subject_len</span>: <span class="ident">u32</span>, <span class="ident">out_ptr</span>: <span class="ident">u32</span>, <span class="ident">out_len_ptr</span>: <span class="ident">u32</span>) =&gt; {
 		<span class="ident">ctx</span>.<span class="ident">charge_gas</span>(<span class="ident">RuntimeCosts::Random</span>)<span class="question-mark">?</span>;
 		<span class="kw">if</span> <span class="ident">subject_len</span> <span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">ext</span>.<span class="ident">schedule</span>().<span class="ident">limits</span>.<span class="ident">subject_len</span> {
-			<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::RandomSubjectTooLong</span>)<span class="question-mark">?</span>;
+			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::RandomSubjectTooLong</span>.<span class="ident">into</span>());
 		}
 		<span class="kw">let</span> <span class="ident">subject_buf</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">read_sandbox_memory</span>(<span class="ident">subject_ptr</span>, <span class="ident">subject_len</span>)<span class="question-mark">?</span>;
 		<span class="prelude-val">Ok</span>(<span class="ident">ctx</span>.<span class="ident">write_sandbox_output</span>(
@@ -3665,7 +3665,7 @@
 	[<span class="ident">seal1</span>] <span class="ident">seal_random</span>(<span class="ident">ctx</span>, <span class="ident">subject_ptr</span>: <span class="ident">u32</span>, <span class="ident">subject_len</span>: <span class="ident">u32</span>, <span class="ident">out_ptr</span>: <span class="ident">u32</span>, <span class="ident">out_len_ptr</span>: <span class="ident">u32</span>) =&gt; {
 		<span class="ident">ctx</span>.<span class="ident">charge_gas</span>(<span class="ident">RuntimeCosts::Random</span>)<span class="question-mark">?</span>;
 		<span class="kw">if</span> <span class="ident">subject_len</span> <span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">ext</span>.<span class="ident">schedule</span>().<span class="ident">limits</span>.<span class="ident">subject_len</span> {
-			<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::RandomSubjectTooLong</span>)<span class="question-mark">?</span>;
+			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::RandomSubjectTooLong</span>.<span class="ident">into</span>());
 		}
 		<span class="kw">let</span> <span class="ident">subject_buf</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">read_sandbox_memory</span>(<span class="ident">subject_ptr</span>, <span class="ident">subject_len</span>)<span class="question-mark">?</span>;
 		<span class="prelude-val">Ok</span>(<span class="ident">ctx</span>.<span class="ident">write_sandbox_output</span>(
@@ -3783,13 +3783,13 @@
 
 		<span class="kw">let</span> <span class="ident">num_topic</span> <span class="op">=</span> <span class="ident">topics_len</span>
 			.<span class="ident">checked_div</span>(<span class="ident">sp_std::mem::size_of</span>::<span class="op">&lt;</span><span class="ident">TopicOf</span><span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="ident">u32</span>)
-			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="string">&quot;Zero sized topics are not allowed&quot;</span>)<span class="question-mark">?</span>;
+			.<span class="ident">ok_or</span>(<span class="string">&quot;Zero sized topics are not allowed&quot;</span>)<span class="question-mark">?</span>;
 		<span class="ident">ctx</span>.<span class="ident">charge_gas</span>(<span class="ident">RuntimeCosts::DepositEvent</span> {
 			<span class="ident">num_topic</span>,
 			<span class="ident">len</span>: <span class="ident">data_len</span>,
 		})<span class="question-mark">?</span>;
 		<span class="kw">if</span> <span class="ident">data_len</span> <span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">ext</span>.<span class="ident">max_value_size</span>() {
-			<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::ValueTooLarge</span>)<span class="question-mark">?</span>;
+			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::ValueTooLarge</span>.<span class="ident">into</span>());
 		}
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">topics</span>: <span class="ident">Vec</span>::<span class="op">&lt;</span><span class="ident">TopicOf</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">E</span> <span class="kw">as</span> <span class="ident">Ext</span><span class="op">&gt;</span><span class="ident">::T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">topics_len</span> {
@@ -3799,14 +3799,14 @@
 
 		<span class="comment">// If there are more than `event_topics`, then trap.</span>
 		<span class="kw">if</span> <span class="ident">topics</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">ext</span>.<span class="ident">schedule</span>().<span class="ident">limits</span>.<span class="ident">event_topics</span> <span class="kw">as</span> <span class="ident">usize</span> {
-			<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::TooManyTopics</span>)<span class="question-mark">?</span>;
+			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::TooManyTopics</span>.<span class="ident">into</span>());
 		}
 
 		<span class="comment">// Check for duplicate topics. If there are any, then trap.</span>
 		<span class="comment">// Complexity O(n * log(n)) and no additional allocations.</span>
 		<span class="comment">// This also sorts the topics.</span>
 		<span class="kw">if</span> <span class="ident">has_duplicates</span>(<span class="kw-2">&amp;mut</span> <span class="ident">topics</span>) {
-			<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::DuplicateTopics</span>)<span class="question-mark">?</span>;
+			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::DuplicateTopics</span>.<span class="ident">into</span>());
 		}
 
 		<span class="kw">let</span> <span class="ident">event_data</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">read_sandbox_memory</span>(<span class="ident">data_ptr</span>, <span class="ident">data_len</span>)<span class="question-mark">?</span>;
@@ -3986,7 +3986,7 @@
 	) -&gt; <span class="ident">u32</span> =&gt; {
 		<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::chain_extension</span>::{<span class="ident">ChainExtension</span>, <span class="ident">Environment</span>, <span class="ident">RetVal</span>};
 		<span class="kw">if</span> <span class="op">!</span><span class="op">&lt;</span><span class="ident">E::T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::ChainExtension::enabled</span>() {
-			<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::NoChainExtension</span>)<span class="question-mark">?</span>;
+			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="ident">::NoChainExtension</span>.<span class="ident">into</span>());
 		}
 		<span class="kw">let</span> <span class="ident">env</span> <span class="op">=</span> <span class="ident">Environment::new</span>(<span class="ident">ctx</span>, <span class="ident">input_ptr</span>, <span class="ident">input_len</span>, <span class="ident">output_ptr</span>, <span class="ident">output_len_ptr</span>);
 		<span class="kw">match</span> <span class="op">&lt;</span><span class="ident">E::T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::ChainExtension::call</span>(<span class="ident">func_id</span>, <span class="ident">env</span>)<span class="question-mark">?</span> {

@@ -1464,15 +1464,6 @@
 <span id="1459">1459</span>
 <span id="1460">1460</span>
 <span id="1461">1461</span>
-<span id="1462">1462</span>
-<span id="1463">1463</span>
-<span id="1464">1464</span>
-<span id="1465">1465</span>
-<span id="1466">1466</span>
-<span id="1467">1467</span>
-<span id="1468">1468</span>
-<span id="1469">1469</span>
-<span id="1470">1470</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -1830,25 +1821,21 @@
 					(<span class="ident">Instant::now</span>(), <span class="ident">pending_response</span>),
 				);
 				<span class="macro">debug_assert!</span>(<span class="ident">prev_req_id</span>.<span class="ident">is_none</span>(), <span class="string">&quot;Expect request id to be unique.&quot;</span>);
-			} <span class="kw">else</span> {
-				<span class="kw">if</span> <span class="ident">pending_response</span>.<span class="ident">send</span>(<span class="prelude-val">Err</span>(<span class="ident">RequestFailure::NotConnected</span>)).<span class="ident">is_err</span>() {
-					<span class="macro">log::debug!</span>(
-						<span class="ident">target</span>: <span class="string">&quot;sub-libp2p&quot;</span>,
-						<span class="string">&quot;Not connected to peer {:?}. At the same time local \
-						 node is no longer interested in the result.&quot;</span>,
-						<span class="ident">target</span>,
-					);
-				};
-			}
-		} <span class="kw">else</span> {
-			<span class="kw">if</span> <span class="ident">pending_response</span>.<span class="ident">send</span>(<span class="prelude-val">Err</span>(<span class="ident">RequestFailure::UnknownProtocol</span>)).<span class="ident">is_err</span>() {
+			} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">pending_response</span>.<span class="ident">send</span>(<span class="prelude-val">Err</span>(<span class="ident">RequestFailure::NotConnected</span>)).<span class="ident">is_err</span>() {
 				<span class="macro">log::debug!</span>(
 					<span class="ident">target</span>: <span class="string">&quot;sub-libp2p&quot;</span>,
-					<span class="string">&quot;Unknown protocol {:?}. At the same time local \
+					<span class="string">&quot;Not connected to peer {:?}. At the same time local \
 					 node is no longer interested in the result.&quot;</span>,
-					<span class="ident">protocol_name</span>,
+					<span class="ident">target</span>,
 				);
-			};
+			}
+		} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">pending_response</span>.<span class="ident">send</span>(<span class="prelude-val">Err</span>(<span class="ident">RequestFailure::UnknownProtocol</span>)).<span class="ident">is_err</span>() {
+			<span class="macro">log::debug!</span>(
+				<span class="ident">target</span>: <span class="string">&quot;sub-libp2p&quot;</span>,
+				<span class="string">&quot;Unknown protocol {:?}. At the same time local \
+				 node is no longer interested in the result.&quot;</span>,
+				<span class="ident">protocol_name</span>,
+			);
 		}
 	}
 
@@ -2074,7 +2061,7 @@
 							<span class="comment">// will be reported by the corresponding `RequestResponse` through</span>
 							<span class="comment">// an `InboundFailure::Omission` event.</span>
 							<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">resp_builder</span>.<span class="ident">try_send</span>(<span class="ident">IncomingRequest</span> {
-								<span class="ident">peer</span>: <span class="ident">peer</span>.<span class="ident">clone</span>(),
+								<span class="ident">peer</span>,
 								<span class="ident">payload</span>: <span class="ident">request</span>,
 								<span class="ident">pending_response</span>: <span class="ident">tx</span>,
 							});
@@ -2123,7 +2110,7 @@
 
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">payload</span>) <span class="op">=</span> <span class="ident">result</span> {
 					<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">protocol</span>, <span class="kw">_</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">protocols</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">protocol_name</span>) {
-						<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="ident">protocol</span>.<span class="ident">send_response</span>(<span class="ident">inner_channel</span>, <span class="prelude-val">Ok</span>(<span class="ident">payload</span>)) {
+						<span class="kw">if</span> <span class="ident">protocol</span>.<span class="ident">send_response</span>(<span class="ident">inner_channel</span>, <span class="prelude-val">Ok</span>(<span class="ident">payload</span>)).<span class="ident">is_err</span>() {
 							<span class="comment">// Note: Failure is handled further below when receiving</span>
 							<span class="comment">// `InboundFailure` event from `RequestResponse` behaviour.</span>
 							<span class="macro">log::debug!</span>(
@@ -2133,11 +2120,9 @@
 								 Dropping response&quot;</span>,
 								<span class="ident">request_id</span>, <span class="ident">protocol_name</span>,
 							);
-						} <span class="kw">else</span> {
-							<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">sent_feedback</span>) <span class="op">=</span> <span class="ident">sent_feedback</span> {
-								<span class="self">self</span>.<span class="ident">send_feedback</span>
-									.<span class="ident">insert</span>((<span class="ident">protocol_name</span>, <span class="ident">request_id</span>).<span class="ident">into</span>(), <span class="ident">sent_feedback</span>);
-							}
+						} <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">sent_feedback</span>) <span class="op">=</span> <span class="ident">sent_feedback</span> {
+							<span class="self">self</span>.<span class="ident">send_feedback</span>
+								.<span class="ident">insert</span>((<span class="ident">protocol_name</span>, <span class="ident">request_id</span>).<span class="ident">into</span>(), <span class="ident">sent_feedback</span>);
 						}
 					}
 				}
@@ -2193,13 +2178,10 @@
 							<span class="ident">message</span>:
 								<span class="ident">RequestResponseMessage::Request</span> { <span class="ident">request_id</span>, <span class="ident">request</span>, <span class="ident">channel</span>, .. },
 						} =&gt; {
-							<span class="self">self</span>.<span class="ident">pending_responses_arrival_time</span>.<span class="ident">insert</span>(
-								(<span class="ident">protocol</span>.<span class="ident">clone</span>(), <span class="ident">request_id</span>.<span class="ident">clone</span>()).<span class="ident">into</span>(),
-								<span class="ident">Instant::now</span>(),
-							);
+							<span class="self">self</span>.<span class="ident">pending_responses_arrival_time</span>
+								.<span class="ident">insert</span>((<span class="ident">protocol</span>.<span class="ident">clone</span>(), <span class="ident">request_id</span>).<span class="ident">into</span>(), <span class="ident">Instant::now</span>());
 
-							<span class="kw">let</span> <span class="ident">get_peer_reputation</span> <span class="op">=</span>
-								<span class="self">self</span>.<span class="ident">peerset</span>.<span class="ident">clone</span>().<span class="ident">peer_reputation</span>(<span class="ident">peer</span>.<span class="ident">clone</span>());
+							<span class="kw">let</span> <span class="ident">get_peer_reputation</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">peerset</span>.<span class="ident">clone</span>().<span class="ident">peer_reputation</span>(<span class="ident">peer</span>);
 							<span class="kw">let</span> <span class="ident">get_peer_reputation</span> <span class="op">=</span> <span class="ident">Box::pin</span>(<span class="ident">get_peer_reputation</span>);
 
 							<span class="comment">// Save the Future-like state with params to poll `get_peer_reputation`</span>

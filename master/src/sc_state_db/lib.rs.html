@@ -988,7 +988,7 @@
 		<span class="kw">let</span> <span class="ident">db_mode</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">get_meta</span>(<span class="kw-2">&amp;</span><span class="ident">to_meta_key</span>(<span class="ident">PRUNING_MODE</span>, <span class="kw-2">&amp;</span>())).<span class="ident">map_err</span>(<span class="ident">Error::Db</span>)<span class="question-mark">?</span>;
 		<span class="macro">trace!</span>(<span class="ident">target</span>: <span class="string">&quot;state-db&quot;</span>,
 			<span class="string">&quot;DB pruning mode: {:?}&quot;</span>,
-			<span class="ident">db_mode</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">std::str::from_utf8</span>(<span class="kw-2">&amp;</span><span class="ident">v</span>))
+			<span class="ident">db_mode</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">std::str::from_utf8</span>(<span class="ident">v</span>))
 		);
 		<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">db_mode</span> {
 			<span class="prelude-val">Some</span>(<span class="ident">v</span>) <span class="kw">if</span> <span class="ident">v</span>.<span class="ident">as_slice</span>() <span class="op">==</span> <span class="ident">mode</span>.<span class="ident">id</span>() =&gt; <span class="prelude-val">Ok</span>(()),
@@ -1034,7 +1034,7 @@
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">mode</span> <span class="op">==</span> <span class="ident">PruningMode::ArchiveAll</span> {
 			<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">commit</span>)
 		}
-		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">non_canonical</span>.<span class="ident">canonicalize</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>, <span class="kw-2">&amp;mut</span> <span class="ident">commit</span>) {
+		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">non_canonical</span>.<span class="ident">canonicalize</span>(<span class="ident">hash</span>, <span class="kw-2">&amp;mut</span> <span class="ident">commit</span>) {
 			<span class="prelude-val">Ok</span>(()) =&gt;
 				<span class="kw">if</span> <span class="self">self</span>.<span class="ident">mode</span> <span class="op">==</span> <span class="ident">PruningMode::ArchiveCanonical</span> {
 					<span class="ident">commit</span>.<span class="ident">data</span>.<span class="ident">deleted</span>.<span class="ident">clear</span>();
@@ -1042,14 +1042,14 @@
 			<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>),
 		};
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">pruning</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">pruning</span> {
-			<span class="ident">pruning</span>.<span class="ident">note_canonical</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>, <span class="kw-2">&amp;mut</span> <span class="ident">commit</span>);
+			<span class="ident">pruning</span>.<span class="ident">note_canonical</span>(<span class="ident">hash</span>, <span class="kw-2">&amp;mut</span> <span class="ident">commit</span>);
 		}
 		<span class="self">self</span>.<span class="ident">prune</span>(<span class="kw-2">&amp;mut</span> <span class="ident">commit</span>);
 		<span class="prelude-val">Ok</span>(<span class="ident">commit</span>)
 	}
 
 	<span class="kw">fn</span> <span class="ident">best_canonical</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> {
-		<span class="kw">return</span> <span class="self">self</span>.<span class="ident">non_canonical</span>.<span class="ident">last_canonicalized_block_number</span>()
+		<span class="self">self</span>.<span class="ident">non_canonical</span>.<span class="ident">last_canonicalized_block_number</span>()
 	}
 
 	<span class="kw">fn</span> <span class="ident">is_pruned</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hash</span>: <span class="kw-2">&amp;</span><span class="ident">BlockHash</span>, <span class="ident">number</span>: <span class="ident">u64</span>) -&gt; <span class="ident">bool</span> {
@@ -1158,7 +1158,7 @@
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">non_canonical</span>.<span class="ident">get</span>(<span class="ident">key</span>) {
 			<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">value</span>))
 		}
-		<span class="ident">db</span>.<span class="ident">get</span>(<span class="ident">key</span>.<span class="ident">as_ref</span>()).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">Error::Db</span>(<span class="ident">e</span>))
+		<span class="ident">db</span>.<span class="ident">get</span>(<span class="ident">key</span>.<span class="ident">as_ref</span>()).<span class="ident">map_err</span>(<span class="ident">Error::Db</span>)
 	}
 
 	<span class="kw">fn</span> <span class="ident">apply_pending</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {

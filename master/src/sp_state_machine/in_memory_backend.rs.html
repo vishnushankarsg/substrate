@@ -322,7 +322,7 @@
 	<span class="ident">H::Out</span>: <span class="ident">Codec</span> <span class="op">+</span> <span class="ident">Ord</span>,
 {
 	<span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span> {
-		<span class="ident">TrieBackend::new</span>(<span class="self">self</span>.<span class="ident">backend_storage</span>().<span class="ident">clone</span>(), <span class="self">self</span>.<span class="ident">root</span>().<span class="ident">clone</span>())
+		<span class="ident">TrieBackend::new</span>(<span class="self">self</span>.<span class="ident">backend_storage</span>().<span class="ident">clone</span>(), <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">root</span>())
 	}
 }
 

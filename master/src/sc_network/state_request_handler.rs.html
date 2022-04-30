@@ -262,11 +262,6 @@
 <span id="257">257</span>
 <span id="258">258</span>
 <span id="259">259</span>
-<span id="260">260</span>
-<span id="261">261</span>
-<span id="262">262</span>
-<span id="263">263</span>
-<span id="264">264</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Substrate.</span>
 
@@ -332,11 +327,7 @@
 
 <span class="doccomment">/// Generate the state protocol name from chain specific protocol identifier.</span>
 <span class="kw">fn</span> <span class="ident">generate_protocol_name</span>(<span class="ident">protocol_id</span>: <span class="kw-2">&amp;</span><span class="ident">ProtocolId</span>) -&gt; <span class="ident">String</span> {
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">String::new</span>();
-	<span class="ident">s</span>.<span class="ident">push_str</span>(<span class="string">&quot;/&quot;</span>);
-	<span class="ident">s</span>.<span class="ident">push_str</span>(<span class="ident">protocol_id</span>.<span class="ident">as_ref</span>());
-	<span class="ident">s</span>.<span class="ident">push_str</span>(<span class="string">&quot;/state/2&quot;</span>);
-	<span class="ident">s</span>
+	<span class="macro">format!</span>(<span class="string">&quot;/{}/state/2&quot;</span>, <span class="ident">protocol_id</span>.<span class="ident">as_ref</span>())
 }
 
 <span class="doccomment">/// The key of [`BlockRequestHandler::seen_requests`].</span>
@@ -421,8 +412,7 @@
 		<span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="ident">StateRequest::decode</span>(<span class="kw-2">&amp;</span><span class="ident">payload</span>[..])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">block</span>: <span class="ident">B::Hash</span> <span class="op">=</span> <span class="ident">Decode::decode</span>(<span class="kw-2">&amp;mut</span> <span class="ident">request</span>.<span class="ident">block</span>.<span class="ident">as_ref</span>())<span class="question-mark">?</span>;
 
-		<span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span>
-			<span class="ident">SeenRequestsKey</span> { <span class="ident">peer</span>: <span class="kw-2">*</span><span class="ident">peer</span>, <span class="ident">block</span>: <span class="ident">block</span>.<span class="ident">clone</span>(), <span class="ident">start</span>: <span class="ident">request</span>.<span class="ident">start</span>.<span class="ident">clone</span>() };
+		<span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="ident">SeenRequestsKey</span> { <span class="ident">peer</span>: <span class="kw-2">*</span><span class="ident">peer</span>, <span class="ident">block</span>, <span class="ident">start</span>: <span class="ident">request</span>.<span class="ident">start</span>.<span class="ident">clone</span>() };
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">reputation_changes</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
 

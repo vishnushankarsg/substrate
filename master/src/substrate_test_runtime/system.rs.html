@@ -612,7 +612,7 @@
 	<span class="comment">// try to read something that depends on current header digest</span>
 	<span class="comment">// so that it&#39;ll be included in execution proof</span>
 	<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">generic::DigestItem::Other</span>(<span class="ident">v</span>)) <span class="op">=</span> <span class="ident">header</span>.<span class="ident">digest</span>().<span class="ident">logs</span>().<span class="ident">iter</span>().<span class="ident">next</span>() {
-		<span class="kw">let</span> <span class="kw">_</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">storage::unhashed::get</span>(<span class="kw-2">&amp;</span><span class="ident">v</span>);
+		<span class="kw">let</span> <span class="kw">_</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">storage::unhashed::get</span>(<span class="ident">v</span>);
 	}
 }
 

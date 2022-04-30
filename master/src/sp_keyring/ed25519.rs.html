@@ -334,7 +334,7 @@
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Keyring</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Public</span> {
 	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">k</span>: <span class="ident">Keyring</span>) -&gt; <span class="self">Self</span> {
-		(<span class="kw-2">*</span><span class="ident">PUBLIC_KEYS</span>).<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">k</span>).<span class="ident">unwrap</span>().<span class="ident">clone</span>()
+		<span class="kw-2">*</span>(<span class="kw-2">*</span><span class="ident">PUBLIC_KEYS</span>).<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">k</span>).<span class="ident">unwrap</span>()
 	}
 }
 

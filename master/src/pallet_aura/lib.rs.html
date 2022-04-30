@@ -556,7 +556,7 @@
 		<span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">Inner::find_author</span>(<span class="ident">digests</span>)<span class="question-mark">?</span>;
 
 		<span class="kw">let</span> <span class="ident">validators</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::authorities</span>();
-		<span class="ident">validators</span>.<span class="ident">get</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="ident">usize</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">k</span>.<span class="ident">clone</span>())
+		<span class="ident">validators</span>.<span class="ident">get</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="ident">usize</span>).<span class="ident">cloned</span>()
 	}
 }
 

@@ -1253,8 +1253,8 @@
 			<span class="ident">Default::default</span>(),
 		)<span class="question-mark">?</span>;
 		<span class="ident">Staking</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::nominate</span>(
-			<span class="ident">RawOrigin::Signed</span>(<span class="ident">origin_controller2</span>.<span class="ident">clone</span>()).<span class="ident">into</span>(),
-			<span class="macro">vec!</span>[<span class="ident">T::Lookup::unlookup</span>(<span class="ident">account</span>(<span class="string">&quot;random_validator&quot;</span>, <span class="number">0</span>, <span class="ident">SEED</span>))].<span class="ident">clone</span>(),
+			<span class="ident">RawOrigin::Signed</span>(<span class="ident">origin_controller2</span>).<span class="ident">into</span>(),
+			<span class="macro">vec!</span>[<span class="ident">T::Lookup::unlookup</span>(<span class="ident">account</span>(<span class="string">&quot;random_validator&quot;</span>, <span class="number">0</span>, <span class="ident">SEED</span>))],
 		)<span class="question-mark">?</span>;
 
 		<span class="comment">// find a destination weight that will trigger the worst case scenario</span>
@@ -1309,10 +1309,10 @@
 		<span class="comment">// the weight the nominator will start at.</span>
 		<span class="kw">let</span> <span class="ident">scenario</span> <span class="op">=</span> <span class="ident">ListScenario</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">origin_weight</span>, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
 
-		<span class="kw">let</span> <span class="ident">max_additional</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">dest_weight</span>.<span class="ident">clone</span>() <span class="op">-</span> <span class="ident">origin_weight</span>;
+		<span class="kw">let</span> <span class="ident">max_additional</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">dest_weight</span> <span class="op">-</span> <span class="ident">origin_weight</span>;
 
 		<span class="kw">let</span> <span class="ident">stash</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_stash1</span>.<span class="ident">clone</span>();
-		<span class="kw">let</span> <span class="ident">controller</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_controller1</span>.<span class="ident">clone</span>();
+		<span class="kw">let</span> <span class="ident">controller</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_controller1</span>;
 		<span class="kw">let</span> <span class="ident">original_bonded</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
 			<span class="op">=</span> <span class="ident">Ledger</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">controller</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">l</span><span class="op">|</span> <span class="ident">l</span>.<span class="ident">active</span>).<span class="ident">ok_or</span>(<span class="string">&quot;ledger not created after&quot;</span>)<span class="question-mark">?</span>;
 
@@ -1341,7 +1341,7 @@
 
 		<span class="kw">let</span> <span class="ident">stash</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_stash1</span>.<span class="ident">clone</span>();
 		<span class="kw">let</span> <span class="ident">controller</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_controller1</span>.<span class="ident">clone</span>();
-		<span class="kw">let</span> <span class="ident">amount</span> <span class="op">=</span> <span class="ident">origin_weight</span> <span class="op">-</span> <span class="ident">scenario</span>.<span class="ident">dest_weight</span>.<span class="ident">clone</span>();
+		<span class="kw">let</span> <span class="ident">amount</span> <span class="op">=</span> <span class="ident">origin_weight</span> <span class="op">-</span> <span class="ident">scenario</span>.<span class="ident">dest_weight</span>;
 		<span class="kw">let</span> <span class="ident">ledger</span> <span class="op">=</span> <span class="ident">Ledger</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">controller</span>).<span class="ident">ok_or</span>(<span class="string">&quot;ledger not created before&quot;</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">original_bonded</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">ledger</span>.<span class="ident">active</span>;
 
@@ -1385,7 +1385,7 @@
 		<span class="comment">// destination position because we are doing a removal from the list but no insert.</span>
 		<span class="kw">let</span> <span class="ident">scenario</span> <span class="op">=</span> <span class="ident">ListScenario</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">origin_weight</span>, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">controller</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_controller1</span>.<span class="ident">clone</span>();
-		<span class="kw">let</span> <span class="ident">stash</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_stash1</span>.<span class="ident">clone</span>();
+		<span class="kw">let</span> <span class="ident">stash</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_stash1</span>;
 		<span class="macro">assert!</span>(<span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
 
 		<span class="kw">let</span> <span class="ident">ed</span> <span class="op">=</span> <span class="ident">T::Currency::minimum_balance</span>();
@@ -1520,7 +1520,7 @@
 		<span class="comment">// destination position because we are doing a removal from the list but no insert.</span>
 		<span class="kw">let</span> <span class="ident">scenario</span> <span class="op">=</span> <span class="ident">ListScenario</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">origin_weight</span>, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">controller</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_controller1</span>.<span class="ident">clone</span>();
-		<span class="kw">let</span> <span class="ident">stash</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_stash1</span>.<span class="ident">clone</span>();
+		<span class="kw">let</span> <span class="ident">stash</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_stash1</span>;
 		<span class="macro">assert!</span>(<span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
 
 		<span class="macro">whitelist_account!</span>(<span class="ident">controller</span>);
@@ -1588,7 +1588,7 @@
 		<span class="comment">// destination position because we are doing a removal from the list but no insert.</span>
 		<span class="kw">let</span> <span class="ident">scenario</span> <span class="op">=</span> <span class="ident">ListScenario</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">origin_weight</span>, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">controller</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_controller1</span>.<span class="ident">clone</span>();
-		<span class="kw">let</span> <span class="ident">stash</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_stash1</span>.<span class="ident">clone</span>();
+		<span class="kw">let</span> <span class="ident">stash</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_stash1</span>;
 		<span class="macro">assert!</span>(<span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
 		<span class="ident">add_slashing_spans</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>, <span class="ident">s</span>);
 
@@ -1631,10 +1631,10 @@
 		<span class="kw">let</span> <span class="ident">validator_controller</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Bonded</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">validator</span>).<span class="ident">unwrap</span>();
 		<span class="kw">let</span> <span class="ident">balance_before</span> <span class="op">=</span> <span class="ident">T::Currency::free_balance</span>(<span class="kw-2">&amp;</span><span class="ident">validator_controller</span>);
 		<span class="kw">for</span> (<span class="kw">_</span>, <span class="ident">controller</span>) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">nominators</span> {
-			<span class="kw">let</span> <span class="ident">balance</span> <span class="op">=</span> <span class="ident">T::Currency::free_balance</span>(<span class="kw-2">&amp;</span><span class="ident">controller</span>);
+			<span class="kw">let</span> <span class="ident">balance</span> <span class="op">=</span> <span class="ident">T::Currency::free_balance</span>(<span class="ident">controller</span>);
 			<span class="macro">ensure!</span>(<span class="ident">balance</span>.<span class="ident">is_zero</span>(), <span class="string">&quot;Controller has balance, but should be dead.&quot;</span>);
 		}
-	}: <span class="ident">payout_stakers</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">validator</span>.<span class="ident">clone</span>(), <span class="ident">current_era</span>)
+	}: <span class="ident">payout_stakers</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">validator</span>, <span class="ident">current_era</span>)
 	<span class="ident">verify</span> {
 		<span class="kw">let</span> <span class="ident">balance_after</span> <span class="op">=</span> <span class="ident">T::Currency::free_balance</span>(<span class="kw-2">&amp;</span><span class="ident">validator_controller</span>);
 		<span class="macro">ensure!</span>(
@@ -1642,7 +1642,7 @@
 			<span class="string">&quot;Balance of validator controller should have increased after payout.&quot;</span>,
 		);
 		<span class="kw">for</span> (<span class="kw">_</span>, <span class="ident">controller</span>) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">nominators</span> {
-			<span class="kw">let</span> <span class="ident">balance</span> <span class="op">=</span> <span class="ident">T::Currency::free_balance</span>(<span class="kw-2">&amp;</span><span class="ident">controller</span>);
+			<span class="kw">let</span> <span class="ident">balance</span> <span class="op">=</span> <span class="ident">T::Currency::free_balance</span>(<span class="ident">controller</span>);
 			<span class="macro">ensure!</span>(<span class="op">!</span><span class="ident">balance</span>.<span class="ident">is_zero</span>(), <span class="string">&quot;Payout not given to controller.&quot;</span>);
 		}
 	}
@@ -1664,7 +1664,7 @@
 		<span class="kw">let</span> <span class="ident">balance_before</span> <span class="op">=</span> <span class="ident">T::Currency::free_balance</span>(<span class="kw-2">&amp;</span><span class="ident">validator</span>);
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">nominator_balances_before</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
 		<span class="kw">for</span> (<span class="ident">stash</span>, <span class="kw">_</span>) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">nominators</span> {
-			<span class="kw">let</span> <span class="ident">balance</span> <span class="op">=</span> <span class="ident">T::Currency::free_balance</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>);
+			<span class="kw">let</span> <span class="ident">balance</span> <span class="op">=</span> <span class="ident">T::Currency::free_balance</span>(<span class="ident">stash</span>);
 			<span class="ident">nominator_balances_before</span>.<span class="ident">push</span>(<span class="ident">balance</span>);
 		}
 	}: <span class="ident">payout_stakers</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">validator</span>.<span class="ident">clone</span>(), <span class="ident">current_era</span>)
@@ -1675,7 +1675,7 @@
 			<span class="string">&quot;Balance of validator stash should have increased after payout.&quot;</span>,
 		);
 		<span class="kw">for</span> ((<span class="ident">stash</span>, <span class="kw">_</span>), <span class="ident">balance_before</span>) <span class="kw">in</span> <span class="ident">nominators</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">nominator_balances_before</span>.<span class="ident">iter</span>()) {
-			<span class="kw">let</span> <span class="ident">balance_after</span> <span class="op">=</span> <span class="ident">T::Currency::free_balance</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>);
+			<span class="kw">let</span> <span class="ident">balance_after</span> <span class="op">=</span> <span class="ident">T::Currency::free_balance</span>(<span class="ident">stash</span>);
 			<span class="macro">ensure!</span>(
 				<span class="ident">balance_before</span> <span class="op">&lt;</span> <span class="kw-2">&amp;</span><span class="ident">balance_after</span>,
 				<span class="string">&quot;Balance of nominator stash should have increased after payout.&quot;</span>,
@@ -1696,7 +1696,7 @@
 
 		<span class="comment">// setup a worst case list scenario.</span>
 		<span class="kw">let</span> <span class="ident">scenario</span> <span class="op">=</span> <span class="ident">ListScenario</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">origin_weight</span>, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">dest_weight</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">dest_weight</span>.<span class="ident">clone</span>();
+		<span class="kw">let</span> <span class="ident">dest_weight</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">dest_weight</span>;
 
 		<span class="comment">// rebond an amount that will give the user dest_weight</span>
 		<span class="kw">let</span> <span class="ident">rebond_amount</span> <span class="op">=</span> <span class="ident">dest_weight</span> <span class="op">-</span> <span class="ident">origin_weight</span>;
@@ -1714,7 +1714,7 @@
 		};
 
 		<span class="kw">let</span> <span class="ident">stash</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_stash1</span>.<span class="ident">clone</span>();
-		<span class="kw">let</span> <span class="ident">controller</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_controller1</span>.<span class="ident">clone</span>();
+		<span class="kw">let</span> <span class="ident">controller</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_controller1</span>;
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">staking_ledger</span> <span class="op">=</span> <span class="ident">Ledger</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">controller</span>.<span class="ident">clone</span>()).<span class="ident">unwrap</span>();
 
 		<span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">l</span> {
@@ -1761,7 +1761,7 @@
 		<span class="comment">// destination position because we are doing a removal from the list but no insert.</span>
 		<span class="kw">let</span> <span class="ident">scenario</span> <span class="op">=</span> <span class="ident">ListScenario</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">origin_weight</span>, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">controller</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_controller1</span>.<span class="ident">clone</span>();
-		<span class="kw">let</span> <span class="ident">stash</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_stash1</span>.<span class="ident">clone</span>();
+		<span class="kw">let</span> <span class="ident">stash</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_stash1</span>;
 
 		<span class="ident">add_slashing_spans</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>, <span class="ident">s</span>);
 		<span class="kw">let</span> <span class="ident">l</span> <span class="op">=</span> <span class="ident">StakingLedger</span> {
@@ -1965,7 +1965,7 @@
 		<span class="comment">// destination position because we are doing a removal from the list but no insert.</span>
 		<span class="kw">let</span> <span class="ident">scenario</span> <span class="op">=</span> <span class="ident">ListScenario</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">origin_weight</span>, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">controller</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_controller1</span>.<span class="ident">clone</span>();
-		<span class="kw">let</span> <span class="ident">stash</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_stash1</span>.<span class="ident">clone</span>();
+		<span class="kw">let</span> <span class="ident">stash</span> <span class="op">=</span> <span class="ident">scenario</span>.<span class="ident">origin_stash1</span>;
 		<span class="macro">assert!</span>(<span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
 
 		<span class="ident">Staking</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::set_staking_configs</span>(
@@ -1979,7 +1979,7 @@
 		)<span class="question-mark">?</span>;
 
 		<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">whitelisted_caller</span>();
-	}: <span class="kw">_</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">controller</span>.<span class="ident">clone</span>())
+	}: <span class="kw">_</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">controller</span>)
 	<span class="ident">verify</span> {
 		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>));
 	}

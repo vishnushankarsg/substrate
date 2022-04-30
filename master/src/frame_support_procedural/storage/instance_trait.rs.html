@@ -260,7 +260,7 @@
 	<span class="kw">let</span> <span class="ident">instance_trait</span> <span class="op">=</span> <span class="macro">quote!</span>( #<span class="ident">scrate::traits::Instance</span> );
 
 	<span class="kw">let</span> <span class="ident">instance_struct</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">instance_def</span>.<span class="ident">instance_struct</span>;
-	<span class="kw">let</span> <span class="ident">prefix</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;{}{}&quot;</span>, <span class="ident">instance_def</span>.<span class="ident">prefix</span>, <span class="ident">def</span>.<span class="ident">crate_name</span>.<span class="ident">to_string</span>());
+	<span class="kw">let</span> <span class="ident">prefix</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;{}{}&quot;</span>, <span class="ident">instance_def</span>.<span class="ident">prefix</span>, <span class="ident">def</span>.<span class="ident">crate_name</span>);
 	<span class="kw">let</span> <span class="ident">doc</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">instance_def</span>.<span class="ident">doc</span>;
 	<span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">instance_def</span>.<span class="ident">index</span>;
 

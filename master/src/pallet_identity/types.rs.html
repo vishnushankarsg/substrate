@@ -504,12 +504,6 @@
 <span id="499">499</span>
 <span id="500">500</span>
 <span id="501">501</span>
-<span id="502">502</span>
-<span id="503">503</span>
-<span id="504">504</span>
-<span id="505">505</span>
-<span id="506">506</span>
-<span id="507">507</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -729,20 +723,14 @@
 	<span class="doccomment">/// Returns `true` if this judgement is indicative of a deposit being currently held. This means</span>
 	<span class="doccomment">/// it should not be cleared or replaced except by an operation which utilizes the deposit.</span>
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">has_deposit</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident">Judgement::FeePaid</span>(<span class="kw">_</span>) =&gt; <span class="bool-val">true</span>,
-			<span class="kw">_</span> =&gt; <span class="bool-val">false</span>,
-		}
+		<span class="macro">matches!</span>(<span class="self">self</span>, <span class="ident">Judgement::FeePaid</span>(<span class="kw">_</span>))
 	}
 
 	<span class="doccomment">/// Returns `true` if this judgement is one that should not be generally be replaced outside</span>
 	<span class="doccomment">/// of specialized handlers. Examples include &quot;malicious&quot; judgements and deposit-holding</span>
 	<span class="doccomment">/// judgements.</span>
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">is_sticky</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident">Judgement::FeePaid</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">Judgement::Erroneous</span> =&gt; <span class="bool-val">true</span>,
-			<span class="kw">_</span> =&gt; <span class="bool-val">false</span>,
-		}
+		<span class="macro">matches!</span>(<span class="self">self</span>, <span class="ident">Judgement::FeePaid</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">Judgement::Erroneous</span>)
 	}
 }
 

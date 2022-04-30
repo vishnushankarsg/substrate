@@ -1125,7 +1125,7 @@
 				},
 			};
 
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">key2_material</span> <span class="op">=</span> <span class="ident">G::Hasher2::reverse</span>(<span class="kw-2">&amp;</span><span class="ident">key_material</span>);
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">key2_material</span> <span class="op">=</span> <span class="ident">G::Hasher2::reverse</span>(<span class="ident">key_material</span>);
 			<span class="kw">let</span> <span class="ident">key2</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">K2::decode</span>(<span class="kw-2">&amp;mut</span> <span class="ident">key2_material</span>) {
 				<span class="prelude-val">Ok</span>(<span class="ident">key2</span>) =&gt; <span class="ident">key2</span>,
 				<span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; {

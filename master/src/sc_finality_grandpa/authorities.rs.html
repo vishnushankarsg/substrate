@@ -1751,7 +1751,6 @@
 <span id="1746">1746</span>
 <span id="1747">1747</span>
 <span id="1748">1748</span>
-<span id="1749">1749</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -2311,8 +2310,7 @@
 			<span class="ident">fork_tree::FinalizationResult::Changed</span>(<span class="ident">change</span>) =&gt; {
 				<span class="ident">status</span>.<span class="ident">changed</span> <span class="op">=</span> <span class="bool-val">true</span>;
 
-				<span class="kw">let</span> <span class="ident">pending_forced_changes</span> <span class="op">=</span>
-					<span class="ident">std::mem::replace</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">pending_forced_changes</span>, <span class="ident">Vec::new</span>());
+				<span class="kw">let</span> <span class="ident">pending_forced_changes</span> <span class="op">=</span> <span class="ident">std::mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">pending_forced_changes</span>);
 
 				<span class="comment">// we will keep all forced changes for any later blocks and that are a</span>
 				<span class="comment">// descendent of the finalized block (i.e. they are part of this branch).</span>

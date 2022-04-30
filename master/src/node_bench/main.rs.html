@@ -194,17 +194,6 @@
 <span id="189">189</span>
 <span id="190">190</span>
 <span id="191">191</span>
-<span id="192">192</span>
-<span id="193">193</span>
-<span id="194">194</span>
-<span id="195">195</span>
-<span id="196">196</span>
-<span id="197">197</span>
-<span id="198">198</span>
-<span id="199">199</span>
-<span id="200">200</span>
-<span id="201">201</span>
-<span id="202">202</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -292,7 +281,7 @@
 
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">import_benchmarks</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
 
-	<span class="kw">for</span> <span class="ident">profile</span> <span class="kw">in</span> [<span class="ident">Profile::Wasm</span>, <span class="ident">Profile::Native</span>].<span class="ident">iter</span>() {
+	<span class="kw">for</span> <span class="ident">profile</span> <span class="kw">in</span> [<span class="ident">Profile::Wasm</span>, <span class="ident">Profile::Native</span>] {
 		<span class="kw">for</span> <span class="ident">size</span> <span class="kw">in</span> [
 			<span class="ident">SizeType::Empty</span>,
 			<span class="ident">SizeType::Small</span>,
@@ -300,25 +289,14 @@
 			<span class="ident">SizeType::Large</span>,
 			<span class="ident">SizeType::Full</span>,
 			<span class="ident">SizeType::Custom</span>(<span class="ident">opt</span>.<span class="ident">transactions</span>.<span class="ident">unwrap_or</span>(<span class="number">0</span>)),
-		]
-		.<span class="ident">iter</span>()
-		{
+		] {
 			<span class="kw">for</span> <span class="ident">block_type</span> <span class="kw">in</span> [
 				<span class="ident">BlockType::RandomTransfersKeepAlive</span>,
 				<span class="ident">BlockType::RandomTransfersReaping</span>,
 				<span class="ident">BlockType::Noop</span>,
-			]
-			.<span class="ident">iter</span>()
-			{
-				<span class="kw">for</span> <span class="ident">database_type</span> <span class="kw">in</span>
-					[<span class="ident">BenchDataBaseType::RocksDb</span>, <span class="ident">BenchDataBaseType::ParityDb</span>].<span class="ident">iter</span>()
-				{
-					<span class="ident">import_benchmarks</span>.<span class="ident">push</span>((
-						<span class="ident">profile</span>,
-						<span class="ident">size</span>.<span class="ident">clone</span>(),
-						<span class="ident">block_type</span>.<span class="ident">clone</span>(),
-						<span class="ident">database_type</span>,
-					));
+			] {
+				<span class="kw">for</span> <span class="ident">database_type</span> <span class="kw">in</span> [<span class="ident">BenchDataBaseType::RocksDb</span>, <span class="ident">BenchDataBaseType::ParityDb</span>] {
+					<span class="ident">import_benchmarks</span>.<span class="ident">push</span>((<span class="ident">profile</span>, <span class="ident">size</span>, <span class="ident">block_type</span>, <span class="ident">database_type</span>));
 				}
 			}
 		}
@@ -327,11 +305,11 @@
 	<span class="kw">let</span> <span class="ident">benchmarks</span> <span class="op">=</span> <span class="macro">matrix!</span>(
 		(<span class="ident">profile</span>, <span class="ident">size</span>, <span class="ident">block_type</span>, <span class="ident">database_type</span>) <span class="kw">in</span> <span class="ident">import_benchmarks</span>.<span class="ident">into_iter</span>() =&gt;
 			<span class="ident">ImportBenchmarkDescription</span> {
-				<span class="ident">profile</span>: <span class="kw-2">*</span><span class="ident">profile</span>,
+				<span class="ident">profile</span>,
 				<span class="ident">key_types</span>: <span class="ident">KeyTypes::Sr25519</span>,
-				<span class="ident">size</span>: <span class="ident">size</span>,
-				<span class="ident">block_type</span>: <span class="ident">block_type</span>,
-				<span class="ident">database_type</span>: <span class="kw-2">*</span><span class="ident">database_type</span>,
+				<span class="ident">size</span>,
+				<span class="ident">block_type</span>,
+				<span class="ident">database_type</span>,
 			},
 		(<span class="ident">size</span>, <span class="ident">db_type</span>) <span class="kw">in</span>
 			[

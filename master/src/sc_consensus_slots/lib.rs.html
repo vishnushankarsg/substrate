@@ -1837,7 +1837,7 @@
 		<span class="comment">// if we defined a maximum portion of the slot for proposal then we must make sure the</span>
 		<span class="comment">// lenience doesn&#39;t go over it</span>
 		<span class="kw">let</span> <span class="ident">lenient_proposing_duration</span> <span class="op">=</span>
-			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">max_block_proposal_slot_portion</span>) <span class="op">=</span> <span class="ident">max_block_proposal_slot_portion</span> {
+			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">max_block_proposal_slot_portion</span>) <span class="op">=</span> <span class="ident">max_block_proposal_slot_portion</span> {
 				<span class="ident">std::cmp::min</span>(
 					<span class="ident">lenient_proposing_duration</span>,
 					<span class="ident">slot_info</span>.<span class="ident">duration</span>.<span class="ident">mul_f32</span>(<span class="ident">max_block_proposal_slot_portion</span>.<span class="ident">get</span>()),

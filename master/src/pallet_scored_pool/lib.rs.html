@@ -749,7 +749,7 @@
 			<span class="comment">// reserve balance for each candidate in the pool.</span>
 			<span class="comment">// panicking here is ok, since this just happens one time, pre-genesis.</span>
 			<span class="ident">pool</span>.<span class="ident">iter</span>().<span class="ident">for_each</span>(<span class="op">|</span>(<span class="ident">who</span>, <span class="kw">_</span>)<span class="op">|</span> {
-				<span class="ident">T::Currency::reserve</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">T::CandidateDeposit::get</span>())
+				<span class="ident">T::Currency::reserve</span>(<span class="ident">who</span>, <span class="ident">T::CandidateDeposit::get</span>())
 					.<span class="ident">expect</span>(<span class="string">&quot;balance too low to create candidacy&quot;</span>);
 				<span class="op">&lt;</span><span class="ident">CandidateExists</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">who</span>, <span class="bool-val">true</span>);
 			});
@@ -880,7 +880,7 @@
 			<span class="comment">// if there is already an element with `score`, we insert</span>
 			<span class="comment">// right before that. if not, the search returns a location</span>
 			<span class="comment">// where we can insert while maintaining order.</span>
-			<span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> (<span class="ident">who</span>, <span class="prelude-val">Some</span>(<span class="ident">score</span>.<span class="ident">clone</span>()));
+			<span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> (<span class="ident">who</span>, <span class="prelude-val">Some</span>(<span class="ident">score</span>));
 			<span class="kw">let</span> <span class="ident">location</span> <span class="op">=</span> <span class="ident">pool</span>
 				.<span class="ident">binary_search_by_key</span>(<span class="kw-2">&amp;</span><span class="ident">Reverse</span>(<span class="ident">score</span>), <span class="op">|</span>(<span class="kw">_</span>, <span class="ident">maybe_score</span>)<span class="op">|</span> {
 					<span class="ident">Reverse</span>(<span class="ident">maybe_score</span>.<span class="ident">unwrap_or_default</span>())

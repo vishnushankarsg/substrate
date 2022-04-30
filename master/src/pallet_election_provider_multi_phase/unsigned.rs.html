@@ -1601,7 +1601,6 @@
 <span id="1596">1596</span>
 <span id="1597">1597</span>
 <span id="1598">1598</span>
-<span id="1599">1599</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -1703,7 +1702,7 @@
 <span class="doccomment">/// Save a given call into OCW storage.</span>
 <span class="kw">fn</span> <span class="ident">save_solution</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">call</span>: <span class="kw-2">&amp;</span><span class="ident">Call</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">MinerError</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 	<span class="macro">log!</span>(<span class="ident">debug</span>, <span class="string">&quot;saving a call to the offchain storage.&quot;</span>);
-	<span class="kw">let</span> <span class="ident">storage</span> <span class="op">=</span> <span class="ident">StorageValueRef::persistent</span>(<span class="kw-2">&amp;</span><span class="ident">OFFCHAIN_CACHED_CALL</span>);
+	<span class="kw">let</span> <span class="ident">storage</span> <span class="op">=</span> <span class="ident">StorageValueRef::persistent</span>(<span class="ident">OFFCHAIN_CACHED_CALL</span>);
 	<span class="kw">match</span> <span class="ident">storage</span>.<span class="ident">mutate</span>::<span class="op">&lt;</span><span class="kw">_</span>, (), <span class="kw">_</span><span class="op">&gt;</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="ident">call</span>.<span class="ident">clone</span>())) {
 		<span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(()),
 		<span class="prelude-val">Err</span>(<span class="ident">MutateStorageError::ConcurrentModification</span>(<span class="kw">_</span>)) =&gt;
@@ -1720,7 +1719,7 @@
 
 <span class="doccomment">/// Get a saved solution from OCW storage if it exists.</span>
 <span class="kw">fn</span> <span class="ident">restore_solution</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">MinerError</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-	<span class="ident">StorageValueRef::persistent</span>(<span class="kw-2">&amp;</span><span class="ident">OFFCHAIN_CACHED_CALL</span>)
+	<span class="ident">StorageValueRef::persistent</span>(<span class="ident">OFFCHAIN_CACHED_CALL</span>)
 		.<span class="ident">get</span>()
 		.<span class="ident">ok</span>()
 		.<span class="ident">flatten</span>()
@@ -1730,7 +1729,7 @@
 <span class="doccomment">/// Clear a saved solution from OCW storage.</span>
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">kill_ocw_solution</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>() {
 	<span class="macro">log!</span>(<span class="ident">debug</span>, <span class="string">&quot;clearing offchain call cache storage.&quot;</span>);
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">storage</span> <span class="op">=</span> <span class="ident">StorageValueRef::persistent</span>(<span class="kw-2">&amp;</span><span class="ident">OFFCHAIN_CACHED_CALL</span>);
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">storage</span> <span class="op">=</span> <span class="ident">StorageValueRef::persistent</span>(<span class="ident">OFFCHAIN_CACHED_CALL</span>);
 	<span class="ident">storage</span>.<span class="ident">clear</span>();
 }
 
@@ -1739,14 +1738,14 @@
 <span class="doccomment">/// After calling this, the next offchain worker is guaranteed to work, with respect to the</span>
 <span class="doccomment">/// frequency repeat.</span>
 <span class="kw">fn</span> <span class="ident">clear_offchain_repeat_frequency</span>() {
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">last_block</span> <span class="op">=</span> <span class="ident">StorageValueRef::persistent</span>(<span class="kw-2">&amp;</span><span class="ident">OFFCHAIN_LAST_BLOCK</span>);
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">last_block</span> <span class="op">=</span> <span class="ident">StorageValueRef::persistent</span>(<span class="ident">OFFCHAIN_LAST_BLOCK</span>);
 	<span class="ident">last_block</span>.<span class="ident">clear</span>();
 }
 
 <span class="doccomment">/// `true` when OCW storage contains a solution</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">fn</span> <span class="ident">ocw_solution_exists</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>() -&gt; <span class="ident">bool</span> {
-	<span class="macro">matches!</span>(<span class="ident">StorageValueRef::persistent</span>(<span class="kw-2">&amp;</span><span class="ident">OFFCHAIN_CACHED_CALL</span>).<span class="ident">get</span>::<span class="op">&lt;</span><span class="ident">Call</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>(), <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="kw">_</span>)))
+	<span class="macro">matches!</span>(<span class="ident">StorageValueRef::persistent</span>(<span class="ident">OFFCHAIN_CACHED_CALL</span>).<span class="ident">get</span>::<span class="op">&lt;</span><span class="ident">Call</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>(), <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="kw">_</span>)))
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
@@ -1810,9 +1809,8 @@
 		<span class="comment">// get the solution, with a load of checks to ensure if submitted, IT IS ABSOLUTELY VALID.</span>
 		<span class="kw">let</span> (<span class="ident">raw_solution</span>, <span class="ident">witness</span>) <span class="op">=</span> <span class="ident"><span class="self">Self</span>::mine_and_check</span>()<span class="question-mark">?</span>;
 
-		<span class="kw">let</span> <span class="ident">score</span> <span class="op">=</span> <span class="ident">raw_solution</span>.<span class="ident">score</span>.<span class="ident">clone</span>();
-		<span class="kw">let</span> <span class="ident">call</span>: <span class="ident">Call</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span>
-			<span class="ident">Call::submit_unsigned</span> { <span class="ident">raw_solution</span>: <span class="ident">Box::new</span>(<span class="ident">raw_solution</span>), <span class="ident">witness</span> }.<span class="ident">into</span>();
+		<span class="kw">let</span> <span class="ident">score</span> <span class="op">=</span> <span class="ident">raw_solution</span>.<span class="ident">score</span>;
+		<span class="kw">let</span> <span class="ident">call</span>: <span class="ident">Call</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Call::submit_unsigned</span> { <span class="ident">raw_solution</span>: <span class="ident">Box::new</span>(<span class="ident">raw_solution</span>), <span class="ident">witness</span> };
 
 		<span class="macro">log!</span>(
 			<span class="ident">debug</span>,
@@ -2136,7 +2134,7 @@
 				<span class="comment">// we found the right value - early exit the function.</span>
 				<span class="prelude-val">Ok</span>(<span class="ident">next</span>) =&gt; <span class="kw">return</span> <span class="ident">next</span>,
 			}
-			<span class="ident">step</span> <span class="op">=</span> <span class="ident">step</span> <span class="op">/</span> <span class="number">2</span>;
+			<span class="ident">step</span> <span class="op">/</span><span class="op">=</span> <span class="number">2</span>;
 			<span class="ident">current_weight</span> <span class="op">=</span> <span class="ident">weight_with</span>(<span class="ident">voters</span>);
 		}
 
@@ -2170,7 +2168,7 @@
 	<span class="doccomment">/// is returned, `now` is written in storage and will be used in further calls as the baseline.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ensure_offchain_repeat_frequency</span>(<span class="ident">now</span>: <span class="ident">T::BlockNumber</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">MinerError</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">threshold</span> <span class="op">=</span> <span class="ident">T::OffchainRepeat::get</span>();
-		<span class="kw">let</span> <span class="ident">last_block</span> <span class="op">=</span> <span class="ident">StorageValueRef::persistent</span>(<span class="kw-2">&amp;</span><span class="ident">OFFCHAIN_LAST_BLOCK</span>);
+		<span class="kw">let</span> <span class="ident">last_block</span> <span class="op">=</span> <span class="ident">StorageValueRef::persistent</span>(<span class="ident">OFFCHAIN_LAST_BLOCK</span>);
 
 		<span class="kw">let</span> <span class="ident">mutate_stat</span> <span class="op">=</span> <span class="ident">last_block</span>.<span class="ident">mutate</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>, <span class="kw">_</span><span class="op">&gt;</span>(
 			<span class="op">|</span><span class="ident">maybe_head</span>: <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T::BlockNumber</span><span class="op">&gt;</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="op">|</span> {

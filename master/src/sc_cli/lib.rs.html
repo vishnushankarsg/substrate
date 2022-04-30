@@ -372,7 +372,7 @@
 		<span class="kw">let</span> <span class="ident">app</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">CommandFactory</span><span class="op">&gt;</span><span class="ident">::command</span>();
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">full_version</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::impl_version</span>();
-		<span class="ident">full_version</span>.<span class="ident">push_str</span>(<span class="string">&quot;\n&quot;</span>);
+		<span class="ident">full_version</span>.<span class="ident">push</span>(<span class="string">&#39;\n&#39;</span>);
 
 		<span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::executable_name</span>();
 		<span class="kw">let</span> <span class="ident">author</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::author</span>();
@@ -414,7 +414,7 @@
 		<span class="kw">let</span> <span class="ident">app</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">CommandFactory</span><span class="op">&gt;</span><span class="ident">::command</span>();
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">full_version</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::impl_version</span>();
-		<span class="ident">full_version</span>.<span class="ident">push_str</span>(<span class="string">&quot;\n&quot;</span>);
+		<span class="ident">full_version</span>.<span class="ident">push</span>(<span class="string">&#39;\n&#39;</span>);
 
 		<span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::executable_name</span>();
 		<span class="kw">let</span> <span class="ident">author</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::author</span>();

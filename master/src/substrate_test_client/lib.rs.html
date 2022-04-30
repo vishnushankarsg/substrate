@@ -841,7 +841,7 @@
 		<span class="ident">extrinsic</span>: <span class="ident">OpaqueExtrinsic</span>,
 	) -&gt; <span class="ident">Pin</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RpcTransactionOutput</span>, <span class="ident">RpcTransactionError</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">futures::channel::mpsc::unbounded</span>();
-		<span class="kw">let</span> <span class="ident">mem</span> <span class="op">=</span> <span class="ident">RpcSession::new</span>(<span class="ident">tx</span>.<span class="ident">into</span>());
+		<span class="kw">let</span> <span class="ident">mem</span> <span class="op">=</span> <span class="ident">RpcSession::new</span>(<span class="ident">tx</span>);
 		<span class="ident">Box::pin</span>(
 			<span class="self">self</span>.<span class="ident">rpc_query</span>(
 				<span class="kw-2">&amp;</span><span class="ident">mem</span>,

@@ -475,7 +475,7 @@
 			},
 			<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="ident">validity</span>)) =&gt; {
 				<span class="ident">revalidated</span>.<span class="ident">insert</span>(
-					<span class="ident">ext_hash</span>.<span class="ident">clone</span>(),
+					<span class="ident">ext_hash</span>,
 					<span class="ident">ValidatedTransaction::valid_at</span>(
 						<span class="ident">at</span>.<span class="ident">saturated_into</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>(),
 						<span class="ident">ext_hash</span>,
@@ -577,14 +577,14 @@
 			<span class="self">self</span>.<span class="ident">block_ordered</span>
 				.<span class="ident">entry</span>(<span class="ident">block_number</span>)
 				.<span class="ident">and_modify</span>(<span class="op">|</span><span class="ident">value</span><span class="op">|</span> {
-					<span class="ident">value</span>.<span class="ident">insert</span>(<span class="ident">ext_hash</span>.<span class="ident">clone</span>());
+					<span class="ident">value</span>.<span class="ident">insert</span>(<span class="ident">ext_hash</span>);
 				})
 				.<span class="ident">or_insert_with</span>(<span class="op">|</span><span class="op">|</span> {
 					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bt</span> <span class="op">=</span> <span class="ident">HashSet::new</span>();
-					<span class="ident">bt</span>.<span class="ident">insert</span>(<span class="ident">ext_hash</span>.<span class="ident">clone</span>());
+					<span class="ident">bt</span>.<span class="ident">insert</span>(<span class="ident">ext_hash</span>);
 					<span class="ident">bt</span>
 				});
-			<span class="self">self</span>.<span class="ident">members</span>.<span class="ident">insert</span>(<span class="ident">ext_hash</span>.<span class="ident">clone</span>(), <span class="ident">block_number</span>);
+			<span class="self">self</span>.<span class="ident">members</span>.<span class="ident">insert</span>(<span class="ident">ext_hash</span>, <span class="ident">block_number</span>);
 		}
 	}
 

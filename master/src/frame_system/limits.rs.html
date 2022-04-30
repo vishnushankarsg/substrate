@@ -662,7 +662,7 @@
 	<span class="doccomment">/// Verifies correctness of this `BlockWeights` object.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">validate</span>(<span class="self">self</span>) -&gt; <span class="ident">ValidationResult</span> {
 		<span class="kw">fn</span> <span class="ident">or_max</span>(<span class="ident">w</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Weight</span><span class="op">&gt;</span>) -&gt; <span class="ident">Weight</span> {
-			<span class="ident">w</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Weight::max_value</span>())
+			<span class="ident">w</span>.<span class="ident">unwrap_or_else</span>(<span class="ident">Weight::max_value</span>)
 		}
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">error</span> <span class="op">=</span> <span class="ident">ValidationErrors::default</span>();
 
@@ -691,7 +691,7 @@
 			);
 			<span class="comment">// Max extrinsic should not be 0</span>
 			<span class="macro">error_assert!</span>(
-				<span class="ident">weights</span>.<span class="ident">max_extrinsic</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Weight::max_value</span>()) <span class="op">&gt;</span> <span class="number">0</span>,
+				<span class="ident">weights</span>.<span class="ident">max_extrinsic</span>.<span class="ident">unwrap_or_else</span>(<span class="ident">Weight::max_value</span>) <span class="op">&gt;</span> <span class="number">0</span>,
 				<span class="kw-2">&amp;mut</span> <span class="ident">error</span>,
 				<span class="string">&quot;[{:?}] {:?} (max_extrinsic) must not be 0. Check base cost and average initialization cost.&quot;</span>,
 				<span class="ident">class</span>, <span class="ident">weights</span>.<span class="ident">max_extrinsic</span>,

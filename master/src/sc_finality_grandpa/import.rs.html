@@ -839,7 +839,6 @@
 <span id="834">834</span>
 <span id="835">835</span>
 <span id="836">836</span>
-<span id="837">837</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -1281,8 +1280,7 @@
 			<span class="comment">// This code may be removed once warp sync to an old runtime is no longer needed.</span>
 			<span class="kw">for</span> <span class="ident">prefix</span> <span class="kw">in</span> [<span class="string">&quot;GrandpaFinality&quot;</span>, <span class="string">&quot;Grandpa&quot;</span>] {
 				<span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> [<span class="ident">twox_128</span>(<span class="ident">prefix</span>.<span class="ident">as_bytes</span>()), <span class="ident">twox_128</span>(<span class="string">b&quot;CurrentSetId&quot;</span>)].<span class="ident">concat</span>();
-				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">id</span>)) <span class="op">=</span>
-					<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">storage</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>, <span class="kw-2">&amp;</span><span class="ident">sc_client_api::StorageKey</span>(<span class="ident">k</span>.<span class="ident">to_vec</span>()))
+				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">id</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">storage</span>(<span class="ident">id</span>, <span class="kw-2">&amp;</span><span class="ident">sc_client_api::StorageKey</span>(<span class="ident">k</span>.<span class="ident">to_vec</span>()))
 				{
 					<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">id</span>) <span class="op">=</span> <span class="ident">SetId::decode</span>(<span class="kw-2">&amp;mut</span> <span class="ident">id</span>.<span class="number">0</span>.<span class="ident">as_ref</span>()) {
 						<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">id</span>)
@@ -1293,7 +1291,7 @@
 		} <span class="kw">else</span> {
 			<span class="self">self</span>.<span class="ident">inner</span>
 				.<span class="ident">runtime_api</span>()
-				.<span class="ident">current_set_id</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>)
+				.<span class="ident">current_set_id</span>(<span class="ident">id</span>)
 				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">ConsensusError::ClientImport</span>(<span class="ident">e</span>.<span class="ident">to_string</span>()))
 		}
 	}
@@ -1574,7 +1572,7 @@
 
 			<span class="ident">authority_set</span>.<span class="ident">pending_standard_changes</span> <span class="op">=</span>
 				<span class="ident">authority_set</span>.<span class="ident">pending_standard_changes</span>.<span class="ident">clone</span>().<span class="ident">map</span>(<span class="kw-2">&amp;mut</span> <span class="op">|</span><span class="ident">hash</span>, <span class="kw">_</span>, <span class="ident">original</span><span class="op">|</span> {
-					<span class="ident">authority_set_hard_forks</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>).<span class="ident">cloned</span>().<span class="ident">unwrap_or</span>(<span class="ident">original</span>)
+					<span class="ident">authority_set_hard_forks</span>.<span class="ident">get</span>(<span class="ident">hash</span>).<span class="ident">cloned</span>().<span class="ident">unwrap_or</span>(<span class="ident">original</span>)
 				});
 		}
 

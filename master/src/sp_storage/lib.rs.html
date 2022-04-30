@@ -655,21 +655,21 @@
 	<span class="doccomment">/// Wasm code of the runtime.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Stored as a raw byte vector. Required by substrate.</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CODE</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">u8</span>] <span class="op">=</span> <span class="string">b&quot;:code&quot;</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CODE</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>] <span class="op">=</span> <span class="string">b&quot;:code&quot;</span>;
 
 	<span class="doccomment">/// Number of wasm linear memory pages required for execution of the runtime.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// The type of this value is encoded `u64`.</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">HEAP_PAGES</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">u8</span>] <span class="op">=</span> <span class="string">b&quot;:heappages&quot;</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">HEAP_PAGES</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>] <span class="op">=</span> <span class="string">b&quot;:heappages&quot;</span>;
 
 	<span class="doccomment">/// Current extrinsic index (u32) is stored under this key.</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">EXTRINSIC_INDEX</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">u8</span>] <span class="op">=</span> <span class="string">b&quot;:extrinsic_index&quot;</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">EXTRINSIC_INDEX</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>] <span class="op">=</span> <span class="string">b&quot;:extrinsic_index&quot;</span>;
 
 	<span class="doccomment">/// Prefix of child storage keys.</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CHILD_STORAGE_KEY_PREFIX</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">u8</span>] <span class="op">=</span> <span class="string">b&quot;:child_storage:&quot;</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CHILD_STORAGE_KEY_PREFIX</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>] <span class="op">=</span> <span class="string">b&quot;:child_storage:&quot;</span>;
 
 	<span class="doccomment">/// Prefix of the default child storage keys in the top trie.</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DEFAULT_CHILD_STORAGE_KEY_PREFIX</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">u8</span>] <span class="op">=</span> <span class="string">b&quot;:child_storage:default:&quot;</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DEFAULT_CHILD_STORAGE_KEY_PREFIX</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>] <span class="op">=</span> <span class="string">b&quot;:child_storage:default:&quot;</span>;
 
 	<span class="doccomment">/// Whether a key is a default child storage key.</span>
 	<span class="doccomment">///</span>
@@ -825,7 +825,7 @@
 	<span class="kw">fn</span> <span class="ident">do_prefix_key</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) {
 		<span class="kw">let</span> <span class="ident">parent_prefix</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">parent_prefix</span>();
 		<span class="kw">let</span> <span class="ident">key_len</span> <span class="op">=</span> <span class="ident">key</span>.<span class="ident">len</span>();
-		<span class="kw">if</span> <span class="ident">parent_prefix</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">0</span> {
+		<span class="kw">if</span> <span class="op">!</span><span class="ident">parent_prefix</span>.<span class="ident">is_empty</span>() {
 			<span class="ident">key</span>.<span class="ident">resize</span>(<span class="ident">key_len</span> <span class="op">+</span> <span class="ident">parent_prefix</span>.<span class="ident">len</span>(), <span class="number">0</span>);
 			<span class="ident">key</span>.<span class="ident">copy_within</span>(..<span class="ident">key_len</span>, <span class="ident">parent_prefix</span>.<span class="ident">len</span>());
 			<span class="ident">key</span>[..<span class="ident">parent_prefix</span>.<span class="ident">len</span>()].<span class="ident">copy_from_slice</span>(<span class="ident">parent_prefix</span>);

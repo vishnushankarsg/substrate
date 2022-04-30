@@ -391,7 +391,7 @@
 
 	<span class="doccomment">/// Tries to unwrap passed block hash, or uses best block hash otherwise.</span>
 	<span class="kw">fn</span> <span class="ident">unwrap_or_best</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hash</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>) -&gt; <span class="ident">Block::Hash</span> {
-		<span class="kw">match</span> <span class="ident">hash</span>.<span class="ident">into</span>() {
+		<span class="kw">match</span> <span class="ident">hash</span> {
 			<span class="prelude-val">None</span> =&gt; <span class="self">self</span>.<span class="ident">client</span>().<span class="ident">info</span>().<span class="ident">best_hash</span>,
 			<span class="prelude-val">Some</span>(<span class="ident">hash</span>) =&gt; <span class="ident">hash</span>,
 		}
@@ -642,7 +642,7 @@
 		<span class="comment">// send further subscriptions</span>
 		<span class="kw">let</span> <span class="ident">stream</span> <span class="op">=</span> <span class="ident">stream</span>()
 			.<span class="ident">inspect_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">warn!</span>(<span class="string">&quot;Block notification stream error: {:?}&quot;</span>, <span class="ident">e</span>))
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">res</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="ident">res</span>));
+			.<span class="ident">map</span>(<span class="prelude-val">Ok</span>);
 
 		<span class="ident">stream::iter</span>(<span class="macro">vec!</span>[<span class="prelude-val">Ok</span>(<span class="ident">header</span>)])
 			.<span class="ident">chain</span>(<span class="ident">stream</span>)

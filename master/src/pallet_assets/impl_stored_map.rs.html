@@ -101,7 +101,7 @@
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">account</span>) <span class="op">=</span> <span class="ident">maybe_account</span> {
 					<span class="ident">account</span>.<span class="ident">extra</span> <span class="op">=</span> <span class="ident">extra</span>;
 				} <span class="kw">else</span> {
-					<span class="prelude-val">Err</span>(<span class="ident">DispatchError::NoProviders</span>)<span class="question-mark">?</span>;
+					<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">DispatchError::NoProviders</span>.<span class="ident">into</span>())
 				}
 			} <span class="kw">else</span> {
 				<span class="comment">// They want to delete it. Let this pass if the item never existed anyway.</span>

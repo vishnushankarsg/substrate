@@ -379,7 +379,7 @@
 
 		<span class="kw">let</span> <span class="ident">finalized_block_weight</span> <span class="op">=</span>
 			<span class="ident">sc_consensus_babe::aux_schema::load_block_weight</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">client</span>, <span class="ident">finalized_hash</span>)<span class="question-mark">?</span>
-				.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error::LoadingBlockWeightFailed</span>(<span class="ident">finalized_hash</span>))<span class="question-mark">?</span>;
+				.<span class="ident">ok_or</span>(<span class="ident">Error::LoadingBlockWeightFailed</span>(<span class="ident">finalized_hash</span>))<span class="question-mark">?</span>;
 
 		<span class="prelude-val">Ok</span>(<span class="ident">LightSyncState</span> {
 			<span class="ident">finalized_block_header</span>: <span class="ident">finalized_header</span>,

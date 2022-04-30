@@ -720,7 +720,7 @@
 
 	<span class="kw">fn</span> <span class="ident">snooze</span>(<span class="ident">deadline</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::Deadline</span>) {
 		<span class="kw">let</span> <span class="ident">now</span> <span class="op">=</span> <span class="ident">offchain::timestamp</span>();
-		<span class="kw">let</span> <span class="ident">remainder</span>: <span class="ident">Duration</span> <span class="op">=</span> <span class="ident">now</span>.<span class="ident">diff</span>(<span class="kw-2">&amp;</span><span class="ident">deadline</span>);
+		<span class="kw">let</span> <span class="ident">remainder</span>: <span class="ident">Duration</span> <span class="op">=</span> <span class="ident">now</span>.<span class="ident">diff</span>(<span class="ident">deadline</span>);
 		<span class="comment">// do not snooze the full duration, but instead snooze max 100ms</span>
 		<span class="comment">// it might get unlocked in another thread</span>
 		<span class="kw">use</span> <span class="ident">core::cmp</span>::{<span class="ident">max</span>, <span class="ident">min</span>};

@@ -1943,11 +1943,6 @@
 <span id="1938">1938</span>
 <span id="1939">1939</span>
 <span id="1940">1940</span>
-<span id="1941">1941</span>
-<span id="1942">1942</span>
-<span id="1943">1943</span>
-<span id="1944">1944</span>
-<span id="1945">1945</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -2620,8 +2615,7 @@
 		) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">who</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 
-			<span class="kw">let</span> <span class="ident">seconds</span> <span class="op">=</span>
-				<span class="ident"><span class="self">Self</span>::len_of_deposit_of</span>(<span class="ident">proposal</span>).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ProposalMissing</span>)<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="ident">seconds</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::len_of_deposit_of</span>(<span class="ident">proposal</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ProposalMissing</span>)<span class="question-mark">?</span>;
 			<span class="macro">ensure!</span>(<span class="ident">seconds</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">seconds_upper_bound</span>, <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::WrongUpperBound</span>);
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">deposit</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::deposit_of</span>(<span class="ident">proposal</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ProposalMissing</span>)<span class="question-mark">?</span>;
 			<span class="ident">T::Currency::reserve</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">deposit</span>.<span class="number">1</span>)<span class="question-mark">?</span>;
@@ -2770,12 +2764,10 @@
 			<span class="comment">// - `InstantAllowed` is `true` and `origin` is `InstantOrigin`.</span>
 			<span class="kw">let</span> <span class="ident">maybe_ensure_instant</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">voting_period</span> <span class="op">&lt;</span> <span class="ident">T::FastTrackVotingPeriod::get</span>() {
 				<span class="prelude-val">Some</span>(<span class="ident">origin</span>)
+			} <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">origin</span>) <span class="op">=</span> <span class="ident">T::FastTrackOrigin::try_origin</span>(<span class="ident">origin</span>) {
+				<span class="prelude-val">Some</span>(<span class="ident">origin</span>)
 			} <span class="kw">else</span> {
-				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">origin</span>) <span class="op">=</span> <span class="ident">T::FastTrackOrigin::try_origin</span>(<span class="ident">origin</span>) {
-					<span class="prelude-val">Some</span>(<span class="ident">origin</span>)
-				} <span class="kw">else</span> {
-					<span class="prelude-val">None</span>
-				}
+				<span class="prelude-val">None</span>
 			};
 			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">ensure_instant</span>) <span class="op">=</span> <span class="ident">maybe_ensure_instant</span> {
 				<span class="ident">T::InstantOrigin::ensure_origin</span>(<span class="ident">ensure_instant</span>)<span class="question-mark">?</span>;
@@ -2817,7 +2809,7 @@
 			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">e_proposal_hash</span>, <span class="kw">_</span>)) <span class="op">=</span> <span class="op">&lt;</span><span class="ident">NextExternal</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::get</span>() {
 				<span class="macro">ensure!</span>(<span class="ident">proposal_hash</span> <span class="op">==</span> <span class="ident">e_proposal_hash</span>, <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ProposalMissing</span>);
 			} <span class="kw">else</span> {
-				<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::NoProposal</span>)<span class="question-mark">?</span>;
+				<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::NoProposal</span>.<span class="ident">into</span>())
 			}
 
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">existing_vetoers</span> <span class="op">=</span>
@@ -2916,7 +2908,7 @@
 		<span class="doccomment">///   voted on. Weight is charged as if maximum votes.</span>
 		<span class="comment">// NOTE: weight must cover an incorrect voting of origin with max votes, this is ensure</span>
 		<span class="comment">// because a valid delegation cover decoding a direct voting with max votes.</span>
-		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::undelegate</span>(<span class="ident">T::MaxVotes::get</span>().<span class="ident">into</span>()))]</span>
+		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::undelegate</span>(<span class="ident">T::MaxVotes::get</span>()))]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">undelegate</span>(<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) -&gt; <span class="ident">DispatchResultWithPostInfo</span> {
 			<span class="kw">let</span> <span class="ident">who</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">votes</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::try_undelegate</span>(<span class="ident">who</span>)<span class="question-mark">?</span>;
@@ -3584,7 +3576,7 @@
 			);
 			<span class="prelude-val">Ok</span>(())
 		} <span class="kw">else</span> {
-			<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::NoneWaiting</span>)<span class="question-mark">?</span>
+			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::NoneWaiting</span>.<span class="ident">into</span>())
 		}
 	}
 
@@ -3617,7 +3609,7 @@
 			}
 			<span class="prelude-val">Ok</span>(())
 		} <span class="kw">else</span> {
-			<span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::NoneWaiting</span>)<span class="question-mark">?</span>
+			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::NoneWaiting</span>.<span class="ident">into</span>())
 		}
 	}
 
@@ -3772,8 +3764,7 @@
 		<span class="comment">// To decode the enum variant we only need the first byte.</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> [<span class="number">0u8</span>; <span class="number">1</span>];
 		<span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Preimages</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::hashed_key_for</span>(<span class="ident">proposal_hash</span>);
-		<span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span>
-			<span class="ident">sp_io::storage::read</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>, <span class="kw-2">&amp;mut</span> <span class="ident">buf</span>, <span class="number">0</span>).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::NotImminent</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="ident">sp_io::storage::read</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>, <span class="kw-2">&amp;mut</span> <span class="ident">buf</span>, <span class="number">0</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::NotImminent</span>)<span class="question-mark">?</span>;
 		<span class="comment">// The value may be smaller that 1 byte.</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">input</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">buf</span>[<span class="number">0</span>..<span class="ident">buf</span>.<span class="ident">len</span>().<span class="ident">min</span>(<span class="ident">bytes</span> <span class="kw">as</span> <span class="ident">usize</span>)];
 
@@ -3801,8 +3792,7 @@
 		<span class="comment">// * at most 5 bytes to decode a `Compact&lt;u32&gt;`</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> [<span class="number">0u8</span>; <span class="number">6</span>];
 		<span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Preimages</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::hashed_key_for</span>(<span class="ident">proposal_hash</span>);
-		<span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span>
-			<span class="ident">sp_io::storage::read</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>, <span class="kw-2">&amp;mut</span> <span class="ident">buf</span>, <span class="number">0</span>).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::PreimageMissing</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="ident">sp_io::storage::read</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>, <span class="kw-2">&amp;mut</span> <span class="ident">buf</span>, <span class="number">0</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::PreimageMissing</span>)<span class="question-mark">?</span>;
 		<span class="comment">// The value may be smaller that 6 bytes.</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">input</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">buf</span>[<span class="number">0</span>..<span class="ident">buf</span>.<span class="ident">len</span>().<span class="ident">min</span>(<span class="ident">bytes</span> <span class="kw">as</span> <span class="ident">usize</span>)];
 
@@ -3881,7 +3871,7 @@
 <span class="kw">fn</span> <span class="ident">decode_compact_u32_at</span>(<span class="ident">key</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
 	<span class="comment">// `Compact&lt;u32&gt;` takes at most 5 bytes.</span>
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> [<span class="number">0u8</span>; <span class="number">5</span>];
-	<span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="ident">sp_io::storage::read</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>, <span class="kw-2">&amp;mut</span> <span class="ident">buf</span>, <span class="number">0</span>)<span class="question-mark">?</span>;
+	<span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="ident">sp_io::storage::read</span>(<span class="ident">key</span>, <span class="kw-2">&amp;mut</span> <span class="ident">buf</span>, <span class="number">0</span>)<span class="question-mark">?</span>;
 	<span class="comment">// The value may be smaller than 5 bytes.</span>
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">input</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">buf</span>[<span class="number">0</span>..<span class="ident">buf</span>.<span class="ident">len</span>().<span class="ident">min</span>(<span class="ident">bytes</span> <span class="kw">as</span> <span class="ident">usize</span>)];
 	<span class="kw">match</span> <span class="ident">codec::Compact</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="ident">::decode</span>(<span class="kw-2">&amp;mut</span> <span class="ident">input</span>) {

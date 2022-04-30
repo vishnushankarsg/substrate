@@ -206,11 +206,11 @@
 				rare panic here is basically zero&quot;</span>);
 
 			<span class="comment">// Legacy noise configurations for backward compatibility.</span>
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">noise_legacy</span> <span class="op">=</span> <span class="ident">noise::LegacyConfig::default</span>();
-			<span class="ident">noise_legacy</span>.<span class="ident">recv_legacy_handshake</span> <span class="op">=</span> <span class="bool-val">true</span>;
+			<span class="kw">let</span> <span class="ident">noise_legacy</span> <span class="op">=</span>
+				<span class="ident">noise::LegacyConfig</span> { <span class="ident">recv_legacy_handshake</span>: <span class="bool-val">true</span>, ..<span class="ident">Default::default</span>() };
 
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">xx_config</span> <span class="op">=</span> <span class="ident">noise::NoiseConfig::xx</span>(<span class="ident">noise_keypair</span>);
-			<span class="ident">xx_config</span>.<span class="ident">set_legacy_config</span>(<span class="ident">noise_legacy</span>.<span class="ident">clone</span>());
+			<span class="ident">xx_config</span>.<span class="ident">set_legacy_config</span>(<span class="ident">noise_legacy</span>);
 			<span class="ident">xx_config</span>.<span class="ident">into_authenticated</span>()
 		};
 

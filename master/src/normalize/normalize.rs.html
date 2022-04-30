@@ -61,8 +61,6 @@
 <span id="56">56</span>
 <span id="57">57</span>
 <span id="58">58</span>
-<span id="59">59</span>
-<span id="60">60</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -100,7 +98,7 @@
 	<span class="kw">loop</span> {
 		<span class="macro">fuzz!</span>(<span class="op">|</span><span class="ident">data</span>: (<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Ty</span><span class="op">&gt;</span>, <span class="ident">Ty</span>)<span class="op">|</span> {
 			<span class="kw">let</span> (<span class="ident">data</span>, <span class="ident">norm</span>) <span class="op">=</span> <span class="ident">data</span>;
-			<span class="kw">if</span> <span class="ident">data</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">0</span> {
+			<span class="kw">if</span> <span class="ident">data</span>.<span class="ident">is_empty</span>() {
 				<span class="kw">return</span>
 			}
 			<span class="kw">let</span> <span class="ident">pre_sum</span>: <span class="ident">u128</span> <span class="op">=</span> <span class="ident">data</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">x</span> <span class="kw">as</span> <span class="ident">u128</span>).<span class="ident">sum</span>();
@@ -109,16 +107,14 @@
 			<span class="comment">// error cases.</span>
 			<span class="kw">if</span> <span class="ident">pre_sum</span> <span class="op">&gt;</span> <span class="ident">sum_limit</span> <span class="op">|</span><span class="op">|</span> <span class="ident">data</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="ident">len_limit</span> {
 				<span class="macro">assert!</span>(<span class="ident">normalized</span>.<span class="ident">is_err</span>())
-			} <span class="kw">else</span> {
-				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">normalized</span>) <span class="op">=</span> <span class="ident">normalized</span> {
-					<span class="comment">// if sum goes beyond u128, panic.</span>
-					<span class="kw">let</span> <span class="ident">sum</span>: <span class="ident">u128</span> <span class="op">=</span> <span class="ident">normalized</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">x</span> <span class="kw">as</span> <span class="ident">u128</span>).<span class="ident">sum</span>();
+			} <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">normalized</span>) <span class="op">=</span> <span class="ident">normalized</span> {
+				<span class="comment">// if sum goes beyond u128, panic.</span>
+				<span class="kw">let</span> <span class="ident">sum</span>: <span class="ident">u128</span> <span class="op">=</span> <span class="ident">normalized</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">x</span> <span class="kw">as</span> <span class="ident">u128</span>).<span class="ident">sum</span>();
 
-					<span class="comment">// if this function returns Ok(), then it will ALWAYS be accurate.</span>
-					<span class="macro">assert_eq!</span>(<span class="ident">sum</span>, <span class="ident">norm</span> <span class="kw">as</span> <span class="ident">u128</span>, <span class="string">&quot;sums don&#39;t match {:?}, {}&quot;</span>, <span class="ident">normalized</span>, <span class="ident">norm</span>);
-				} <span class="kw">else</span> {
-					<span class="macro">panic!</span>(<span class="string">&quot;Should have returned Ok for input = {:?}, target = {:?}&quot;</span>, <span class="ident">data</span>, <span class="ident">norm</span>);
-				}
+				<span class="comment">// if this function returns Ok(), then it will ALWAYS be accurate.</span>
+				<span class="macro">assert_eq!</span>(<span class="ident">sum</span>, <span class="ident">norm</span> <span class="kw">as</span> <span class="ident">u128</span>, <span class="string">&quot;sums don&#39;t match {:?}, {}&quot;</span>, <span class="ident">normalized</span>, <span class="ident">norm</span>);
+			} <span class="kw">else</span> {
+				<span class="macro">panic!</span>(<span class="string">&quot;Should have returned Ok for input = {:?}, target = {:?}&quot;</span>, <span class="ident">data</span>, <span class="ident">norm</span>);
 			}
 		})
 	}

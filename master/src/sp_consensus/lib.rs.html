@@ -503,7 +503,7 @@
 	<span class="kw">const</span> <span class="ident">ENABLED</span>: <span class="ident">bool</span> <span class="op">=</span> <span class="bool-val">true</span>;
 
 	<span class="kw">fn</span> <span class="ident">into_proof</span>(<span class="ident">proof</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StorageProof</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Proof</span>, <span class="ident">NoProofRecorded</span><span class="op">&gt;</span> {
-		<span class="ident">proof</span>.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">NoProofRecorded</span>)
+		<span class="ident">proof</span>.<span class="ident">ok_or</span>(<span class="ident">NoProofRecorded</span>)
 	}
 }
 

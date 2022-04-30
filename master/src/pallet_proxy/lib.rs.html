@@ -835,6 +835,8 @@
 <span id="830">830</span>
 <span id="831">831</span>
 <span id="832">832</span>
+<span id="833">833</span>
+<span id="834">834</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -1033,7 +1035,7 @@
 		<span class="doccomment">/// # &lt;/weight&gt;</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>({
 			<span class="kw">let</span> <span class="ident">di</span> <span class="op">=</span> <span class="ident">call</span>.<span class="ident">get_dispatch_info</span>();
-			(<span class="ident">T::WeightInfo::proxy</span>(<span class="ident">T::MaxProxies::get</span>().<span class="ident">into</span>())
+			(<span class="ident">T::WeightInfo::proxy</span>(<span class="ident">T::MaxProxies::get</span>())
 				.<span class="ident">saturating_add</span>(<span class="ident">di</span>.<span class="ident">weight</span>)
 				 <span class="comment">// AccountData for inner call origin accountdata.</span>
 				.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads_writes</span>(<span class="number">1</span>, <span class="number">1</span>)),
@@ -1067,7 +1069,7 @@
 		<span class="doccomment">/// # &lt;weight&gt;</span>
 		<span class="doccomment">/// Weight is a function of the number of proxies the user has (P).</span>
 		<span class="doccomment">/// # &lt;/weight&gt;</span>
-		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::add_proxy</span>(<span class="ident">T::MaxProxies::get</span>().<span class="ident">into</span>()))]</span>
+		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::add_proxy</span>(<span class="ident">T::MaxProxies::get</span>()))]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_proxy</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">delegate</span>: <span class="ident">T::AccountId</span>,
@@ -1089,7 +1091,7 @@
 		<span class="doccomment">/// # &lt;weight&gt;</span>
 		<span class="doccomment">/// Weight is a function of the number of proxies the user has (P).</span>
 		<span class="doccomment">/// # &lt;/weight&gt;</span>
-		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::remove_proxy</span>(<span class="ident">T::MaxProxies::get</span>().<span class="ident">into</span>()))]</span>
+		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::remove_proxy</span>(<span class="ident">T::MaxProxies::get</span>()))]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remove_proxy</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">delegate</span>: <span class="ident">T::AccountId</span>,
@@ -1110,7 +1112,7 @@
 		<span class="doccomment">/// # &lt;weight&gt;</span>
 		<span class="doccomment">/// Weight is a function of the number of proxies the user has (P).</span>
 		<span class="doccomment">/// # &lt;/weight&gt;</span>
-		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::remove_proxies</span>(<span class="ident">T::MaxProxies::get</span>().<span class="ident">into</span>()))]</span>
+		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::remove_proxies</span>(<span class="ident">T::MaxProxies::get</span>()))]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remove_proxies</span>(<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">who</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> (<span class="kw">_</span>, <span class="ident">old_deposit</span>) <span class="op">=</span> <span class="ident">Proxies</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::take</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>);
@@ -1142,7 +1144,7 @@
 		<span class="doccomment">/// Weight is a function of the number of proxies the user has (P).</span>
 		<span class="doccomment">/// # &lt;/weight&gt;</span>
 		<span class="doccomment">/// TODO: Might be over counting 1 read</span>
-		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::anonymous</span>(<span class="ident">T::MaxProxies::get</span>().<span class="ident">into</span>()))]</span>
+		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::anonymous</span>(<span class="ident">T::MaxProxies::get</span>()))]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">anonymous</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">proxy_type</span>: <span class="ident">T::ProxyType</span>,
@@ -1193,7 +1195,7 @@
 		<span class="doccomment">/// # &lt;weight&gt;</span>
 		<span class="doccomment">/// Weight is a function of the number of proxies the user has (P).</span>
 		<span class="doccomment">/// # &lt;/weight&gt;</span>
-		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::kill_anonymous</span>(<span class="ident">T::MaxProxies::get</span>().<span class="ident">into</span>()))]</span>
+		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::kill_anonymous</span>(<span class="ident">T::MaxProxies::get</span>()))]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">kill_anonymous</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">spawner</span>: <span class="ident">T::AccountId</span>,
@@ -1235,7 +1237,7 @@
 		<span class="doccomment">/// - A: the number of announcements made.</span>
 		<span class="doccomment">/// - P: the number of proxies the user has.</span>
 		<span class="doccomment">/// # &lt;/weight&gt;</span>
-		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::announce</span>(<span class="ident">T::MaxPending::get</span>(), <span class="ident">T::MaxProxies::get</span>().<span class="ident">into</span>()))]</span>
+		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::announce</span>(<span class="ident">T::MaxPending::get</span>(), <span class="ident">T::MaxProxies::get</span>()))]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">announce</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">real</span>: <span class="ident">T::AccountId</span>,
@@ -1245,12 +1247,12 @@
 			<span class="ident">Proxies</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">real</span>)
 				.<span class="number">0</span>
 				.<span class="ident">into_iter</span>()
-				.<span class="ident">find</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">delegate</span> <span class="op">==</span> <span class="kw-2">&amp;</span><span class="ident">who</span>)
+				.<span class="ident">find</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">delegate</span> <span class="op">==</span> <span class="ident">who</span>)
 				.<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::NotProxy</span>)<span class="question-mark">?</span>;
 
 			<span class="kw">let</span> <span class="ident">announcement</span> <span class="op">=</span> <span class="ident">Announcement</span> {
 				<span class="ident">real</span>: <span class="ident">real</span>.<span class="ident">clone</span>(),
-				<span class="ident">call_hash</span>: <span class="ident">call_hash</span>.<span class="ident">clone</span>(),
+				<span class="ident">call_hash</span>,
 				<span class="ident">height</span>: <span class="ident">system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::block_number</span>(),
 			};
 
@@ -1289,9 +1291,10 @@
 		<span class="doccomment">/// - A: the number of announcements made.</span>
 		<span class="doccomment">/// - P: the number of proxies the user has.</span>
 		<span class="doccomment">/// # &lt;/weight&gt;</span>
-		<span class="attribute">#[<span class="ident">pallet::weight</span>(
-			<span class="ident">T::WeightInfo::remove_announcement</span>(<span class="ident">T::MaxPending::get</span>(), <span class="ident">T::MaxProxies::get</span>().<span class="ident">into</span>())
-		)]</span>
+		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::remove_announcement</span>(
+			<span class="ident">T::MaxPending::get</span>(),
+			<span class="ident">T::MaxProxies::get</span>()
+		))]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remove_announcement</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">real</span>: <span class="ident">T::AccountId</span>,
@@ -1319,9 +1322,10 @@
 		<span class="doccomment">/// - A: the number of announcements made.</span>
 		<span class="doccomment">/// - P: the number of proxies the user has.</span>
 		<span class="doccomment">/// # &lt;/weight&gt;</span>
-		<span class="attribute">#[<span class="ident">pallet::weight</span>(
-			<span class="ident">T::WeightInfo::reject_announcement</span>(<span class="ident">T::MaxPending::get</span>(), <span class="ident">T::MaxProxies::get</span>().<span class="ident">into</span>())
-		)]</span>
+		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::reject_announcement</span>(
+			<span class="ident">T::MaxPending::get</span>(),
+			<span class="ident">T::MaxProxies::get</span>()
+		))]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reject_announcement</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">delegate</span>: <span class="ident">T::AccountId</span>,
@@ -1354,7 +1358,7 @@
 		<span class="doccomment">/// # &lt;/weight&gt;</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>({
 			<span class="kw">let</span> <span class="ident">di</span> <span class="op">=</span> <span class="ident">call</span>.<span class="ident">get_dispatch_info</span>();
-			(<span class="ident">T::WeightInfo::proxy_announced</span>(<span class="ident">T::MaxPending::get</span>(), <span class="ident">T::MaxProxies::get</span>().<span class="ident">into</span>())
+			(<span class="ident">T::WeightInfo::proxy_announced</span>(<span class="ident">T::MaxPending::get</span>(), <span class="ident">T::MaxProxies::get</span>())
 				.<span class="ident">saturating_add</span>(<span class="ident">di</span>.<span class="ident">weight</span>)
 				 <span class="comment">// AccountData for inner call origin accountdata.</span>
 				.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads_writes</span>(<span class="number">1</span>, <span class="number">1</span>)),
@@ -1596,9 +1600,9 @@
 		<span class="kw">let</span> <span class="ident">new_deposit</span> <span class="op">=</span>
 			<span class="kw">if</span> <span class="ident">len</span> <span class="op">==</span> <span class="number">0</span> { <span class="ident">BalanceOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::zero</span>() } <span class="kw">else</span> { <span class="ident">base</span> <span class="op">+</span> <span class="ident">factor</span> <span class="op">*</span> (<span class="ident">len</span> <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">into</span>() };
 		<span class="kw">if</span> <span class="ident">new_deposit</span> <span class="op">&gt;</span> <span class="ident">old_deposit</span> {
-			<span class="ident">T::Currency::reserve</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">new_deposit</span> <span class="op">-</span> <span class="ident">old_deposit</span>)<span class="question-mark">?</span>;
+			<span class="ident">T::Currency::reserve</span>(<span class="ident">who</span>, <span class="ident">new_deposit</span> <span class="op">-</span> <span class="ident">old_deposit</span>)<span class="question-mark">?</span>;
 		} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">new_deposit</span> <span class="op">&lt;</span> <span class="ident">old_deposit</span> {
-			<span class="ident">T::Currency::unreserve</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">old_deposit</span> <span class="op">-</span> <span class="ident">new_deposit</span>);
+			<span class="ident">T::Currency::unreserve</span>(<span class="ident">who</span>, <span class="ident">old_deposit</span> <span class="op">-</span> <span class="ident">new_deposit</span>);
 		}
 		<span class="prelude-val">Ok</span>(<span class="kw">if</span> <span class="ident">len</span> <span class="op">==</span> <span class="number">0</span> { <span class="prelude-val">None</span> } <span class="kw">else</span> { <span class="prelude-val">Some</span>(<span class="ident">new_deposit</span>) })
 	}
@@ -1653,7 +1657,7 @@
 				<span class="comment">// has.</span>
 				<span class="prelude-val">Some</span>(<span class="ident">Call::add_proxy</span> { <span class="kw-2">ref</span> <span class="ident">proxy_type</span>, .. }) <span class="op">|</span>
 				<span class="prelude-val">Some</span>(<span class="ident">Call::remove_proxy</span> { <span class="kw-2">ref</span> <span class="ident">proxy_type</span>, .. })
-					<span class="kw">if</span> <span class="op">!</span><span class="ident">def</span>.<span class="ident">proxy_type</span>.<span class="ident">is_superset</span>(<span class="kw-2">&amp;</span><span class="ident">proxy_type</span>) =&gt;
+					<span class="kw">if</span> <span class="op">!</span><span class="ident">def</span>.<span class="ident">proxy_type</span>.<span class="ident">is_superset</span>(<span class="ident">proxy_type</span>) =&gt;
 					<span class="bool-val">false</span>,
 				<span class="comment">// Proxy call cannot remove all proxies or kill anonymous proxies unless it has full</span>
 				<span class="comment">// permissions.</span>

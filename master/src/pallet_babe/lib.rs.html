@@ -1436,7 +1436,7 @@
 			}
 		}
 
-		<span class="kw">return</span> <span class="prelude-val">None</span>
+		<span class="prelude-val">None</span>
 	}
 }
 
@@ -1639,7 +1639,7 @@
 			<span class="kw">let</span> <span class="ident">segment_idx</span> <span class="op">=</span> <span class="ident">segment_idx</span> <span class="op">+</span> <span class="number">1</span>;
 			<span class="kw">let</span> <span class="ident">bounded_randomness</span> <span class="op">=</span>
 				<span class="ident">BoundedVec</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="ident">UNDER_CONSTRUCTION_SEGMENT_LENGTH</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::try_from</span>(<span class="macro">vec!</span>[
-					<span class="ident">randomness</span>.<span class="ident">clone</span>(),
+					<span class="kw-2">*</span><span class="ident">randomness</span>,
 				])
 				.<span class="ident">expect</span>(<span class="string">&quot;UNDER_CONSTRUCTION_SEGMENT_LENGTH &gt;= 1&quot;</span>);
 			<span class="ident">UnderConstruction</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="ident">segment_idx</span>, <span class="ident">bounded_randomness</span>);
@@ -1724,7 +1724,7 @@
 
 						<span class="ident">vrf_output</span>.<span class="number">0</span>.<span class="ident">attach_input_hash</span>(<span class="kw-2">&amp;</span><span class="ident">pubkey</span>, <span class="ident">transcript</span>).<span class="ident">ok</span>()
 					})
-					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">inout</span><span class="op">|</span> <span class="ident">inout</span>.<span class="ident">make_bytes</span>(<span class="kw-2">&amp;</span><span class="ident">sp_consensus_babe::BABE_VRF_INOUT_CONTEXT</span>))
+					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">inout</span><span class="op">|</span> <span class="ident">inout</span>.<span class="ident">make_bytes</span>(<span class="ident">sp_consensus_babe::BABE_VRF_INOUT_CONTEXT</span>))
 			})
 		});
 

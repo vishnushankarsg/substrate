@@ -614,7 +614,6 @@
 <span id="609">609</span>
 <span id="610">610</span>
 <span id="611">611</span>
-<span id="612">612</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -1051,7 +1050,6 @@
 							<span class="string">&quot;Trying to send warp sync request when no protocol is configured {:?}&quot;</span>,
 							<span class="ident">request</span>,
 						);
-						<span class="kw">return</span>
 					},
 				},
 			<span class="ident">CustomMessageOutcome::NotificationStreamOpened</span> {
@@ -1066,7 +1064,7 @@
 					<span class="ident">protocol</span>,
 					<span class="ident">negotiated_fallback</span>,
 					<span class="ident">role</span>: <span class="ident">reported_roles_to_observed_role</span>(<span class="ident">roles</span>),
-					<span class="ident">notifications_sink</span>: <span class="ident">notifications_sink</span>.<span class="ident">clone</span>(),
+					<span class="ident">notifications_sink</span>,
 				});
 			},
 			<span class="ident">CustomMessageOutcome::NotificationStreamReplaced</span> {

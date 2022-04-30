@@ -423,7 +423,7 @@
 	<span class="ident">Bounties</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::propose_curator</span>(
 		<span class="ident">RawOrigin::Root</span>.<span class="ident">into</span>(),
 		<span class="ident">child_bounty_setup</span>.<span class="ident">bounty_id</span>,
-		<span class="ident">curator_lookup</span>.<span class="ident">clone</span>(),
+		<span class="ident">curator_lookup</span>,
 		<span class="ident">child_bounty_setup</span>.<span class="ident">fee</span>,
 	)<span class="question-mark">?</span>;
 	<span class="ident">Bounties</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::accept_curator</span>(
@@ -454,7 +454,7 @@
 		<span class="ident">RawOrigin::Signed</span>(<span class="ident">bounty_setup</span>.<span class="ident">curator</span>.<span class="ident">clone</span>()).<span class="ident">into</span>(),
 		<span class="ident">bounty_setup</span>.<span class="ident">bounty_id</span>,
 		<span class="ident">bounty_setup</span>.<span class="ident">child_bounty_id</span>,
-		<span class="ident">child_curator_lookup</span>.<span class="ident">clone</span>(),
+		<span class="ident">child_curator_lookup</span>,
 		<span class="ident">bounty_setup</span>.<span class="ident">child_bounty_fee</span>,
 	)<span class="question-mark">?</span>;
 
@@ -524,7 +524,7 @@
 			<span class="ident">RawOrigin::Signed</span>(<span class="ident">bounty_setup</span>.<span class="ident">curator</span>.<span class="ident">clone</span>()).<span class="ident">into</span>(),
 			<span class="ident">bounty_setup</span>.<span class="ident">bounty_id</span>,
 			<span class="ident">bounty_setup</span>.<span class="ident">child_bounty_id</span>,
-			<span class="ident">child_curator_lookup</span>.<span class="ident">clone</span>(),
+			<span class="ident">child_curator_lookup</span>,
 			<span class="ident">bounty_setup</span>.<span class="ident">child_bounty_fee</span>,
 		)<span class="question-mark">?</span>;
 	}: <span class="kw">_</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">bounty_setup</span>.<span class="ident">child_curator</span>), <span class="ident">bounty_setup</span>.<span class="ident">bounty_id</span>,
@@ -559,7 +559,7 @@
 		<span class="ident">setup_pot_account</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
 		<span class="kw">let</span> <span class="ident">bounty_setup</span> <span class="op">=</span> <span class="ident">activate_child_bounty</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="number">0</span>, <span class="ident">T::MaximumReasonLength::get</span>())<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">beneficiary_account</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;beneficiary&quot;</span>, <span class="number">0</span>, <span class="ident">SEED</span>);
-		<span class="kw">let</span> <span class="ident">beneficiary</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">beneficiary_account</span>.<span class="ident">clone</span>());
+		<span class="kw">let</span> <span class="ident">beneficiary</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">beneficiary_account</span>);
 
 		<span class="ident">ChildBounties</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::award_child_bounty</span>(
 			<span class="ident">RawOrigin::Signed</span>(<span class="ident">bounty_setup</span>.<span class="ident">child_curator</span>.<span class="ident">clone</span>()).<span class="ident">into</span>(),

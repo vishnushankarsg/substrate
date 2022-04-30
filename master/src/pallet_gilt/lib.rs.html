@@ -1066,7 +1066,7 @@
 				<span class="ident">qs</span>[<span class="ident">queue_index</span>].<span class="number">0</span> <span class="op">+</span><span class="op">=</span> <span class="ident">net</span>.<span class="number">0</span>;
 				<span class="ident">qs</span>[<span class="ident">queue_index</span>].<span class="number">1</span> <span class="op">=</span> <span class="ident">qs</span>[<span class="ident">queue_index</span>].<span class="number">1</span>.<span class="ident">saturating_add</span>(<span class="ident">net</span>.<span class="number">1</span>);
 			});
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::BidPlaced</span> { <span class="ident">who</span>: <span class="ident">who</span>.<span class="ident">clone</span>(), <span class="ident">amount</span>, <span class="ident">duration</span> });
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::BidPlaced</span> { <span class="ident">who</span>, <span class="ident">amount</span>, <span class="ident">duration</span> });
 
 			<span class="prelude-val">Ok</span>(().<span class="ident">into</span>())
 		}

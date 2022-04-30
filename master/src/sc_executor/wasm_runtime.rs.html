@@ -942,7 +942,7 @@
 			.<span class="ident">transpose</span>()<span class="question-mark">?</span>
 			.<span class="ident">map</span>(<span class="ident">Into::into</span>);
 
-		<span class="kw">let</span> <span class="ident">core_version</span> <span class="op">=</span> <span class="ident">apis</span>.<span class="ident">as_ref</span>().<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">apis</span><span class="op">|</span> <span class="ident">sp_version::core_version_from_apis</span>(<span class="ident">apis</span>));
+		<span class="kw">let</span> <span class="ident">core_version</span> <span class="op">=</span> <span class="ident">apis</span>.<span class="ident">as_ref</span>().<span class="ident">and_then</span>(<span class="ident">sp_version::core_version_from_apis</span>);
 		<span class="comment">// We do not use `RuntimeVersion::decode` here because that `decode_version` relies on</span>
 		<span class="comment">// presence of a special API in the `apis` field to treat the input as a non-legacy version.</span>
 		<span class="comment">// However the structure found in the `runtime_version` always contain an empty `apis`</span>
@@ -977,7 +977,7 @@
 {
 	<span class="comment">// The incoming code may be actually compressed. We decompress it here and then work with</span>
 	<span class="comment">// the uncompressed code from now on.</span>
-	<span class="kw">let</span> <span class="ident">blob</span> <span class="op">=</span> <span class="ident">sc_executor_common::runtime_blob::RuntimeBlob::uncompress_if_needed</span>(<span class="kw-2">&amp;</span><span class="ident">code</span>)<span class="question-mark">?</span>;
+	<span class="kw">let</span> <span class="ident">blob</span> <span class="op">=</span> <span class="ident">sc_executor_common::runtime_blob::RuntimeBlob::uncompress_if_needed</span>(<span class="ident">code</span>)<span class="question-mark">?</span>;
 
 	<span class="comment">// Use the runtime blob to scan if there is any metadata embedded into the wasm binary</span>
 	<span class="comment">// pertaining to runtime version. We do it before consuming the runtime blob for creating the</span>

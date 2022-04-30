@@ -1117,7 +1117,7 @@ qed
 				<span class="kw">for</span> <span class="ident">tag</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">tx</span>.<span class="ident">transaction</span>.<span class="ident">transaction</span>.<span class="ident">requires</span> {
 					<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">hash</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">provided_tags</span>.<span class="ident">get</span>(<span class="ident">tag</span>) {
 						<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">tx</span>) <span class="op">=</span> <span class="ident">ready</span>.<span class="ident">get_mut</span>(<span class="ident">hash</span>) {
-							<span class="ident">remove_item</span>(<span class="kw-2">&amp;mut</span> <span class="ident">tx</span>.<span class="ident">unlocks</span>, <span class="kw-2">&amp;</span><span class="ident">hash</span>);
+							<span class="ident">remove_item</span>(<span class="kw-2">&amp;mut</span> <span class="ident">tx</span>.<span class="ident">unlocks</span>, <span class="ident">hash</span>);
 						}
 					}
 				}
@@ -1168,7 +1168,7 @@ qed
 					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ready</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">ready</span>.<span class="ident">write</span>();
 					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">find_previous</span> <span class="op">=</span> <span class="op">|</span><span class="ident">tag</span><span class="op">|</span> -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Tag</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 						<span class="kw">let</span> <span class="ident">prev_hash</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">provided_tags</span>.<span class="ident">get</span>(<span class="ident">tag</span>)<span class="question-mark">?</span>;
-						<span class="kw">let</span> <span class="ident">tx2</span> <span class="op">=</span> <span class="ident">ready</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">prev_hash</span>)<span class="question-mark">?</span>;
+						<span class="kw">let</span> <span class="ident">tx2</span> <span class="op">=</span> <span class="ident">ready</span>.<span class="ident">get_mut</span>(<span class="ident">prev_hash</span>)<span class="question-mark">?</span>;
 						<span class="ident">remove_item</span>(<span class="kw-2">&amp;mut</span> <span class="ident">tx2</span>.<span class="ident">unlocks</span>, <span class="ident">hash</span>);
 						<span class="comment">// We eagerly prune previous transactions as well.</span>
 						<span class="comment">// But it might not always be good.</span>
@@ -1368,7 +1368,7 @@ qed
 				<span class="kw">continue</span>
 			}
 
-			<span class="kw">let</span> <span class="ident">ready</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">all</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>).<span class="ident">cloned</span>() {
+			<span class="kw">let</span> <span class="ident">ready</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">all</span>.<span class="ident">get</span>(<span class="ident">hash</span>).<span class="ident">cloned</span>() {
 				<span class="prelude-val">Some</span>(<span class="ident">ready</span>) =&gt; <span class="ident">ready</span>,
 				<span class="comment">// The transaction is not in all, maybe it was removed in the meantime?</span>
 				<span class="prelude-val">None</span> =&gt; <span class="kw">continue</span>,

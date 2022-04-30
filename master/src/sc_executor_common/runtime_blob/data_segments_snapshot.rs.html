@@ -131,7 +131,7 @@
 			.<span class="ident">map</span>(<span class="op">|</span><span class="kw-2">mut</span> <span class="ident">segment</span><span class="op">|</span> {
 				<span class="comment">// Just replace contents of the segment since the segments will be discarded later</span>
 				<span class="comment">// anyway.</span>
-				<span class="kw">let</span> <span class="ident">contents</span> <span class="op">=</span> <span class="ident">mem::replace</span>(<span class="ident">segment</span>.<span class="ident">value_mut</span>(), <span class="macro">vec!</span>[]);
+				<span class="kw">let</span> <span class="ident">contents</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="ident">segment</span>.<span class="ident">value_mut</span>());
 
 				<span class="kw">let</span> <span class="ident">init_expr</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">segment</span>.<span class="ident">offset</span>() {
 					<span class="prelude-val">Some</span>(<span class="ident">offset</span>) =&gt; <span class="ident">offset</span>.<span class="ident">code</span>(),

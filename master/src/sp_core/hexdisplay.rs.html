@@ -194,13 +194,13 @@
 
 <span class="kw">impl</span> <span class="ident">AsBytesRef</span> <span class="kw">for</span> [<span class="ident">u8</span>] {
 	<span class="kw">fn</span> <span class="ident">as_bytes_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">u8</span>] {
-		<span class="kw-2">&amp;</span><span class="self">self</span>
+		<span class="self">self</span>
 	}
 }
 
 <span class="kw">impl</span> <span class="ident">AsBytesRef</span> <span class="kw">for</span> <span class="ident">sp_std::vec::Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">as_bytes_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">u8</span>] {
-		<span class="kw-2">&amp;</span><span class="self">self</span>
+		<span class="self">self</span>
 	}
 }
 

@@ -1328,7 +1328,7 @@
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">HttpError</span><span class="op">&gt;</span> {
 		<span class="comment">// Extract the request from the list.</span>
 		<span class="comment">// Don&#39;t forget to add it back if necessary when returning.</span>
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">request</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">requests</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">request_id</span>).<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">HttpError::Invalid</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">request</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">requests</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">request_id</span>).<span class="ident">ok_or</span>(<span class="ident">HttpError::Invalid</span>)<span class="question-mark">?</span>;
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">deadline</span> <span class="op">=</span> <span class="ident">timestamp::deadline_to_future</span>(<span class="ident">deadline</span>);
 		<span class="comment">// Closure that writes data to a sender, taking the deadline into account. Can return `Ok`</span>

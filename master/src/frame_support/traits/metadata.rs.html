@@ -475,7 +475,7 @@
 
 <span class="kw">impl</span> <span class="ident">sp_std::cmp::PartialOrd</span> <span class="kw">for</span> <span class="ident">CrateVersion</span> {
 	<span class="kw">fn</span> <span class="ident">partial_cmp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">sp_std::cmp::Ordering</span><span class="op">&gt;</span> {
-		<span class="prelude-val">Some</span>(<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">Ord</span><span class="op">&gt;</span><span class="ident">::cmp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>))
+		<span class="prelude-val">Some</span>(<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">Ord</span><span class="op">&gt;</span><span class="ident">::cmp</span>(<span class="self">self</span>, <span class="ident">other</span>))
 	}
 }
 

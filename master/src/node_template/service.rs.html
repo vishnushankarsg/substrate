@@ -432,7 +432,7 @@
 
 	<span class="kw">let</span> (<span class="ident">client</span>, <span class="ident">backend</span>, <span class="ident">keystore_container</span>, <span class="ident">task_manager</span>) <span class="op">=</span>
 		<span class="ident">sc_service::new_full_parts</span>::<span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">RuntimeApi</span>, <span class="kw">_</span><span class="op">&gt;</span>(
-			<span class="kw-2">&amp;</span><span class="ident">config</span>,
+			<span class="ident">config</span>,
 			<span class="ident">telemetry</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="kw">_</span>, <span class="ident">telemetry</span>)<span class="op">|</span> <span class="ident">telemetry</span>.<span class="ident">handle</span>()),
 			<span class="ident">executor</span>,
 		)<span class="question-mark">?</span>;
@@ -613,7 +613,7 @@
 		<span class="kw">let</span> <span class="ident">aura</span> <span class="op">=</span> <span class="ident">sc_consensus_aura::start_aura</span>::<span class="op">&lt;</span><span class="ident">AuraPair</span>, <span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(
 			<span class="ident">StartAuraParams</span> {
 				<span class="ident">slot_duration</span>,
-				<span class="ident">client</span>: <span class="ident">client</span>.<span class="ident">clone</span>(),
+				<span class="ident">client</span>,
 				<span class="ident">select_chain</span>,
 				<span class="ident">block_import</span>,
 				<span class="ident">proposer_factory</span>,
