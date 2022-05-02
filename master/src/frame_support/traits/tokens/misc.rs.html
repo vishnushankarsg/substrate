@@ -226,7 +226,7 @@
 <span class="kw">use</span> <span class="ident">sp_std::fmt::Debug</span>;
 
 <span class="doccomment">/// One of a number of consequences of withdrawing a fungible from an account.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">WithdrawConsequence</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Withdraw could not happen since the amount to be withdrawn is less than the total funds in</span>
 	<span class="doccomment">/// the account.</span>
@@ -271,7 +271,7 @@
 }
 
 <span class="doccomment">/// One of a number of consequences of withdrawing a fungible from an account.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">DepositConsequence</span> {
 	<span class="doccomment">/// Deposit couldn&#39;t happen due to the amount being too low. This is usually because the</span>
 	<span class="doccomment">/// account doesn&#39;t yet exist and the deposit wouldn&#39;t bring it to at least the minimum needed</span>
@@ -306,7 +306,7 @@
 }
 
 <span class="doccomment">/// Simple boolean for whether an account needs to be kept in existence.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ExistenceRequirement</span> {
 	<span class="doccomment">/// Operation must not result in the account going out of existence.</span>
 	<span class="doccomment">///</span>
