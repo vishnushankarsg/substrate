@@ -304,6 +304,11 @@
 <span id="299">299</span>
 <span id="300">300</span>
 <span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -329,11 +334,16 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_executor::WasmExecutionMethod</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_network</span>::{
 	<span class="ident">config</span>::{
-		<span class="ident">IncomingRequest</span>, <span class="ident">MultiaddrWithPeerId</span>, <span class="ident">NetworkConfiguration</span>, <span class="ident">NodeKeyConfig</span>,
-		<span class="ident">NonDefaultSetConfig</span>, <span class="ident">OutgoingResponse</span>, <span class="ident">RequestResponseConfig</span>, <span class="ident">Role</span>, <span class="ident">SetConfig</span>,
-		<span class="ident">TransportConfig</span>,
+		<span class="ident">MultiaddrWithPeerId</span>, <span class="ident">NetworkConfiguration</span>, <span class="ident">NodeKeyConfig</span>, <span class="ident">NonDefaultSetConfig</span>, <span class="ident">Role</span>,
+		<span class="ident">SetConfig</span>, <span class="ident">TransportConfig</span>,
 	},
 	<span class="ident">Multiaddr</span>,
+};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_network_common</span>::{
+	<span class="ident">config::ProtocolId</span>,
+	<span class="ident">request_responses</span>::{
+		<span class="ident">IncomingRequest</span>, <span class="ident">OutgoingResponse</span>, <span class="ident">ProtocolConfig</span> <span class="kw">as</span> <span class="ident">RequestResponseConfig</span>,
+	},
 };
 
 <span class="kw">use</span> <span class="ident">prometheus_endpoint::Registry</span>;
@@ -514,7 +524,7 @@
 	}
 
 	<span class="doccomment">/// Returns the network protocol id from the chain spec, or the default.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">protocol_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">sc_network::config::ProtocolId</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">protocol_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">ProtocolId</span> {
 		<span class="kw">let</span> <span class="ident">protocol_id_full</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chain_spec</span>.<span class="ident">protocol_id</span>() {
 			<span class="prelude-val">Some</span>(<span class="ident">pid</span>) =&gt; <span class="ident">pid</span>,
 			<span class="prelude-val">None</span> =&gt; {
@@ -526,7 +536,7 @@
 				<span class="ident"><span class="kw">crate</span>::DEFAULT_PROTOCOL_ID</span>
 			},
 		};
-		<span class="ident">sc_network::config::ProtocolId::from</span>(<span class="ident">protocol_id_full</span>)
+		<span class="ident">ProtocolId::from</span>(<span class="ident">protocol_id_full</span>)
 	}
 }
 

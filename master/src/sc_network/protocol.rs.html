@@ -1858,6 +1858,9 @@
 <span id="1853">1853</span>
 <span id="1854">1854</span>
 <span id="1855">1855</span>
+<span id="1856">1856</span>
+<span id="1857">1857</span>
+<span id="1858">1858</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1877,12 +1880,10 @@
 <span class="comment">// along with this program. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-	<span class="ident">config</span>::{<span class="self">self</span>, <span class="ident">ProtocolId</span>, <span class="ident">WarpSyncProvider</span>},
-	<span class="ident">error</span>,
+	<span class="ident">config</span>, <span class="ident">error</span>,
 	<span class="ident">request_responses::RequestFailure</span>,
-	<span class="ident">schema::v1::StateResponse</span>,
 	<span class="ident">utils</span>::{<span class="ident">interval</span>, <span class="ident">LruHashSet</span>},
-	<span class="ident">warp_request_handler::EncodedProof</span>,
+	<span class="ident">warp_request_handler</span>::{<span class="ident">EncodedProof</span>, <span class="ident">WarpSyncProvider</span>},
 };
 
 <span class="kw">use</span> <span class="ident">bytes::Bytes</span>;
@@ -1903,13 +1904,23 @@
 <span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">debug</span>, <span class="ident">error</span>, <span class="ident">info</span>, <span class="ident">log</span>, <span class="ident">trace</span>, <span class="ident">warn</span>, <span class="ident">Level</span>};
 <span class="kw">use</span> <span class="ident">message</span>::{
 	<span class="ident">generic</span>::{<span class="ident">Message</span> <span class="kw">as</span> <span class="ident">GenericMessage</span>, <span class="ident">Roles</span>},
-	<span class="ident">BlockAnnounce</span>, <span class="ident">Message</span>,
+	<span class="ident">Message</span>,
 };
 <span class="kw">use</span> <span class="ident">notifications</span>::{<span class="ident">Notifications</span>, <span class="ident">NotificationsOut</span>};
 <span class="kw">use</span> <span class="ident">prometheus_endpoint</span>::{<span class="ident">register</span>, <span class="ident">Gauge</span>, <span class="ident">GaugeVec</span>, <span class="ident">Opts</span>, <span class="ident">PrometheusError</span>, <span class="ident">Registry</span>, <span class="ident">U64</span>};
 <span class="kw">use</span> <span class="ident">prost::Message</span> <span class="kw">as</span> <span class="kw">_</span>;
 <span class="kw">use</span> <span class="ident">sc_client_api</span>::{<span class="ident">BlockBackend</span>, <span class="ident">HeaderBackend</span>, <span class="ident">ProofProvider</span>};
 <span class="kw">use</span> <span class="ident">sc_consensus::import_queue</span>::{<span class="ident">BlockImportError</span>, <span class="ident">BlockImportStatus</span>, <span class="ident">IncomingBlock</span>, <span class="ident">Origin</span>};
+<span class="kw">use</span> <span class="ident">sc_network_common::config::ProtocolId</span>;
+<span class="kw">use</span> <span class="ident">sc_network_sync</span>::{
+	<span class="ident">message</span>::{
+		<span class="ident">BlockAnnounce</span>, <span class="ident">BlockAttributes</span>, <span class="ident">BlockData</span>, <span class="ident">BlockRequest</span>, <span class="ident">BlockResponse</span>, <span class="ident">BlockState</span>,
+		<span class="ident">FromBlock</span>,
+	},
+	<span class="ident">schema::v1::StateResponse</span>,
+	<span class="ident">BadPeer</span>, <span class="ident">ChainSync</span>, <span class="ident">OnBlockData</span>, <span class="ident">OnBlockJustification</span>, <span class="ident">OnStateData</span>,
+	<span class="ident">PollBlockAnnounceValidation</span>, <span class="ident">Status</span> <span class="kw">as</span> <span class="ident">SyncStatus</span>,
+};
 <span class="kw">use</span> <span class="ident">sp_arithmetic::traits::SaturatedConversion</span>;
 <span class="kw">use</span> <span class="ident">sp_consensus</span>::{<span class="ident">block_validation::BlockAnnounceValidator</span>, <span class="ident">BlockOrigin</span>};
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
@@ -1927,13 +1938,11 @@
 	<span class="ident">task::Poll</span>,
 	<span class="ident">time</span>,
 };
-<span class="kw">use</span> <span class="ident">sync</span>::{<span class="ident">ChainSync</span>, <span class="ident">Status</span> <span class="kw">as</span> <span class="ident">SyncStatus</span>};
 
 <span class="kw">mod</span> <span class="ident">notifications</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">event</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">message</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">sync</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">notifications</span>::{<span class="ident">NotificationsSink</span>, <span class="ident">NotifsHandlerError</span>, <span class="ident">Ready</span>};
 <span class="kw">use</span> <span class="ident">sp_blockchain::HeaderMetadata</span>;
@@ -2062,7 +2071,7 @@
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">enum</span> <span class="ident">PeerRequest</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> {
-	<span class="ident">Block</span>(<span class="ident">message::BlockRequest</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>),
+	<span class="ident">Block</span>(<span class="ident">BlockRequest</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>),
 	<span class="ident">State</span>,
 	<span class="ident">WarpProof</span>,
 }
@@ -2100,15 +2109,15 @@
 }
 
 <span class="kw">impl</span> <span class="ident">ProtocolConfig</span> {
-	<span class="kw">fn</span> <span class="ident">sync_mode</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">sync::SyncMode</span> {
+	<span class="kw">fn</span> <span class="ident">sync_mode</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">sc_network_sync::SyncMode</span> {
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">roles</span>.<span class="ident">is_light</span>() {
-			<span class="ident">sync::SyncMode::Light</span>
+			<span class="ident">sc_network_sync::SyncMode::Light</span>
 		} <span class="kw">else</span> {
 			<span class="kw">match</span> <span class="self">self</span>.<span class="ident">sync_mode</span> {
-				<span class="ident">config::SyncMode::Full</span> =&gt; <span class="ident">sync::SyncMode::Full</span>,
+				<span class="ident">config::SyncMode::Full</span> =&gt; <span class="ident">sc_network_sync::SyncMode::Full</span>,
 				<span class="ident">config::SyncMode::Fast</span> { <span class="ident">skip_proofs</span>, <span class="ident">storage_chain_mode</span> } =&gt;
-					<span class="ident">sync::SyncMode::LightState</span> { <span class="ident">skip_proofs</span>, <span class="ident">storage_chain_mode</span> },
-				<span class="ident">config::SyncMode::Warp</span> =&gt; <span class="ident">sync::SyncMode::Warp</span>,
+					<span class="ident">sc_network_sync::SyncMode::LightState</span> { <span class="ident">skip_proofs</span>, <span class="ident">storage_chain_mode</span> },
+				<span class="ident">config::SyncMode::Warp</span> =&gt; <span class="ident">sc_network_sync::SyncMode::Warp</span>,
 			}
 		}
 	}
@@ -2423,7 +2432,7 @@
 	<span class="kw">fn</span> <span class="ident">prepare_block_request</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">who</span>: <span class="ident">PeerId</span>,
-		<span class="ident">request</span>: <span class="ident">message::BlockRequest</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+		<span class="ident">request</span>: <span class="ident">BlockRequest</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 	) -&gt; <span class="ident">CustomMessageOutcome</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
 		<span class="ident">prepare_block_request</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">peers</span>, <span class="ident">who</span>, <span class="ident">request</span>)
 	}
@@ -2439,9 +2448,7 @@
 		}
 
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">_peer_data</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">peers</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">peer</span>) {
-			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">sync::OnBlockData::Import</span>(<span class="ident">origin</span>, <span class="ident">blocks</span>)) <span class="op">=</span>
-				<span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">peer_disconnected</span>(<span class="kw-2">&amp;</span><span class="ident">peer</span>)
-			{
+			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">OnBlockData::Import</span>(<span class="ident">origin</span>, <span class="ident">blocks</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">peer_disconnected</span>(<span class="kw-2">&amp;</span><span class="ident">peer</span>) {
 				<span class="self">self</span>.<span class="ident">pending_messages</span>
 					.<span class="ident">push_back</span>(<span class="ident">CustomMessageOutcome::BlockImport</span>(<span class="ident">origin</span>, <span class="ident">blocks</span>));
 			}
@@ -2461,21 +2468,21 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_block_response</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">peer_id</span>: <span class="ident">PeerId</span>,
-		<span class="ident">request</span>: <span class="ident">message::BlockRequest</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
-		<span class="ident">response</span>: <span class="ident"><span class="kw">crate</span>::schema::v1::BlockResponse</span>,
+		<span class="ident">request</span>: <span class="ident">BlockRequest</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+		<span class="ident">response</span>: <span class="ident">sc_network_sync::schema::v1::BlockResponse</span>,
 	) -&gt; <span class="ident">CustomMessageOutcome</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">blocks</span> <span class="op">=</span> <span class="ident">response</span>
 			.<span class="ident">blocks</span>
 			.<span class="ident">into_iter</span>()
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">block_data</span><span class="op">|</span> {
-				<span class="prelude-val">Ok</span>(<span class="ident">message::BlockData</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
+				<span class="prelude-val">Ok</span>(<span class="ident">BlockData</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
 					<span class="ident">hash</span>: <span class="ident">Decode::decode</span>(<span class="kw-2">&amp;mut</span> <span class="ident">block_data</span>.<span class="ident">hash</span>.<span class="ident">as_ref</span>())<span class="question-mark">?</span>,
 					<span class="ident">header</span>: <span class="kw">if</span> <span class="op">!</span><span class="ident">block_data</span>.<span class="ident">header</span>.<span class="ident">is_empty</span>() {
 						<span class="prelude-val">Some</span>(<span class="ident">Decode::decode</span>(<span class="kw-2">&amp;mut</span> <span class="ident">block_data</span>.<span class="ident">header</span>.<span class="ident">as_ref</span>())<span class="question-mark">?</span>)
 					} <span class="kw">else</span> {
 						<span class="prelude-val">None</span>
 					},
-					<span class="ident">body</span>: <span class="kw">if</span> <span class="ident">request</span>.<span class="ident">fields</span>.<span class="ident">contains</span>(<span class="ident">message::BlockAttributes::BODY</span>) {
+					<span class="ident">body</span>: <span class="kw">if</span> <span class="ident">request</span>.<span class="ident">fields</span>.<span class="ident">contains</span>(<span class="ident">BlockAttributes::BODY</span>) {
 						<span class="prelude-val">Some</span>(
 							<span class="ident">block_data</span>
 								.<span class="ident">body</span>
@@ -2486,8 +2493,7 @@
 					} <span class="kw">else</span> {
 						<span class="prelude-val">None</span>
 					},
-					<span class="ident">indexed_body</span>: <span class="kw">if</span> <span class="ident">request</span>.<span class="ident">fields</span>.<span class="ident">contains</span>(<span class="ident">message::BlockAttributes::INDEXED_BODY</span>)
-					{
+					<span class="ident">indexed_body</span>: <span class="kw">if</span> <span class="ident">request</span>.<span class="ident">fields</span>.<span class="ident">contains</span>(<span class="ident">BlockAttributes::INDEXED_BODY</span>) {
 						<span class="prelude-val">Some</span>(<span class="ident">block_data</span>.<span class="ident">indexed_body</span>)
 					} <span class="kw">else</span> {
 						<span class="prelude-val">None</span>
@@ -2527,7 +2533,7 @@
 			},
 		};
 
-		<span class="kw">let</span> <span class="ident">block_response</span> <span class="op">=</span> <span class="ident">message::BlockResponse</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> { <span class="ident">id</span>: <span class="ident">request</span>.<span class="ident">id</span>, <span class="ident">blocks</span> };
+		<span class="kw">let</span> <span class="ident">block_response</span> <span class="op">=</span> <span class="ident">BlockResponse</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> { <span class="ident">id</span>: <span class="ident">request</span>.<span class="ident">id</span>, <span class="ident">blocks</span> };
 
 		<span class="kw">let</span> <span class="ident">blocks_range</span> <span class="op">=</span> <span class="op">|</span><span class="op">|</span> <span class="kw">match</span> (
 			<span class="ident">block_response</span>
@@ -2547,12 +2553,12 @@
 			<span class="ident">blocks_range</span>(),
 		);
 
-		<span class="kw">if</span> <span class="ident">request</span>.<span class="ident">fields</span> <span class="op">==</span> <span class="ident">message::BlockAttributes::JUSTIFICATION</span> {
+		<span class="kw">if</span> <span class="ident">request</span>.<span class="ident">fields</span> <span class="op">==</span> <span class="ident">BlockAttributes::JUSTIFICATION</span> {
 			<span class="kw">match</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">on_block_justification</span>(<span class="ident">peer_id</span>, <span class="ident">block_response</span>) {
-				<span class="prelude-val">Ok</span>(<span class="ident">sync::OnBlockJustification::Nothing</span>) =&gt; <span class="ident">CustomMessageOutcome::None</span>,
-				<span class="prelude-val">Ok</span>(<span class="ident">sync::OnBlockJustification::Import</span> { <span class="ident">peer</span>, <span class="ident">hash</span>, <span class="ident">number</span>, <span class="ident">justifications</span> }) =&gt;
+				<span class="prelude-val">Ok</span>(<span class="ident">OnBlockJustification::Nothing</span>) =&gt; <span class="ident">CustomMessageOutcome::None</span>,
+				<span class="prelude-val">Ok</span>(<span class="ident">OnBlockJustification::Import</span> { <span class="ident">peer</span>, <span class="ident">hash</span>, <span class="ident">number</span>, <span class="ident">justifications</span> }) =&gt;
 					<span class="ident">CustomMessageOutcome::JustificationImport</span>(<span class="ident">peer</span>, <span class="ident">hash</span>, <span class="ident">number</span>, <span class="ident">justifications</span>),
-				<span class="prelude-val">Err</span>(<span class="ident">sync::BadPeer</span>(<span class="ident">id</span>, <span class="ident">repu</span>)) =&gt; {
+				<span class="prelude-val">Err</span>(<span class="ident">BadPeer</span>(<span class="ident">id</span>, <span class="ident">repu</span>)) =&gt; {
 					<span class="self">self</span>.<span class="ident">behaviour</span>.<span class="ident">disconnect_peer</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>, <span class="ident">HARDCODED_PEERSETS_SYNC</span>);
 					<span class="self">self</span>.<span class="ident">peerset_handle</span>.<span class="ident">report_peer</span>(<span class="ident">id</span>, <span class="ident">repu</span>);
 					<span class="ident">CustomMessageOutcome::None</span>
@@ -2560,10 +2566,10 @@
 			}
 		} <span class="kw">else</span> {
 			<span class="kw">match</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">on_block_data</span>(<span class="kw-2">&amp;</span><span class="ident">peer_id</span>, <span class="prelude-val">Some</span>(<span class="ident">request</span>), <span class="ident">block_response</span>) {
-				<span class="prelude-val">Ok</span>(<span class="ident">sync::OnBlockData::Import</span>(<span class="ident">origin</span>, <span class="ident">blocks</span>)) =&gt;
+				<span class="prelude-val">Ok</span>(<span class="ident">OnBlockData::Import</span>(<span class="ident">origin</span>, <span class="ident">blocks</span>)) =&gt;
 					<span class="ident">CustomMessageOutcome::BlockImport</span>(<span class="ident">origin</span>, <span class="ident">blocks</span>),
-				<span class="prelude-val">Ok</span>(<span class="ident">sync::OnBlockData::Request</span>(<span class="ident">peer</span>, <span class="ident">req</span>)) =&gt; <span class="self">self</span>.<span class="ident">prepare_block_request</span>(<span class="ident">peer</span>, <span class="ident">req</span>),
-				<span class="prelude-val">Err</span>(<span class="ident">sync::BadPeer</span>(<span class="ident">id</span>, <span class="ident">repu</span>)) =&gt; {
+				<span class="prelude-val">Ok</span>(<span class="ident">OnBlockData::Request</span>(<span class="ident">peer</span>, <span class="ident">req</span>)) =&gt; <span class="self">self</span>.<span class="ident">prepare_block_request</span>(<span class="ident">peer</span>, <span class="ident">req</span>),
+				<span class="prelude-val">Err</span>(<span class="ident">BadPeer</span>(<span class="ident">id</span>, <span class="ident">repu</span>)) =&gt; {
 					<span class="self">self</span>.<span class="ident">behaviour</span>.<span class="ident">disconnect_peer</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>, <span class="ident">HARDCODED_PEERSETS_SYNC</span>);
 					<span class="self">self</span>.<span class="ident">peerset_handle</span>.<span class="ident">report_peer</span>(<span class="ident">id</span>, <span class="ident">repu</span>);
 					<span class="ident">CustomMessageOutcome::None</span>
@@ -2580,10 +2586,10 @@
 		<span class="ident">response</span>: <span class="ident">StateResponse</span>,
 	) -&gt; <span class="ident">CustomMessageOutcome</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">on_state_data</span>(<span class="kw-2">&amp;</span><span class="ident">peer_id</span>, <span class="ident">response</span>) {
-			<span class="prelude-val">Ok</span>(<span class="ident">sync::OnStateData::Import</span>(<span class="ident">origin</span>, <span class="ident">block</span>)) =&gt;
+			<span class="prelude-val">Ok</span>(<span class="ident">OnStateData::Import</span>(<span class="ident">origin</span>, <span class="ident">block</span>)) =&gt;
 				<span class="ident">CustomMessageOutcome::BlockImport</span>(<span class="ident">origin</span>, <span class="macro">vec!</span>[<span class="ident">block</span>]),
-			<span class="prelude-val">Ok</span>(<span class="ident">sync::OnStateData::Continue</span>) =&gt; <span class="ident">CustomMessageOutcome::None</span>,
-			<span class="prelude-val">Err</span>(<span class="ident">sync::BadPeer</span>(<span class="ident">id</span>, <span class="ident">repu</span>)) =&gt; {
+			<span class="prelude-val">Ok</span>(<span class="ident">OnStateData::Continue</span>) =&gt; <span class="ident">CustomMessageOutcome::None</span>,
+			<span class="prelude-val">Err</span>(<span class="ident">BadPeer</span>(<span class="ident">id</span>, <span class="ident">repu</span>)) =&gt; {
 				<span class="self">self</span>.<span class="ident">behaviour</span>.<span class="ident">disconnect_peer</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>, <span class="ident">HARDCODED_PEERSETS_SYNC</span>);
 				<span class="self">self</span>.<span class="ident">peerset_handle</span>.<span class="ident">report_peer</span>(<span class="ident">id</span>, <span class="ident">repu</span>);
 				<span class="ident">CustomMessageOutcome::None</span>
@@ -2600,7 +2606,7 @@
 	) -&gt; <span class="ident">CustomMessageOutcome</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">on_warp_sync_data</span>(<span class="kw-2">&amp;</span><span class="ident">peer_id</span>, <span class="ident">response</span>) {
 			<span class="prelude-val">Ok</span>(()) =&gt; <span class="ident">CustomMessageOutcome::None</span>,
-			<span class="prelude-val">Err</span>(<span class="ident">sync::BadPeer</span>(<span class="ident">id</span>, <span class="ident">repu</span>)) =&gt; {
+			<span class="prelude-val">Err</span>(<span class="ident">BadPeer</span>(<span class="ident">id</span>, <span class="ident">repu</span>)) =&gt; {
 				<span class="self">self</span>.<span class="ident">behaviour</span>.<span class="ident">disconnect_peer</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>, <span class="ident">HARDCODED_PEERSETS_SYNC</span>);
 				<span class="self">self</span>.<span class="ident">peerset_handle</span>.<span class="ident">report_peer</span>(<span class="ident">id</span>, <span class="ident">repu</span>);
 				<span class="ident">CustomMessageOutcome::None</span>
@@ -2709,7 +2715,7 @@
 		<span class="kw">let</span> <span class="ident">req</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">peer</span>.<span class="ident">info</span>.<span class="ident">roles</span>.<span class="ident">is_full</span>() {
 			<span class="kw">match</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">who</span>, <span class="ident">peer</span>.<span class="ident">info</span>.<span class="ident">best_hash</span>, <span class="ident">peer</span>.<span class="ident">info</span>.<span class="ident">best_number</span>) {
 				<span class="prelude-val">Ok</span>(<span class="ident">req</span>) =&gt; <span class="ident">req</span>,
-				<span class="prelude-val">Err</span>(<span class="ident">sync::BadPeer</span>(<span class="ident">id</span>, <span class="ident">repu</span>)) =&gt; {
+				<span class="prelude-val">Err</span>(<span class="ident">BadPeer</span>(<span class="ident">id</span>, <span class="ident">repu</span>)) =&gt; {
 					<span class="self">self</span>.<span class="ident">behaviour</span>.<span class="ident">disconnect_peer</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>, <span class="ident">HARDCODED_PEERSETS_SYNC</span>);
 					<span class="self">self</span>.<span class="ident">peerset_handle</span>.<span class="ident">report_peer</span>(<span class="ident">id</span>, <span class="ident">repu</span>);
 					<span class="kw">return</span> <span class="prelude-val">Err</span>(())
@@ -2766,13 +2772,9 @@
 			<span class="kw">let</span> <span class="ident">inserted</span> <span class="op">=</span> <span class="ident">peer</span>.<span class="ident">known_blocks</span>.<span class="ident">insert</span>(<span class="ident">hash</span>);
 			<span class="kw">if</span> <span class="ident">inserted</span> {
 				<span class="macro">trace!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;Announcing block {:?} to {}&quot;</span>, <span class="ident">hash</span>, <span class="ident">who</span>);
-				<span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="ident">message::BlockAnnounce</span> {
+				<span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="ident">BlockAnnounce</span> {
 					<span class="ident">header</span>: <span class="ident">header</span>.<span class="ident">clone</span>(),
-					<span class="ident">state</span>: <span class="kw">if</span> <span class="ident">is_best</span> {
-						<span class="prelude-val">Some</span>(<span class="ident">message::BlockState::Best</span>)
-					} <span class="kw">else</span> {
-						<span class="prelude-val">Some</span>(<span class="ident">message::BlockState::Normal</span>)
-					},
+					<span class="ident">state</span>: <span class="kw">if</span> <span class="ident">is_best</span> { <span class="prelude-val">Some</span>(<span class="ident">BlockState::Best</span>) } <span class="kw">else</span> { <span class="prelude-val">Some</span>(<span class="ident">BlockState::Normal</span>) },
 					<span class="ident">data</span>: <span class="prelude-val">Some</span>(<span class="ident">data</span>.<span class="ident">clone</span>()),
 				};
 
@@ -2809,9 +2811,9 @@
 
 		<span class="ident">peer</span>.<span class="ident">known_blocks</span>.<span class="ident">insert</span>(<span class="ident">hash</span>);
 
-		<span class="kw">let</span> <span class="ident">is_best</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">announce</span>.<span class="ident">state</span>.<span class="ident">unwrap_or</span>(<span class="ident">message::BlockState::Best</span>) {
-			<span class="ident">message::BlockState::Best</span> =&gt; <span class="bool-val">true</span>,
-			<span class="ident">message::BlockState::Normal</span> =&gt; <span class="bool-val">false</span>,
+		<span class="kw">let</span> <span class="ident">is_best</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">announce</span>.<span class="ident">state</span>.<span class="ident">unwrap_or</span>(<span class="ident">BlockState::Best</span>) {
+			<span class="ident">BlockState::Best</span> =&gt; <span class="bool-val">true</span>,
+			<span class="ident">BlockState::Normal</span> =&gt; <span class="bool-val">false</span>,
 		};
 
 		<span class="kw">if</span> <span class="ident">peer</span>.<span class="ident">info</span>.<span class="ident">roles</span>.<span class="ident">is_full</span>() {
@@ -2822,11 +2824,11 @@
 	<span class="doccomment">/// Process the result of the block announce validation.</span>
 	<span class="kw">fn</span> <span class="ident">process_block_announce_validation_result</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">validation_result</span>: <span class="ident">sync::PollBlockAnnounceValidation</span><span class="op">&lt;</span><span class="ident">B::Header</span><span class="op">&gt;</span>,
+		<span class="ident">validation_result</span>: <span class="ident">PollBlockAnnounceValidation</span><span class="op">&lt;</span><span class="ident">B::Header</span><span class="op">&gt;</span>,
 	) -&gt; <span class="ident">CustomMessageOutcome</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> (<span class="ident">header</span>, <span class="ident">is_best</span>, <span class="ident">who</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">validation_result</span> {
-			<span class="ident">sync::PollBlockAnnounceValidation::Skip</span> =&gt; <span class="kw">return</span> <span class="ident">CustomMessageOutcome::None</span>,
-			<span class="ident">sync::PollBlockAnnounceValidation::Nothing</span> { <span class="ident">is_best</span>, <span class="ident">who</span>, <span class="ident">announce</span> } =&gt; {
+			<span class="ident">PollBlockAnnounceValidation::Skip</span> =&gt; <span class="kw">return</span> <span class="ident">CustomMessageOutcome::None</span>,
+			<span class="ident">PollBlockAnnounceValidation::Nothing</span> { <span class="ident">is_best</span>, <span class="ident">who</span>, <span class="ident">announce</span> } =&gt; {
 				<span class="self">self</span>.<span class="ident">update_peer_info</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>);
 
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">data</span>) <span class="op">=</span> <span class="ident">announce</span>.<span class="ident">data</span> {
@@ -2847,7 +2849,7 @@
 					<span class="kw">return</span> <span class="ident">CustomMessageOutcome::None</span>
 				}
 			},
-			<span class="ident">sync::PollBlockAnnounceValidation::ImportHeader</span> { <span class="ident">announce</span>, <span class="ident">is_best</span>, <span class="ident">who</span> } =&gt; {
+			<span class="ident">PollBlockAnnounceValidation::ImportHeader</span> { <span class="ident">announce</span>, <span class="ident">is_best</span>, <span class="ident">who</span> } =&gt; {
 				<span class="self">self</span>.<span class="ident">update_peer_info</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>);
 
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">data</span>) <span class="op">=</span> <span class="ident">announce</span>.<span class="ident">data</span> {
@@ -2858,7 +2860,7 @@
 
 				(<span class="ident">announce</span>.<span class="ident">header</span>, <span class="ident">is_best</span>, <span class="ident">who</span>)
 			},
-			<span class="ident">sync::PollBlockAnnounceValidation::Failure</span> { <span class="ident">who</span>, <span class="ident">disconnect</span> } =&gt; {
+			<span class="ident">PollBlockAnnounceValidation::Failure</span> { <span class="ident">who</span>, <span class="ident">disconnect</span> } =&gt; {
 				<span class="kw">if</span> <span class="ident">disconnect</span> {
 					<span class="self">self</span>.<span class="ident">behaviour</span>.<span class="ident">disconnect_peer</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">HARDCODED_PEERSETS_SYNC</span>);
 				}
@@ -2875,9 +2877,9 @@
 		<span class="kw">let</span> <span class="ident">blocks_to_import</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">on_block_data</span>(
 			<span class="kw-2">&amp;</span><span class="ident">who</span>,
 			<span class="prelude-val">None</span>,
-			<span class="ident">message::generic::BlockResponse</span> {
+			<span class="ident">BlockResponse</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
 				<span class="ident">id</span>: <span class="number">0</span>,
-				<span class="ident">blocks</span>: <span class="macro">vec!</span>[<span class="ident">message::generic::BlockData</span> {
+				<span class="ident">blocks</span>: <span class="macro">vec!</span>[<span class="ident">BlockData</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
 					<span class="ident">hash</span>: <span class="ident">header</span>.<span class="ident">hash</span>(),
 					<span class="ident">header</span>: <span class="prelude-val">Some</span>(<span class="ident">header</span>),
 					<span class="ident">body</span>: <span class="prelude-val">None</span>,
@@ -2895,10 +2897,10 @@
 		}
 
 		<span class="kw">match</span> <span class="ident">blocks_to_import</span> {
-			<span class="prelude-val">Ok</span>(<span class="ident">sync::OnBlockData::Import</span>(<span class="ident">origin</span>, <span class="ident">blocks</span>)) =&gt;
+			<span class="prelude-val">Ok</span>(<span class="ident">OnBlockData::Import</span>(<span class="ident">origin</span>, <span class="ident">blocks</span>)) =&gt;
 				<span class="ident">CustomMessageOutcome::BlockImport</span>(<span class="ident">origin</span>, <span class="ident">blocks</span>),
-			<span class="prelude-val">Ok</span>(<span class="ident">sync::OnBlockData::Request</span>(<span class="ident">peer</span>, <span class="ident">req</span>)) =&gt; <span class="self">self</span>.<span class="ident">prepare_block_request</span>(<span class="ident">peer</span>, <span class="ident">req</span>),
-			<span class="prelude-val">Err</span>(<span class="ident">sync::BadPeer</span>(<span class="ident">id</span>, <span class="ident">repu</span>)) =&gt; {
+			<span class="prelude-val">Ok</span>(<span class="ident">OnBlockData::Request</span>(<span class="ident">peer</span>, <span class="ident">req</span>)) =&gt; <span class="self">self</span>.<span class="ident">prepare_block_request</span>(<span class="ident">peer</span>, <span class="ident">req</span>),
+			<span class="prelude-val">Err</span>(<span class="ident">BadPeer</span>(<span class="ident">id</span>, <span class="ident">repu</span>)) =&gt; {
 				<span class="self">self</span>.<span class="ident">behaviour</span>.<span class="ident">disconnect_peer</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>, <span class="ident">HARDCODED_PEERSETS_SYNC</span>);
 				<span class="self">self</span>.<span class="ident">peerset_handle</span>.<span class="ident">report_peer</span>(<span class="ident">id</span>, <span class="ident">repu</span>);
 				<span class="ident">CustomMessageOutcome::None</span>
@@ -2956,7 +2958,7 @@
 						<span class="ident">req</span>,
 					));
 				},
-				<span class="prelude-val">Err</span>(<span class="ident">sync::BadPeer</span>(<span class="ident">id</span>, <span class="ident">repu</span>)) =&gt; {
+				<span class="prelude-val">Err</span>(<span class="ident">BadPeer</span>(<span class="ident">id</span>, <span class="ident">repu</span>)) =&gt; {
 					<span class="self">self</span>.<span class="ident">behaviour</span>.<span class="ident">disconnect_peer</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>, <span class="ident">HARDCODED_PEERSETS_SYNC</span>);
 					<span class="self">self</span>.<span class="ident">peerset_handle</span>.<span class="ident">report_peer</span>(<span class="ident">id</span>, <span class="ident">repu</span>)
 				},
@@ -3123,7 +3125,7 @@
 <span class="kw">fn</span> <span class="ident">prepare_block_request</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span>(
 	<span class="ident">peers</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">PeerId</span>, <span class="ident">Peer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="ident">who</span>: <span class="ident">PeerId</span>,
-	<span class="ident">request</span>: <span class="ident">message::BlockRequest</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+	<span class="ident">request</span>: <span class="ident">BlockRequest</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 ) -&gt; <span class="ident">CustomMessageOutcome</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 
@@ -3131,13 +3133,13 @@
 		<span class="ident">peer</span>.<span class="ident">request</span> <span class="op">=</span> <span class="prelude-val">Some</span>((<span class="ident">PeerRequest::Block</span>(<span class="ident">request</span>.<span class="ident">clone</span>()), <span class="ident">rx</span>));
 	}
 
-	<span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::schema::v1::BlockRequest</span> {
+	<span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="ident">sc_network_sync::schema::v1::BlockRequest</span> {
 		<span class="ident">fields</span>: <span class="ident">request</span>.<span class="ident">fields</span>.<span class="ident">to_be_u32</span>(),
 		<span class="ident">from_block</span>: <span class="kw">match</span> <span class="ident">request</span>.<span class="ident">from</span> {
-			<span class="ident">message::FromBlock::Hash</span>(<span class="ident">h</span>) =&gt;
-				<span class="prelude-val">Some</span>(<span class="ident"><span class="kw">crate</span>::schema::v1::block_request::FromBlock::Hash</span>(<span class="ident">h</span>.<span class="ident">encode</span>())),
-			<span class="ident">message::FromBlock::Number</span>(<span class="ident">n</span>) =&gt;
-				<span class="prelude-val">Some</span>(<span class="ident"><span class="kw">crate</span>::schema::v1::block_request::FromBlock::Number</span>(<span class="ident">n</span>.<span class="ident">encode</span>())),
+			<span class="ident">FromBlock::Hash</span>(<span class="ident">h</span>) =&gt;
+				<span class="prelude-val">Some</span>(<span class="ident">sc_network_sync::schema::v1::block_request::FromBlock::Hash</span>(<span class="ident">h</span>.<span class="ident">encode</span>())),
+			<span class="ident">FromBlock::Number</span>(<span class="ident">n</span>) =&gt;
+				<span class="prelude-val">Some</span>(<span class="ident">sc_network_sync::schema::v1::block_request::FromBlock::Number</span>(<span class="ident">n</span>.<span class="ident">encode</span>())),
 		},
 		<span class="ident">to_block</span>: <span class="ident">request</span>.<span class="ident">to</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">encode</span>()).<span class="ident">unwrap_or_default</span>(),
 		<span class="ident">direction</span>: <span class="ident">request</span>.<span class="ident">direction</span> <span class="kw">as</span> <span class="ident">i32</span>,
@@ -3151,7 +3153,7 @@
 <span class="kw">fn</span> <span class="ident">prepare_state_request</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span>(
 	<span class="ident">peers</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">PeerId</span>, <span class="ident">Peer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="ident">who</span>: <span class="ident">PeerId</span>,
-	<span class="ident">request</span>: <span class="ident"><span class="kw">crate</span>::schema::v1::StateRequest</span>,
+	<span class="ident">request</span>: <span class="ident">sc_network_sync::schema::v1::StateRequest</span>,
 ) -&gt; <span class="ident">CustomMessageOutcome</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 
@@ -3208,13 +3210,13 @@
 	<span class="doccomment">/// A new block request must be emitted.</span>
 	<span class="ident">BlockRequest</span> {
 		<span class="ident">target</span>: <span class="ident">PeerId</span>,
-		<span class="ident">request</span>: <span class="ident"><span class="kw">crate</span>::schema::v1::BlockRequest</span>,
+		<span class="ident">request</span>: <span class="ident">sc_network_sync::schema::v1::BlockRequest</span>,
 		<span class="ident">pending_response</span>: <span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">RequestFailure</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	},
 	<span class="doccomment">/// A new storage request must be emitted.</span>
 	<span class="ident">StateRequest</span> {
 		<span class="ident">target</span>: <span class="ident">PeerId</span>,
-		<span class="ident">request</span>: <span class="ident"><span class="kw">crate</span>::schema::v1::StateRequest</span>,
+		<span class="ident">request</span>: <span class="ident">sc_network_sync::schema::v1::StateRequest</span>,
 		<span class="ident">pending_response</span>: <span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">RequestFailure</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	},
 	<span class="doccomment">/// A new warp sync request must be emitted.</span>
@@ -3318,7 +3320,9 @@
 						<span class="kw">match</span> <span class="ident">req</span> {
 							<span class="ident">PeerRequest::Block</span>(<span class="ident">req</span>) =&gt; {
 								<span class="kw">let</span> <span class="ident">protobuf_response</span> <span class="op">=</span>
-									<span class="kw">match</span> <span class="ident"><span class="kw">crate</span>::schema::v1::BlockResponse::decode</span>(<span class="kw-2">&amp;</span><span class="ident">resp</span>[..]) {
+									<span class="kw">match</span> <span class="ident">sc_network_sync::schema::v1::BlockResponse::decode</span>(
+										<span class="kw-2">&amp;</span><span class="ident">resp</span>[..],
+									) {
 										<span class="prelude-val">Ok</span>(<span class="ident">proto</span>) =&gt; <span class="ident">proto</span>,
 										<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
 											<span class="macro">debug!</span>(
@@ -3338,7 +3342,9 @@
 							},
 							<span class="ident">PeerRequest::State</span> =&gt; {
 								<span class="kw">let</span> <span class="ident">protobuf_response</span> <span class="op">=</span>
-									<span class="kw">match</span> <span class="ident"><span class="kw">crate</span>::schema::v1::StateResponse::decode</span>(<span class="kw-2">&amp;</span><span class="ident">resp</span>[..]) {
+									<span class="kw">match</span> <span class="ident">sc_network_sync::schema::v1::StateResponse::decode</span>(
+										<span class="kw-2">&amp;</span><span class="ident">resp</span>[..],
+									) {
 										<span class="prelude-val">Ok</span>(<span class="ident">proto</span>) =&gt; <span class="ident">proto</span>,
 										<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
 											<span class="macro">debug!</span>(
@@ -3624,7 +3630,7 @@
 			},
 			<span class="ident">NotificationsOut::Notification</span> { <span class="ident">peer_id</span>, <span class="ident">set_id</span>, <span class="ident">message</span> } =&gt; <span class="kw">match</span> <span class="ident">set_id</span> {
 				<span class="ident">HARDCODED_PEERSETS_SYNC</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">peers</span>.<span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">peer_id</span>) =&gt; {
-					<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">announce</span>) <span class="op">=</span> <span class="ident">message::BlockAnnounce::decode</span>(<span class="kw-2">&amp;mut</span> <span class="ident">message</span>.<span class="ident">as_ref</span>()) {
+					<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">announce</span>) <span class="op">=</span> <span class="ident">BlockAnnounce::decode</span>(<span class="kw-2">&amp;mut</span> <span class="ident">message</span>.<span class="ident">as_ref</span>()) {
 						<span class="self">self</span>.<span class="ident">push_block_announce_validation</span>(<span class="ident">peer_id</span>, <span class="ident">announce</span>);
 
 						<span class="comment">// Make sure that the newly added block announce validation future was</span>

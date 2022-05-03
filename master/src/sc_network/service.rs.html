@@ -2255,8 +2255,6 @@
 <span id="2250">2250</span>
 <span id="2251">2251</span>
 <span id="2252">2252</span>
-<span id="2253">2253</span>
-<span id="2254">2254</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -2296,11 +2294,8 @@
 		<span class="ident">NetworkState</span>, <span class="ident">NotConnectedPeer</span> <span class="kw">as</span> <span class="ident">NetworkStateNotConnectedPeer</span>, <span class="ident">Peer</span> <span class="kw">as</span> <span class="ident">NetworkStatePeer</span>,
 	},
 	<span class="ident">protocol</span>::{
-		<span class="self">self</span>,
-		<span class="ident">event::Event</span>,
-		<span class="ident">message::generic::Roles</span>,
-		<span class="ident">sync</span>::{<span class="ident">Status</span> <span class="kw">as</span> <span class="ident">SyncStatus</span>, <span class="ident">SyncState</span>},
-		<span class="ident">NotificationsSink</span>, <span class="ident">NotifsHandlerError</span>, <span class="ident">PeerInfo</span>, <span class="ident">Protocol</span>, <span class="ident">Ready</span>,
+		<span class="self">self</span>, <span class="ident">event::Event</span>, <span class="ident">message::generic::Roles</span>, <span class="ident">NotificationsSink</span>, <span class="ident">NotifsHandlerError</span>,
+		<span class="ident">PeerInfo</span>, <span class="ident">Protocol</span>, <span class="ident">Ready</span>,
 	},
 	<span class="ident">transactions</span>, <span class="ident">transport</span>, <span class="ident">DhtEvent</span>, <span class="ident">ExHashT</span>, <span class="ident">NetworkStateInfo</span>, <span class="ident">NetworkStatus</span>, <span class="ident">ReputationChange</span>,
 };
@@ -2322,6 +2317,7 @@
 <span class="kw">use</span> <span class="ident">parking_lot::Mutex</span>;
 <span class="kw">use</span> <span class="ident">sc_client_api</span>::{<span class="ident">BlockBackend</span>, <span class="ident">ProofProvider</span>};
 <span class="kw">use</span> <span class="ident">sc_consensus</span>::{<span class="ident">BlockImportError</span>, <span class="ident">BlockImportStatus</span>, <span class="ident">ImportQueue</span>, <span class="ident">Link</span>};
+<span class="kw">use</span> <span class="ident">sc_network_sync</span>::{<span class="ident">Status</span> <span class="kw">as</span> <span class="ident">SyncStatus</span>, <span class="ident">SyncState</span>};
 <span class="kw">use</span> <span class="ident">sc_peerset::PeersetHandle</span>;
 <span class="kw">use</span> <span class="ident">sc_utils::mpsc</span>::{<span class="ident">tracing_unbounded</span>, <span class="ident">TracingUnboundedReceiver</span>, <span class="ident">TracingUnboundedSender</span>};
 <span class="kw">use</span> <span class="ident">sp_blockchain</span>::{<span class="ident">HeaderBackend</span>, <span class="ident">HeaderMetadata</span>};

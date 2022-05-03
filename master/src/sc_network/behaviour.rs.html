@@ -634,7 +634,6 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
 	<span class="ident">bitswap::Bitswap</span>,
-	<span class="ident">config::ProtocolId</span>,
 	<span class="ident">discovery</span>::{<span class="ident">DiscoveryBehaviour</span>, <span class="ident">DiscoveryConfig</span>, <span class="ident">DiscoveryOut</span>},
 	<span class="ident">peer_info</span>,
 	<span class="ident">protocol</span>::{<span class="ident">message::Roles</span>, <span class="ident">CustomMessageOutcome</span>, <span class="ident">NotificationsSink</span>, <span class="ident">Protocol</span>},
@@ -658,6 +657,7 @@
 <span class="kw">use</span> <span class="ident">prost::Message</span>;
 <span class="kw">use</span> <span class="ident">sc_client_api</span>::{<span class="ident">BlockBackend</span>, <span class="ident">ProofProvider</span>};
 <span class="kw">use</span> <span class="ident">sc_consensus::import_queue</span>::{<span class="ident">IncomingBlock</span>, <span class="ident">Origin</span>};
+<span class="kw">use</span> <span class="ident">sc_network_common</span>::{<span class="ident">config::ProtocolId</span>, <span class="ident">request_responses::ProtocolConfig</span>};
 <span class="kw">use</span> <span class="ident">sc_peerset::PeersetHandle</span>;
 <span class="kw">use</span> <span class="ident">sp_blockchain</span>::{<span class="ident">HeaderBackend</span>, <span class="ident">HeaderMetadata</span>};
 <span class="kw">use</span> <span class="ident">sp_consensus::BlockOrigin</span>;
@@ -836,13 +836,13 @@
 		<span class="ident">user_agent</span>: <span class="ident">String</span>,
 		<span class="ident">local_public_key</span>: <span class="ident">PublicKey</span>,
 		<span class="ident">disco_config</span>: <span class="ident">DiscoveryConfig</span>,
-		<span class="ident">block_request_protocol_config</span>: <span class="ident">request_responses::ProtocolConfig</span>,
-		<span class="ident">state_request_protocol_config</span>: <span class="ident">request_responses::ProtocolConfig</span>,
-		<span class="ident">warp_sync_protocol_config</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">request_responses::ProtocolConfig</span><span class="op">&gt;</span>,
+		<span class="ident">block_request_protocol_config</span>: <span class="ident">ProtocolConfig</span>,
+		<span class="ident">state_request_protocol_config</span>: <span class="ident">ProtocolConfig</span>,
+		<span class="ident">warp_sync_protocol_config</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ProtocolConfig</span><span class="op">&gt;</span>,
 		<span class="ident">bitswap</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Bitswap</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Client</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-		<span class="ident">light_client_request_protocol_config</span>: <span class="ident">request_responses::ProtocolConfig</span>,
+		<span class="ident">light_client_request_protocol_config</span>: <span class="ident">ProtocolConfig</span>,
 		<span class="comment">// All remaining request protocol configs.</span>
-		<span class="kw-2">mut</span> <span class="ident">request_response_protocols</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">request_responses::ProtocolConfig</span><span class="op">&gt;</span>,
+		<span class="kw-2">mut</span> <span class="ident">request_response_protocols</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ProtocolConfig</span><span class="op">&gt;</span>,
 		<span class="ident">peerset</span>: <span class="ident">PeersetHandle</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">request_responses::RegisterError</span><span class="op">&gt;</span> {
 		<span class="comment">// Extract protocol name and add to `request_response_protocols`.</span>

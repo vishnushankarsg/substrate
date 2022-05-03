@@ -838,27 +838,6 @@
 <span id="833">833</span>
 <span id="834">834</span>
 <span id="835">835</span>
-<span id="836">836</span>
-<span id="837">837</span>
-<span id="838">838</span>
-<span id="839">839</span>
-<span id="840">840</span>
-<span id="841">841</span>
-<span id="842">842</span>
-<span id="843">843</span>
-<span id="844">844</span>
-<span id="845">845</span>
-<span id="846">846</span>
-<span id="847">847</span>
-<span id="848">848</span>
-<span id="849">849</span>
-<span id="850">850</span>
-<span id="851">851</span>
-<span id="852">852</span>
-<span id="853">853</span>
-<span id="854">854</span>
-<span id="855">855</span>
-<span id="856">856</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -882,12 +861,14 @@
 <span class="doccomment">//! The [`Params`] struct is the struct that must be passed in order to initialize the networking.</span>
 <span class="doccomment">//! See the documentation of [`Params`].</span>
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::{
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_network_common</span>::{
+	<span class="ident">config::ProtocolId</span>,
 	<span class="ident">request_responses</span>::{
 		<span class="ident">IncomingRequest</span>, <span class="ident">OutgoingResponse</span>, <span class="ident">ProtocolConfig</span> <span class="kw">as</span> <span class="ident">RequestResponseConfig</span>,
 	},
-	<span class="ident">warp_request_handler::WarpSyncProvider</span>,
 };
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_network_sync::warp_request_handler::WarpSyncProvider</span>;
+
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">libp2p</span>::{<span class="ident">build_multiaddr</span>, <span class="ident">core::PublicKey</span>, <span class="ident">identity</span>};
 
 <span class="comment">// Note: this re-export shouldn&#39;t be part of the public API of the crate and will be removed in</span>
@@ -972,10 +953,10 @@
 	<span class="doccomment">/// protocol name. In addition all of [`RequestResponseConfig`] is used to handle incoming</span>
 	<span class="doccomment">/// block requests, if enabled.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Can be constructed either via [`crate::block_request_handler::generate_protocol_config`]</span>
-	<span class="doccomment">/// allowing outgoing but not incoming requests, or constructed via</span>
-	<span class="doccomment">/// [`crate::block_request_handler::BlockRequestHandler::new`] allowing both outgoing and</span>
-	<span class="doccomment">/// incoming requests.</span>
+	<span class="doccomment">/// Can be constructed either via</span>
+	<span class="doccomment">/// [`sc_network_sync::block_request_handler::generate_protocol_config`] allowing outgoing but</span>
+	<span class="doccomment">/// not incoming requests, or constructed via [`sc_network_sync::block_request_handler::</span>
+	<span class="doccomment">/// BlockRequestHandler::new`] allowing both outgoing and incoming requests.</span>
 	<span class="kw">pub</span> <span class="ident">block_request_protocol_config</span>: <span class="ident">RequestResponseConfig</span>,
 
 	<span class="doccomment">/// Request response configuration for the light client request protocol.</span>
@@ -990,8 +971,8 @@
 	<span class="doccomment">/// Request response configuration for the state request protocol.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Can be constructed either via</span>
-	<span class="doccomment">/// [`crate::block_request_handler::generate_protocol_config`] allowing outgoing but not</span>
-	<span class="doccomment">/// incoming requests, or constructed via</span>
+	<span class="doccomment">/// [`sc_network_sync::block_request_handler::generate_protocol_config`] allowing outgoing but</span>
+	<span class="doccomment">/// not incoming requests, or constructed via</span>
 	<span class="doccomment">/// [`crate::state_request_handler::StateRequestHandler::new`] allowing</span>
 	<span class="doccomment">/// both outgoing and incoming requests.</span>
 	<span class="kw">pub</span> <span class="ident">state_request_protocol_config</span>: <span class="ident">RequestResponseConfig</span>,
@@ -1090,29 +1071,6 @@
 
 	<span class="kw">fn</span> <span class="ident">transaction</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_h</span>: <span class="kw-2">&amp;</span><span class="ident">H</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">B::Extrinsic</span><span class="op">&gt;</span> {
 		<span class="prelude-val">None</span>
-	}
-}
-
-<span class="doccomment">/// Name of a protocol, transmitted on the wire. Should be unique for each chain. Always UTF-8.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ProtocolId</span>(<span class="ident">smallvec::SmallVec</span><span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">6</span>]<span class="op">&gt;</span>);
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">From</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ProtocolId</span> {
-	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">bytes</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>) -&gt; <span class="ident">ProtocolId</span> {
-		<span class="self">Self</span>(<span class="ident">bytes</span>.<span class="ident">as_bytes</span>().<span class="ident">into</span>())
-	}
-}
-
-<span class="kw">impl</span> <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ProtocolId</span> {
-	<span class="kw">fn</span> <span class="ident">as_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">str</span> {
-		<span class="ident">str::from_utf8</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>[..])
-			.<span class="ident">expect</span>(<span class="string">&quot;the only way to build a ProtocolId is through a UTF-8 String; qed&quot;</span>)
-	}
-}
-
-<span class="kw">impl</span> <span class="ident">fmt::Debug</span> <span class="kw">for</span> <span class="ident">ProtocolId</span> {
-	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span>) -&gt; <span class="ident">fmt::Result</span> {
-		<span class="ident">fmt::Debug::fmt</span>(<span class="self">self</span>.<span class="ident">as_ref</span>(), <span class="ident">f</span>)
 	}
 }
 
