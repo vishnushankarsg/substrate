@@ -306,6 +306,10 @@
 <span id="301">301</span>
 <span id="302">302</span>
 <span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -379,6 +383,7 @@
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">pallet</span>::<span class="kw-2">*</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_mmr_primitives</span>::{<span class="self">self</span> <span class="kw">as</span> <span class="ident">primitives</span>, <span class="ident">Error</span>, <span class="ident">LeafDataProvider</span>, <span class="ident">LeafIndex</span>, <span class="ident">NodeIndex</span>};
+<span class="kw">use</span> <span class="ident">sp_std::prelude</span>::<span class="kw-2">*</span>;
 
 <span class="doccomment">/// The most common use case for MMRs is to store historical block hashes,</span>
 <span class="doccomment">/// so that any point in time in the future we can receive a proof about some past</span>
@@ -536,22 +541,23 @@
 <span class="doccomment">/// Hashing used for the pallet.</span>
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type</span> <span class="ident">HashingOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Hashing</span>;
 
-<span class="doccomment">/// Stateless MMR proof verification.</span>
+<span class="doccomment">/// Stateless MMR proof verification for batch of leaves.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// This function can be used to verify received MMR proof (`proof`)</span>
-<span class="doccomment">/// for given leaf data (`leaf`) against a known MMR root hash (`root`).</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// The verification does not require any storage access.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">verify_leaf_proof</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">L</span><span class="op">&gt;</span>(
+<span class="doccomment">/// This function can be used to verify received MMR [primitives::BatchProof] (`proof`)</span>
+<span class="doccomment">/// for given leaves set (`leaves`) against a known MMR root hash (`root`).</span>
+<span class="doccomment">/// Note, the leaves should be sorted such that corresponding leaves and leaf indices have the</span>
+<span class="doccomment">/// same position in both the `leaves` vector and the `leaf_indices` vector contained in the</span>
+<span class="doccomment">/// [primitives::BatchProof].</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">verify_leaves_proof</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">L</span><span class="op">&gt;</span>(
 	<span class="ident">root</span>: <span class="ident">H::Output</span>,
-	<span class="ident">leaf</span>: <span class="ident">mmr::Node</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">L</span><span class="op">&gt;</span>,
-	<span class="ident">proof</span>: <span class="ident">primitives::Proof</span><span class="op">&lt;</span><span class="ident">H::Output</span><span class="op">&gt;</span>,
+	<span class="ident">leaves</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">mmr::Node</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">L</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="ident">proof</span>: <span class="ident">primitives::BatchProof</span><span class="op">&lt;</span><span class="ident">H::Output</span><span class="op">&gt;</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">primitives::Error</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">H</span>: <span class="ident">traits::Hash</span>,
 	<span class="ident">L</span>: <span class="ident">primitives::FullLeaf</span>,
 {
-	<span class="kw">let</span> <span class="ident">is_valid</span> <span class="op">=</span> <span class="ident">mmr::verify_leaf_proof</span>::<span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">L</span><span class="op">&gt;</span>(<span class="ident">root</span>, <span class="ident">leaf</span>, <span class="ident">proof</span>)<span class="question-mark">?</span>;
+	<span class="kw">let</span> <span class="ident">is_valid</span> <span class="op">=</span> <span class="ident">mmr::verify_leaves_proof</span>::<span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">L</span><span class="op">&gt;</span>(<span class="ident">root</span>, <span class="ident">leaves</span>, <span class="ident">proof</span>)<span class="question-mark">?</span>;
 	<span class="kw">if</span> <span class="ident">is_valid</span> {
 		<span class="prelude-val">Ok</span>(())
 	} <span class="kw">else</span> {
@@ -563,29 +569,36 @@
 	<span class="kw">fn</span> <span class="ident">offchain_key</span>(<span class="ident">pos</span>: <span class="ident">NodeIndex</span>) -&gt; <span class="ident">sp_std::prelude::Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {
 		(<span class="ident">T::INDEXING_PREFIX</span>, <span class="ident">pos</span>).<span class="ident">encode</span>()
 	}
-
-	<span class="doccomment">/// Generate a MMR proof for the given `leaf_index`.</span>
+	<span class="doccomment">/// Generate a MMR proof for the given `leaf_indices`.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Note this method can only be used from an off-chain context</span>
 	<span class="doccomment">/// (Offchain Worker or Runtime API call), since it requires</span>
 	<span class="doccomment">/// all the leaves to be present.</span>
 	<span class="doccomment">/// It may return an error or panic if used incorrectly.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">generate_proof</span>(
-		<span class="ident">leaf_index</span>: <span class="ident">LeafIndex</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">LeafOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">primitives::Proof</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span>), <span class="ident">primitives::Error</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">generate_batch_proof</span>(
+		<span class="ident">leaf_indices</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">NodeIndex</span><span class="op">&gt;</span>,
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>
+		(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">LeafOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">primitives::BatchProof</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span>),
+		<span class="ident">primitives::Error</span>,
+	<span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">mmr</span>: <span class="ident">ModuleMmr</span><span class="op">&lt;</span><span class="ident">mmr::storage::OffchainStorage</span>, <span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">mmr::Mmr::new</span>(<span class="ident"><span class="self">Self</span>::mmr_leaves</span>());
-		<span class="ident">mmr</span>.<span class="ident">generate_proof</span>(<span class="ident">leaf_index</span>)
+		<span class="ident">mmr</span>.<span class="ident">generate_batch_proof</span>(<span class="ident">leaf_indices</span>)
 	}
 
-	<span class="doccomment">/// Verify MMR proof for given `leaf`.</span>
+	<span class="doccomment">/// Return the on-chain MMR root hash.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mmr_root</span>() -&gt; <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Hash</span> {
+		<span class="ident"><span class="self">Self</span>::mmr_root_hash</span>()
+	}
+
+	<span class="doccomment">/// Verify MMR proof for given `leaves`.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This method is safe to use within the runtime code.</span>
 	<span class="doccomment">/// It will return `Ok(())` if the proof is valid</span>
 	<span class="doccomment">/// and an `Err(..)` if MMR is inconsistent (some leaves are missing)</span>
 	<span class="doccomment">/// or the proof is invalid.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">verify_leaf</span>(
-		<span class="ident">leaf</span>: <span class="ident">LeafOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
-		<span class="ident">proof</span>: <span class="ident">primitives::Proof</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">verify_leaves</span>(
+		<span class="ident">leaves</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">LeafOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+		<span class="ident">proof</span>: <span class="ident">primitives::BatchProof</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">primitives::Error</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="ident">proof</span>.<span class="ident">leaf_count</span> <span class="op">&gt;</span> <span class="ident"><span class="self">Self</span>::mmr_leaves</span>() <span class="op">|</span><span class="op">|</span>
 			<span class="ident">proof</span>.<span class="ident">leaf_count</span> <span class="op">==</span> <span class="number">0</span> <span class="op">|</span><span class="op">|</span>
@@ -596,17 +609,12 @@
 		}
 
 		<span class="kw">let</span> <span class="ident">mmr</span>: <span class="ident">ModuleMmr</span><span class="op">&lt;</span><span class="ident">mmr::storage::OffchainStorage</span>, <span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">mmr::Mmr::new</span>(<span class="ident">proof</span>.<span class="ident">leaf_count</span>);
-		<span class="kw">let</span> <span class="ident">is_valid</span> <span class="op">=</span> <span class="ident">mmr</span>.<span class="ident">verify_leaf_proof</span>(<span class="ident">leaf</span>, <span class="ident">proof</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">is_valid</span> <span class="op">=</span> <span class="ident">mmr</span>.<span class="ident">verify_leaves_proof</span>(<span class="ident">leaves</span>, <span class="ident">proof</span>)<span class="question-mark">?</span>;
 		<span class="kw">if</span> <span class="ident">is_valid</span> {
 			<span class="prelude-val">Ok</span>(())
 		} <span class="kw">else</span> {
 			<span class="prelude-val">Err</span>(<span class="ident">primitives::Error::Verify</span>.<span class="ident">log_debug</span>(<span class="string">&quot;The proof is incorrect.&quot;</span>))
 		}
-	}
-
-	<span class="doccomment">/// Return the on-chain MMR root hash.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mmr_root</span>() -&gt; <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Hash</span> {
-		<span class="ident"><span class="self">Self</span>::mmr_root_hash</span>()
 	}
 }
 </code></pre></div>

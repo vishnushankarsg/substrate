@@ -2255,6 +2255,10 @@
 <span id="2250">2250</span>
 <span id="2251">2251</span>
 <span id="2252">2252</span>
+<span id="2253">2253</span>
+<span id="2254">2254</span>
+<span id="2255">2255</span>
+<span id="2256">2256</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -2485,12 +2489,10 @@
 		)<span class="question-mark">?</span>;
 
 		<span class="comment">// List of multiaddresses that we know in the network.</span>
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bootnodes</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">boot_node_ids</span> <span class="op">=</span> <span class="ident">HashSet::new</span>();
 
 		<span class="comment">// Process the bootnodes.</span>
 		<span class="kw">for</span> <span class="ident">bootnode</span> <span class="kw">in</span> <span class="ident">params</span>.<span class="ident">network_config</span>.<span class="ident">boot_nodes</span>.<span class="ident">iter</span>() {
-			<span class="ident">bootnodes</span>.<span class="ident">push</span>(<span class="ident">bootnode</span>.<span class="ident">peer_id</span>);
 			<span class="ident">boot_node_ids</span>.<span class="ident">insert</span>(<span class="ident">bootnode</span>.<span class="ident">peer_id</span>);
 			<span class="ident">known_addresses</span>.<span class="ident">push</span>((<span class="ident">bootnode</span>.<span class="ident">peer_id</span>, <span class="ident">bootnode</span>.<span class="ident">multiaddr</span>.<span class="ident">clone</span>()));
 		}
@@ -2498,12 +2500,18 @@
 		<span class="kw">let</span> <span class="ident">boot_node_ids</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">boot_node_ids</span>);
 
 		<span class="comment">// Check for duplicate bootnodes.</span>
-		<span class="ident">known_addresses</span>.<span class="ident">iter</span>().<span class="ident">try_for_each</span>(<span class="op">|</span>(<span class="ident">peer_id</span>, <span class="ident">addr</span>)<span class="op">|</span> {
-			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">other</span>) <span class="op">=</span> <span class="ident">known_addresses</span>.<span class="ident">iter</span>().<span class="ident">find</span>(<span class="op">|</span><span class="ident">o</span><span class="op">|</span> <span class="ident">o</span>.<span class="number">1</span> <span class="op">==</span> <span class="kw-2">*</span><span class="ident">addr</span> <span class="op">&amp;&amp;</span> <span class="ident">o</span>.<span class="number">0</span> <span class="op">!</span><span class="op">=</span> <span class="kw-2">*</span><span class="ident">peer_id</span>) {
+		<span class="ident">params</span>.<span class="ident">network_config</span>.<span class="ident">boot_nodes</span>.<span class="ident">iter</span>().<span class="ident">try_for_each</span>(<span class="op">|</span><span class="ident">bootnode</span><span class="op">|</span> {
+			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">other</span>) <span class="op">=</span> <span class="ident">params</span>
+				.<span class="ident">network_config</span>
+				.<span class="ident">boot_nodes</span>
+				.<span class="ident">iter</span>()
+				.<span class="ident">filter</span>(<span class="op">|</span><span class="ident">o</span><span class="op">|</span> <span class="ident">o</span>.<span class="ident">multiaddr</span> <span class="op">==</span> <span class="ident">bootnode</span>.<span class="ident">multiaddr</span>)
+				.<span class="ident">find</span>(<span class="op">|</span><span class="ident">o</span><span class="op">|</span> <span class="ident">o</span>.<span class="ident">peer_id</span> <span class="op">!</span><span class="op">=</span> <span class="ident">bootnode</span>.<span class="ident">peer_id</span>)
+			{
 				<span class="prelude-val">Err</span>(<span class="ident">Error::DuplicateBootnode</span> {
-					<span class="ident">address</span>: <span class="ident">addr</span>.<span class="ident">clone</span>(),
-					<span class="ident">first_id</span>: <span class="kw-2">*</span><span class="ident">peer_id</span>,
-					<span class="ident">second_id</span>: <span class="ident">other</span>.<span class="number">0</span>,
+					<span class="ident">address</span>: <span class="ident">bootnode</span>.<span class="ident">multiaddr</span>.<span class="ident">clone</span>(),
+					<span class="ident">first_id</span>: <span class="ident">bootnode</span>.<span class="ident">peer_id</span>,
+					<span class="ident">second_id</span>: <span class="ident">other</span>.<span class="ident">peer_id</span>,
 				})
 			} <span class="kw">else</span> {
 				<span class="prelude-val">Ok</span>(())

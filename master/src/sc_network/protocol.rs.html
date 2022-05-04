@@ -1861,6 +1861,8 @@
 <span id="1856">1856</span>
 <span id="1857">1857</span>
 <span id="1858">1858</span>
+<span id="1859">1859</span>
+<span id="1860">1860</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -2219,13 +2221,15 @@
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">default_sets_reserved</span> <span class="op">=</span> <span class="ident">HashSet::new</span>();
 			<span class="kw">for</span> <span class="ident">reserved</span> <span class="kw">in</span> <span class="ident">network_config</span>.<span class="ident">default_peers_set</span>.<span class="ident">reserved_nodes</span>.<span class="ident">iter</span>() {
 				<span class="ident">default_sets_reserved</span>.<span class="ident">insert</span>(<span class="ident">reserved</span>.<span class="ident">peer_id</span>);
-				<span class="ident">known_addresses</span>.<span class="ident">push</span>((<span class="ident">reserved</span>.<span class="ident">peer_id</span>, <span class="ident">reserved</span>.<span class="ident">multiaddr</span>.<span class="ident">clone</span>()));
+
+				<span class="kw">if</span> <span class="op">!</span><span class="ident">reserved</span>.<span class="ident">multiaddr</span>.<span class="ident">is_empty</span>() {
+					<span class="ident">known_addresses</span>.<span class="ident">push</span>((<span class="ident">reserved</span>.<span class="ident">peer_id</span>, <span class="ident">reserved</span>.<span class="ident">multiaddr</span>.<span class="ident">clone</span>()));
+				}
 			}
 
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bootnodes</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">network_config</span>.<span class="ident">boot_nodes</span>.<span class="ident">len</span>());
 			<span class="kw">for</span> <span class="ident">bootnode</span> <span class="kw">in</span> <span class="ident">network_config</span>.<span class="ident">boot_nodes</span>.<span class="ident">iter</span>() {
 				<span class="ident">bootnodes</span>.<span class="ident">push</span>(<span class="ident">bootnode</span>.<span class="ident">peer_id</span>);
-				<span class="ident">known_addresses</span>.<span class="ident">push</span>((<span class="ident">bootnode</span>.<span class="ident">peer_id</span>, <span class="ident">bootnode</span>.<span class="ident">multiaddr</span>.<span class="ident">clone</span>()));
 			}
 
 			<span class="comment">// Set number 0 is used for block announces.</span>

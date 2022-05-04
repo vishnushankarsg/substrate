@@ -401,30 +401,6 @@
 <span id="396">396</span>
 <span id="397">397</span>
 <span id="398">398</span>
-<span id="399">399</span>
-<span id="400">400</span>
-<span id="401">401</span>
-<span id="402">402</span>
-<span id="403">403</span>
-<span id="404">404</span>
-<span id="405">405</span>
-<span id="406">406</span>
-<span id="407">407</span>
-<span id="408">408</span>
-<span id="409">409</span>
-<span id="410">410</span>
-<span id="411">411</span>
-<span id="412">412</span>
-<span id="413">413</span>
-<span id="414">414</span>
-<span id="415">415</span>
-<span id="416">416</span>
-<span id="417">417</span>
-<span id="418">418</span>
-<span id="419">419</span>
-<span id="420">420</span>
-<span id="421">421</span>
-<span id="422">422</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -500,7 +476,6 @@
 	<span class="ident">best_done</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="ident">session_start</span>: <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 	<span class="ident">validator_set</span>: <span class="ident">ValidatorSet</span><span class="op">&lt;</span><span class="ident">Public</span><span class="op">&gt;</span>,
-	<span class="ident">prev_validator_set</span>: <span class="ident">ValidatorSet</span><span class="op">&lt;</span><span class="ident">Public</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">B</span><span class="op">&gt;</span> <span class="ident">Rounds</span><span class="op">&lt;</span><span class="ident">P</span>, <span class="ident">B</span><span class="op">&gt;</span>
@@ -508,18 +483,8 @@
 	<span class="ident">P</span>: <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Hash</span> <span class="op">+</span> <span class="ident">Clone</span>,
 	<span class="ident">B</span>: <span class="ident">Block</span>,
 {
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>(
-		<span class="ident">session_start</span>: <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
-		<span class="ident">validator_set</span>: <span class="ident">ValidatorSet</span><span class="op">&lt;</span><span class="ident">Public</span><span class="op">&gt;</span>,
-		<span class="ident">prev_validator_set</span>: <span class="ident">ValidatorSet</span><span class="op">&lt;</span><span class="ident">Public</span><span class="op">&gt;</span>,
-	) -&gt; <span class="self">Self</span> {
-		<span class="ident">Rounds</span> {
-			<span class="ident">rounds</span>: <span class="ident">BTreeMap::new</span>(),
-			<span class="ident">best_done</span>: <span class="prelude-val">None</span>,
-			<span class="ident">session_start</span>,
-			<span class="ident">validator_set</span>,
-			<span class="ident">prev_validator_set</span>,
-		}
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">session_start</span>: <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">validator_set</span>: <span class="ident">ValidatorSet</span><span class="op">&lt;</span><span class="ident">Public</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
+		<span class="ident">Rounds</span> { <span class="ident">rounds</span>: <span class="ident">BTreeMap::new</span>(), <span class="ident">best_done</span>: <span class="prelude-val">None</span>, <span class="ident">session_start</span>, <span class="ident">validator_set</span> }
 	}
 }
 
@@ -528,24 +493,12 @@
 	<span class="ident">P</span>: <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Hash</span> <span class="op">+</span> <span class="ident">Clone</span>,
 	<span class="ident">B</span>: <span class="ident">Block</span>,
 {
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">validator_set_id_for</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">block_number</span>: <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>) -&gt; <span class="ident">ValidatorSetId</span> {
-		<span class="kw">if</span> <span class="ident">block_number</span> <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">session_start</span> {
-			<span class="self">self</span>.<span class="ident">validator_set</span>.<span class="ident">id</span>()
-		} <span class="kw">else</span> {
-			<span class="self">self</span>.<span class="ident">prev_validator_set</span>.<span class="ident">id</span>()
-		}
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">validator_set_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">ValidatorSetId</span> {
+		<span class="self">self</span>.<span class="ident">validator_set</span>.<span class="ident">id</span>()
 	}
 
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">validators_for</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">block_number</span>: <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">Public</span>] {
-		<span class="kw">if</span> <span class="ident">block_number</span> <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">session_start</span> {
-			<span class="self">self</span>.<span class="ident">validator_set</span>.<span class="ident">validators</span>()
-		} <span class="kw">else</span> {
-			<span class="self">self</span>.<span class="ident">prev_validator_set</span>.<span class="ident">validators</span>()
-		}
-	}
-
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">validator_set</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">ValidatorSet</span><span class="op">&lt;</span><span class="ident">Public</span><span class="op">&gt;</span> {
-		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">validator_set</span>
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">validators</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">Public</span>] {
+		<span class="self">self</span>.<span class="ident">validator_set</span>.<span class="ident">validators</span>()
 	}
 
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">session_start</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
@@ -570,7 +523,7 @@
 				<span class="ident">round</span>.<span class="number">1</span>
 			);
 			<span class="bool-val">false</span>
-		} <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">validator_set</span>.<span class="ident">validators</span>().<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">id</span><span class="op">|</span> <span class="ident">vote</span>.<span class="number">0</span> <span class="op">==</span> <span class="kw-2">*</span><span class="ident">id</span>) {
+		} <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">validators</span>().<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">id</span><span class="op">|</span> <span class="ident">vote</span>.<span class="number">0</span> <span class="op">==</span> <span class="kw-2">*</span><span class="ident">id</span>) {
 			<span class="macro">debug!</span>(
 				<span class="ident">target</span>: <span class="string">&quot;beefy&quot;</span>,
 				<span class="string">&quot;🥩 received vote {:?} from validator that is not in the validator set, ignoring&quot;</span>,
@@ -597,12 +550,11 @@
 			<span class="comment">// remove this and older (now stale) rounds</span>
 			<span class="kw">let</span> <span class="ident">signatures</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">rounds</span>.<span class="ident">remove</span>(<span class="ident">round</span>)<span class="question-mark">?</span>.<span class="ident">votes</span>;
 			<span class="self">self</span>.<span class="ident">rounds</span>.<span class="ident">retain</span>(<span class="op">|</span><span class="kw-2">&amp;</span>(<span class="kw">_</span>, <span class="ident">number</span>), <span class="kw">_</span><span class="op">|</span> <span class="ident">number</span> <span class="op">&gt;</span> <span class="ident">round</span>.<span class="number">1</span>);
-			<span class="self">self</span>.<span class="ident">best_done</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">best_done</span>.<span class="ident">clone</span>().<span class="ident">max</span>(<span class="prelude-val">Some</span>(<span class="ident">round</span>.<span class="number">1</span>.<span class="ident">clone</span>()));
+			<span class="self">self</span>.<span class="ident">best_done</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">best_done</span>.<span class="ident">max</span>(<span class="prelude-val">Some</span>(<span class="ident">round</span>.<span class="number">1</span>));
 			<span class="macro">debug!</span>(<span class="ident">target</span>: <span class="string">&quot;beefy&quot;</span>, <span class="string">&quot;🥩 Concluded round #{}&quot;</span>, <span class="ident">round</span>.<span class="number">1</span>);
 
 			<span class="prelude-val">Some</span>(
-				<span class="self">self</span>.<span class="ident">validator_set</span>
-					.<span class="ident">validators</span>()
+				<span class="self">self</span>.<span class="ident">validators</span>()
 					.<span class="ident">iter</span>()
 					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">authority_id</span><span class="op">|</span> <span class="ident">signatures</span>.<span class="ident">get</span>(<span class="ident">authority_id</span>).<span class="ident">cloned</span>())
 					.<span class="ident">collect</span>(),
@@ -674,13 +626,13 @@
 		.<span class="ident">unwrap</span>();
 
 		<span class="kw">let</span> <span class="ident">session_start</span> <span class="op">=</span> <span class="number">1u64</span>.<span class="ident">into</span>();
-		<span class="kw">let</span> <span class="ident">rounds</span> <span class="op">=</span> <span class="ident">Rounds</span>::<span class="op">&lt;</span><span class="ident">H256</span>, <span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">session_start</span>, <span class="ident">validators</span>.<span class="ident">clone</span>(), <span class="ident">validators</span>);
+		<span class="kw">let</span> <span class="ident">rounds</span> <span class="op">=</span> <span class="ident">Rounds</span>::<span class="op">&lt;</span><span class="ident">H256</span>, <span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">session_start</span>, <span class="ident">validators</span>);
 
-		<span class="macro">assert_eq!</span>(<span class="number">42</span>, <span class="ident">rounds</span>.<span class="ident">validator_set_id_for</span>(<span class="ident">session_start</span>));
+		<span class="macro">assert_eq!</span>(<span class="number">42</span>, <span class="ident">rounds</span>.<span class="ident">validator_set_id</span>());
 		<span class="macro">assert_eq!</span>(<span class="number">1</span>, <span class="kw-2">*</span><span class="ident">rounds</span>.<span class="ident">session_start</span>());
 		<span class="macro">assert_eq!</span>(
 			<span class="kw-2">&amp;</span><span class="macro">vec!</span>[<span class="ident">Keyring::Alice</span>.<span class="ident">public</span>(), <span class="ident">Keyring::Bob</span>.<span class="ident">public</span>(), <span class="ident">Keyring::Charlie</span>.<span class="ident">public</span>()],
-			<span class="ident">rounds</span>.<span class="ident">validators_for</span>(<span class="ident">session_start</span>)
+			<span class="ident">rounds</span>.<span class="ident">validators</span>()
 		);
 	}
 
@@ -701,7 +653,7 @@
 		<span class="kw">let</span> <span class="ident">round</span> <span class="op">=</span> (<span class="ident">H256::from_low_u64_le</span>(<span class="number">1</span>), <span class="number">1</span>);
 
 		<span class="kw">let</span> <span class="ident">session_start</span> <span class="op">=</span> <span class="number">1u64</span>.<span class="ident">into</span>();
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rounds</span> <span class="op">=</span> <span class="ident">Rounds</span>::<span class="op">&lt;</span><span class="ident">H256</span>, <span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">session_start</span>, <span class="ident">validators</span>.<span class="ident">clone</span>(), <span class="ident">validators</span>);
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rounds</span> <span class="op">=</span> <span class="ident">Rounds</span>::<span class="op">&lt;</span><span class="ident">H256</span>, <span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">session_start</span>, <span class="ident">validators</span>);
 
 		<span class="comment">// no self vote yet, should self vote</span>
 		<span class="macro">assert!</span>(<span class="ident">rounds</span>.<span class="ident">should_self_vote</span>(<span class="kw-2">&amp;</span><span class="ident">round</span>));
@@ -774,7 +726,7 @@
 		.<span class="ident">unwrap</span>();
 
 		<span class="kw">let</span> <span class="ident">session_start</span> <span class="op">=</span> <span class="number">1u64</span>.<span class="ident">into</span>();
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rounds</span> <span class="op">=</span> <span class="ident">Rounds</span>::<span class="op">&lt;</span><span class="ident">H256</span>, <span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">session_start</span>, <span class="ident">validators</span>.<span class="ident">clone</span>(), <span class="ident">validators</span>);
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rounds</span> <span class="op">=</span> <span class="ident">Rounds</span>::<span class="op">&lt;</span><span class="ident">H256</span>, <span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">session_start</span>, <span class="ident">validators</span>);
 
 		<span class="comment">// round 1</span>
 		<span class="macro">assert!</span>(<span class="ident">rounds</span>.<span class="ident">add_vote</span>(
