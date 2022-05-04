@@ -215,6 +215,13 @@
 <span id="210">210</span>
 <span id="211">211</span>
 <span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -239,13 +246,14 @@
 	<span class="ident">BabeEpochConfiguration</span>, <span class="ident">Slot</span>, <span class="ident">BABE_ENGINE_ID</span>,
 };
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">MaxEncodedLen</span>};
+<span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{<span class="ident">DigestItem</span>, <span class="ident">RuntimeDebug</span>};
 <span class="kw">use</span> <span class="ident">sp_std::vec::Vec</span>;
 
 <span class="kw">use</span> <span class="ident">sp_consensus_vrf::schnorrkel</span>::{<span class="ident">Randomness</span>, <span class="ident">VRFOutput</span>, <span class="ident">VRFProof</span>};
 
 <span class="doccomment">/// Raw BABE primary slot assignment pre-digest.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">MaxEncodedLen</span>, <span class="ident">TypeInfo</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PrimaryPreDigest</span> {
 	<span class="doccomment">/// Authority index</span>
 	<span class="kw">pub</span> <span class="ident">authority_index</span>: <span class="ident"><span class="kw">super</span>::AuthorityIndex</span>,
@@ -258,7 +266,7 @@
 }
 
 <span class="doccomment">/// BABE secondary slot assignment pre-digest.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">MaxEncodedLen</span>, <span class="ident">TypeInfo</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SecondaryPlainPreDigest</span> {
 	<span class="doccomment">/// Authority index</span>
 	<span class="doccomment">///</span>
@@ -272,7 +280,7 @@
 }
 
 <span class="doccomment">/// BABE secondary deterministic slot assignment with VRF outputs.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">MaxEncodedLen</span>, <span class="ident">TypeInfo</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SecondaryVRFPreDigest</span> {
 	<span class="doccomment">/// Authority index</span>
 	<span class="kw">pub</span> <span class="ident">authority_index</span>: <span class="ident"><span class="kw">super</span>::AuthorityIndex</span>,
@@ -287,7 +295,7 @@
 <span class="doccomment">/// A BABE pre-runtime digest. This contains all data required to validate a</span>
 <span class="doccomment">/// block and for the BABE runtime module. Slots can be assigned to a primary</span>
 <span class="doccomment">/// (VRF based) and to a secondary (slot number based).</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">MaxEncodedLen</span>, <span class="ident">TypeInfo</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">PreDigest</span> {
 	<span class="doccomment">/// A primary VRF-based slot assignment.</span>
 	<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">index</span> <span class="op">=</span> <span class="number">1</span>)]</span>
@@ -319,6 +327,11 @@
 		}
 	}
 
+	<span class="doccomment">/// Returns true if this pre-digest is for a primary slot assignment.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_primary</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
+		<span class="macro">matches!</span>(<span class="self">self</span>, <span class="ident">PreDigest::Primary</span>(..))
+	}
+
 	<span class="doccomment">/// Returns the weight _added_ by this digest, not the cumulative weight</span>
 	<span class="doccomment">/// of the chain.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">added_weight</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="kw">crate</span>::BabeBlockWeight</span> {
@@ -328,11 +341,12 @@
 		}
 	}
 
-	<span class="doccomment">/// Returns the VRF output, if it exists.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">vrf_output</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">VRFOutput</span><span class="op">&gt;</span> {
+	<span class="doccomment">/// Returns the VRF output and proof, if they exist.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">vrf</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="kw-2">&amp;</span><span class="ident">VRFOutput</span>, <span class="kw-2">&amp;</span><span class="ident">VRFProof</span>)<span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident">PreDigest::Primary</span>(<span class="ident">primary</span>) =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">primary</span>.<span class="ident">vrf_output</span>),
-			<span class="ident">PreDigest::SecondaryVRF</span>(<span class="ident">secondary</span>) =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">secondary</span>.<span class="ident">vrf_output</span>),
+			<span class="ident">PreDigest::Primary</span>(<span class="ident">primary</span>) =&gt; <span class="prelude-val">Some</span>((<span class="kw-2">&amp;</span><span class="ident">primary</span>.<span class="ident">vrf_output</span>, <span class="kw-2">&amp;</span><span class="ident">primary</span>.<span class="ident">vrf_proof</span>)),
+			<span class="ident">PreDigest::SecondaryVRF</span>(<span class="ident">secondary</span>) =&gt;
+				<span class="prelude-val">Some</span>((<span class="kw-2">&amp;</span><span class="ident">secondary</span>.<span class="ident">vrf_output</span>, <span class="kw-2">&amp;</span><span class="ident">secondary</span>.<span class="ident">vrf_proof</span>)),
 			<span class="ident">PreDigest::SecondaryPlain</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">None</span>,
 		}
 	}
