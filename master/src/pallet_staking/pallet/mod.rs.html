@@ -1723,6 +1723,9 @@
 <span id="1718">1718</span>
 <span id="1719">1719</span>
 <span id="1720">1720</span>
+<span id="1721">1721</span>
+<span id="1722">1722</span>
+<span id="1723">1723</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1747,8 +1750,8 @@
 	<span class="ident">dispatch::Codec</span>,
 	<span class="ident">pallet_prelude</span>::<span class="kw-2">*</span>,
 	<span class="ident">traits</span>::{
-		<span class="ident">Currency</span>, <span class="ident">CurrencyToVote</span>, <span class="ident">DefensiveSaturating</span>, <span class="ident">EnsureOrigin</span>, <span class="ident">EstimateNextNewSession</span>, <span class="ident">Get</span>,
-		<span class="ident">LockIdentifier</span>, <span class="ident">LockableCurrency</span>, <span class="ident">OnUnbalanced</span>, <span class="ident">UnixTime</span>,
+		<span class="ident">Currency</span>, <span class="ident">CurrencyToVote</span>, <span class="ident">Defensive</span>, <span class="ident">DefensiveSaturating</span>, <span class="ident">EnsureOrigin</span>,
+		<span class="ident">EstimateNextNewSession</span>, <span class="ident">Get</span>, <span class="ident">LockIdentifier</span>, <span class="ident">LockableCurrency</span>, <span class="ident">OnUnbalanced</span>, <span class="ident">UnixTime</span>,
 	},
 	<span class="ident">weights::Weight</span>,
 };
@@ -2583,7 +2586,8 @@
 				<span class="ident"><span class="self">Self</span>::update_ledger</span>(<span class="kw-2">&amp;</span><span class="ident">controller</span>, <span class="kw-2">&amp;</span><span class="ident">ledger</span>);
 				<span class="comment">// update this staker in the sorted list, if they exist in it.</span>
 				<span class="kw">if</span> <span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>) {
-					<span class="ident">T::VoterList::on_update</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>, <span class="ident"><span class="self">Self</span>::weight_of</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>));
+					<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span>
+						<span class="ident">T::VoterList::on_update</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>, <span class="ident"><span class="self">Self</span>::weight_of</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>)).<span class="ident">defensive</span>();
 					<span class="macro">debug_assert_eq!</span>(<span class="ident">T::VoterList::sanity_check</span>(), <span class="prelude-val">Ok</span>(()));
 				}
 
@@ -2666,7 +2670,8 @@
 
 				<span class="comment">// update this staker in the sorted list, if they exist in it.</span>
 				<span class="kw">if</span> <span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>) {
-					<span class="ident">T::VoterList::on_update</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>, <span class="ident"><span class="self">Self</span>::weight_of</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>));
+					<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">T::VoterList::on_update</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>, <span class="ident"><span class="self">Self</span>::weight_of</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>))
+						.<span class="ident">defensive</span>();
 				}
 
 				<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Unbonded</span>(<span class="ident">ledger</span>.<span class="ident">stash</span>, <span class="ident">value</span>));
@@ -3151,7 +3156,8 @@
 			<span class="comment">// NOTE: ledger must be updated prior to calling `Self::weight_of`.</span>
 			<span class="ident"><span class="self">Self</span>::update_ledger</span>(<span class="kw-2">&amp;</span><span class="ident">controller</span>, <span class="kw-2">&amp;</span><span class="ident">ledger</span>);
 			<span class="kw">if</span> <span class="ident">T::VoterList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>) {
-				<span class="ident">T::VoterList::on_update</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>, <span class="ident"><span class="self">Self</span>::weight_of</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>));
+				<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">T::VoterList::on_update</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>, <span class="ident"><span class="self">Self</span>::weight_of</span>(<span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>))
+					.<span class="ident">defensive</span>();
 			}
 
 			<span class="kw">let</span> <span class="ident">removed_chunks</span> <span class="op">=</span> <span class="number">1u32</span> <span class="comment">// for the case where the last iterated chunk is not removed</span>

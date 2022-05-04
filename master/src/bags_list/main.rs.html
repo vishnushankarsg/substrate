@@ -156,19 +156,19 @@
 				<span class="ident">Action::Insert</span> =&gt; {
 					<span class="kw">if</span> <span class="ident">BagsList::on_insert</span>(<span class="ident">id</span>, <span class="ident">vote_weight</span>).<span class="ident">is_err</span>() {
 						<span class="comment">// this was a duplicate id, which is ok. We can just update it.</span>
-						<span class="ident">BagsList::on_update</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>, <span class="ident">vote_weight</span>);
+						<span class="ident">BagsList::on_update</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>, <span class="ident">vote_weight</span>).<span class="ident">unwrap</span>();
 					}
 					<span class="macro">assert!</span>(<span class="ident">BagsList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>));
 				},
 				<span class="ident">Action::Update</span> =&gt; {
 					<span class="kw">let</span> <span class="ident">already_contains</span> <span class="op">=</span> <span class="ident">BagsList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>);
-					<span class="ident">BagsList::on_update</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>, <span class="ident">vote_weight</span>);
+					<span class="ident">BagsList::on_update</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>, <span class="ident">vote_weight</span>).<span class="ident">unwrap</span>();
 					<span class="kw">if</span> <span class="ident">already_contains</span> {
 						<span class="macro">assert!</span>(<span class="ident">BagsList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>));
 					}
 				},
 				<span class="ident">Action::Remove</span> =&gt; {
-					<span class="ident">BagsList::on_remove</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>);
+					<span class="ident">BagsList::on_remove</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>).<span class="ident">unwrap</span>();
 					<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">BagsList::contains</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>));
 				},
 			}
