@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/k256-0.10.2/src/arithmetic/field.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>field.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/k256-0.10.4/src/arithmetic/field.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>field.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/RustCrypto/meta/master/logo.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../k256/index.html"><div class="logo-container"><img src="https://raw.githubusercontent.com/RustCrypto/meta/master/logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -643,6 +643,33 @@
 <span id="636">636</span>
 <span id="637">637</span>
 <span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
+<span id="652">652</span>
+<span id="653">653</span>
+<span id="654">654</span>
+<span id="655">655</span>
+<span id="656">656</span>
+<span id="657">657</span>
+<span id="658">658</span>
+<span id="659">659</span>
+<span id="660">660</span>
+<span id="661">661</span>
+<span id="662">662</span>
+<span id="663">663</span>
+<span id="664">664</span>
+<span id="665">665</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Field arithmetic modulo p = 2^256 - 2^32 - 2^9 - 2^8 - 2^7 - 2^6 - 2^4 - 1</span>
 
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">clippy::assign_op_pattern</span>, <span class="ident">clippy::op_ref</span>)]</span>
@@ -1185,6 +1212,33 @@
         <span class="kw">let</span> <span class="ident">two</span> <span class="op">=</span> <span class="ident">one</span> <span class="op">+</span> <span class="kw-2">&amp;</span><span class="ident">one</span>;
         <span class="kw">let</span> <span class="ident">four</span> <span class="op">=</span> <span class="ident">two</span>.<span class="ident">square</span>();
         <span class="macro">assert_eq!</span>(<span class="ident">four</span>.<span class="ident">sqrt</span>().<span class="ident">unwrap</span>().<span class="ident">normalize</span>(), <span class="ident">two</span>.<span class="ident">normalize</span>());
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="attribute">#[<span class="ident">cfg_attr</span>(
+        <span class="ident">debug_assertions</span>,
+        <span class="ident">should_panic</span>(<span class="ident">expected</span> <span class="op">=</span> <span class="string">&quot;assertion failed: self.normalized&quot;</span>)
+    )]</span>
+    <span class="kw">fn</span> <span class="ident">unnormalized_is_odd</span>() {
+        <span class="comment">// This is a regression test for https://github.com/RustCrypto/elliptic-curves/issues/529</span>
+        <span class="comment">// where `is_odd()` in debug mode force-normalized its argument</span>
+        <span class="comment">// instead of checking that it is already normalized.</span>
+        <span class="comment">// As a result, in release (where normalization didn&#39;t happen) `is_odd()`</span>
+        <span class="comment">// could return an incorrect value.</span>
+
+        <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">FieldElement::from_bytes_unchecked</span>(<span class="kw-2">&amp;</span>[
+            <span class="number">61</span>, <span class="number">128</span>, <span class="number">156</span>, <span class="number">189</span>, <span class="number">241</span>, <span class="number">12</span>, <span class="number">174</span>, <span class="number">4</span>, <span class="number">80</span>, <span class="number">52</span>, <span class="number">238</span>, <span class="number">78</span>, <span class="number">188</span>, <span class="number">251</span>, <span class="number">9</span>, <span class="number">188</span>, <span class="number">95</span>, <span class="number">115</span>, <span class="number">38</span>, <span class="number">6</span>,
+            <span class="number">212</span>, <span class="number">168</span>, <span class="number">175</span>, <span class="number">174</span>, <span class="number">211</span>, <span class="number">232</span>, <span class="number">208</span>, <span class="number">14</span>, <span class="number">182</span>, <span class="number">45</span>, <span class="number">59</span>, <span class="number">122</span>,
+        ]);
+        <span class="comment">// Produces an unnormalized FieldElement with magnitude 1</span>
+        <span class="comment">// (we cannot create one directly).</span>
+        <span class="kw">let</span> <span class="ident">y</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">sqrt</span>().<span class="ident">unwrap</span>();
+
+        <span class="comment">// This is fine.</span>
+        <span class="macro">assert!</span>(<span class="ident">y</span>.<span class="ident">normalize</span>().<span class="ident">is_odd</span>().<span class="ident">unwrap_u8</span>() <span class="op">==</span> <span class="number">0</span>);
+
+        <span class="comment">// This panics since `y` is not normalized.</span>
+        <span class="kw">let</span> <span class="ident">_result</span> <span class="op">=</span> <span class="ident">y</span>.<span class="ident">is_odd</span>().<span class="ident">unwrap_u8</span>();
     }
 
     <span class="macro">prop_compose!</span> {

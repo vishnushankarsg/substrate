@@ -97,6 +97,17 @@
 <span id="92">92</span>
 <span id="93">93</span>
 <span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2022 Parity Technologies (UK) Ltd.</span>
@@ -149,6 +160,7 @@
 	<span class="kw">fn</span> <span class="ident">as_derivative</span>() -&gt; <span class="ident">Weight</span>;
 	<span class="kw">fn</span> <span class="ident">batch_all</span>(<span class="ident">c</span>: <span class="ident">u32</span>, ) -&gt; <span class="ident">Weight</span>;
 	<span class="kw">fn</span> <span class="ident">dispatch_as</span>() -&gt; <span class="ident">Weight</span>;
+	<span class="kw">fn</span> <span class="ident">force_batch</span>(<span class="ident">c</span>: <span class="ident">u32</span>, ) -&gt; <span class="ident">Weight</span>;
 }
 
 <span class="doccomment">/// Weights for pallet_utility using the Substrate node and recommended hardware.</span>
@@ -170,6 +182,11 @@
 	<span class="kw">fn</span> <span class="ident">dispatch_as</span>() -&gt; <span class="ident">Weight</span> {
 		(<span class="number">8_463_000</span> <span class="kw">as</span> <span class="ident">Weight</span>)
 	}
+	<span class="kw">fn</span> <span class="ident">force_batch</span>(<span class="ident">c</span>: <span class="ident">u32</span>, ) -&gt; <span class="ident">Weight</span> {
+		(<span class="number">13_988_000</span> <span class="kw">as</span> <span class="ident">Weight</span>)
+			<span class="comment">// Standard Error: 1_000</span>
+			.<span class="ident">saturating_add</span>((<span class="number">2_481_000</span> <span class="kw">as</span> <span class="ident">Weight</span>).<span class="ident">saturating_mul</span>(<span class="ident">c</span> <span class="kw">as</span> <span class="ident">Weight</span>))
+	}
 }
 
 <span class="comment">// For backwards compatibility and tests</span>
@@ -189,6 +206,11 @@
 	}
 	<span class="kw">fn</span> <span class="ident">dispatch_as</span>() -&gt; <span class="ident">Weight</span> {
 		(<span class="number">8_463_000</span> <span class="kw">as</span> <span class="ident">Weight</span>)
+	}
+	<span class="kw">fn</span> <span class="ident">force_batch</span>(<span class="ident">c</span>: <span class="ident">u32</span>, ) -&gt; <span class="ident">Weight</span> {
+		(<span class="number">13_988_000</span> <span class="kw">as</span> <span class="ident">Weight</span>)
+			<span class="comment">// Standard Error: 1_000</span>
+			.<span class="ident">saturating_add</span>((<span class="number">2_481_000</span> <span class="kw">as</span> <span class="ident">Weight</span>).<span class="ident">saturating_mul</span>(<span class="ident">c</span> <span class="kw">as</span> <span class="ident">Weight</span>))
 	}
 }
 </code></pre></div>
