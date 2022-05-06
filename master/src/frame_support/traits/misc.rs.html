@@ -1012,6 +1012,37 @@
 <span id="1007">1007</span>
 <span id="1008">1008</span>
 <span id="1009">1009</span>
+<span id="1010">1010</span>
+<span id="1011">1011</span>
+<span id="1012">1012</span>
+<span id="1013">1013</span>
+<span id="1014">1014</span>
+<span id="1015">1015</span>
+<span id="1016">1016</span>
+<span id="1017">1017</span>
+<span id="1018">1018</span>
+<span id="1019">1019</span>
+<span id="1020">1020</span>
+<span id="1021">1021</span>
+<span id="1022">1022</span>
+<span id="1023">1023</span>
+<span id="1024">1024</span>
+<span id="1025">1025</span>
+<span id="1026">1026</span>
+<span id="1027">1027</span>
+<span id="1028">1028</span>
+<span id="1029">1029</span>
+<span id="1030">1030</span>
+<span id="1031">1031</span>
+<span id="1032">1032</span>
+<span id="1033">1033</span>
+<span id="1034">1034</span>
+<span id="1035">1035</span>
+<span id="1036">1036</span>
+<span id="1037">1037</span>
+<span id="1038">1038</span>
+<span id="1039">1039</span>
+<span id="1040">1040</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -1064,6 +1095,16 @@
 			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">error</span>
 		);
 		<span class="macro">debug_assert!</span>(<span class="bool-val">false</span>, <span class="string">&quot;{}: {:?}&quot;</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::traits::DEFENSIVE_OP_INTERNAL_ERROR</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">error</span>);
+	};
+	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">error</span>:<span class="ident">tt</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">proof</span>:<span class="ident">tt</span>) =&gt; {
+		<span class="macro">frame_support::log::error!</span>(
+			<span class="ident">target</span>: <span class="string">&quot;runtime&quot;</span>,
+			<span class="string">&quot;{}: {:?}: {:?}&quot;</span>,
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::traits::DEFENSIVE_OP_PUBLIC_ERROR</span>,
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">error</span>,
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">proof</span>,
+		);
+		<span class="macro">debug_assert!</span>(<span class="bool-val">false</span>, <span class="string">&quot;{}: {:?}: {:?}&quot;</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::traits::DEFENSIVE_OP_INTERNAL_ERROR</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">error</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">proof</span>);
 	}
 }
 
@@ -1116,6 +1157,10 @@
 	<span class="doccomment">/// }</span>
 	<span class="doccomment">/// ```</span>
 	<span class="kw">fn</span> <span class="ident">defensive</span>(<span class="self">self</span>) -&gt; <span class="self">Self</span>;
+
+	<span class="doccomment">/// Same as [`Defensive::defensive`], but it takes a proof as input, and displays it if the</span>
+	<span class="doccomment">/// defensive operation has been triggered.</span>
+	<span class="kw">fn</span> <span class="ident">defensive_proof</span>(<span class="self">self</span>, <span class="ident">proof</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>) -&gt; <span class="self">Self</span>;
 }
 
 <span class="doccomment">/// Subset of methods similar to [`Defensive`] that can only work for a `Result`.</span>
@@ -1198,6 +1243,13 @@
 			},
 		}
 	}
+
+	<span class="kw">fn</span> <span class="ident">defensive_proof</span>(<span class="self">self</span>, <span class="ident">proof</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>) -&gt; <span class="self">Self</span> {
+		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_none</span>() {
+			<span class="macro">defensive!</span>(<span class="ident">proof</span>);
+		}
+		<span class="self">self</span>
+	}
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span>: <span class="ident">sp_std::fmt::Debug</span><span class="op">&gt;</span> <span class="ident">Defensive</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span> {
@@ -1239,6 +1291,16 @@
 			<span class="prelude-val">Ok</span>(<span class="ident">inner</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">inner</span>),
 			<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
 				<span class="macro">defensive!</span>(<span class="ident">e</span>);
+				<span class="prelude-val">Err</span>(<span class="ident">e</span>)
+			},
+		}
+	}
+
+	<span class="kw">fn</span> <span class="ident">defensive_proof</span>(<span class="self">self</span>, <span class="ident">proof</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>) -&gt; <span class="self">Self</span> {
+		<span class="kw">match</span> <span class="self">self</span> {
+			<span class="prelude-val">Ok</span>(<span class="ident">inner</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">inner</span>),
+			<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
+				<span class="macro">defensive!</span>(<span class="ident">e</span>, <span class="ident">proof</span>);
 				<span class="prelude-val">Err</span>(<span class="ident">e</span>)
 			},
 		}

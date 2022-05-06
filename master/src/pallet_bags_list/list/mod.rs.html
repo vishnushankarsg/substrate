@@ -1365,8 +1365,8 @@
 
 		<span class="comment">// remove the heavier node from this list. Note that this removes the node from storage and</span>
 		<span class="comment">// decrements the node counter.</span>
-		<span class="comment">// defensive: both nodes have been checked to exist.</span>
-		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::remove</span>(<span class="kw-2">&amp;</span><span class="ident">heavier_id</span>).<span class="ident">defensive</span>();
+		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span>
+			<span class="ident"><span class="self">Self</span>::remove</span>(<span class="kw-2">&amp;</span><span class="ident">heavier_id</span>).<span class="ident">defensive_proof</span>(<span class="string">&quot;both nodes have been checked to exist; qed&quot;</span>);
 
 		<span class="comment">// re-fetch `lighter_node` from storage since it may have been updated when `heavier_node`</span>
 		<span class="comment">// was removed.</span>
