@@ -168,6 +168,10 @@
 <span id="163">163</span>
 <span id="164">164</span>
 <span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -210,12 +214,16 @@
 	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">flatten</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">database_params</span>: <span class="ident">DatabaseParams</span>,
 
-	<span class="doccomment">/// Force start with unsafe pruning settings.</span>
+	<span class="doccomment">/// THIS IS A DEPRECATED CLI-ARGUMENT.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// When running as a validator it is highly recommended to disable state</span>
-	<span class="doccomment">/// pruning (i.e. &#39;archive&#39;) which is the default. The node will refuse to</span>
-	<span class="doccomment">/// start as a validator if pruning is enabled unless this option is set.</span>
+	<span class="doccomment">/// It has been preserved in order to not break the compatibility with the existing scripts.</span>
+	<span class="doccomment">/// Enabling this option will lead to a runtime warning.</span>
+	<span class="doccomment">/// In future this option will be removed completely, thus specifying it will lead to a start</span>
+	<span class="doccomment">/// up error.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Details: &lt;https://github.com/paritytech/substrate/issues/8103&gt;</span>
 	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
+	<span class="attribute">#[<span class="ident">deprecated</span> <span class="op">=</span> <span class="string">&quot;According to https://github.com/paritytech/substrate/issues/8103&quot;</span>]</span>
 	<span class="kw">pub</span> <span class="ident">unsafe_pruning</span>: <span class="ident">bool</span>,
 
 	<span class="doccomment">/// Method for executing Wasm runtime code.</span>

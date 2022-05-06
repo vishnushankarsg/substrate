@@ -1270,7 +1270,7 @@
 				<span class="ident">wasm_runtime_overrides</span>: <span class="ident">config</span>.<span class="ident">wasm_runtime_overrides</span>.<span class="ident">clone</span>(),
 				<span class="ident">no_genesis</span>: <span class="macro">matches!</span>(
 					<span class="ident">config</span>.<span class="ident">network</span>.<span class="ident">sync_mode</span>,
-					<span class="ident">sc_network::config::SyncMode::Fast</span> { .. } <span class="op">|</span> <span class="ident">sc_network::config::SyncMode::Warp</span>
+					<span class="ident">SyncMode::Fast</span> { .. } <span class="op">|</span> <span class="ident">SyncMode::Warp</span> { .. }
 				),
 				<span class="ident">wasm_runtime_substitutes</span>,
 			},
@@ -1744,12 +1744,12 @@
 		<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Warp sync enabled, but no warp sync provider configured.&quot;</span>.<span class="ident">into</span>())
 	}
 
-	<span class="kw">if</span> <span class="ident">config</span>.<span class="ident">state_pruning</span>.<span class="ident">is_archive</span>() {
+	<span class="kw">if</span> <span class="ident">client</span>.<span class="ident">requires_full_sync</span>() {
 		<span class="kw">match</span> <span class="ident">config</span>.<span class="ident">network</span>.<span class="ident">sync_mode</span> {
 			<span class="ident">SyncMode::Fast</span> { .. } =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Fast sync doesn&#39;t work for archive nodes&quot;</span>.<span class="ident">into</span>()),
 			<span class="ident">SyncMode::Warp</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Warp sync doesn&#39;t work for archive nodes&quot;</span>.<span class="ident">into</span>()),
 			<span class="ident">SyncMode::Full</span> =&gt; {},
-		};
+		}
 	}
 
 	<span class="kw">let</span> <span class="ident">transaction_pool_adapter</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">TransactionPoolAdapter</span> {

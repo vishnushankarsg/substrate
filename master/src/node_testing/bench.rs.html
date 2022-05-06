@@ -1086,7 +1086,7 @@
 		<span class="kw">let</span> <span class="ident">db_config</span> <span class="op">=</span> <span class="ident">sc_client_db::DatabaseSettings</span> {
 			<span class="ident">state_cache_size</span>: <span class="number">16</span> <span class="op">*</span> <span class="number">1024</span> <span class="op">*</span> <span class="number">1024</span>,
 			<span class="ident">state_cache_child_ratio</span>: <span class="prelude-val">Some</span>((<span class="number">0</span>, <span class="number">100</span>)),
-			<span class="ident">state_pruning</span>: <span class="ident">PruningMode::ArchiveAll</span>,
+			<span class="ident">state_pruning</span>: <span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveAll</span>),
 			<span class="ident">source</span>: <span class="ident">database_type</span>.<span class="ident">into_settings</span>(<span class="ident">dir</span>.<span class="ident">into</span>()),
 			<span class="ident">keep_blocks</span>: <span class="ident">sc_client_db::KeepBlocks::All</span>,
 		};
