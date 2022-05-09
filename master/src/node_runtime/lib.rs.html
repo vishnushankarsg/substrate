@@ -2038,6 +2038,10 @@
 <span id="2033">2033</span>
 <span id="2034">2034</span>
 <span id="2035">2035</span>
+<span id="2036">2036</span>
+<span id="2037">2037</span>
+<span id="2038">2038</span>
+<span id="2039">2039</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -3099,8 +3103,11 @@
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DepositPerByte</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="ident">deposit</span>(<span class="number">0</span>, <span class="number">1</span>);
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaxValueSize</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">16</span> <span class="op">*</span> <span class="number">1024</span>;
 	<span class="comment">// The lazy deletion runs inside on_initialize.</span>
-	<span class="kw">pub</span> <span class="ident">DeletionWeightLimit</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">AVERAGE_ON_INITIALIZE_RATIO</span> <span class="op">*</span>
-		<span class="ident">RuntimeBlockWeights::get</span>().<span class="ident">max_block</span>;
+	<span class="kw">pub</span> <span class="ident">DeletionWeightLimit</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">RuntimeBlockWeights::get</span>()
+		.<span class="ident">per_class</span>
+		.<span class="ident">get</span>(<span class="ident">DispatchClass::Normal</span>)
+		.<span class="ident">max_total</span>
+		.<span class="ident">unwrap_or</span>(<span class="ident">RuntimeBlockWeights::get</span>().<span class="ident">max_block</span>);
 	<span class="comment">// The weight needed for decoding the queue should be less or equal than a fifth</span>
 	<span class="comment">// of the overall weight dedicated to the lazy deletion.</span>
 	<span class="kw">pub</span> <span class="ident">DeletionQueueDepth</span>: <span class="ident">u32</span> <span class="op">=</span> ((<span class="ident">DeletionWeightLimit::get</span>() <span class="op">/</span> (
@@ -3133,6 +3140,7 @@
 	<span class="kw">type</span> <span class="ident">DeletionWeightLimit</span> <span class="op">=</span> <span class="ident">DeletionWeightLimit</span>;
 	<span class="kw">type</span> <span class="ident">Schedule</span> <span class="op">=</span> <span class="ident">Schedule</span>;
 	<span class="kw">type</span> <span class="ident">AddressGenerator</span> <span class="op">=</span> <span class="ident">pallet_contracts::DefaultAddressGenerator</span>;
+	<span class="kw">type</span> <span class="ident">ContractAccessWeight</span> <span class="op">=</span> <span class="ident">pallet_contracts::DefaultContractAccessWeight</span><span class="op">&lt;</span><span class="ident">RuntimeBlockWeights</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">impl</span> <span class="ident">pallet_sudo::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
