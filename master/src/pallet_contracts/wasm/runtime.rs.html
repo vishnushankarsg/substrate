@@ -2088,8 +2088,6 @@
 <span id="2083">2083</span>
 <span id="2084">2084</span>
 <span id="2085">2085</span>
-<span id="2086">2086</span>
-<span id="2087">2087</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -2277,7 +2275,6 @@
 	<span class="doccomment">/// Weight of calling `seal_clear_storage` per cleared byte.</span>
 	<span class="ident">ClearStorage</span>(<span class="ident">u32</span>),
 	<span class="doccomment">/// Weight of calling `seal_contains_storage` per byte of the checked item.</span>
-	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unstable-interface&quot;</span>)]</span>
 	<span class="ident">ContainsStorage</span>(<span class="ident">u32</span>),
 	<span class="doccomment">/// Weight of calling `seal_get_storage` with the specified size in storage.</span>
 	<span class="ident">GetStorage</span>(<span class="ident">u32</span>),
@@ -2361,7 +2358,6 @@
 			<span class="ident">ClearStorage</span>(<span class="ident">len</span>) =&gt; <span class="ident">s</span>
 				.<span class="ident">clear_storage</span>
 				.<span class="ident">saturating_add</span>(<span class="ident">s</span>.<span class="ident">clear_storage_per_byte</span>.<span class="ident">saturating_mul</span>(<span class="ident">len</span>.<span class="ident">into</span>())),
-			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unstable-interface&quot;</span>)]</span>
 			<span class="ident">ContainsStorage</span>(<span class="ident">len</span>) =&gt; <span class="ident">s</span>
 				.<span class="ident">contains_storage</span>
 				.<span class="ident">saturating_add</span>(<span class="ident">s</span>.<span class="ident">contains_storage_per_byte</span>.<span class="ident">saturating_mul</span>(<span class="ident">len</span>.<span class="ident">into</span>())),
@@ -2981,7 +2977,7 @@
 	<span class="comment">//</span>
 	<span class="comment">// Returns the size of the pre-existing value at the specified key if any. Otherwise</span>
 	<span class="comment">// `SENTINEL` is returned as a sentinel value.</span>
-	[<span class="ident">__unstable__</span>] <span class="ident">seal_set_storage</span>(<span class="ident">ctx</span>, <span class="ident">key_ptr</span>: <span class="ident">u32</span>, <span class="ident">value_ptr</span>: <span class="ident">u32</span>, <span class="ident">value_len</span>: <span class="ident">u32</span>) -&gt; <span class="ident">u32</span> =&gt; {
+	[<span class="ident">seal1</span>] <span class="ident">seal_set_storage</span>(<span class="ident">ctx</span>, <span class="ident">key_ptr</span>: <span class="ident">u32</span>, <span class="ident">value_ptr</span>: <span class="ident">u32</span>, <span class="ident">value_len</span>: <span class="ident">u32</span>) -&gt; <span class="ident">u32</span> =&gt; {
 		<span class="ident">ctx</span>.<span class="ident">set_storage</span>(<span class="ident">key_ptr</span>, <span class="ident">value_ptr</span>, <span class="ident">value_len</span>)
 	},
 
@@ -3043,7 +3039,7 @@
 	<span class="comment">//</span>
 	<span class="comment">// Returns the size of the pre-existing value at the specified key if any. Otherwise</span>
 	<span class="comment">// `SENTINEL` is returned as a sentinel value.</span>
-	[<span class="ident">__unstable__</span>] <span class="ident">seal_contains_storage</span>(<span class="ident">ctx</span>, <span class="ident">key_ptr</span>: <span class="ident">u32</span>) -&gt; <span class="ident">u32</span> =&gt; {
+	[<span class="ident">seal0</span>] <span class="ident">seal_contains_storage</span>(<span class="ident">ctx</span>, <span class="ident">key_ptr</span>: <span class="ident">u32</span>) -&gt; <span class="ident">u32</span> =&gt; {
 		<span class="kw">let</span> <span class="ident">charged</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">charge_gas</span>(<span class="ident">RuntimeCosts::ContainsStorage</span>(<span class="ident">ctx</span>.<span class="ident">ext</span>.<span class="ident">max_value_size</span>()))<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">key</span>: <span class="ident">StorageKey</span> <span class="op">=</span> [<span class="number">0</span>; <span class="number">32</span>];
 		<span class="ident">ctx</span>.<span class="ident">read_sandbox_memory_into_buf</span>(<span class="ident">key_ptr</span>, <span class="kw-2">&amp;mut</span> <span class="ident">key</span>)<span class="question-mark">?</span>;
