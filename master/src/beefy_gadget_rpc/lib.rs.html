@@ -337,68 +337,6 @@
 <span id="332">332</span>
 <span id="333">333</span>
 <span id="334">334</span>
-<span id="335">335</span>
-<span id="336">336</span>
-<span id="337">337</span>
-<span id="338">338</span>
-<span id="339">339</span>
-<span id="340">340</span>
-<span id="341">341</span>
-<span id="342">342</span>
-<span id="343">343</span>
-<span id="344">344</span>
-<span id="345">345</span>
-<span id="346">346</span>
-<span id="347">347</span>
-<span id="348">348</span>
-<span id="349">349</span>
-<span id="350">350</span>
-<span id="351">351</span>
-<span id="352">352</span>
-<span id="353">353</span>
-<span id="354">354</span>
-<span id="355">355</span>
-<span id="356">356</span>
-<span id="357">357</span>
-<span id="358">358</span>
-<span id="359">359</span>
-<span id="360">360</span>
-<span id="361">361</span>
-<span id="362">362</span>
-<span id="363">363</span>
-<span id="364">364</span>
-<span id="365">365</span>
-<span id="366">366</span>
-<span id="367">367</span>
-<span id="368">368</span>
-<span id="369">369</span>
-<span id="370">370</span>
-<span id="371">371</span>
-<span id="372">372</span>
-<span id="373">373</span>
-<span id="374">374</span>
-<span id="375">375</span>
-<span id="376">376</span>
-<span id="377">377</span>
-<span id="378">378</span>
-<span id="379">379</span>
-<span id="380">380</span>
-<span id="381">381</span>
-<span id="382">382</span>
-<span id="383">383</span>
-<span id="384">384</span>
-<span id="385">385</span>
-<span id="386">386</span>
-<span id="387">387</span>
-<span id="388">388</span>
-<span id="389">389</span>
-<span id="390">390</span>
-<span id="391">391</span>
-<span id="392">392</span>
-<span id="393">393</span>
-<span id="394">394</span>
-<span id="395">395</span>
-<span id="396">396</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -424,18 +362,21 @@
 <span class="kw">use</span> <span class="ident">parking_lot::RwLock</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
+<span class="kw">use</span> <span class="ident">sc_rpc::SubscriptionTaskExecutor</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime::traits::Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>;
 
-<span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">task::SpawnError</span>, <span class="ident">FutureExt</span>, <span class="ident">SinkExt</span>, <span class="ident">StreamExt</span>, <span class="ident">TryFutureExt</span>};
-<span class="kw">use</span> <span class="ident">jsonrpc_derive::rpc</span>;
-<span class="kw">use</span> <span class="ident">jsonrpc_pubsub</span>::{<span class="ident">manager::SubscriptionManager</span>, <span class="ident">typed::Subscriber</span>, <span class="ident">SubscriptionId</span>};
+<span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">task::SpawnError</span>, <span class="ident">FutureExt</span>, <span class="ident">StreamExt</span>};
+<span class="kw">use</span> <span class="ident">jsonrpsee</span>::{
+	<span class="ident">core</span>::{<span class="ident">async_trait</span>, <span class="ident">Error</span> <span class="kw">as</span> <span class="ident">JsonRpseeError</span>, <span class="ident">RpcResult</span>},
+	<span class="ident">proc_macros::rpc</span>,
+	<span class="ident">types</span>::{<span class="ident">error::CallError</span>, <span class="ident">ErrorObject</span>},
+	<span class="ident">PendingSubscription</span>,
+};
 <span class="kw">use</span> <span class="ident">log::warn</span>;
 
 <span class="kw">use</span> <span class="ident">beefy_gadget::notification</span>::{<span class="ident">BeefyBestBlockStream</span>, <span class="ident">BeefySignedCommitmentStream</span>};
 
 <span class="kw">mod</span> <span class="ident">notification</span>;
-
-<span class="kw">type</span> <span class="ident">FutureResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">jsonrpc_core::BoxFuture</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">jsonrpc_core::Error</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>)]</span>
 <span class="doccomment">/// Top-level error type for the RPC handler</span>
@@ -465,195 +406,149 @@
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">jsonrpc_core::Error</span> {
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">JsonRpseeError</span> {
 	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">error</span>: <span class="ident">Error</span>) -&gt; <span class="self">Self</span> {
-		<span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">error</span>);
+		<span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="ident">error</span>.<span class="ident">to_string</span>();
 		<span class="kw">let</span> <span class="ident">code</span> <span class="op">=</span> <span class="ident">ErrorCode::from</span>(<span class="ident">error</span>);
-		<span class="ident">jsonrpc_core::Error</span> {
+		<span class="ident">JsonRpseeError::Call</span>(<span class="ident">CallError::Custom</span>(<span class="ident">ErrorObject::owned</span>(
+			<span class="ident">code</span> <span class="kw">as</span> <span class="ident">i32</span>,
 			<span class="ident">message</span>,
-			<span class="ident">code</span>: <span class="ident">jsonrpc_core::ErrorCode::ServerError</span>(<span class="ident">code</span> <span class="kw">as</span> <span class="ident">i64</span>),
-			<span class="ident">data</span>: <span class="prelude-val">None</span>,
-		}
+			<span class="prelude-val">None</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>,
+		)))
 	}
 }
 
-<span class="doccomment">/// Provides RPC methods for interacting with BEEFY.</span>
-<span class="attribute">#[<span class="ident">rpc</span>]</span>
+<span class="comment">// Provides RPC methods for interacting with BEEFY.</span>
+<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">client</span>, <span class="ident">server</span>)]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">BeefyApi</span><span class="op">&lt;</span><span class="ident">Notification</span>, <span class="ident">Hash</span><span class="op">&gt;</span> {
-	<span class="doccomment">/// RPC Metadata</span>
-	<span class="kw">type</span> <span class="ident">Metadata</span>;
-
 	<span class="doccomment">/// Returns the block most recently finalized by BEEFY, alongside side its justification.</span>
-	<span class="attribute">#[<span class="ident">pubsub</span>(
-		<span class="ident">subscription</span> <span class="op">=</span> <span class="string">&quot;beefy_justifications&quot;</span>,
-		<span class="ident">subscribe</span>,
-		<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;beefy_subscribeJustifications&quot;</span>
+	<span class="attribute">#[<span class="ident">subscription</span>(
+		<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;beefy_subscribeJustifications&quot;</span> =&gt; <span class="string">&quot;beefy_justifications&quot;</span>,
+		<span class="ident">unsubscribe</span> <span class="op">=</span> <span class="string">&quot;beefy_unsubscribeJustifications&quot;</span>,
+		<span class="ident">item</span> <span class="op">=</span> <span class="ident">Notification</span>,
 	)]</span>
-	<span class="kw">fn</span> <span class="ident">subscribe_justifications</span>(
-		<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">metadata</span>: <span class="ident"><span class="self">Self</span>::Metadata</span>,
-		<span class="ident">subscriber</span>: <span class="ident">Subscriber</span><span class="op">&lt;</span><span class="ident">Notification</span><span class="op">&gt;</span>,
-	);
-
-	<span class="doccomment">/// Unsubscribe from receiving notifications about recently finalized blocks.</span>
-	<span class="attribute">#[<span class="ident">pubsub</span>(
-		<span class="ident">subscription</span> <span class="op">=</span> <span class="string">&quot;beefy_justifications&quot;</span>,
-		<span class="ident">unsubscribe</span>,
-		<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;beefy_unsubscribeJustifications&quot;</span>
-	)]</span>
-	<span class="kw">fn</span> <span class="ident">unsubscribe_justifications</span>(
-		<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">metadata</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Metadata</span><span class="op">&gt;</span>,
-		<span class="ident">id</span>: <span class="ident">SubscriptionId</span>,
-	) -&gt; <span class="ident">jsonrpc_core::Result</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>;
+	<span class="kw">fn</span> <span class="ident">subscribe_justifications</span>(<span class="kw-2">&amp;</span><span class="self">self</span>);
 
 	<span class="doccomment">/// Returns hash of the latest BEEFY finalized block as seen by this client.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// The latest BEEFY block might not be available if the BEEFY gadget is not running</span>
 	<span class="doccomment">/// in the network or if the client is still initializing or syncing with the network.</span>
 	<span class="doccomment">/// In such case an error would be returned.</span>
-	<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;beefy_getFinalizedHead&quot;</span>)]</span>
-	<span class="kw">fn</span> <span class="ident">latest_finalized</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">FutureResult</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>;
+	<span class="attribute">#[<span class="ident">method</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;beefy_getFinalizedHead&quot;</span>)]</span>
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">latest_finalized</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// Implements the BeefyApi RPC trait for interacting with BEEFY.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BeefyRpcHandler</span><span class="op">&lt;</span><span class="ident">Block</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> {
 	<span class="ident">signed_commitment_stream</span>: <span class="ident">BeefySignedCommitmentStream</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
 	<span class="ident">beefy_best_block</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-	<span class="ident">manager</span>: <span class="ident">SubscriptionManager</span>,
+	<span class="ident">executor</span>: <span class="ident">SubscriptionTaskExecutor</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Block</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> <span class="ident">BeefyRpcHandler</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="ident">BeefyRpcHandler</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+	<span class="ident">Block</span>: <span class="ident">BlockT</span>,
+{
 	<span class="doccomment">/// Creates a new BeefyRpcHandler instance.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
 		<span class="ident">signed_commitment_stream</span>: <span class="ident">BeefySignedCommitmentStream</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
 		<span class="ident">best_block_stream</span>: <span class="ident">BeefyBestBlockStream</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
-		<span class="ident">executor</span>: <span class="ident">E</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">Error</span><span class="op">&gt;</span>
-	<span class="kw">where</span>
-		<span class="ident">E</span>: <span class="ident">futures::task::Spawn</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-	{
+		<span class="ident">executor</span>: <span class="ident">SubscriptionTaskExecutor</span>,
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">beefy_best_block</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">RwLock::new</span>(<span class="prelude-val">None</span>));
 
 		<span class="kw">let</span> <span class="ident">stream</span> <span class="op">=</span> <span class="ident">best_block_stream</span>.<span class="ident">subscribe</span>();
 		<span class="kw">let</span> <span class="ident">closure_clone</span> <span class="op">=</span> <span class="ident">beefy_best_block</span>.<span class="ident">clone</span>();
 		<span class="kw">let</span> <span class="ident">future</span> <span class="op">=</span> <span class="ident">stream</span>.<span class="ident">for_each</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">best_beefy</span><span class="op">|</span> {
 			<span class="kw">let</span> <span class="ident">async_clone</span> <span class="op">=</span> <span class="ident">closure_clone</span>.<span class="ident">clone</span>();
-			<span class="kw">async</span> <span class="kw">move</span> {
-				<span class="kw-2">*</span><span class="ident">async_clone</span>.<span class="ident">write</span>() <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">best_beefy</span>);
-			}
+			<span class="kw">async</span> <span class="kw">move</span> { <span class="kw-2">*</span><span class="ident">async_clone</span>.<span class="ident">write</span>() <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">best_beefy</span>) }
 		});
 
-		<span class="ident">executor</span>
-			.<span class="ident">spawn_obj</span>(<span class="ident">futures::task::FutureObj::new</span>(<span class="ident">Box::pin</span>(<span class="ident">future</span>)))
-			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
-				<span class="macro">log::error!</span>(<span class="string">&quot;Failed to spawn BEEFY RPC background task; err: {}&quot;</span>, <span class="ident">e</span>);
-				<span class="ident">e</span>
-			})<span class="question-mark">?</span>;
-
-		<span class="kw">let</span> <span class="ident">manager</span> <span class="op">=</span> <span class="ident">SubscriptionManager::new</span>(<span class="ident">Arc::new</span>(<span class="ident">executor</span>));
-		<span class="prelude-val">Ok</span>(<span class="self">Self</span> { <span class="ident">signed_commitment_stream</span>, <span class="ident">beefy_best_block</span>, <span class="ident">manager</span> })
+		<span class="ident">executor</span>.<span class="ident">spawn</span>(<span class="string">&quot;substrate-rpc-subscription&quot;</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;rpc&quot;</span>), <span class="ident">future</span>.<span class="ident">map</span>(<span class="ident">drop</span>).<span class="ident">boxed</span>());
+		<span class="prelude-val">Ok</span>(<span class="self">Self</span> { <span class="ident">signed_commitment_stream</span>, <span class="ident">beefy_best_block</span>, <span class="ident">executor</span> })
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="ident">BeefyApi</span><span class="op">&lt;</span><span class="ident">notification::EncodedSignedCommitment</span>, <span class="ident">Block::Hash</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BeefyRpcHandler</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>
+<span class="attribute">#[<span class="ident">async_trait</span>]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="ident">BeefyApiServer</span><span class="op">&lt;</span><span class="ident">notification::EncodedSignedCommitment</span>, <span class="ident">Block::Hash</span><span class="op">&gt;</span>
+	<span class="kw">for</span> <span class="ident">BeefyRpcHandler</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">Block</span>: <span class="ident">BlockT</span>,
 {
-	<span class="kw">type</span> <span class="ident">Metadata</span> <span class="op">=</span> <span class="ident">sc_rpc::Metadata</span>;
-
-	<span class="kw">fn</span> <span class="ident">subscribe_justifications</span>(
-		<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">_metadata</span>: <span class="ident"><span class="self">Self</span>::Metadata</span>,
-		<span class="ident">subscriber</span>: <span class="ident">Subscriber</span><span class="op">&lt;</span><span class="ident">notification::EncodedSignedCommitment</span><span class="op">&gt;</span>,
-	) {
+	<span class="kw">fn</span> <span class="ident">subscribe_justifications</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">pending</span>: <span class="ident">PendingSubscription</span>) {
 		<span class="kw">let</span> <span class="ident">stream</span> <span class="op">=</span> <span class="self">self</span>
 			.<span class="ident">signed_commitment_stream</span>
 			.<span class="ident">subscribe</span>()
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="prelude-val">Ok</span>::<span class="op">&lt;</span><span class="kw">_</span>, ()<span class="op">&gt;</span>(<span class="prelude-val">Ok</span>(<span class="ident">notification::EncodedSignedCommitment::new</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="ident">x</span>))));
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">sc</span><span class="op">|</span> <span class="ident">notification::EncodedSignedCommitment::new</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(<span class="ident">sc</span>));
 
-		<span class="self">self</span>.<span class="ident">manager</span>.<span class="ident">add</span>(<span class="ident">subscriber</span>, <span class="op">|</span><span class="ident">sink</span><span class="op">|</span> {
-			<span class="ident">stream</span>
-				.<span class="ident">forward</span>(<span class="ident">sink</span>.<span class="ident">sink_map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">warn!</span>(<span class="string">&quot;Error sending notifications: {:?}&quot;</span>, <span class="ident">e</span>)))
-				.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())
-		});
+		<span class="kw">let</span> <span class="ident">fut</span> <span class="op">=</span> <span class="kw">async</span> <span class="kw">move</span> {
+			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">sink</span>) <span class="op">=</span> <span class="ident">pending</span>.<span class="ident">accept</span>() {
+				<span class="ident">sink</span>.<span class="ident">pipe_from_stream</span>(<span class="ident">stream</span>).<span class="kw">await</span>;
+			}
+		}
+		.<span class="ident">boxed</span>();
+
+		<span class="self">self</span>.<span class="ident">executor</span>
+			.<span class="ident">spawn</span>(<span class="string">&quot;substrate-rpc-subscription&quot;</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;rpc&quot;</span>), <span class="ident">fut</span>.<span class="ident">map</span>(<span class="ident">drop</span>).<span class="ident">boxed</span>());
 	}
 
-	<span class="kw">fn</span> <span class="ident">unsubscribe_justifications</span>(
-		<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">_metadata</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Metadata</span><span class="op">&gt;</span>,
-		<span class="ident">id</span>: <span class="ident">SubscriptionId</span>,
-	) -&gt; <span class="ident">jsonrpc_core::Result</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
-		<span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="ident">manager</span>.<span class="ident">cancel</span>(<span class="ident">id</span>))
-	}
-
-	<span class="kw">fn</span> <span class="ident">latest_finalized</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">FutureResult</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">result</span>: <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Block::Hash</span>, <span class="ident">jsonrpc_core::Error</span><span class="op">&gt;</span> <span class="op">=</span> <span class="self">self</span>
-			.<span class="ident">beefy_best_block</span>
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">latest_finalized</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="ident">beefy_best_block</span>
 			.<span class="ident">read</span>()
 			.<span class="ident">as_ref</span>()
 			.<span class="ident">cloned</span>()
-			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error::EndpointNotReady</span>.<span class="ident">into</span>());
-		<span class="kw">let</span> <span class="ident">future</span> <span class="op">=</span> <span class="kw">async</span> <span class="kw">move</span> { <span class="ident">result</span> }.<span class="ident">boxed</span>();
-		<span class="ident">future</span>.<span class="ident">map_err</span>(<span class="ident">jsonrpc_core::Error::from</span>).<span class="ident">boxed</span>()
+			.<span class="ident">ok_or</span>(<span class="ident">Error::EndpointNotReady</span>)
+			.<span class="ident">map_err</span>(<span class="ident">Into::into</span>)
 	}
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-	<span class="kw">use</span> <span class="ident">jsonrpc_core</span>::{<span class="ident">types::Params</span>, <span class="ident">Notification</span>, <span class="ident">Output</span>};
 
-	<span class="kw">use</span> <span class="ident">beefy_gadget::notification</span>::{<span class="ident">BeefySignedCommitment</span>, <span class="ident">BeefySignedCommitmentSender</span>};
+	<span class="kw">use</span> <span class="ident">beefy_gadget::notification</span>::{
+		<span class="ident">BeefyBestBlockStream</span>, <span class="ident">BeefySignedCommitment</span>, <span class="ident">BeefySignedCommitmentSender</span>,
+	};
 	<span class="kw">use</span> <span class="ident">beefy_primitives</span>::{<span class="ident">known_payload_ids</span>, <span class="ident">Payload</span>};
 	<span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
+	<span class="kw">use</span> <span class="ident">jsonrpsee</span>::{<span class="ident">types::EmptyParams</span>, <span class="ident">RpcModule</span>};
 	<span class="kw">use</span> <span class="ident">sp_runtime::traits</span>::{<span class="ident">BlakeTwo256</span>, <span class="ident">Hash</span>};
 	<span class="kw">use</span> <span class="ident">substrate_test_runtime_client::runtime::Block</span>;
 
-	<span class="kw">fn</span> <span class="ident">setup_io_handler</span>(
-	) -&gt; (<span class="ident">jsonrpc_core::MetaIoHandler</span><span class="op">&lt;</span><span class="ident">sc_rpc::Metadata</span><span class="op">&gt;</span>, <span class="ident">BeefySignedCommitmentSender</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>) {
+	<span class="kw">fn</span> <span class="ident">setup_io_handler</span>() -&gt; (<span class="ident">RpcModule</span><span class="op">&lt;</span><span class="ident">BeefyRpcHandler</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">BeefySignedCommitmentSender</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>)
+	{
 		<span class="kw">let</span> (<span class="kw">_</span>, <span class="ident">stream</span>) <span class="op">=</span> <span class="ident">BeefyBestBlockStream</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::channel</span>();
 		<span class="ident">setup_io_handler_with_best_block_stream</span>(<span class="ident">stream</span>)
 	}
 
 	<span class="kw">fn</span> <span class="ident">setup_io_handler_with_best_block_stream</span>(
 		<span class="ident">best_block_stream</span>: <span class="ident">BeefyBestBlockStream</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
-	) -&gt; (<span class="ident">jsonrpc_core::MetaIoHandler</span><span class="op">&lt;</span><span class="ident">sc_rpc::Metadata</span><span class="op">&gt;</span>, <span class="ident">BeefySignedCommitmentSender</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>) {
+	) -&gt; (<span class="ident">RpcModule</span><span class="op">&lt;</span><span class="ident">BeefyRpcHandler</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">BeefySignedCommitmentSender</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>) {
 		<span class="kw">let</span> (<span class="ident">commitment_sender</span>, <span class="ident">commitment_stream</span>) <span class="op">=</span>
 			<span class="ident">BeefySignedCommitmentStream</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::channel</span>();
 
-		<span class="kw">let</span> <span class="ident">handler</span>: <span class="ident">BeefyRpcHandler</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">BeefyRpcHandler::new</span>(
+		<span class="kw">let</span> <span class="ident">handler</span> <span class="op">=</span> <span class="ident">BeefyRpcHandler::new</span>(
 			<span class="ident">commitment_stream</span>,
 			<span class="ident">best_block_stream</span>,
-			<span class="ident">sc_rpc::testing::TaskExecutor</span>,
+			<span class="ident">sc_rpc::testing::test_executor</span>(),
 		)
-		.<span class="ident">unwrap</span>();
+		.<span class="ident">expect</span>(<span class="string">&quot;Setting up the BEEFY RPC handler works&quot;</span>);
 
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">io</span> <span class="op">=</span> <span class="ident">jsonrpc_core::MetaIoHandler::default</span>();
-		<span class="ident">io</span>.<span class="ident">extend_with</span>(<span class="ident">BeefyApi::to_delegate</span>(<span class="ident">handler</span>));
-
-		(<span class="ident">io</span>, <span class="ident">commitment_sender</span>)
+		(<span class="ident">handler</span>.<span class="ident">into_rpc</span>(), <span class="ident">commitment_sender</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">setup_session</span>() -&gt; (<span class="ident">sc_rpc::Metadata</span>, <span class="ident">futures::channel::mpsc::UnboundedReceiver</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>) {
-		<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">futures::channel::mpsc::unbounded</span>();
-		<span class="kw">let</span> <span class="ident">meta</span> <span class="op">=</span> <span class="ident">sc_rpc::Metadata::new</span>(<span class="ident">tx</span>);
-		(<span class="ident">meta</span>, <span class="ident">rx</span>)
-	}
-
-	<span class="attribute">#[<span class="ident">test</span>]</span>
-	<span class="kw">fn</span> <span class="ident">uninitialized_rpc_handler</span>() {
-		<span class="kw">let</span> (<span class="ident">io</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">setup_io_handler</span>();
-
+	<span class="attribute">#[<span class="ident">tokio::test</span>]</span>
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">uninitialized_rpc_handler</span>() {
+		<span class="kw">let</span> (<span class="ident">rpc</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">setup_io_handler</span>();
 		<span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="string">r#&quot;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;beefy_getFinalizedHead&quot;,&quot;params&quot;:[],&quot;id&quot;:1}&quot;#</span>;
-		<span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="string">r#&quot;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;error&quot;:{&quot;code&quot;:1,&quot;message&quot;:&quot;BEEFY RPC endpoint not ready&quot;},&quot;id&quot;:1}&quot;#</span>;
+		<span class="kw">let</span> <span class="ident">expected_response</span> <span class="op">=</span> <span class="string">r#&quot;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;error&quot;:{&quot;code&quot;:1,&quot;message&quot;:&quot;BEEFY RPC endpoint not ready&quot;},&quot;id&quot;:1}&quot;#</span>.<span class="ident">to_string</span>();
+		<span class="kw">let</span> (<span class="ident">result</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">rpc</span>.<span class="ident">raw_json_request</span>(<span class="kw-2">&amp;</span><span class="ident">request</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>();
 
-		<span class="kw">let</span> <span class="ident">meta</span> <span class="op">=</span> <span class="ident">sc_rpc::Metadata::default</span>();
-		<span class="macro">assert_eq!</span>(<span class="prelude-val">Some</span>(<span class="ident">response</span>.<span class="ident">into</span>()), <span class="ident">io</span>.<span class="ident">handle_request_sync</span>(<span class="ident">request</span>, <span class="ident">meta</span>));
+		<span class="macro">assert_eq!</span>(<span class="ident">expected_response</span>, <span class="ident">result</span>,);
 	}
 
-	<span class="attribute">#[<span class="ident">test</span>]</span>
-	<span class="kw">fn</span> <span class="ident">latest_finalized_rpc</span>() {
+	<span class="attribute">#[<span class="ident">tokio::test</span>]</span>
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">latest_finalized_rpc</span>() {
 		<span class="kw">let</span> (<span class="ident">sender</span>, <span class="ident">stream</span>) <span class="op">=</span> <span class="ident">BeefyBestBlockStream</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::channel</span>();
 		<span class="kw">let</span> (<span class="ident">io</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">setup_io_handler_with_best_block_stream</span>(<span class="ident">stream</span>);
 
@@ -667,83 +562,78 @@
 			\&quot;jsonrpc\&quot;:\&quot;2.0\&quot;,\
 			\&quot;result\&quot;:\&quot;0x2f0039e93a27221fcf657fb877a1d4f60307106113e885096cb44a461cd0afbf\&quot;,\
 			\&quot;id\&quot;:1\
-		}&quot;</span>;
+		}&quot;</span>
+		.<span class="ident">to_string</span>();
 		<span class="kw">let</span> <span class="ident">not_ready</span> <span class="op">=</span> <span class="string">&quot;{\
 			\&quot;jsonrpc\&quot;:\&quot;2.0\&quot;,\
 			\&quot;error\&quot;:{\&quot;code\&quot;:1,\&quot;message\&quot;:\&quot;BEEFY RPC endpoint not ready\&quot;},\
 			\&quot;id\&quot;:1\
-		}&quot;</span>;
+		}&quot;</span>
+		.<span class="ident">to_string</span>();
 
 		<span class="kw">let</span> <span class="ident">deadline</span> <span class="op">=</span> <span class="ident">std::time::Instant::now</span>() <span class="op">+</span> <span class="ident">std::time::Duration::from_secs</span>(<span class="number">2</span>);
 		<span class="kw">while</span> <span class="ident">std::time::Instant::now</span>() <span class="op">&lt;</span> <span class="ident">deadline</span> {
-			<span class="kw">let</span> <span class="ident">meta</span> <span class="op">=</span> <span class="ident">sc_rpc::Metadata::default</span>();
-			<span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">io</span>.<span class="ident">handle_request_sync</span>(<span class="ident">request</span>, <span class="ident">meta</span>);
-			<span class="comment">// Retry &quot;not ready&quot; responses.</span>
-			<span class="kw">if</span> <span class="ident">response</span> <span class="op">!</span><span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">not_ready</span>.<span class="ident">into</span>()) {
-				<span class="macro">assert_eq!</span>(<span class="ident">response</span>, <span class="prelude-val">Some</span>(<span class="ident">expected</span>.<span class="ident">into</span>()));
+			<span class="kw">let</span> (<span class="ident">response</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">io</span>.<span class="ident">raw_json_request</span>(<span class="ident">request</span>).<span class="kw">await</span>.<span class="ident">expect</span>(<span class="string">&quot;RPC requests work&quot;</span>);
+			<span class="kw">if</span> <span class="ident">response</span> <span class="op">!</span><span class="op">=</span> <span class="ident">not_ready</span> {
+				<span class="macro">assert_eq!</span>(<span class="ident">response</span>, <span class="ident">expected</span>);
 				<span class="comment">// Success</span>
 				<span class="kw">return</span>
 			}
-			<span class="ident">std::thread::sleep</span>(<span class="ident">std::time::Duration::from_millis</span>(<span class="number">50</span>));
+			<span class="ident">std::thread::sleep</span>(<span class="ident">std::time::Duration::from_millis</span>(<span class="number">50</span>))
 		}
+
 		<span class="macro">panic!</span>(
 			<span class="string">&quot;Deadline reached while waiting for best BEEFY block to update. Perhaps the background task is broken?&quot;</span>
 		);
 	}
 
-	<span class="attribute">#[<span class="ident">test</span>]</span>
-	<span class="kw">fn</span> <span class="ident">subscribe_and_unsubscribe_to_justifications</span>() {
-		<span class="kw">let</span> (<span class="ident">io</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">setup_io_handler</span>();
-		<span class="kw">let</span> (<span class="ident">meta</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">setup_session</span>();
+	<span class="attribute">#[<span class="ident">tokio::test</span>]</span>
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">subscribe_and_unsubscribe_to_justifications</span>() {
+		<span class="kw">let</span> (<span class="ident">rpc</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">setup_io_handler</span>();
 
-		<span class="comment">// Subscribe</span>
-		<span class="kw">let</span> <span class="ident">sub_request</span> <span class="op">=</span>
-			<span class="string">r#&quot;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;beefy_subscribeJustifications&quot;,&quot;params&quot;:[],&quot;id&quot;:1}&quot;#</span>;
-		<span class="kw">let</span> <span class="ident">resp</span> <span class="op">=</span> <span class="ident">io</span>.<span class="ident">handle_request_sync</span>(<span class="ident">sub_request</span>, <span class="ident">meta</span>.<span class="ident">clone</span>());
-		<span class="kw">let</span> <span class="ident">resp</span>: <span class="ident">Output</span> <span class="op">=</span> <span class="ident">serde_json::from_str</span>(<span class="kw-2">&amp;</span><span class="ident">resp</span>.<span class="ident">unwrap</span>()).<span class="ident">unwrap</span>();
+		<span class="comment">// Subscribe call.</span>
+		<span class="kw">let</span> <span class="ident">sub</span> <span class="op">=</span> <span class="ident">rpc</span>
+			.<span class="ident">subscribe</span>(<span class="string">&quot;beefy_subscribeJustifications&quot;</span>, <span class="ident">EmptyParams::new</span>())
+			.<span class="kw">await</span>
+			.<span class="ident">unwrap</span>();
 
-		<span class="kw">let</span> <span class="ident">sub_id</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">resp</span> {
-			<span class="ident">Output::Success</span>(<span class="ident">success</span>) =&gt; <span class="ident">success</span>.<span class="ident">result</span>,
-			<span class="kw">_</span> =&gt; <span class="macro">panic!</span>(),
-		};
+		<span class="kw">let</span> <span class="ident">ser_id</span> <span class="op">=</span> <span class="ident">serde_json::to_string</span>(<span class="ident">sub</span>.<span class="ident">subscription_id</span>()).<span class="ident">unwrap</span>();
 
 		<span class="comment">// Unsubscribe</span>
 		<span class="kw">let</span> <span class="ident">unsub_req</span> <span class="op">=</span> <span class="macro">format!</span>(
-			<span class="string">r#&quot;{{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;beefy_unsubscribeJustifications&quot;,&quot;params&quot;:[{}],&quot;id&quot;:1}}&quot;#</span>,
-			<span class="ident">sub_id</span>
+			<span class="string">&quot;{{\&quot;jsonrpc\&quot;:\&quot;2.0\&quot;,\&quot;method\&quot;:\&quot;beefy_unsubscribeJustifications\&quot;,\&quot;params\&quot;:[{}],\&quot;id\&quot;:1}}&quot;</span>,
+			<span class="ident">ser_id</span>
 		);
-		<span class="macro">assert_eq!</span>(
-			<span class="ident">io</span>.<span class="ident">handle_request_sync</span>(<span class="kw-2">&amp;</span><span class="ident">unsub_req</span>, <span class="ident">meta</span>.<span class="ident">clone</span>()),
-			<span class="prelude-val">Some</span>(<span class="string">r#&quot;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;result&quot;:true,&quot;id&quot;:1}&quot;#</span>.<span class="ident">into</span>()),
-		);
+		<span class="kw">let</span> (<span class="ident">response</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">rpc</span>.<span class="ident">raw_json_request</span>(<span class="kw-2">&amp;</span><span class="ident">unsub_req</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>();
+
+		<span class="macro">assert_eq!</span>(<span class="ident">response</span>, <span class="string">r#&quot;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;result&quot;:true,&quot;id&quot;:1}&quot;#</span>);
 
 		<span class="comment">// Unsubscribe again and fail</span>
-		<span class="macro">assert_eq!</span>(
-			<span class="ident">io</span>.<span class="ident">handle_request_sync</span>(<span class="kw-2">&amp;</span><span class="ident">unsub_req</span>, <span class="ident">meta</span>),
-			<span class="prelude-val">Some</span>(<span class="string">r#&quot;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;error&quot;:{&quot;code&quot;:-32602,&quot;message&quot;:&quot;Invalid subscription id.&quot;},&quot;id&quot;:1}&quot;#</span>.<span class="ident">into</span>()),
-		);
+		<span class="kw">let</span> (<span class="ident">response</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">rpc</span>.<span class="ident">raw_json_request</span>(<span class="kw-2">&amp;</span><span class="ident">unsub_req</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>();
+		<span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="string">r#&quot;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;result&quot;:false,&quot;id&quot;:1}&quot;#</span>;
+
+		<span class="macro">assert_eq!</span>(<span class="ident">response</span>, <span class="ident">expected</span>);
 	}
 
-	<span class="attribute">#[<span class="ident">test</span>]</span>
-	<span class="kw">fn</span> <span class="ident">subscribe_and_unsubscribe_with_wrong_id</span>() {
-		<span class="kw">let</span> (<span class="ident">io</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">setup_io_handler</span>();
-		<span class="kw">let</span> (<span class="ident">meta</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">setup_session</span>();
-
-		<span class="comment">// Subscribe</span>
-		<span class="kw">let</span> <span class="ident">sub_request</span> <span class="op">=</span>
-			<span class="string">r#&quot;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;beefy_subscribeJustifications&quot;,&quot;params&quot;:[],&quot;id&quot;:1}&quot;#</span>;
-		<span class="kw">let</span> <span class="ident">resp</span> <span class="op">=</span> <span class="ident">io</span>.<span class="ident">handle_request_sync</span>(<span class="ident">sub_request</span>, <span class="ident">meta</span>.<span class="ident">clone</span>());
-		<span class="kw">let</span> <span class="ident">resp</span>: <span class="ident">Output</span> <span class="op">=</span> <span class="ident">serde_json::from_str</span>(<span class="kw-2">&amp;</span><span class="ident">resp</span>.<span class="ident">unwrap</span>()).<span class="ident">unwrap</span>();
-		<span class="macro">assert!</span>(<span class="macro">matches!</span>(<span class="ident">resp</span>, <span class="ident">Output::Success</span>(<span class="kw">_</span>)));
+	<span class="attribute">#[<span class="ident">tokio::test</span>]</span>
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">subscribe_and_unsubscribe_with_wrong_id</span>() {
+		<span class="kw">let</span> (<span class="ident">rpc</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">setup_io_handler</span>();
+		<span class="comment">// Subscribe call.</span>
+		<span class="kw">let</span> <span class="ident">_sub</span> <span class="op">=</span> <span class="ident">rpc</span>
+			.<span class="ident">subscribe</span>(<span class="string">&quot;beefy_subscribeJustifications&quot;</span>, <span class="ident">EmptyParams::new</span>())
+			.<span class="kw">await</span>
+			.<span class="ident">unwrap</span>();
 
 		<span class="comment">// Unsubscribe with wrong ID</span>
-		<span class="macro">assert_eq!</span>(
-			<span class="ident">io</span>.<span class="ident">handle_request_sync</span>(
+		<span class="kw">let</span> (<span class="ident">response</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">rpc</span>
+			.<span class="ident">raw_json_request</span>(
 				<span class="string">r#&quot;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;beefy_unsubscribeJustifications&quot;,&quot;params&quot;:[&quot;FOO&quot;],&quot;id&quot;:1}&quot;#</span>,
-				<span class="ident">meta</span>.<span class="ident">clone</span>()
-			),
-			<span class="prelude-val">Some</span>(<span class="string">r#&quot;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;error&quot;:{&quot;code&quot;:-32602,&quot;message&quot;:&quot;Invalid subscription id.&quot;},&quot;id&quot;:1}&quot;#</span>.<span class="ident">into</span>())
-		);
+			)
+			.<span class="kw">await</span>
+			.<span class="ident">unwrap</span>();
+		<span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="string">r#&quot;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;result&quot;:false,&quot;id&quot;:1}&quot;#</span>;
+
+		<span class="macro">assert_eq!</span>(<span class="ident">response</span>, <span class="ident">expected</span>);
 	}
 
 	<span class="kw">fn</span> <span class="ident">create_commitment</span>() -&gt; <span class="ident">BeefySignedCommitment</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> {
@@ -758,18 +648,15 @@
 		}
 	}
 
-	<span class="attribute">#[<span class="ident">test</span>]</span>
-	<span class="kw">fn</span> <span class="ident">subscribe_and_listen_to_one_justification</span>() {
-		<span class="kw">let</span> (<span class="ident">io</span>, <span class="ident">commitment_sender</span>) <span class="op">=</span> <span class="ident">setup_io_handler</span>();
-		<span class="kw">let</span> (<span class="ident">meta</span>, <span class="ident">receiver</span>) <span class="op">=</span> <span class="ident">setup_session</span>();
+	<span class="attribute">#[<span class="ident">tokio::test</span>]</span>
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">subscribe_and_listen_to_one_justification</span>() {
+		<span class="kw">let</span> (<span class="ident">rpc</span>, <span class="ident">commitment_sender</span>) <span class="op">=</span> <span class="ident">setup_io_handler</span>();
 
 		<span class="comment">// Subscribe</span>
-		<span class="kw">let</span> <span class="ident">sub_request</span> <span class="op">=</span>
-			<span class="string">r#&quot;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;beefy_subscribeJustifications&quot;,&quot;params&quot;:[],&quot;id&quot;:1}&quot;#</span>;
-
-		<span class="kw">let</span> <span class="ident">resp</span> <span class="op">=</span> <span class="ident">io</span>.<span class="ident">handle_request_sync</span>(<span class="ident">sub_request</span>, <span class="ident">meta</span>.<span class="ident">clone</span>());
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">resp</span>: <span class="ident">serde_json::Value</span> <span class="op">=</span> <span class="ident">serde_json::from_str</span>(<span class="kw-2">&amp;</span><span class="ident">resp</span>.<span class="ident">unwrap</span>()).<span class="ident">unwrap</span>();
-		<span class="kw">let</span> <span class="ident">sub_id</span>: <span class="ident">String</span> <span class="op">=</span> <span class="ident">serde_json::from_value</span>(<span class="ident">resp</span>[<span class="string">&quot;result&quot;</span>].<span class="ident">take</span>()).<span class="ident">unwrap</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sub</span> <span class="op">=</span> <span class="ident">rpc</span>
+			.<span class="ident">subscribe</span>(<span class="string">&quot;beefy_subscribeJustifications&quot;</span>, <span class="ident">EmptyParams::new</span>())
+			.<span class="kw">await</span>
+			.<span class="ident">unwrap</span>();
 
 		<span class="comment">// Notify with commitment</span>
 		<span class="kw">let</span> <span class="ident">commitment</span> <span class="op">=</span> <span class="ident">create_commitment</span>();
@@ -777,21 +664,10 @@
 		<span class="ident">r</span>.<span class="ident">unwrap</span>();
 
 		<span class="comment">// Inspect what we received</span>
-		<span class="kw">let</span> <span class="ident">recv</span> <span class="op">=</span> <span class="ident">futures::executor::block_on</span>(<span class="ident">receiver</span>.<span class="ident">take</span>(<span class="number">1</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>());
-		<span class="kw">let</span> <span class="ident">recv</span>: <span class="ident">Notification</span> <span class="op">=</span> <span class="ident">serde_json::from_str</span>(<span class="kw-2">&amp;</span><span class="ident">recv</span>[<span class="number">0</span>]).<span class="ident">unwrap</span>();
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">json_map</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">recv</span>.<span class="ident">params</span> {
-			<span class="ident">Params::Map</span>(<span class="ident">json_map</span>) =&gt; <span class="ident">json_map</span>,
-			<span class="kw">_</span> =&gt; <span class="macro">panic!</span>(),
-		};
-
-		<span class="kw">let</span> <span class="ident">recv_sub_id</span>: <span class="ident">String</span> <span class="op">=</span> <span class="ident">serde_json::from_value</span>(<span class="ident">json_map</span>[<span class="string">&quot;subscription&quot;</span>].<span class="ident">take</span>()).<span class="ident">unwrap</span>();
-		<span class="kw">let</span> <span class="ident">recv_commitment</span>: <span class="ident">sp_core::Bytes</span> <span class="op">=</span>
-			<span class="ident">serde_json::from_value</span>(<span class="ident">json_map</span>[<span class="string">&quot;result&quot;</span>].<span class="ident">take</span>()).<span class="ident">unwrap</span>();
+		<span class="kw">let</span> (<span class="ident">bytes</span>, <span class="ident">recv_sub_id</span>) <span class="op">=</span> <span class="ident">sub</span>.<span class="ident">next</span>::<span class="op">&lt;</span><span class="ident">sp_core::Bytes</span><span class="op">&gt;</span>().<span class="kw">await</span>.<span class="ident">unwrap</span>().<span class="ident">unwrap</span>();
 		<span class="kw">let</span> <span class="ident">recv_commitment</span>: <span class="ident">BeefySignedCommitment</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">=</span>
-			<span class="ident">Decode::decode</span>(<span class="kw-2">&amp;mut</span> <span class="kw-2">&amp;</span><span class="ident">recv_commitment</span>[..]).<span class="ident">unwrap</span>();
-
-		<span class="macro">assert_eq!</span>(<span class="ident">recv</span>.<span class="ident">method</span>, <span class="string">&quot;beefy_justifications&quot;</span>);
-		<span class="macro">assert_eq!</span>(<span class="ident">recv_sub_id</span>, <span class="ident">sub_id</span>);
+			<span class="ident">Decode::decode</span>(<span class="kw-2">&amp;mut</span> <span class="kw-2">&amp;</span><span class="ident">bytes</span>[..]).<span class="ident">unwrap</span>();
+		<span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span><span class="ident">recv_sub_id</span>, <span class="ident">sub</span>.<span class="ident">subscription_id</span>());
 		<span class="macro">assert_eq!</span>(<span class="ident">recv_commitment</span>, <span class="ident">commitment</span>);
 	}
 }

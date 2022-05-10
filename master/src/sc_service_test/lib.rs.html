@@ -565,6 +565,10 @@
 <span id="560">560</span>
 <span id="561">561</span>
 <span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -813,6 +817,10 @@
 		<span class="ident">rpc_cors</span>: <span class="prelude-val">None</span>,
 		<span class="ident">rpc_methods</span>: <span class="ident">Default::default</span>(),
 		<span class="ident">rpc_max_payload</span>: <span class="prelude-val">None</span>,
+		<span class="ident">rpc_max_request_size</span>: <span class="prelude-val">None</span>,
+		<span class="ident">rpc_max_response_size</span>: <span class="prelude-val">None</span>,
+		<span class="ident">rpc_id_provider</span>: <span class="prelude-val">None</span>,
+		<span class="ident">rpc_max_subs_per_conn</span>: <span class="prelude-val">None</span>,
 		<span class="ident">ws_max_out_buffer_capacity</span>: <span class="prelude-val">None</span>,
 		<span class="ident">prometheus_config</span>: <span class="prelude-val">None</span>,
 		<span class="ident">telemetry_endpoints</span>: <span class="prelude-val">None</span>,

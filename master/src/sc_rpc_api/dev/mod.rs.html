@@ -66,7 +66,6 @@
 <span id="61">61</span>
 <span id="62">62</span>
 <span id="63">63</span>
-<span id="64">64</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2022 Parity Technologies (UK) Ltd.</span>
@@ -91,9 +90,8 @@
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">error</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="self">self</span>::error::Result</span>;
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
-<span class="kw">use</span> <span class="ident">jsonrpc_derive::rpc</span>;
+<span class="kw">use</span> <span class="ident">jsonrpsee</span>::{<span class="ident">core::RpcResult</span>, <span class="ident">proc_macros::rpc</span>};
 <span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
 
@@ -121,15 +119,15 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// This API contains unstable and unsafe methods only meant for development nodes. They</span>
 <span class="doccomment">/// are all flagged as unsafe for this reason.</span>
-<span class="attribute">#[<span class="ident">rpc</span>]</span>
+<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">client</span>, <span class="ident">server</span>)]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">DevApi</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Reexecute the specified `block_hash` and gather statistics while doing so.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This function requires the specified block and its parent to be available</span>
 	<span class="doccomment">/// at the queried node. If either the specified block or the parent is pruned,</span>
 	<span class="doccomment">/// this function will return `None`.</span>
-	<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;dev_getBlockStats&quot;</span>)]</span>
-	<span class="kw">fn</span> <span class="ident">block_stats</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">block_hash</span>: <span class="ident">Hash</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BlockStats</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+	<span class="attribute">#[<span class="ident">method</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;dev_getBlockStats&quot;</span>)]</span>
+	<span class="kw">fn</span> <span class="ident">block_stats</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">block_hash</span>: <span class="ident">Hash</span>) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BlockStats</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="sc_rpc_api" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (e745b4ddb 2022-04-07)" ></div>

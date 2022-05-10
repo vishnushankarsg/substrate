@@ -465,38 +465,6 @@
 <span id="460">460</span>
 <span id="461">461</span>
 <span id="462">462</span>
-<span id="463">463</span>
-<span id="464">464</span>
-<span id="465">465</span>
-<span id="466">466</span>
-<span id="467">467</span>
-<span id="468">468</span>
-<span id="469">469</span>
-<span id="470">470</span>
-<span id="471">471</span>
-<span id="472">472</span>
-<span id="473">473</span>
-<span id="474">474</span>
-<span id="475">475</span>
-<span id="476">476</span>
-<span id="477">477</span>
-<span id="478">478</span>
-<span id="479">479</span>
-<span id="480">480</span>
-<span id="481">481</span>
-<span id="482">482</span>
-<span id="483">483</span>
-<span id="484">484</span>
-<span id="485">485</span>
-<span id="486">486</span>
-<span id="487">487</span>
-<span id="488">488</span>
-<span id="489">489</span>
-<span id="490">490</span>
-<span id="491">491</span>
-<span id="492">492</span>
-<span id="493">493</span>
-<span id="494">494</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -527,7 +495,7 @@
 };
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_client_db</span>::{<span class="self">self</span>, <span class="ident">Backend</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_executor</span>::{<span class="self">self</span>, <span class="ident">NativeElseWasmExecutor</span>, <span class="ident">WasmExecutionMethod</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_service</span>::{<span class="ident">client</span>, <span class="ident">RpcHandlers</span>, <span class="ident">RpcSession</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_service</span>::{<span class="ident">client</span>, <span class="ident">RpcHandlers</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_consensus</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_keyring</span>::{
 	<span class="ident">ed25519::Keyring</span> <span class="kw">as</span> <span class="ident">Ed25519Keyring</span>, <span class="ident">sr25519::Keyring</span> <span class="kw">as</span> <span class="ident">Sr25519Keyring</span>, <span class="ident">AccountKeyring</span>,
@@ -536,10 +504,7 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_runtime</span>::{<span class="ident">Storage</span>, <span class="ident">StorageChild</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_state_machine::ExecutionStrategy</span>;
 
-<span class="kw">use</span> <span class="ident">futures</span>::{
-	<span class="ident">future</span>::{<span class="ident">Future</span>, <span class="ident">FutureExt</span>},
-	<span class="ident">stream::StreamExt</span>,
-};
+<span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">future::Future</span>, <span class="ident">stream::StreamExt</span>};
 <span class="kw">use</span> <span class="ident">sc_client_api::BlockchainEvents</span>;
 <span class="kw">use</span> <span class="ident">sc_service::client</span>::{<span class="ident">ClientConfig</span>, <span class="ident">LocalCallExecutor</span>};
 <span class="kw">use</span> <span class="ident">serde::Deserialize</span>;
@@ -796,16 +761,14 @@
 <span class="doccomment">/// The output of an RPC transaction.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RpcTransactionOutput</span> {
 	<span class="doccomment">/// The output string of the transaction if any.</span>
-	<span class="kw">pub</span> <span class="ident">result</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-	<span class="doccomment">/// The session object.</span>
-	<span class="kw">pub</span> <span class="ident">session</span>: <span class="ident">RpcSession</span>,
+	<span class="kw">pub</span> <span class="ident">result</span>: <span class="ident">String</span>,
 	<span class="doccomment">/// An async receiver if data will be returned via a callback.</span>
 	<span class="kw">pub</span> <span class="ident">receiver</span>: <span class="ident">futures::channel::mpsc::UnboundedReceiver</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">std::fmt::Debug</span> <span class="kw">for</span> <span class="ident">RpcTransactionOutput</span> {
 	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">std::fmt::Formatter</span>) -&gt; <span class="ident">std::fmt::Result</span> {
-		<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;RpcTransactionOutput {{ result: {:?}, session, receiver }}&quot;</span>, <span class="self">self</span>.<span class="ident">result</span>)
+		<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;RpcTransactionOutput {{ result: {:?}, receiver }}&quot;</span>, <span class="self">self</span>.<span class="ident">result</span>)
 	}
 }
 
@@ -827,56 +790,51 @@
 }
 
 <span class="doccomment">/// An extension trait for `RpcHandlers`.</span>
+<span class="attribute">#[<span class="ident">async_trait::async_trait</span>]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">RpcHandlersExt</span> {
 	<span class="doccomment">/// Send a transaction through the RpcHandlers.</span>
-	<span class="kw">fn</span> <span class="ident">send_transaction</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send_transaction</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">extrinsic</span>: <span class="ident">OpaqueExtrinsic</span>,
-	) -&gt; <span class="ident">Pin</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RpcTransactionOutput</span>, <span class="ident">RpcTransactionError</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RpcTransactionOutput</span>, <span class="ident">RpcTransactionError</span><span class="op">&gt;</span>;
 }
 
+<span class="attribute">#[<span class="ident">async_trait::async_trait</span>]</span>
 <span class="kw">impl</span> <span class="ident">RpcHandlersExt</span> <span class="kw">for</span> <span class="ident">RpcHandlers</span> {
-	<span class="kw">fn</span> <span class="ident">send_transaction</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send_transaction</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">extrinsic</span>: <span class="ident">OpaqueExtrinsic</span>,
-	) -&gt; <span class="ident">Pin</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RpcTransactionOutput</span>, <span class="ident">RpcTransactionError</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">futures::channel::mpsc::unbounded</span>();
-		<span class="kw">let</span> <span class="ident">mem</span> <span class="op">=</span> <span class="ident">RpcSession::new</span>(<span class="ident">tx</span>);
-		<span class="ident">Box::pin</span>(
-			<span class="self">self</span>.<span class="ident">rpc_query</span>(
-				<span class="kw-2">&amp;</span><span class="ident">mem</span>,
-				<span class="kw-2">&amp;</span><span class="macro">format!</span>(
-					<span class="string">r#&quot;{{
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RpcTransactionOutput</span>, <span class="ident">RpcTransactionError</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> (<span class="ident">result</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="self">self</span>
+			.<span class="ident">rpc_query</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(
+				<span class="string">r#&quot;{{
 						&quot;jsonrpc&quot;: &quot;2.0&quot;,
 						&quot;method&quot;: &quot;author_submitExtrinsic&quot;,
 						&quot;params&quot;: [&quot;0x{}&quot;],
 						&quot;id&quot;: 0
 					}}&quot;#</span>,
-					<span class="ident">hex::encode</span>(<span class="ident">extrinsic</span>.<span class="ident">encode</span>())
-				),
-			)
-			.<span class="ident">map</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">result</span><span class="op">|</span> <span class="ident">parse_rpc_result</span>(<span class="ident">result</span>, <span class="ident">mem</span>, <span class="ident">rx</span>)),
-		)
+				<span class="ident">hex::encode</span>(<span class="ident">extrinsic</span>.<span class="ident">encode</span>())
+			))
+			.<span class="kw">await</span>
+			.<span class="ident">expect</span>(<span class="string">&quot;valid JSON-RPC request object; qed&quot;</span>);
+		<span class="ident">parse_rpc_result</span>(<span class="ident">result</span>, <span class="ident">rx</span>)
 	}
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">parse_rpc_result</span>(
-	<span class="ident">result</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-	<span class="ident">session</span>: <span class="ident">RpcSession</span>,
+	<span class="ident">result</span>: <span class="ident">String</span>,
 	<span class="ident">receiver</span>: <span class="ident">futures::channel::mpsc::UnboundedReceiver</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RpcTransactionOutput</span>, <span class="ident">RpcTransactionError</span><span class="op">&gt;</span> {
-	<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">result</span>) <span class="op">=</span> <span class="ident">result</span> {
-		<span class="kw">let</span> <span class="ident">json</span>: <span class="ident">serde_json::Value</span> <span class="op">=</span>
-			<span class="ident">serde_json::from_str</span>(<span class="ident">result</span>).<span class="ident">expect</span>(<span class="string">&quot;the result can only be a JSONRPC string; qed&quot;</span>);
-		<span class="kw">let</span> <span class="ident">error</span> <span class="op">=</span> <span class="ident">json</span>.<span class="ident">as_object</span>().<span class="ident">expect</span>(<span class="string">&quot;JSON result is always an object; qed&quot;</span>).<span class="ident">get</span>(<span class="string">&quot;error&quot;</span>);
+	<span class="kw">let</span> <span class="ident">json</span>: <span class="ident">serde_json::Value</span> <span class="op">=</span>
+		<span class="ident">serde_json::from_str</span>(<span class="kw-2">&amp;</span><span class="ident">result</span>).<span class="ident">expect</span>(<span class="string">&quot;the result can only be a JSONRPC string; qed&quot;</span>);
+	<span class="kw">let</span> <span class="ident">error</span> <span class="op">=</span> <span class="ident">json</span>.<span class="ident">as_object</span>().<span class="ident">expect</span>(<span class="string">&quot;JSON result is always an object; qed&quot;</span>).<span class="ident">get</span>(<span class="string">&quot;error&quot;</span>);
 
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">error</span>) <span class="op">=</span> <span class="ident">error</span> {
-			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">serde_json::from_value</span>(<span class="ident">error</span>.<span class="ident">clone</span>())
-				.<span class="ident">expect</span>(<span class="string">&quot;the JSONRPC result&#39;s error is always valid; qed&quot;</span>))
-		}
+	<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">error</span>) <span class="op">=</span> <span class="ident">error</span> {
+		<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">serde_json::from_value</span>(<span class="ident">error</span>.<span class="ident">clone</span>())
+			.<span class="ident">expect</span>(<span class="string">&quot;the JSONRPC result&#39;s error is always valid; qed&quot;</span>))
 	}
 
-	<span class="prelude-val">Ok</span>(<span class="ident">RpcTransactionOutput</span> { <span class="ident">result</span>, <span class="ident">session</span>, <span class="ident">receiver</span> })
+	<span class="prelude-val">Ok</span>(<span class="ident">RpcTransactionOutput</span> { <span class="ident">result</span>, <span class="ident">receiver</span> })
 }
 
 <span class="doccomment">/// An extension trait for `BlockchainEvents`.</span>
@@ -917,40 +875,23 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
-	<span class="kw">use</span> <span class="ident">sc_service::RpcSession</span>;
-
-	<span class="kw">fn</span> <span class="ident">create_session_and_receiver</span>(
-	) -&gt; (<span class="ident">RpcSession</span>, <span class="ident">futures::channel::mpsc::UnboundedReceiver</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>) {
-		<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">futures::channel::mpsc::unbounded</span>();
-		<span class="kw">let</span> <span class="ident">mem</span> <span class="op">=</span> <span class="ident">RpcSession::new</span>(<span class="ident">tx</span>.<span class="ident">into</span>());
-
-		(<span class="ident">mem</span>, <span class="ident">rx</span>)
-	}
-
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">parses_error_properly</span>() {
-		<span class="kw">let</span> (<span class="ident">mem</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">create_session_and_receiver</span>();
-		<span class="macro">assert!</span>(<span class="ident"><span class="kw">super</span>::parse_rpc_result</span>(<span class="prelude-val">None</span>, <span class="ident">mem</span>, <span class="ident">rx</span>).<span class="ident">is_ok</span>());
-
-		<span class="kw">let</span> (<span class="ident">mem</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">create_session_and_receiver</span>();
+		<span class="kw">let</span> (<span class="kw">_</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">futures::channel::mpsc::unbounded</span>();
 		<span class="macro">assert!</span>(<span class="ident"><span class="kw">super</span>::parse_rpc_result</span>(
-			<span class="prelude-val">Some</span>(
-				<span class="string">r#&quot;{
+			<span class="string">r#&quot;{
 				&quot;jsonrpc&quot;: &quot;2.0&quot;,
 				&quot;result&quot;: 19,
 				&quot;id&quot;: 1
 			}&quot;#</span>
-				.<span class="ident">to_string</span>()
-			),
-			<span class="ident">mem</span>,
+			.<span class="ident">to_string</span>(),
 			<span class="ident">rx</span>
 		)
-		.<span class="ident">is_ok</span>(),);
+		.<span class="ident">is_ok</span>());
 
-		<span class="kw">let</span> (<span class="ident">mem</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">create_session_and_receiver</span>();
+		<span class="kw">let</span> (<span class="kw">_</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">futures::channel::mpsc::unbounded</span>();
 		<span class="kw">let</span> <span class="ident">error</span> <span class="op">=</span> <span class="ident"><span class="kw">super</span>::parse_rpc_result</span>(
-			<span class="prelude-val">Some</span>(
-				<span class="string">r#&quot;{
+			<span class="string">r#&quot;{
 				&quot;jsonrpc&quot;: &quot;2.0&quot;,
 				&quot;error&quot;: {
 					&quot;code&quot;: -32601,
@@ -958,9 +899,7 @@
 				},
 				&quot;id&quot;: 1
 			}&quot;#</span>
-				.<span class="ident">to_string</span>(),
-			),
-			<span class="ident">mem</span>,
+			.<span class="ident">to_string</span>(),
 			<span class="ident">rx</span>,
 		)
 		.<span class="ident">unwrap_err</span>();
@@ -968,10 +907,9 @@
 		<span class="macro">assert_eq!</span>(<span class="ident">error</span>.<span class="ident">message</span>, <span class="string">&quot;Method not found&quot;</span>);
 		<span class="macro">assert!</span>(<span class="ident">error</span>.<span class="ident">data</span>.<span class="ident">is_none</span>());
 
-		<span class="kw">let</span> (<span class="ident">mem</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">create_session_and_receiver</span>();
+		<span class="kw">let</span> (<span class="kw">_</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">futures::channel::mpsc::unbounded</span>();
 		<span class="kw">let</span> <span class="ident">error</span> <span class="op">=</span> <span class="ident"><span class="kw">super</span>::parse_rpc_result</span>(
-			<span class="prelude-val">Some</span>(
-				<span class="string">r#&quot;{
+			<span class="string">r#&quot;{
 				&quot;jsonrpc&quot;: &quot;2.0&quot;,
 				&quot;error&quot;: {
 					&quot;code&quot;: -32601,
@@ -980,9 +918,7 @@
 				},
 				&quot;id&quot;: 1
 			}&quot;#</span>
-				.<span class="ident">to_string</span>(),
-			),
-			<span class="ident">mem</span>,
+			.<span class="ident">to_string</span>(),
 			<span class="ident">rx</span>,
 		)
 		.<span class="ident">unwrap_err</span>();

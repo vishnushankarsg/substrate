@@ -17,7 +17,7 @@ differences:</p>
 <ul>
 <li>The trait will have one additional (already implemented) method, <code>into_rpc</code>, which turns any object that
 implements the server trait into an <code>RpcModule</code>.</li>
-<li>For subscription methods, there will be one additional argument inserted right after <code>&amp;self</code>: <code>subscription_sink: SubscriptionSink</code>. It should be used to actually maintain the subscription.</li>
+<li>For subscription methods, there will be one additional argument inserted right after <code>&amp;self</code>: <code>subscription_sink: PendingSubscription</code>. It should be used accept or reject a pending subscription.</li>
 </ul>
 <p>Since this macro can generate up to two traits, both server and client traits will have
 a new name. For the <code>Foo</code> trait, server trait will be named <code>FooServer</code>, and client,
@@ -53,7 +53,7 @@ that generated for it by the macro.</p>
     <span class="kw">fn</span> <span class="ident">sync_method</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">String</span>;
 
     <span class="comment">// Note that `subscription_sink` was added automatically.</span>
-    <span class="kw">fn</span> <span class="ident">sub</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">subscription_sink</span>: <span class="ident">SubscriptionSink</span>);
+    <span class="kw">fn</span> <span class="ident">sub</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">subscription_sink</span>: <span class="ident">PendingSubscription</span>);
 
     <span class="kw">fn</span> <span class="ident">into_rpc</span>(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">jsonrpsee::core::Error</span><span class="op">&gt;</span> {
         <span class="comment">// Actual implementation stripped, but inside we will create</span>
@@ -149,7 +149,7 @@ so add the complete name, including the namespace.</li>
 
 <span class="comment">// RPC is put into a separate module to clearly show names of generated entities.</span>
 <span class="kw">mod</span> <span class="ident">rpc_impl</span> {
-    <span class="kw">use</span> <span class="ident">jsonrpsee</span>::{<span class="ident">proc_macros::rpc</span>, <span class="ident">core::async_trait</span>, <span class="ident">core::RpcResult</span>, <span class="ident">ws_server::SubscriptionSink</span>};
+    <span class="kw">use</span> <span class="ident">jsonrpsee</span>::{<span class="ident">proc_macros::rpc</span>, <span class="ident">core::async_trait</span>, <span class="ident">core::RpcResult</span>, <span class="ident">ws_server::PendingSubscription</span>};
 
     <span class="comment">// Generate both server and client implementations, prepend all the methods with `foo_` prefix.</span>
     <span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">client</span>, <span class="ident">server</span>, <span class="ident">namespace</span> <span class="op">=</span> <span class="string">&quot;foo&quot;</span>)]</span>
@@ -177,7 +177,7 @@ so add the complete name, including the namespace.</li>
         <span class="doccomment">/// }</span>
         <span class="doccomment">/// ```</span>
         <span class="attribute">#[<span class="ident">subscription</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;sub&quot;</span> =&gt; <span class="string">&quot;subNotif&quot;</span>, <span class="ident">unsubscribe</span> <span class="op">=</span> <span class="string">&quot;unsub&quot;</span>, <span class="ident">item</span> <span class="op">=</span> <span class="ident">String</span>)]</span>
-        <span class="kw">fn</span> <span class="ident">sub_override_notif_method</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
+        <span class="kw">fn</span> <span class="ident">sub_override_notif_method</span>(<span class="kw-2">&amp;</span><span class="self">self</span>);
 
         <span class="doccomment">/// Use the same method name for both the `subscribe call` and `notifications`</span>
         <span class="doccomment">///</span>
@@ -194,7 +194,7 @@ so add the complete name, including the namespace.</li>
         <span class="doccomment">/// }</span>
         <span class="doccomment">/// ```</span>
         <span class="attribute">#[<span class="ident">subscription</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;subscribe&quot;</span>, <span class="ident">item</span> <span class="op">=</span> <span class="ident">String</span>)]</span>
-        <span class="kw">fn</span> <span class="ident">sub</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
+        <span class="kw">fn</span> <span class="ident">sub</span>(<span class="kw-2">&amp;</span><span class="self">self</span>);
     }
 
     <span class="comment">// Structure that will implement the `MyRpcServer` trait.</span>
@@ -221,21 +221,21 @@ so add the complete name, including the namespace.</li>
 
         <span class="comment">// The stream API can be used to pipe items from the underlying stream</span>
         <span class="comment">// as subscription responses.</span>
-        <span class="kw">fn</span> <span class="ident">sub_override_notif_method</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">sink</span>: <span class="ident">SubscriptionSink</span>) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+        <span class="kw">fn</span> <span class="ident">sub_override_notif_method</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">pending</span>: <span class="ident">PendingSubscription</span>) {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sink</span> <span class="op">=</span> <span class="ident">pending</span>.<span class="ident">accept</span>().<span class="ident">unwrap</span>();     
             <span class="ident">tokio::spawn</span>(<span class="kw">async</span> <span class="kw">move</span> {
                 <span class="kw">let</span> <span class="ident">stream</span> <span class="op">=</span> <span class="ident">futures_util::stream::iter</span>([<span class="string">&quot;one&quot;</span>, <span class="string">&quot;two&quot;</span>, <span class="string">&quot;three&quot;</span>]);
                 <span class="ident">sink</span>.<span class="ident">pipe_from_stream</span>(<span class="ident">stream</span>).<span class="kw">await</span>;
             });
-
-            <span class="prelude-val">Ok</span>(())
         }
 
         <span class="comment">// We could&#39;ve spawned a `tokio` future that yields values while our program works,</span>
         <span class="comment">// but for simplicity of the example we will only send two values and then close</span>
         <span class="comment">// the subscription.</span>
-        <span class="kw">fn</span> <span class="ident">sub</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">sink</span>: <span class="ident">SubscriptionSink</span>) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-            <span class="ident">sink</span>.<span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="string">&quot;Response_A&quot;</span>)<span class="question-mark">?</span>;
-            <span class="ident">sink</span>.<span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="string">&quot;Response_B&quot;</span>)
+        <span class="kw">fn</span> <span class="ident">sub</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">pending</span>: <span class="ident">PendingSubscription</span>) {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sink</span> <span class="op">=</span> <span class="ident">pending</span>.<span class="ident">accept</span>().<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">sink</span>.<span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="string">&quot;Response_A&quot;</span>);
+            <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">sink</span>.<span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="string">&quot;Response_B&quot;</span>);
         }
     }
 }

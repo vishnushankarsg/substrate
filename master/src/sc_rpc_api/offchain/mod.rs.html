@@ -39,9 +39,6 @@
 <span id="34">34</span>
 <span id="35">35</span>
 <span id="36">36</span>
-<span id="37">37</span>
-<span id="38">38</span>
-<span id="39">39</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -62,24 +59,21 @@
 
 <span class="doccomment">//! Substrate offchain API.</span>
 
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">error</span>;
-
-<span class="kw">use</span> <span class="ident"><span class="self">self</span>::error::Result</span>;
-<span class="kw">use</span> <span class="ident">jsonrpc_derive::rpc</span>;
+<span class="kw">use</span> <span class="ident">jsonrpsee</span>::{<span class="ident">core::RpcResult</span>, <span class="ident">proc_macros::rpc</span>};
 <span class="kw">use</span> <span class="ident">sp_core</span>::{<span class="ident">offchain::StorageKind</span>, <span class="ident">Bytes</span>};
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::gen_client::Client</span> <span class="kw">as</span> <span class="ident">OffchainClient</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">error</span>;
 
 <span class="doccomment">/// Substrate offchain RPC API</span>
-<span class="attribute">#[<span class="ident">rpc</span>]</span>
+<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">client</span>, <span class="ident">server</span>)]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">OffchainApi</span> {
 	<span class="doccomment">/// Set offchain local storage under given key and prefix.</span>
-	<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;offchain_localStorageSet&quot;</span>)]</span>
-	<span class="kw">fn</span> <span class="ident">set_local_storage</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">kind</span>: <span class="ident">StorageKind</span>, <span class="ident">key</span>: <span class="ident">Bytes</span>, <span class="ident">value</span>: <span class="ident">Bytes</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
+	<span class="attribute">#[<span class="ident">method</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;offchain_localStorageSet&quot;</span>)]</span>
+	<span class="kw">fn</span> <span class="ident">set_local_storage</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">kind</span>: <span class="ident">StorageKind</span>, <span class="ident">key</span>: <span class="ident">Bytes</span>, <span class="ident">value</span>: <span class="ident">Bytes</span>) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Get offchain local storage under given key and prefix.</span>
-	<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;offchain_localStorageGet&quot;</span>)]</span>
-	<span class="kw">fn</span> <span class="ident">get_local_storage</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">kind</span>: <span class="ident">StorageKind</span>, <span class="ident">key</span>: <span class="ident">Bytes</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Bytes</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+	<span class="attribute">#[<span class="ident">method</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;offchain_localStorageGet&quot;</span>)]</span>
+	<span class="kw">fn</span> <span class="ident">get_local_storage</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">kind</span>: <span class="ident">StorageKind</span>, <span class="ident">key</span>: <span class="ident">Bytes</span>) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Bytes</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="sc_rpc_api" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (e745b4ddb 2022-04-07)" ></div>

@@ -167,6 +167,7 @@
 <span id="162">162</span>
 <span id="163">163</span>
 <span id="164">164</span>
+<span id="165">165</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -186,8 +187,11 @@
 
 <span class="doccomment">//! Rpc for state migration.</span>
 
-<span class="kw">use</span> <span class="ident">jsonrpc_core</span>::{<span class="ident">Error</span>, <span class="ident">ErrorCode</span>, <span class="prelude-ty">Result</span>};
-<span class="kw">use</span> <span class="ident">jsonrpc_derive::rpc</span>;
+<span class="kw">use</span> <span class="ident">jsonrpsee</span>::{
+	<span class="ident">core</span>::{<span class="ident">Error</span> <span class="kw">as</span> <span class="ident">JsonRpseeError</span>, <span class="ident">RpcResult</span>},
+	<span class="ident">proc_macros::rpc</span>,
+	<span class="ident">types::error</span>::{<span class="ident">CallError</span>, <span class="ident">ErrorCode</span>, <span class="ident">ErrorObject</span>},
+};
 <span class="kw">use</span> <span class="ident">sc_rpc_api::DenyUnsafe</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{<span class="ident">generic::BlockId</span>, <span class="ident">traits::Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>};
@@ -276,15 +280,15 @@
 }
 
 <span class="doccomment">/// Migration RPC methods.</span>
-<span class="attribute">#[<span class="ident">rpc</span>]</span>
+<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">server</span>)]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">StateMigrationApi</span><span class="op">&lt;</span><span class="ident">BlockHash</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Check current migration state.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This call is performed locally without submitting any transactions. Thus executing this</span>
 	<span class="doccomment">/// won&#39;t change any state. Nonetheless it is a VERY costy call that should be</span>
 	<span class="doccomment">/// only exposed to trusted peers.</span>
-	<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;state_trieMigrationStatus&quot;</span>)]</span>
-	<span class="kw">fn</span> <span class="ident">call</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">at</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BlockHash</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">MigrationStatusResult</span><span class="op">&gt;</span>;
+	<span class="attribute">#[<span class="ident">method</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;state_trieMigrationStatus&quot;</span>)]</span>
+	<span class="kw">fn</span> <span class="ident">call</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">at</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BlockHash</span><span class="op">&gt;</span>) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">MigrationStatusResult</span><span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// An implementation of state migration specific RPC methods.</span>
@@ -302,16 +306,14 @@
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span>, <span class="ident">BA</span><span class="op">&gt;</span> <span class="ident">StateMigrationApi</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">B</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">MigrationRpc</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span>, <span class="ident">BA</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span>, <span class="ident">BA</span><span class="op">&gt;</span> <span class="ident">StateMigrationApiServer</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">B</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">MigrationRpc</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span>, <span class="ident">BA</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">B</span>: <span class="ident">BlockT</span>,
 	<span class="ident">C</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">sc_client_api::HeaderBackend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 	<span class="ident">BA</span>: <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">sc_client_api::backend::Backend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 {
-	<span class="kw">fn</span> <span class="ident">call</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">at</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">B</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">MigrationStatusResult</span><span class="op">&gt;</span> {
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">deny_unsafe</span>.<span class="ident">check_if_safe</span>() {
-			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>.<span class="ident">into</span>())
-		}
+	<span class="kw">fn</span> <span class="ident">call</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">at</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">B</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span>) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">MigrationStatusResult</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="ident">deny_unsafe</span>.<span class="ident">check_if_safe</span>()<span class="question-mark">?</span>;
 
 		<span class="kw">let</span> <span class="ident">block_id</span> <span class="op">=</span> <span class="ident">BlockId::hash</span>(<span class="ident">at</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">info</span>().<span class="ident">best_hash</span>));
 		<span class="kw">let</span> <span class="ident">state</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">state_at</span>(<span class="ident">block_id</span>).<span class="ident">map_err</span>(<span class="ident">error_into_rpc_err</span>)<span class="question-mark">?</span>;
@@ -324,12 +326,12 @@
 	}
 }
 
-<span class="kw">fn</span> <span class="ident">error_into_rpc_err</span>(<span class="ident">err</span>: <span class="kw">impl</span> <span class="ident">std::fmt::Display</span>) -&gt; <span class="ident">Error</span> {
-	<span class="ident">Error</span> {
-		<span class="ident">code</span>: <span class="ident">ErrorCode::InternalError</span>,
-		<span class="ident">message</span>: <span class="string">&quot;Error while checking migration state&quot;</span>.<span class="ident">into</span>(),
-		<span class="ident">data</span>: <span class="prelude-val">Some</span>(<span class="ident">err</span>.<span class="ident">to_string</span>().<span class="ident">into</span>()),
-	}
+<span class="kw">fn</span> <span class="ident">error_into_rpc_err</span>(<span class="ident">err</span>: <span class="kw">impl</span> <span class="ident">std::fmt::Display</span>) -&gt; <span class="ident">JsonRpseeError</span> {
+	<span class="ident">JsonRpseeError::Call</span>(<span class="ident">CallError::Custom</span>(<span class="ident">ErrorObject::owned</span>(
+		<span class="ident">ErrorCode::InternalError</span>.<span class="ident">code</span>(),
+		<span class="string">&quot;Error while checking migration state&quot;</span>,
+		<span class="prelude-val">Some</span>(<span class="ident">err</span>.<span class="ident">to_string</span>()),
+	)))
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="substrate_state_trie_migration_rpc" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (e745b4ddb 2022-04-07)" ></div>

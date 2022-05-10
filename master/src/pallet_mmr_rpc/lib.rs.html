@@ -327,6 +327,9 @@
 <span id="322">322</span>
 <span id="323">323</span>
 <span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -345,14 +348,18 @@
 <span class="comment">// limitations under the License.</span>
 
 <span class="attribute">#![<span class="ident">warn</span>(<span class="ident">missing_docs</span>)]</span>
+<span class="attribute">#![<span class="ident">warn</span>(<span class="ident">unused_crate_dependencies</span>)]</span>
 
 <span class="doccomment">//! Node-specific RPC methods for interaction with Merkle Mountain Range pallet.</span>
 
-<span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">marker::PhantomData</span>, <span class="ident">sync::Arc</span>};
 
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Codec</span>, <span class="ident">Encode</span>};
-<span class="kw">use</span> <span class="ident">jsonrpc_core</span>::{<span class="ident">Error</span>, <span class="ident">ErrorCode</span>, <span class="prelude-ty">Result</span>};
-<span class="kw">use</span> <span class="ident">jsonrpc_derive::rpc</span>;
+<span class="kw">use</span> <span class="ident">jsonrpsee</span>::{
+	<span class="ident">core</span>::{<span class="ident">async_trait</span>, <span class="ident">RpcResult</span>},
+	<span class="ident">proc_macros::rpc</span>,
+	<span class="ident">types::error</span>::{<span class="ident">CallError</span>, <span class="ident">ErrorObject</span>},
+};
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
 
 <span class="kw">use</span> <span class="ident">sp_api::ProvideRuntimeApi</span>;
@@ -362,6 +369,11 @@
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{<span class="ident">generic::BlockId</span>, <span class="ident">traits::Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>};
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_mmr_primitives::MmrApi</span> <span class="kw">as</span> <span class="ident">MmrRuntimeApi</span>;
+
+<span class="kw">const</span> <span class="ident">RUNTIME_ERROR</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">8000</span>;
+<span class="kw">const</span> <span class="ident">MMR_ERROR</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">8010</span>;
+<span class="kw">const</span> <span class="ident">LEAF_NOT_FOUND_ERROR</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="ident">MMR_ERROR</span> <span class="op">+</span> <span class="number">1</span>;
+<span class="kw">const</span> <span class="ident">GENERATE_PROOF_ERROR</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="ident">MMR_ERROR</span> <span class="op">+</span> <span class="number">2</span>;
 
 <span class="doccomment">/// Retrieved MMR leaf and its proof.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
@@ -415,7 +427,7 @@
 }
 
 <span class="doccomment">/// MMR RPC methods.</span>
-<span class="attribute">#[<span class="ident">rpc</span>]</span>
+<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">client</span>, <span class="ident">server</span>)]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">MmrApi</span><span class="op">&lt;</span><span class="ident">BlockHash</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Generate MMR proof for given leaf index.</span>
 	<span class="doccomment">///</span>
@@ -425,12 +437,12 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Returns the (full) leaf itself and a proof for this leaf (compact encoding, i.e. hash of</span>
 	<span class="doccomment">/// the leaf). Both parameters are SCALE-encoded.</span>
-	<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;mmr_generateProof&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">method</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;mmr_generateProof&quot;</span>)]</span>
 	<span class="kw">fn</span> <span class="ident">generate_proof</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">leaf_index</span>: <span class="ident">LeafIndex</span>,
 		<span class="ident">at</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BlockHash</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">LeafProof</span><span class="op">&lt;</span><span class="ident">BlockHash</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">LeafProof</span><span class="op">&lt;</span><span class="ident">BlockHash</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Generate MMR proof for the given leaf indices.</span>
 	<span class="doccomment">///</span>
@@ -442,43 +454,43 @@
 	<span class="doccomment">/// the leaves). Both parameters are SCALE-encoded.</span>
 	<span class="doccomment">/// The order of entries in the `leaves` field of the returned struct</span>
 	<span class="doccomment">/// is the same as the order of the entries in `leaf_indices` supplied</span>
-	<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;mmr_generateBatchProof&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">method</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;mmr_generateBatchProof&quot;</span>)]</span>
 	<span class="kw">fn</span> <span class="ident">generate_batch_proof</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">leaf_indices</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">LeafIndex</span><span class="op">&gt;</span>,
 		<span class="ident">at</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BlockHash</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">LeafBatchProof</span><span class="op">&lt;</span><span class="ident">BlockHash</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">LeafBatchProof</span><span class="op">&lt;</span><span class="ident">BlockHash</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 }
 
-<span class="doccomment">/// An implementation of MMR specific RPC methods.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Mmr</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span> {
-	<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>,
-	<span class="ident">_marker</span>: <span class="ident">std::marker::PhantomData</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+<span class="doccomment">/// MMR RPC methods.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MmrRpc</span><span class="op">&lt;</span><span class="ident">Client</span>, <span class="ident">Block</span><span class="op">&gt;</span> {
+	<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>,
+	<span class="ident">_marker</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span> <span class="ident">Mmr</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span> <span class="ident">MmrRpc</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Create new `Mmr` with the given reference to the client.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
 		<span class="self">Self</span> { <span class="ident">client</span>, <span class="ident">_marker</span>: <span class="ident">Default::default</span>() }
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">Block</span>, <span class="ident">MmrHash</span><span class="op">&gt;</span> <span class="ident">MmrApi</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Mmr</span><span class="op">&lt;</span><span class="ident">C</span>, (<span class="ident">Block</span>, <span class="ident">MmrHash</span>)<span class="op">&gt;</span>
+<span class="attribute">#[<span class="ident">async_trait</span>]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Client</span>, <span class="ident">Block</span>, <span class="ident">MmrHash</span><span class="op">&gt;</span> <span class="ident">MmrApiServer</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span>
+	<span class="kw">for</span> <span class="ident">MmrRpc</span><span class="op">&lt;</span><span class="ident">Client</span>, (<span class="ident">Block</span>, <span class="ident">MmrHash</span>)<span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">Block</span>: <span class="ident">BlockT</span>,
-	<span class="ident">C</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
-	<span class="ident">C::Api</span>: <span class="ident">MmrRuntimeApi</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">MmrHash</span><span class="op">&gt;</span>,
+	<span class="ident">Client</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
+	<span class="ident">Client::Api</span>: <span class="ident">MmrRuntimeApi</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">MmrHash</span><span class="op">&gt;</span>,
 	<span class="ident">MmrHash</span>: <span class="ident">Codec</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
 	<span class="kw">fn</span> <span class="ident">generate_proof</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">leaf_index</span>: <span class="ident">LeafIndex</span>,
 		<span class="ident">at</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">LeafProof</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">LeafProof</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">api</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">runtime_api</span>();
-		<span class="kw">let</span> <span class="ident">block_hash</span> <span class="op">=</span> <span class="ident">at</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span>
-			<span class="comment">// If the block hash is not supplied assume the best block.</span>
-			<span class="self">self</span>.<span class="ident">client</span>.<span class="ident">info</span>().<span class="ident">best_hash</span>);
+		<span class="kw">let</span> <span class="ident">block_hash</span> <span class="op">=</span> <span class="ident">at</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">info</span>().<span class="ident">best_hash</span>);
 
 		<span class="kw">let</span> (<span class="ident">leaf</span>, <span class="ident">proof</span>) <span class="op">=</span> <span class="ident">api</span>
 			.<span class="ident">generate_proof_with_context</span>(
@@ -496,7 +508,7 @@
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">leaf_indices</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">LeafIndex</span><span class="op">&gt;</span>,
 		<span class="ident">at</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">LeafBatchProof</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">LeafBatchProof</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">api</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">runtime_api</span>();
 		<span class="kw">let</span> <span class="ident">block_hash</span> <span class="op">=</span> <span class="ident">at</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span>
 			<span class="comment">// If the block hash is not supplied assume the best block.</span>
@@ -515,37 +527,31 @@
 	}
 }
 
-<span class="kw">const</span> <span class="ident">RUNTIME_ERROR</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">8000</span>;
-<span class="kw">const</span> <span class="ident">MMR_ERROR</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">8010</span>;
-
-<span class="doccomment">/// Converts a mmr-specific error into an RPC error.</span>
-<span class="kw">fn</span> <span class="ident">mmr_error_into_rpc_error</span>(<span class="ident">err</span>: <span class="ident">MmrError</span>) -&gt; <span class="ident">Error</span> {
+<span class="doccomment">/// Converts a mmr-specific error into a [`CallError`].</span>
+<span class="kw">fn</span> <span class="ident">mmr_error_into_rpc_error</span>(<span class="ident">err</span>: <span class="ident">MmrError</span>) -&gt; <span class="ident">CallError</span> {
+	<span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">err</span>);
 	<span class="kw">match</span> <span class="ident">err</span> {
-		<span class="ident">MmrError::LeafNotFound</span> =&gt; <span class="ident">Error</span> {
-			<span class="ident">code</span>: <span class="ident">ErrorCode::ServerError</span>(<span class="ident">MMR_ERROR</span> <span class="op">+</span> <span class="number">1</span>),
-			<span class="ident">message</span>: <span class="string">&quot;Leaf was not found&quot;</span>.<span class="ident">into</span>(),
-			<span class="ident">data</span>: <span class="prelude-val">Some</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">err</span>).<span class="ident">into</span>()),
-		},
-		<span class="ident">MmrError::GenerateProof</span> =&gt; <span class="ident">Error</span> {
-			<span class="ident">code</span>: <span class="ident">ErrorCode::ServerError</span>(<span class="ident">MMR_ERROR</span> <span class="op">+</span> <span class="number">2</span>),
-			<span class="ident">message</span>: <span class="string">&quot;Error while generating the proof&quot;</span>.<span class="ident">into</span>(),
-			<span class="ident">data</span>: <span class="prelude-val">Some</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">err</span>).<span class="ident">into</span>()),
-		},
-		<span class="kw">_</span> =&gt; <span class="ident">Error</span> {
-			<span class="ident">code</span>: <span class="ident">ErrorCode::ServerError</span>(<span class="ident">MMR_ERROR</span>),
-			<span class="ident">message</span>: <span class="string">&quot;Unexpected MMR error&quot;</span>.<span class="ident">into</span>(),
-			<span class="ident">data</span>: <span class="prelude-val">Some</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">err</span>).<span class="ident">into</span>()),
-		},
+		<span class="ident">MmrError::LeafNotFound</span> =&gt; <span class="ident">CallError::Custom</span>(<span class="ident">ErrorObject::owned</span>(
+			<span class="ident">LEAF_NOT_FOUND_ERROR</span>,
+			<span class="string">&quot;Leaf was not found&quot;</span>,
+			<span class="prelude-val">Some</span>(<span class="ident">data</span>),
+		)),
+		<span class="ident">MmrError::GenerateProof</span> =&gt; <span class="ident">CallError::Custom</span>(<span class="ident">ErrorObject::owned</span>(
+			<span class="ident">GENERATE_PROOF_ERROR</span>,
+			<span class="string">&quot;Error while generating the proof&quot;</span>,
+			<span class="prelude-val">Some</span>(<span class="ident">data</span>),
+		)),
+		<span class="kw">_</span> =&gt; <span class="ident">CallError::Custom</span>(<span class="ident">ErrorObject::owned</span>(<span class="ident">MMR_ERROR</span>, <span class="string">&quot;Unexpected MMR error&quot;</span>, <span class="prelude-val">Some</span>(<span class="ident">data</span>))),
 	}
 }
 
-<span class="doccomment">/// Converts a runtime trap into an RPC error.</span>
-<span class="kw">fn</span> <span class="ident">runtime_error_into_rpc_error</span>(<span class="ident">err</span>: <span class="kw">impl</span> <span class="ident">std::fmt::Display</span>) -&gt; <span class="ident">Error</span> {
-	<span class="ident">Error</span> {
-		<span class="ident">code</span>: <span class="ident">ErrorCode::ServerError</span>(<span class="ident">RUNTIME_ERROR</span>),
-		<span class="ident">message</span>: <span class="string">&quot;Runtime trapped&quot;</span>.<span class="ident">into</span>(),
-		<span class="ident">data</span>: <span class="prelude-val">Some</span>(<span class="ident">err</span>.<span class="ident">to_string</span>().<span class="ident">into</span>()),
-	}
+<span class="doccomment">/// Converts a runtime trap into a [`CallError`].</span>
+<span class="kw">fn</span> <span class="ident">runtime_error_into_rpc_error</span>(<span class="ident">err</span>: <span class="kw">impl</span> <span class="ident">std::fmt::Debug</span>) -&gt; <span class="ident">CallError</span> {
+	<span class="ident">CallError::Custom</span>(<span class="ident">ErrorObject::owned</span>(
+		<span class="ident">RUNTIME_ERROR</span>,
+		<span class="string">&quot;Runtime trapped&quot;</span>,
+		<span class="prelude-val">Some</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">err</span>)),
+	))
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>

@@ -59,6 +59,11 @@
 <span id="54">54</span>
 <span id="55">55</span>
 <span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -80,7 +85,10 @@
 <span class="doccomment">//! System RPC module errors.</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::system::helpers::Health</span>;
-<span class="kw">use</span> <span class="ident">jsonrpc_core</span> <span class="kw">as</span> <span class="ident">rpc</span>;
+<span class="kw">use</span> <span class="ident">jsonrpsee</span>::{
+	<span class="ident">core::Error</span> <span class="kw">as</span> <span class="ident">JsonRpseeError</span>,
+	<span class="ident">types::error</span>::{<span class="ident">CallError</span>, <span class="ident">ErrorObject</span>},
+};
 
 <span class="doccomment">/// System RPC Result type.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Error</span><span class="op">&gt;</span>;
@@ -96,23 +104,25 @@
 	<span class="ident">MalformattedPeerArg</span>(<span class="ident">String</span>),
 }
 
-<span class="doccomment">/// Base code for all system errors.</span>
-<span class="kw">const</span> <span class="ident">BASE_ERROR</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">2000</span>;
+<span class="comment">// Base code for all system errors.</span>
+<span class="kw">const</span> <span class="ident">BASE_ERROR</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">2000</span>;
+<span class="comment">// Provided block range couldn&#39;t be resolved to a list of blocks.</span>
+<span class="kw">const</span> <span class="ident">NOT_HEALTHY_ERROR</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="ident">BASE_ERROR</span> <span class="op">+</span> <span class="number">1</span>;
+<span class="comment">// Peer argument is malformatted.</span>
+<span class="kw">const</span> <span class="ident">MALFORMATTED_PEER_ARG_ERROR</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="ident">BASE_ERROR</span> <span class="op">+</span> <span class="number">2</span>;
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">rpc::Error</span> {
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">JsonRpseeError</span> {
 	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">e</span>: <span class="ident">Error</span>) -&gt; <span class="self">Self</span> {
 		<span class="kw">match</span> <span class="ident">e</span> {
-			<span class="ident">Error::NotHealthy</span>(<span class="kw-2">ref</span> <span class="ident">h</span>) =&gt; <span class="ident">rpc::Error</span> {
-				<span class="ident">code</span>: <span class="ident">rpc::ErrorCode::ServerError</span>(<span class="ident">BASE_ERROR</span> <span class="op">+</span> <span class="number">1</span>),
-				<span class="ident">message</span>: <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">e</span>),
-				<span class="ident">data</span>: <span class="ident">serde_json::to_value</span>(<span class="ident">h</span>).<span class="ident">ok</span>(),
-			},
-			<span class="ident">Error::MalformattedPeerArg</span>(<span class="kw-2">ref</span> <span class="ident">e</span>) =&gt; <span class="ident">rpc::Error</span> {
-				<span class="ident">code</span>: <span class="ident">rpc::ErrorCode::ServerError</span>(<span class="ident">BASE_ERROR</span> <span class="op">+</span> <span class="number">2</span>),
-				<span class="ident">message</span>: <span class="ident">e</span>.<span class="ident">clone</span>(),
-				<span class="ident">data</span>: <span class="prelude-val">None</span>,
-			},
+			<span class="ident">Error::NotHealthy</span>(<span class="kw-2">ref</span> <span class="ident">h</span>) =&gt;
+				<span class="ident">CallError::Custom</span>(<span class="ident">ErrorObject::owned</span>(<span class="ident">NOT_HEALTHY_ERROR</span>, <span class="ident">e</span>.<span class="ident">to_string</span>(), <span class="prelude-val">Some</span>(<span class="ident">h</span>))),
+			<span class="ident">Error::MalformattedPeerArg</span>(<span class="ident">e</span>) =&gt; <span class="ident">CallError::Custom</span>(<span class="ident">ErrorObject::owned</span>(
+				<span class="ident">MALFORMATTED_PEER_ARG_ERROR</span> <span class="op">+</span> <span class="number">2</span>,
+				<span class="ident">e</span>,
+				<span class="prelude-val">None</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>,
+			)),
 		}
+		.<span class="ident">into</span>()
 	}
 }
 </code></pre></div>

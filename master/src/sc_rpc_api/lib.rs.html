@@ -38,12 +38,6 @@
 <span id="33">33</span>
 <span id="34">34</span>
 <span id="35">35</span>
-<span id="36">36</span>
-<span id="37">37</span>
-<span id="38">38</span>
-<span id="39">39</span>
-<span id="40">40</span>
-<span id="41">41</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -68,15 +62,9 @@
 
 <span class="attribute">#![<span class="ident">warn</span>(<span class="ident">missing_docs</span>)]</span>
 
-<span class="kw">mod</span> <span class="ident">errors</span>;
-<span class="kw">mod</span> <span class="ident">helpers</span>;
-<span class="kw">mod</span> <span class="ident">metadata</span>;
 <span class="kw">mod</span> <span class="ident">policy</span>;
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">helpers::Receiver</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">jsonrpc_core::IoHandlerExtension</span> <span class="kw">as</span> <span class="ident">RpcExtension</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">metadata::Metadata</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">policy</span>::{<span class="ident">DenyUnsafe</span>, <span class="ident">UnsafeRpcError</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">policy::DenyUnsafe</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">author</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">chain</span>;

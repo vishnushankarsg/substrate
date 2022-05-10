@@ -628,6 +628,16 @@
 <span id="623">623</span>
 <span id="624">624</span>
 <span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+<span id="628">628</span>
+<span id="629">629</span>
+<span id="630">630</span>
+<span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
+<span id="634">634</span>
+<span id="635">635</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -730,10 +740,20 @@
 	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">unsafe_ws_external</span>: <span class="ident">bool</span>,
 
-	<span class="doccomment">/// Set the the maximum RPC payload size for both requests and responses (both http and ws), in</span>
-	<span class="doccomment">/// megabytes. Default is 15MiB.</span>
+	<span class="doccomment">/// DEPRECATED, this has no affect anymore. Use `rpc_max_request_size` or</span>
+	<span class="doccomment">/// `rpc_max_response_size` instead.</span>
 	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">rpc_max_payload</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+
+	<span class="doccomment">/// Set the the maximum RPC request payload size for both HTTP and WS in megabytes.</span>
+	<span class="doccomment">/// Default is 15MiB.</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
+	<span class="kw">pub</span> <span class="ident">rpc_max_request_size</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+
+	<span class="doccomment">/// Set the the maximum RPC response payload size for both HTTP and WS in megabytes.</span>
+	<span class="doccomment">/// Default is 15MiB.</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
+	<span class="kw">pub</span> <span class="ident">rpc_max_response_size</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Expose Prometheus exporter on all interfaces.</span>
 	<span class="doccomment">///</span>
@@ -741,7 +761,7 @@
 	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">prometheus_external</span>: <span class="ident">bool</span>,
 
-	<span class="doccomment">/// Specify IPC RPC server path</span>
+	<span class="doccomment">/// DEPRECATED, IPC support has been removed.</span>
 	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;PATH&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">ipc_path</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
@@ -757,7 +777,7 @@
 	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;COUNT&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">ws_max_connections</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
 
-	<span class="doccomment">/// Set the the maximum WebSocket output buffer size in MiB. Default is 16.</span>
+	<span class="doccomment">/// DEPRECATED, this has no affect anymore. Use `rpc_max_response_size` instead.</span>
 	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">ws_max_out_buffer_capacity</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
 

@@ -141,7 +141,7 @@
 	<span class="ident">TemporarilyBanned</span>,
 
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;[{0:?}] Already imported&quot;</span>)]</span>
-	<span class="ident">AlreadyImported</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">std::any::Any</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span>),
+	<span class="ident">AlreadyImported</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">std::any::Any</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span>),
 
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Too low priority ({} &gt; {})&quot;</span>, <span class="ident">old</span>, <span class="ident">new</span>)]</span>
 	<span class="ident">TooLowPriority</span> {
@@ -167,7 +167,7 @@
 }
 
 <span class="doccomment">/// Transaction pool error conversion.</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IntoPoolError</span>: <span class="ident">std::error::Error</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sized</span> {
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IntoPoolError</span>: <span class="ident">std::error::Error</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sized</span> <span class="op">+</span> <span class="ident">Sync</span> {
 	<span class="doccomment">/// Try to extract original `Error`</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This implementation is optional and used only to</span>

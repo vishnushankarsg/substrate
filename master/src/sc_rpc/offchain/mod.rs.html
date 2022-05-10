@@ -76,6 +76,7 @@
 <span id="71">71</span>
 <span id="72">72</span>
 <span id="73">73</span>
+<span id="74">74</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -99,7 +100,8 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="self">self</span>::error</span>::{<span class="ident">Error</span>, <span class="prelude-ty">Result</span>};
+<span class="kw">use</span> <span class="ident"><span class="self">self</span>::error::Error</span>;
+<span class="kw">use</span> <span class="ident">jsonrpsee::core</span>::{<span class="ident">async_trait</span>, <span class="ident">Error</span> <span class="kw">as</span> <span class="ident">JsonRpseeError</span>, <span class="ident">RpcResult</span>};
 <span class="kw">use</span> <span class="ident">parking_lot::RwLock</span>;
 <span class="doccomment">/// Re-export the API for backward compatibility.</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_rpc_api::offchain</span>::<span class="kw-2">*</span>;
@@ -125,27 +127,27 @@
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">OffchainStorage</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">OffchainApi</span> <span class="kw">for</span> <span class="ident">Offchain</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-	<span class="doccomment">/// Set offchain local storage under given key and prefix.</span>
-	<span class="kw">fn</span> <span class="ident">set_local_storage</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">kind</span>: <span class="ident">StorageKind</span>, <span class="ident">key</span>: <span class="ident">Bytes</span>, <span class="ident">value</span>: <span class="ident">Bytes</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+<span class="attribute">#[<span class="ident">async_trait</span>]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">OffchainStorage</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">OffchainApiServer</span> <span class="kw">for</span> <span class="ident">Offchain</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">set_local_storage</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">kind</span>: <span class="ident">StorageKind</span>, <span class="ident">key</span>: <span class="ident">Bytes</span>, <span class="ident">value</span>: <span class="ident">Bytes</span>) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">deny_unsafe</span>.<span class="ident">check_if_safe</span>()<span class="question-mark">?</span>;
 
 		<span class="kw">let</span> <span class="ident">prefix</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">kind</span> {
 			<span class="ident">StorageKind::PERSISTENT</span> =&gt; <span class="ident">sp_offchain::STORAGE_PREFIX</span>,
-			<span class="ident">StorageKind::LOCAL</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::UnavailableStorageKind</span>),
+			<span class="ident">StorageKind::LOCAL</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">JsonRpseeError::from</span>(<span class="ident">Error::UnavailableStorageKind</span>)),
 		};
 		<span class="self">self</span>.<span class="ident">storage</span>.<span class="ident">write</span>().<span class="ident">set</span>(<span class="ident">prefix</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">key</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">value</span>);
 		<span class="prelude-val">Ok</span>(())
 	}
 
-	<span class="doccomment">/// Get offchain local storage under given key and prefix.</span>
-	<span class="kw">fn</span> <span class="ident">get_local_storage</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">kind</span>: <span class="ident">StorageKind</span>, <span class="ident">key</span>: <span class="ident">Bytes</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Bytes</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">get_local_storage</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">kind</span>: <span class="ident">StorageKind</span>, <span class="ident">key</span>: <span class="ident">Bytes</span>) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Bytes</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">deny_unsafe</span>.<span class="ident">check_if_safe</span>()<span class="question-mark">?</span>;
 
 		<span class="kw">let</span> <span class="ident">prefix</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">kind</span> {
 			<span class="ident">StorageKind::PERSISTENT</span> =&gt; <span class="ident">sp_offchain::STORAGE_PREFIX</span>,
-			<span class="ident">StorageKind::LOCAL</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::UnavailableStorageKind</span>),
+			<span class="ident">StorageKind::LOCAL</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">JsonRpseeError::from</span>(<span class="ident">Error::UnavailableStorageKind</span>)),
 		};
+
 		<span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="ident">storage</span>.<span class="ident">read</span>().<span class="ident">get</span>(<span class="ident">prefix</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">key</span>).<span class="ident">map</span>(<span class="ident">Into::into</span>))
 	}
 }

@@ -138,6 +138,10 @@
 <span class="doccomment">//! This is suitable for a testing environment.</span>
 
 <span class="kw">use</span> <span class="ident">futures::channel</span>::{<span class="ident">mpsc::SendError</span>, <span class="ident">oneshot</span>};
+<span class="kw">use</span> <span class="ident">jsonrpsee</span>::{
+	<span class="ident">core::Error</span> <span class="kw">as</span> <span class="ident">JsonRpseeError</span>,
+	<span class="ident">types::error</span>::{<span class="ident">CallError</span>, <span class="ident">ErrorObject</span>},
+};
 <span class="kw">use</span> <span class="ident">sc_consensus::ImportResult</span>;
 <span class="kw">use</span> <span class="ident">sp_blockchain::Error</span> <span class="kw">as</span> <span class="ident">BlockchainError</span>;
 <span class="kw">use</span> <span class="ident">sp_consensus::Error</span> <span class="kw">as</span> <span class="ident">ConsensusError</span>;
@@ -145,14 +149,14 @@
 
 <span class="doccomment">/// Error code for rpc</span>
 <span class="kw">mod</span> <span class="ident">codes</span> {
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SERVER_SHUTTING_DOWN</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">10_000</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BLOCK_IMPORT_FAILED</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">11_000</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">EMPTY_TRANSACTION_POOL</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">12_000</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BLOCK_NOT_FOUND</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">13_000</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CONSENSUS_ERROR</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">14_000</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">INHERENTS_ERROR</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">15_000</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BLOCKCHAIN_ERROR</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">16_000</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">UNKNOWN_ERROR</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">20_000</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SERVER_SHUTTING_DOWN</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">10_000</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BLOCK_IMPORT_FAILED</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">11_000</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">EMPTY_TRANSACTION_POOL</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">12_000</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BLOCK_NOT_FOUND</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">13_000</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CONSENSUS_ERROR</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">14_000</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">INHERENTS_ERROR</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">15_000</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BLOCKCHAIN_ERROR</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">16_000</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">UNKNOWN_ERROR</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">20_000</span>;
 }
 
 <span class="doccomment">/// errors encountered by background block authorship task</span>
@@ -189,7 +193,7 @@
 	<span class="ident">SendError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">SendError</span>),
 	<span class="doccomment">/// Some other error.</span>
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Other error: {0}&quot;</span>)]</span>
-	<span class="ident">Other</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">std::error::Error</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span>),
+	<span class="ident">Other</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">std::error::Error</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span>),
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ImportResult</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Error</span> {
@@ -205,7 +209,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Error</span> {
-	<span class="kw">fn</span> <span class="ident">to_code</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">i64</span> {
+	<span class="kw">fn</span> <span class="ident">to_code</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">i32</span> {
 		<span class="kw">use</span> <span class="ident">Error</span>::<span class="kw-2">*</span>;
 		<span class="kw">match</span> <span class="self">self</span> {
 			<span class="ident">BlockImportError</span>(<span class="kw">_</span>) =&gt; <span class="ident">codes::BLOCK_IMPORT_FAILED</span>,
@@ -220,13 +224,9 @@
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">jsonrpc_core::Error</span> {
-	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">error</span>: <span class="ident">Error</span>) -&gt; <span class="self">Self</span> {
-		<span class="ident">jsonrpc_core::Error</span> {
-			<span class="ident">code</span>: <span class="ident">jsonrpc_core::ErrorCode::ServerError</span>(<span class="ident">error</span>.<span class="ident">to_code</span>()),
-			<span class="ident">message</span>: <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">error</span>),
-			<span class="ident">data</span>: <span class="prelude-val">None</span>,
-		}
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">JsonRpseeError</span> {
+	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">err</span>: <span class="ident">Error</span>) -&gt; <span class="self">Self</span> {
+		<span class="ident">CallError::Custom</span>(<span class="ident">ErrorObject::owned</span>(<span class="ident">err</span>.<span class="ident">to_code</span>(), <span class="ident">err</span>.<span class="ident">to_string</span>(), <span class="prelude-val">None</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>)).<span class="ident">into</span>()
 	}
 }
 </code></pre></div>

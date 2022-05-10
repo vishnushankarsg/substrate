@@ -510,6 +510,16 @@
 <span id="505">505</span>
 <span id="506">506</span>
 <span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -529,11 +539,16 @@
 
 <span class="doccomment">//! Node-specific RPC methods for interaction with contracts.</span>
 
-<span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
+<span class="attribute">#![<span class="ident">warn</span>(<span class="ident">unused_crate_dependencies</span>)]</span>
+
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">marker::PhantomData</span>, <span class="ident">sync::Arc</span>};
 
 <span class="kw">use</span> <span class="ident">codec::Codec</span>;
-<span class="kw">use</span> <span class="ident">jsonrpc_core</span>::{<span class="ident">Error</span>, <span class="ident">ErrorCode</span>, <span class="prelude-ty">Result</span>};
-<span class="kw">use</span> <span class="ident">jsonrpc_derive::rpc</span>;
+<span class="kw">use</span> <span class="ident">jsonrpsee</span>::{
+	<span class="ident">core</span>::{<span class="ident">async_trait</span>, <span class="ident">Error</span> <span class="kw">as</span> <span class="ident">JsonRpseeError</span>, <span class="ident">RpcResult</span>},
+	<span class="ident">proc_macros::rpc</span>,
+	<span class="ident">types::error</span>::{<span class="ident">CallError</span>, <span class="ident">ErrorCode</span>, <span class="ident">ErrorObject</span>},
+};
 <span class="kw">use</span> <span class="ident">pallet_contracts_primitives</span>::{
 	<span class="ident">Code</span>, <span class="ident">CodeUploadResult</span>, <span class="ident">ContractExecResult</span>, <span class="ident">ContractInstantiateResult</span>,
 };
@@ -549,8 +564,8 @@
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">pallet_contracts_rpc_runtime_api::ContractsApi</span> <span class="kw">as</span> <span class="ident">ContractsRuntimeApi</span>;
 
-<span class="kw">const</span> <span class="ident">RUNTIME_ERROR</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">1</span>;
-<span class="kw">const</span> <span class="ident">CONTRACT_DOESNT_EXIST</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">2</span>;
+<span class="kw">const</span> <span class="ident">RUNTIME_ERROR</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">1</span>;
+<span class="kw">const</span> <span class="ident">CONTRACT_DOESNT_EXIST</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">2</span>;
 
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">u64</span>;
 
@@ -570,15 +585,17 @@
 
 <span class="doccomment">/// A private newtype for converting `ContractAccessError` into an RPC error.</span>
 <span class="kw">struct</span> <span class="ident">ContractAccessError</span>(<span class="ident">pallet_contracts_primitives::ContractAccessError</span>);
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ContractAccessError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Error</span> {
-	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">e</span>: <span class="ident">ContractAccessError</span>) -&gt; <span class="ident">Error</span> {
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ContractAccessError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">JsonRpseeError</span> {
+	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">e</span>: <span class="ident">ContractAccessError</span>) -&gt; <span class="self">Self</span> {
 		<span class="kw">use</span> <span class="ident">pallet_contracts_primitives::ContractAccessError</span>::<span class="kw-2">*</span>;
 		<span class="kw">match</span> <span class="ident">e</span>.<span class="number">0</span> {
-			<span class="ident">DoesntExist</span> =&gt; <span class="ident">Error</span> {
-				<span class="ident">code</span>: <span class="ident">ErrorCode::ServerError</span>(<span class="ident">CONTRACT_DOESNT_EXIST</span>),
-				<span class="ident">message</span>: <span class="string">&quot;The specified contract doesn&#39;t exist.&quot;</span>.<span class="ident">into</span>(),
-				<span class="ident">data</span>: <span class="prelude-val">None</span>,
-			},
+			<span class="ident">DoesntExist</span> =&gt; <span class="ident">CallError::Custom</span>(<span class="ident">ErrorObject::owned</span>(
+				<span class="ident">CONTRACT_DOESNT_EXIST</span>,
+				<span class="string">&quot;The specified contract doesn&#39;t exist.&quot;</span>,
+				<span class="prelude-val">None</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>,
+			))
+			.<span class="ident">into</span>(),
 		}
 	}
 }
@@ -621,7 +638,7 @@
 }
 
 <span class="doccomment">/// Contracts RPC methods.</span>
-<span class="attribute">#[<span class="ident">rpc</span>]</span>
+<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">client</span>, <span class="ident">server</span>)]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ContractsApi</span><span class="op">&lt;</span><span class="ident">BlockHash</span>, <span class="ident">BlockNumber</span>, <span class="ident">AccountId</span>, <span class="ident">Balance</span>, <span class="ident">Hash</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">Balance</span>: <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">NumberOrHex</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">NumberOrHex</span><span class="op">&gt;</span>,
@@ -633,12 +650,12 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This method is useful for calling getter-like methods on contracts or to dry-run a</span>
 	<span class="doccomment">/// a contract call in order to determine the `gas_limit`.</span>
-	<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;contracts_call&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">method</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;contracts_call&quot;</span>)]</span>
 	<span class="kw">fn</span> <span class="ident">call</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">call_request</span>: <span class="ident">CallRequest</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>,
 		<span class="ident">at</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BlockHash</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ContractExecResult</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">ContractExecResult</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Instantiate a new contract.</span>
 	<span class="doccomment">///</span>
@@ -646,12 +663,12 @@
 	<span class="doccomment">/// is not actually created.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This method is useful for UIs to dry-run contract instantiations.</span>
-	<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;contracts_instantiate&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">method</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;contracts_instantiate&quot;</span>)]</span>
 	<span class="kw">fn</span> <span class="ident">instantiate</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">instantiate_request</span>: <span class="ident">InstantiateRequest</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">Hash</span><span class="op">&gt;</span>,
 		<span class="ident">at</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BlockHash</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ContractInstantiateResult</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">Balance</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">ContractInstantiateResult</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">Balance</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Upload new code without instantiating a contract from it.</span>
 	<span class="doccomment">///</span>
@@ -659,48 +676,50 @@
 	<span class="doccomment">/// won&#39;t change any state.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This method is useful for UIs to dry-run code upload.</span>
-	<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;contracts_upload_code&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">method</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;contracts_upload_code&quot;</span>)]</span>
 	<span class="kw">fn</span> <span class="ident">upload_code</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">upload_request</span>: <span class="ident">CodeUploadRequest</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>,
 		<span class="ident">at</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BlockHash</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">CodeUploadResult</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">Balance</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">CodeUploadResult</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">Balance</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Returns the value under a specified storage `key` in a contract given by `address` param,</span>
 	<span class="doccomment">/// or `None` if it is not set.</span>
-	<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;contracts_getStorage&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">method</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;contracts_getStorage&quot;</span>)]</span>
 	<span class="kw">fn</span> <span class="ident">get_storage</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">address</span>: <span class="ident">AccountId</span>,
 		<span class="ident">key</span>: <span class="ident">H256</span>,
 		<span class="ident">at</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BlockHash</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Bytes</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Bytes</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 }
 
-<span class="doccomment">/// An implementation of contract specific RPC methods.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Contracts</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span> {
-	<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>,
-	<span class="ident">_marker</span>: <span class="ident">std::marker::PhantomData</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+<span class="doccomment">/// Contracts RPC methods.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ContractsRpc</span><span class="op">&lt;</span><span class="ident">Client</span>, <span class="ident">Block</span><span class="op">&gt;</span> {
+	<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>,
+	<span class="ident">_marker</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span> <span class="ident">Contracts</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Client</span>, <span class="ident">Block</span><span class="op">&gt;</span> <span class="ident">ContractsRpc</span><span class="op">&lt;</span><span class="ident">Client</span>, <span class="ident">Block</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Create new `Contracts` with the given reference to the client.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
-		<span class="ident">Contracts</span> { <span class="ident">client</span>, <span class="ident">_marker</span>: <span class="ident">Default::default</span>() }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
+		<span class="self">Self</span> { <span class="ident">client</span>, <span class="ident">_marker</span>: <span class="ident">Default::default</span>() }
 	}
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">Block</span>, <span class="ident">AccountId</span>, <span class="ident">Balance</span>, <span class="ident">Hash</span><span class="op">&gt;</span>
-	<span class="ident">ContractsApi</span><span class="op">&lt;</span>
+
+<span class="attribute">#[<span class="ident">async_trait</span>]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Client</span>, <span class="ident">Block</span>, <span class="ident">AccountId</span>, <span class="ident">Balance</span>, <span class="ident">Hash</span><span class="op">&gt;</span>
+	<span class="ident">ContractsApiServer</span><span class="op">&lt;</span>
 		<span class="op">&lt;</span><span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span>,
 		<span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Header</span> <span class="kw">as</span> <span class="ident">HeaderT</span><span class="op">&gt;</span><span class="ident">::Number</span>,
 		<span class="ident">AccountId</span>,
 		<span class="ident">Balance</span>,
 		<span class="ident">Hash</span>,
-	<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Contracts</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">Block</span><span class="op">&gt;</span>
+	<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ContractsRpc</span><span class="op">&lt;</span><span class="ident">Client</span>, <span class="ident">Block</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">Block</span>: <span class="ident">BlockT</span>,
-	<span class="ident">C</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
-	<span class="ident">C::Api</span>: <span class="ident">ContractsRuntimeApi</span><span class="op">&lt;</span>
+	<span class="ident">Client</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
+	<span class="ident">Client::Api</span>: <span class="ident">ContractsRuntimeApi</span><span class="op">&lt;</span>
 		<span class="ident">Block</span>,
 		<span class="ident">AccountId</span>,
 		<span class="ident">Balance</span>,
@@ -715,7 +734,7 @@
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">call_request</span>: <span class="ident">CallRequest</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>,
 		<span class="ident">at</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ContractExecResult</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">ContractExecResult</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">api</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">runtime_api</span>();
 		<span class="kw">let</span> <span class="ident">at</span> <span class="op">=</span> <span class="ident">BlockId::hash</span>(<span class="ident">at</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span>
 			<span class="comment">// If the block hash is not supplied assume the best block.</span>
@@ -738,7 +757,7 @@
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">instantiate_request</span>: <span class="ident">InstantiateRequest</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">Hash</span><span class="op">&gt;</span>,
 		<span class="ident">at</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ContractInstantiateResult</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">Balance</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">ContractInstantiateResult</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">Balance</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">api</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">runtime_api</span>();
 		<span class="kw">let</span> <span class="ident">at</span> <span class="op">=</span> <span class="ident">BlockId::hash</span>(<span class="ident">at</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span>
 			<span class="comment">// If the block hash is not supplied assume the best block.</span>
@@ -777,7 +796,7 @@
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">upload_request</span>: <span class="ident">CodeUploadRequest</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>,
 		<span class="ident">at</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">CodeUploadResult</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">Balance</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">CodeUploadResult</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">Balance</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">api</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">runtime_api</span>();
 		<span class="kw">let</span> <span class="ident">at</span> <span class="op">=</span> <span class="ident">BlockId::hash</span>(<span class="ident">at</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span>
 			<span class="comment">// If the block hash is not supplied assume the best block.</span>
@@ -797,12 +816,9 @@
 		<span class="ident">address</span>: <span class="ident">AccountId</span>,
 		<span class="ident">key</span>: <span class="ident">H256</span>,
 		<span class="ident">at</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Bytes</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Bytes</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">api</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">runtime_api</span>();
-		<span class="kw">let</span> <span class="ident">at</span> <span class="op">=</span> <span class="ident">BlockId::hash</span>(<span class="ident">at</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span>
-			<span class="comment">// If the block hash is not supplied assume the best block.</span>
-			<span class="self">self</span>.<span class="ident">client</span>.<span class="ident">info</span>().<span class="ident">best_hash</span>));
-
+		<span class="kw">let</span> <span class="ident">at</span> <span class="op">=</span> <span class="ident">BlockId::hash</span>(<span class="ident">at</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">info</span>().<span class="ident">best_hash</span>));
 		<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">api</span>
 			.<span class="ident">get_storage</span>(<span class="kw-2">&amp;</span><span class="ident">at</span>, <span class="ident">address</span>, <span class="ident">key</span>.<span class="ident">into</span>())
 			.<span class="ident">map_err</span>(<span class="ident">runtime_error_into_rpc_err</span>)<span class="question-mark">?</span>
@@ -814,32 +830,35 @@
 }
 
 <span class="doccomment">/// Converts a runtime trap into an RPC error.</span>
-<span class="kw">fn</span> <span class="ident">runtime_error_into_rpc_err</span>(<span class="ident">err</span>: <span class="kw">impl</span> <span class="ident">std::fmt::Display</span>) -&gt; <span class="ident">Error</span> {
-	<span class="ident">Error</span> {
-		<span class="ident">code</span>: <span class="ident">ErrorCode::ServerError</span>(<span class="ident">RUNTIME_ERROR</span>),
-		<span class="ident">message</span>: <span class="string">&quot;Runtime error&quot;</span>.<span class="ident">into</span>(),
-		<span class="ident">data</span>: <span class="prelude-val">Some</span>(<span class="ident">err</span>.<span class="ident">to_string</span>().<span class="ident">into</span>()),
-	}
+<span class="kw">fn</span> <span class="ident">runtime_error_into_rpc_err</span>(<span class="ident">err</span>: <span class="kw">impl</span> <span class="ident">std::fmt::Debug</span>) -&gt; <span class="ident">JsonRpseeError</span> {
+	<span class="ident">CallError::Custom</span>(<span class="ident">ErrorObject::owned</span>(
+		<span class="ident">RUNTIME_ERROR</span>,
+		<span class="string">&quot;Runtime error&quot;</span>,
+		<span class="prelude-val">Some</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">err</span>)),
+	))
+	.<span class="ident">into</span>()
 }
 
-<span class="kw">fn</span> <span class="ident">decode_hex</span><span class="op">&lt;</span><span class="ident">H</span>: <span class="ident">std::fmt::Debug</span> <span class="op">+</span> <span class="ident">Copy</span>, <span class="ident">T</span>: <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">from</span>: <span class="ident">H</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-	<span class="ident">from</span>.<span class="ident">try_into</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">Error</span> {
-		<span class="ident">code</span>: <span class="ident">ErrorCode::InvalidParams</span>,
-		<span class="ident">message</span>: <span class="macro">format!</span>(<span class="string">&quot;{:?} does not fit into the {} type&quot;</span>, <span class="ident">from</span>, <span class="ident">name</span>),
-		<span class="ident">data</span>: <span class="prelude-val">None</span>,
+<span class="kw">fn</span> <span class="ident">decode_hex</span><span class="op">&lt;</span><span class="ident">H</span>: <span class="ident">std::fmt::Debug</span> <span class="op">+</span> <span class="ident">Copy</span>, <span class="ident">T</span>: <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">from</span>: <span class="ident">H</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+	<span class="ident">from</span>.<span class="ident">try_into</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
+		<span class="ident">JsonRpseeError::Call</span>(<span class="ident">CallError::Custom</span>(<span class="ident">ErrorObject::owned</span>(
+			<span class="ident">ErrorCode::InvalidParams</span>.<span class="ident">code</span>(),
+			<span class="macro">format!</span>(<span class="string">&quot;{:?} does not fit into the {} type&quot;</span>, <span class="ident">from</span>, <span class="ident">name</span>),
+			<span class="prelude-val">None</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>,
+		)))
 	})
 }
 
-<span class="kw">fn</span> <span class="ident">limit_gas</span>(<span class="ident">gas_limit</span>: <span class="ident">Weight</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">limit_gas</span>(<span class="ident">gas_limit</span>: <span class="ident">Weight</span>) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 	<span class="kw">if</span> <span class="ident">gas_limit</span> <span class="op">&gt;</span> <span class="ident">GAS_LIMIT</span> {
-		<span class="prelude-val">Err</span>(<span class="ident">Error</span> {
-			<span class="ident">code</span>: <span class="ident">ErrorCode::InvalidParams</span>,
-			<span class="ident">message</span>: <span class="macro">format!</span>(
+		<span class="prelude-val">Err</span>(<span class="ident">JsonRpseeError::Call</span>(<span class="ident">CallError::Custom</span>(<span class="ident">ErrorObject::owned</span>(
+			<span class="ident">ErrorCode::InvalidParams</span>.<span class="ident">code</span>(),
+			<span class="macro">format!</span>(
 				<span class="string">&quot;Requested gas limit is greater than maximum allowed: {} &gt; {}&quot;</span>,
 				<span class="ident">gas_limit</span>, <span class="ident">GAS_LIMIT</span>
 			),
-			<span class="ident">data</span>: <span class="prelude-val">None</span>,
-		})
+			<span class="prelude-val">None</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>,
+		))))
 	} <span class="kw">else</span> {
 		<span class="prelude-val">Ok</span>(())
 	}
@@ -848,6 +867,7 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
+	<span class="kw">use</span> <span class="ident">pallet_contracts_primitives</span>::{<span class="ident">ContractExecResult</span>, <span class="ident">ContractInstantiateResult</span>};
 	<span class="kw">use</span> <span class="ident">sp_core::U256</span>;
 
 	<span class="kw">fn</span> <span class="ident">trim</span>(<span class="ident">json</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">String</span> {

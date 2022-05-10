@@ -642,6 +642,28 @@
 <span id="637">637</span>
 <span id="638">638</span>
 <span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
+<span id="652">652</span>
+<span id="653">653</span>
+<span id="654">654</span>
+<span id="655">655</span>
+<span id="656">656</span>
+<span id="657">657</span>
+<span id="658">658</span>
+<span id="659">659</span>
+<span id="660">660</span>
+<span id="661">661</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -1273,6 +1295,28 @@
 		<span class="macro">assert_eq!</span>(<span class="ident">MaxPools</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(), <span class="prelude-val">Some</span>(<span class="ident">u32::MAX</span>));
 		<span class="macro">assert_eq!</span>(<span class="ident">MaxPoolMembers</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(), <span class="prelude-val">Some</span>(<span class="ident">u32::MAX</span>));
 		<span class="macro">assert_eq!</span>(<span class="ident">MaxPoolMembersPerPool</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(), <span class="prelude-val">Some</span>(<span class="ident">u32::MAX</span>));
+	}
+
+	<span class="ident">update_roles</span> {
+		<span class="kw">let</span> <span class="ident">first_id</span> <span class="op">=</span> <span class="ident">pallet_nomination_pools::LastPoolId</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>() <span class="op">+</span> <span class="number">1</span>;
+		<span class="kw">let</span> (<span class="ident">root</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_pool_account</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="number">0</span>, <span class="ident">CurrencyOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::minimum_balance</span>() <span class="op">*</span> <span class="number">2u32</span>.<span class="ident">into</span>());
+		<span class="kw">let</span> <span class="ident">random</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;but is anything really random in computers..?&quot;</span>, <span class="number">0</span>, <span class="ident">USER_SEED</span>);
+	}:<span class="kw">_</span>(
+		<span class="ident">Origin::Signed</span>(<span class="ident">root</span>.<span class="ident">clone</span>()),
+		<span class="ident">first_id</span>,
+		<span class="prelude-val">Some</span>(<span class="ident">random</span>.<span class="ident">clone</span>()),
+		<span class="prelude-val">Some</span>(<span class="ident">random</span>.<span class="ident">clone</span>()),
+		<span class="prelude-val">Some</span>(<span class="ident">random</span>.<span class="ident">clone</span>())
+	) <span class="ident">verify</span> {
+		<span class="macro">assert_eq!</span>(
+			<span class="ident">pallet_nomination_pools::BondedPools</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">first_id</span>).<span class="ident">unwrap</span>().<span class="ident">roles</span>,
+			<span class="ident">pallet_nomination_pools::PoolRoles</span> {
+				<span class="ident">depositor</span>: <span class="ident">root</span>,
+				<span class="ident">nominator</span>: <span class="ident">random</span>.<span class="ident">clone</span>(),
+				<span class="ident">state_toggler</span>: <span class="ident">random</span>.<span class="ident">clone</span>(),
+				<span class="ident">root</span>: <span class="ident">random</span>,
+			},
+		)
 	}
 
 	<span class="macro">impl_benchmark_test_suite!</span>(

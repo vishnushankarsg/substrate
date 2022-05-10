@@ -172,7 +172,6 @@
 <span id="167">167</span>
 <span id="168">168</span>
 <span id="169">169</span>
-<span id="170">170</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -193,21 +192,21 @@
 
 <span class="doccomment">//! RPC interface for the `ManualSeal` Engine.</span>
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::gen_client::Client</span> <span class="kw">as</span> <span class="ident">ManualSealClient</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::error::Error</span>;
 <span class="kw">use</span> <span class="ident">futures</span>::{
 	<span class="ident">channel</span>::{<span class="ident">mpsc</span>, <span class="ident">oneshot</span>},
-	<span class="ident">FutureExt</span>, <span class="ident">SinkExt</span>, <span class="ident">TryFutureExt</span>,
+	<span class="ident">SinkExt</span>,
 };
-<span class="kw">use</span> <span class="ident">jsonrpc_core::Error</span>;
-<span class="kw">use</span> <span class="ident">jsonrpc_derive::rpc</span>;
+<span class="kw">use</span> <span class="ident">jsonrpsee</span>::{
+	<span class="ident">core</span>::{<span class="ident">async_trait</span>, <span class="ident">Error</span> <span class="kw">as</span> <span class="ident">JsonRpseeError</span>, <span class="ident">RpcResult</span>},
+	<span class="ident">proc_macros::rpc</span>,
+};
 <span class="kw">use</span> <span class="ident">sc_consensus::ImportedAux</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
 <span class="kw">use</span> <span class="ident">sp_runtime::EncodedJustification</span>;
 
-<span class="doccomment">/// Future&#39;s type for jsonrpc</span>
-<span class="kw">type</span> <span class="ident">FutureResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">jsonrpc_core::BoxFuture</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span>;
-<span class="doccomment">/// sender passed to the authorship task to report errors or successes.</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident"><span class="kw">crate</span>::Error</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+<span class="doccomment">/// Sender passed to the authorship task to report errors or successes.</span>
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 <span class="doccomment">/// Message sent to the background authorship task, usually by RPC.</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">EngineCommand</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span> {
@@ -240,27 +239,27 @@
 }
 
 <span class="doccomment">/// RPC trait that provides methods for interacting with the manual-seal authorship task over rpc.</span>
-<span class="attribute">#[<span class="ident">rpc</span>]</span>
+<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">client</span>, <span class="ident">server</span>)]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ManualSealApi</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Instructs the manual-seal authorship task to create a new block</span>
-	<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;engine_createBlock&quot;</span>)]</span>
-	<span class="kw">fn</span> <span class="ident">create_block</span>(
+	<span class="attribute">#[<span class="ident">method</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;engine_createBlock&quot;</span>)]</span>
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">create_block</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">create_empty</span>: <span class="ident">bool</span>,
 		<span class="ident">finalize</span>: <span class="ident">bool</span>,
 		<span class="ident">parent_hash</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>,
-	) -&gt; <span class="ident">FutureResult</span><span class="op">&lt;</span><span class="ident">CreatedBlock</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">CreatedBlock</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Instructs the manual-seal authorship task to finalize a block</span>
-	<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;engine_finalizeBlock&quot;</span>)]</span>
-	<span class="kw">fn</span> <span class="ident">finalize_block</span>(
+	<span class="attribute">#[<span class="ident">method</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;engine_finalizeBlock&quot;</span>)]</span>
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">finalize_block</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">hash</span>: <span class="ident">Hash</span>,
 		<span class="ident">justification</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">EncodedJustification</span><span class="op">&gt;</span>,
-	) -&gt; <span class="ident">FutureResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>;
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>;
 }
 
-<span class="doccomment">/// A struct that implements the [`ManualSealApi`].</span>
+<span class="doccomment">/// A struct that implements the [`ManualSealApiServer`].</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ManualSeal</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span> {
 	<span class="ident">import_block_channel</span>: <span class="ident">mpsc::Sender</span><span class="op">&lt;</span><span class="ident">EngineCommand</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
@@ -281,44 +280,43 @@
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Hash</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">ManualSealApi</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ManualSeal</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">create_block</span>(
+<span class="attribute">#[<span class="ident">async_trait</span>]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Hash</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">ManualSealApiServer</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ManualSeal</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span> {
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">create_block</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">create_empty</span>: <span class="ident">bool</span>,
 		<span class="ident">finalize</span>: <span class="ident">bool</span>,
 		<span class="ident">parent_hash</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>,
-	) -&gt; <span class="ident">FutureResult</span><span class="op">&lt;</span><span class="ident">CreatedBlock</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">CreatedBlock</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sink</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">import_block_channel</span>.<span class="ident">clone</span>();
-		<span class="kw">async</span> <span class="kw">move</span> {
-			<span class="kw">let</span> (<span class="ident">sender</span>, <span class="ident">receiver</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
-			<span class="kw">let</span> <span class="ident">command</span> <span class="op">=</span> <span class="ident">EngineCommand::SealNewBlock</span> {
-				<span class="ident">create_empty</span>,
-				<span class="ident">finalize</span>,
-				<span class="ident">parent_hash</span>,
-				<span class="ident">sender</span>: <span class="prelude-val">Some</span>(<span class="ident">sender</span>),
-			};
-			<span class="ident">sink</span>.<span class="ident">send</span>(<span class="ident">command</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-			<span class="ident">receiver</span>.<span class="kw">await</span><span class="question-mark">?</span>
+		<span class="kw">let</span> (<span class="ident">sender</span>, <span class="ident">receiver</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
+		<span class="comment">// NOTE: this sends a Result over the channel.</span>
+		<span class="kw">let</span> <span class="ident">command</span> <span class="op">=</span> <span class="ident">EngineCommand::SealNewBlock</span> {
+			<span class="ident">create_empty</span>,
+			<span class="ident">finalize</span>,
+			<span class="ident">parent_hash</span>,
+			<span class="ident">sender</span>: <span class="prelude-val">Some</span>(<span class="ident">sender</span>),
+		};
+
+		<span class="ident">sink</span>.<span class="ident">send</span>(<span class="ident">command</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+
+		<span class="kw">match</span> <span class="ident">receiver</span>.<span class="kw">await</span> {
+			<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="ident">rx</span>)) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">rx</span>),
+			<span class="prelude-val">Ok</span>(<span class="prelude-val">Err</span>(<span class="ident">e</span>)) =&gt; <span class="prelude-val">Err</span>(<span class="ident">e</span>.<span class="ident">into</span>()),
+			<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">JsonRpseeError::to_call_error</span>(<span class="ident">e</span>)),
 		}
-		.<span class="ident">map_err</span>(<span class="ident">Error::from</span>)
-		.<span class="ident">boxed</span>()
 	}
 
-	<span class="kw">fn</span> <span class="ident">finalize_block</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">finalize_block</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">hash</span>: <span class="ident">Hash</span>,
 		<span class="ident">justification</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">EncodedJustification</span><span class="op">&gt;</span>,
-	) -&gt; <span class="ident">FutureResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sink</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">import_block_channel</span>.<span class="ident">clone</span>();
-		<span class="kw">async</span> <span class="kw">move</span> {
-			<span class="kw">let</span> (<span class="ident">sender</span>, <span class="ident">receiver</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
-			<span class="ident">sink</span>.<span class="ident">send</span>(<span class="ident">EngineCommand::FinalizeBlock</span> { <span class="ident">hash</span>, <span class="ident">sender</span>: <span class="prelude-val">Some</span>(<span class="ident">sender</span>), <span class="ident">justification</span> })
-				.<span class="kw">await</span><span class="question-mark">?</span>;
-
-			<span class="ident">receiver</span>.<span class="kw">await</span><span class="question-mark">?</span>.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="bool-val">true</span>)
-		}
-		.<span class="ident">map_err</span>(<span class="ident">Error::from</span>)
-		.<span class="ident">boxed</span>()
+		<span class="kw">let</span> (<span class="ident">sender</span>, <span class="ident">receiver</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
+		<span class="kw">let</span> <span class="ident">command</span> <span class="op">=</span> <span class="ident">EngineCommand::FinalizeBlock</span> { <span class="ident">hash</span>, <span class="ident">sender</span>: <span class="prelude-val">Some</span>(<span class="ident">sender</span>), <span class="ident">justification</span> };
+		<span class="ident">sink</span>.<span class="ident">send</span>(<span class="ident">command</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+		<span class="ident">receiver</span>.<span class="kw">await</span>.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="bool-val">true</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">JsonRpseeError::to_call_error</span>(<span class="ident">e</span>))
 	}
 }
 

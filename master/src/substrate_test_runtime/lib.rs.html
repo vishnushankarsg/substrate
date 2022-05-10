@@ -1353,6 +1353,19 @@
 <span id="1348">1348</span>
 <span id="1349">1349</span>
 <span id="1350">1350</span>
+<span id="1351">1351</span>
+<span id="1352">1352</span>
+<span id="1353">1353</span>
+<span id="1354">1354</span>
+<span id="1355">1355</span>
+<span id="1356">1356</span>
+<span id="1357">1357</span>
+<span id="1358">1358</span>
+<span id="1359">1359</span>
+<span id="1360">1360</span>
+<span id="1361">1361</span>
+<span id="1362">1362</span>
+<span id="1363">1363</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1528,6 +1541,19 @@
 		<span class="ident">S</span>: <span class="ident">::serde::Serializer</span>,
 	{
 		<span class="self">self</span>.<span class="ident">using_encoded</span>(<span class="op">|</span><span class="ident">bytes</span><span class="op">|</span> <span class="ident">seq</span>.<span class="ident">serialize_bytes</span>(<span class="ident">bytes</span>))
+	}
+}
+
+<span class="comment">// rustc can&#39;t deduce this trait bound https://github.com/rust-lang/rust/issues/48214</span>
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">serde::Deserialize</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Extrinsic</span> {
+	<span class="kw">fn</span> <span class="ident">deserialize</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>(<span class="ident">de</span>: <span class="ident">D</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">D::Error</span><span class="op">&gt;</span>
+	<span class="kw">where</span>
+		<span class="ident">D</span>: <span class="ident">serde::Deserializer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
+	{
+		<span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">sp_core::bytes::deserialize</span>(<span class="ident">de</span>)<span class="question-mark">?</span>;
+		<span class="ident">Decode::decode</span>(<span class="kw-2">&amp;mut</span> <span class="kw-2">&amp;</span><span class="ident">r</span>[..])
+			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">serde::de::Error::custom</span>(<span class="macro">format!</span>(<span class="string">&quot;Decode error: {}&quot;</span>, <span class="ident">e</span>)))
 	}
 }
 

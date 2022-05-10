@@ -53,11 +53,6 @@
 <span id="48">48</span>
 <span id="49">49</span>
 <span id="50">50</span>
-<span id="51">51</span>
-<span id="52">52</span>
-<span id="53">53</span>
-<span id="54">54</span>
-<span id="55">55</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -78,38 +73,33 @@
 
 <span class="doccomment">//! Error helpers for Chain RPC module.</span>
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::errors</span>;
-<span class="kw">use</span> <span class="ident">jsonrpc_core</span> <span class="kw">as</span> <span class="ident">rpc</span>;
-
+<span class="kw">use</span> <span class="ident">jsonrpsee</span>::{
+	<span class="ident">core::Error</span> <span class="kw">as</span> <span class="ident">JsonRpseeError</span>,
+	<span class="ident">types::error</span>::{<span class="ident">CallError</span>, <span class="ident">ErrorObject</span>},
+};
 <span class="doccomment">/// Chain RPC Result type.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Error</span><span class="op">&gt;</span>;
-
-<span class="doccomment">/// Chain RPC future Result type.</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">FutureResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">jsonrpc_core::BoxFuture</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 <span class="doccomment">/// Chain RPC errors.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span> {
 	<span class="doccomment">/// Client error.</span>
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Client error: {}&quot;</span>, .<span class="number">0</span>)]</span>
-	<span class="ident">Client</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">std::error::Error</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span>),
+	<span class="ident">Client</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">std::error::Error</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span>),
 	<span class="doccomment">/// Other error type.</span>
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;{0}&quot;</span>)]</span>
 	<span class="ident">Other</span>(<span class="ident">String</span>),
 }
 
 <span class="doccomment">/// Base error code for all chain errors.</span>
-<span class="kw">const</span> <span class="ident">BASE_ERROR</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">3000</span>;
+<span class="kw">const</span> <span class="ident">BASE_ERROR</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">3000</span>;
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">rpc::Error</span> {
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">JsonRpseeError</span> {
 	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">e</span>: <span class="ident">Error</span>) -&gt; <span class="self">Self</span> {
 		<span class="kw">match</span> <span class="ident">e</span> {
-			<span class="ident">Error::Other</span>(<span class="ident">message</span>) =&gt; <span class="ident">rpc::Error</span> {
-				<span class="ident">code</span>: <span class="ident">rpc::ErrorCode::ServerError</span>(<span class="ident">BASE_ERROR</span> <span class="op">+</span> <span class="number">1</span>),
-				<span class="ident">message</span>,
-				<span class="ident">data</span>: <span class="prelude-val">None</span>,
-			},
-			<span class="ident">e</span> =&gt; <span class="ident">errors::internal</span>(<span class="ident">e</span>),
+			<span class="ident">Error::Other</span>(<span class="ident">message</span>) =&gt;
+				<span class="ident">CallError::Custom</span>(<span class="ident">ErrorObject::owned</span>(<span class="ident">BASE_ERROR</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">message</span>, <span class="prelude-val">None</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>)).<span class="ident">into</span>(),
+			<span class="ident">e</span> =&gt; <span class="ident">e</span>.<span class="ident">into</span>(),
 		}
 	}
 }

@@ -2241,6 +2241,71 @@
 <span id="2236">2236</span>
 <span id="2237">2237</span>
 <span id="2238">2238</span>
+<span id="2239">2239</span>
+<span id="2240">2240</span>
+<span id="2241">2241</span>
+<span id="2242">2242</span>
+<span id="2243">2243</span>
+<span id="2244">2244</span>
+<span id="2245">2245</span>
+<span id="2246">2246</span>
+<span id="2247">2247</span>
+<span id="2248">2248</span>
+<span id="2249">2249</span>
+<span id="2250">2250</span>
+<span id="2251">2251</span>
+<span id="2252">2252</span>
+<span id="2253">2253</span>
+<span id="2254">2254</span>
+<span id="2255">2255</span>
+<span id="2256">2256</span>
+<span id="2257">2257</span>
+<span id="2258">2258</span>
+<span id="2259">2259</span>
+<span id="2260">2260</span>
+<span id="2261">2261</span>
+<span id="2262">2262</span>
+<span id="2263">2263</span>
+<span id="2264">2264</span>
+<span id="2265">2265</span>
+<span id="2266">2266</span>
+<span id="2267">2267</span>
+<span id="2268">2268</span>
+<span id="2269">2269</span>
+<span id="2270">2270</span>
+<span id="2271">2271</span>
+<span id="2272">2272</span>
+<span id="2273">2273</span>
+<span id="2274">2274</span>
+<span id="2275">2275</span>
+<span id="2276">2276</span>
+<span id="2277">2277</span>
+<span id="2278">2278</span>
+<span id="2279">2279</span>
+<span id="2280">2280</span>
+<span id="2281">2281</span>
+<span id="2282">2282</span>
+<span id="2283">2283</span>
+<span id="2284">2284</span>
+<span id="2285">2285</span>
+<span id="2286">2286</span>
+<span id="2287">2287</span>
+<span id="2288">2288</span>
+<span id="2289">2289</span>
+<span id="2290">2290</span>
+<span id="2291">2291</span>
+<span id="2292">2292</span>
+<span id="2293">2293</span>
+<span id="2294">2294</span>
+<span id="2295">2295</span>
+<span id="2296">2296</span>
+<span id="2297">2297</span>
+<span id="2298">2298</span>
+<span id="2299">2299</span>
+<span id="2300">2300</span>
+<span id="2301">2301</span>
+<span id="2302">2302</span>
+<span id="2303">2303</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -2591,7 +2656,7 @@
 
 <span class="doccomment">/// Possible operations on the configuration values of this pallet.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">MaxEncodedLen</span>, <span class="ident">TypeInfo</span>, <span class="ident">RuntimeDebugNoBound</span>, <span class="ident">PartialEq</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ConfigOp</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Default</span> <span class="op">+</span> <span class="ident">Codec</span> <span class="op">+</span> <span class="ident">Debug</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ConfigOp</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Codec</span> <span class="op">+</span> <span class="ident">Debug</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Don&#39;t change.</span>
 	<span class="ident">Noop</span>,
 	<span class="doccomment">/// Set the given value.</span>
@@ -2748,11 +2813,11 @@
 <span class="doccomment">/// Pool adminstration roles.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">MaxEncodedLen</span>, <span class="ident">TypeInfo</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PoolRoles</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span> {
-	<span class="doccomment">/// Creates the pool and is the initial member. They can only leave the pool once all</span>
-	<span class="doccomment">/// other members have left. Once they fully leave, the pool is destroyed.</span>
+	<span class="doccomment">/// Creates the pool and is the initial member. They can only leave the pool once all other</span>
+	<span class="doccomment">/// members have left. Once they fully leave, the pool is destroyed.</span>
 	<span class="kw">pub</span> <span class="ident">depositor</span>: <span class="ident">AccountId</span>,
-	<span class="doccomment">/// Can change the nominator, state-toggler, or itself and can perform any of the actions</span>
-	<span class="doccomment">/// the nominator or state-toggler can.</span>
+	<span class="doccomment">/// Can change the nominator, state-toggler, or itself and can perform any of the actions the</span>
+	<span class="doccomment">/// nominator or state-toggler can.</span>
 	<span class="kw">pub</span> <span class="ident">root</span>: <span class="ident">AccountId</span>,
 	<span class="doccomment">/// Can select which validators the pool nominates.</span>
 	<span class="kw">pub</span> <span class="ident">nominator</span>: <span class="ident">AccountId</span>,
@@ -2906,6 +2971,10 @@
 		<span class="kw">let</span> <span class="ident">account</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">bonded_account</span>();
 		<span class="ident">T::Currency::free_balance</span>(<span class="kw-2">&amp;</span><span class="ident">account</span>)
 			.<span class="ident">saturating_sub</span>(<span class="ident">T::StakingInterface::active_stake</span>(<span class="kw-2">&amp;</span><span class="ident">account</span>).<span class="ident">unwrap_or_default</span>())
+	}
+
+	<span class="kw">fn</span> <span class="ident">can_update_roles</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">who</span>: <span class="kw-2">&amp;</span><span class="ident">T::AccountId</span>) -&gt; <span class="ident">bool</span> {
+		<span class="kw-2">*</span><span class="ident">who</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">roles</span>.<span class="ident">root</span>
 	}
 
 	<span class="kw">fn</span> <span class="ident">can_nominate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">who</span>: <span class="kw-2">&amp;</span><span class="ident">T::AccountId</span>) -&gt; <span class="ident">bool</span> {
@@ -3384,9 +3453,14 @@
 	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Metadata</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span>
 		<span class="ident">CountedStorageMap</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">Twox64Concat</span>, <span class="ident">PoolId</span>, <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u8</span>, <span class="ident">T::MaxMetadataLen</span><span class="op">&gt;</span>, <span class="ident">ValueQuery</span><span class="op">&gt;</span>;
 
+	<span class="doccomment">/// Ever increasing number of all pools created so far.</span>
 	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
 	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">LastPoolId</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageValue</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">u32</span>, <span class="ident">ValueQuery</span><span class="op">&gt;</span>;
 
+	<span class="doccomment">/// A reverse lookup from the pool&#39;s account id to its id.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// This is only used for slashing. In all other instances, the pool id is used, and the</span>
+	<span class="doccomment">/// accounts are deterministically derived from it.</span>
 	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
 	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">ReversePoolIdLookup</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span>
 		<span class="ident">CountedStorageMap</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">Twox64Concat</span>, <span class="ident">T::AccountId</span>, <span class="ident">PoolId</span>, <span class="ident">OptionQuery</span><span class="op">&gt;</span>;
@@ -3452,6 +3526,8 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// The removal can be voluntary (withdrawn all unbonded funds) or involuntary (kicked).</span>
 		<span class="ident">MemberRemoved</span> { <span class="ident">pool_id</span>: <span class="ident">PoolId</span>, <span class="ident">member</span>: <span class="ident">T::AccountId</span> },
+		<span class="doccomment">/// The roles of a pool have been updated to the given new roles.</span>
+		<span class="ident">RolesUpdated</span> { <span class="ident">root</span>: <span class="ident">T::AccountId</span>, <span class="ident">state_toggler</span>: <span class="ident">T::AccountId</span>, <span class="ident">nominator</span>: <span class="ident">T::AccountId</span> },
 	}
 
 	<span class="attribute">#[<span class="ident">pallet::error</span>]</span>
@@ -3679,9 +3755,9 @@
 
 			<span class="ident">bonded_pool</span>.<span class="ident">ok_to_unbond_with</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>, <span class="kw-2">&amp;</span><span class="ident">member_account</span>, <span class="kw-2">&amp;</span><span class="ident">member</span>, <span class="ident">unbonding_points</span>)<span class="question-mark">?</span>;
 
-			<span class="comment">// Claim the the payout prior to unbonding. Once the user is unbonding their points</span>
-			<span class="comment">// no longer exist in the bonded pool and thus they can no longer claim their payouts.</span>
-			<span class="comment">// It is not strictly necessary to claim the rewards, but we do it here for UX.</span>
+			<span class="comment">// Claim the the payout prior to unbonding. Once the user is unbonding their points no</span>
+			<span class="comment">// longer exist in the bonded pool and thus they can no longer claim their payouts. It</span>
+			<span class="comment">// is not strictly necessary to claim the rewards, but we do it here for UX.</span>
 			<span class="ident"><span class="self">Self</span>::do_reward_payout</span>(
 				<span class="kw-2">&amp;</span><span class="ident">member_account</span>,
 				<span class="kw-2">&amp;mut</span> <span class="ident">member</span>,
@@ -4068,6 +4144,60 @@
 			<span class="macro">config_op_exp!</span>(<span class="ident">MaxPoolMembers</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">max_members</span>);
 			<span class="macro">config_op_exp!</span>(<span class="ident">MaxPoolMembersPerPool</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">max_members_per_pool</span>);
 
+			<span class="prelude-val">Ok</span>(())
+		}
+
+		<span class="doccomment">/// Update the roles of the pool.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// The root is the only entity that can change any of the roles, including itself,</span>
+		<span class="doccomment">/// excluding the depositor, who can never change.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// It emits an event, notifying UIs of the role change. This event is quite relevant to</span>
+		<span class="doccomment">/// most pool members and they should be informed of changes to pool roles.</span>
+		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::update_roles</span>())]</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">update_roles</span>(
+			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+			<span class="ident">pool_id</span>: <span class="ident">PoolId</span>,
+			<span class="ident">root</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>,
+			<span class="ident">nominator</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>,
+			<span class="ident">state_toggler</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>,
+		) -&gt; <span class="ident">DispatchResult</span> {
+			<span class="kw">let</span> <span class="ident">o1</span> <span class="op">=</span> <span class="ident">origin</span>;
+			<span class="kw">let</span> <span class="ident">o2</span> <span class="op">=</span> <span class="ident">o1</span>.<span class="ident">clone</span>();
+
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bonded_pool</span> <span class="op">=</span> <span class="ident">BondedPool</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">pool_id</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::PoolNotFound</span>)<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="ident">is_pool_root</span> <span class="op">=</span> <span class="op">|</span><span class="op">|</span> -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">sp_runtime::DispatchError</span><span class="op">&gt;</span> {
+				<span class="kw">let</span> <span class="ident">who</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">o1</span>)<span class="question-mark">?</span>;
+				<span class="macro">ensure!</span>(<span class="ident">bonded_pool</span>.<span class="ident">can_update_roles</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>), <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::DoesNotHavePermission</span>);
+				<span class="prelude-val">Ok</span>(())
+			};
+			<span class="kw">let</span> <span class="ident">is_root</span> <span class="op">=</span> <span class="op">|</span><span class="op">|</span> -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">sp_runtime::DispatchError</span><span class="op">&gt;</span> {
+				<span class="ident">ensure_root</span>(<span class="ident">o2</span>)<span class="question-mark">?</span>;
+				<span class="prelude-val">Ok</span>(())
+			};
+
+			<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">is_root</span>().<span class="ident">or_else</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">is_pool_root</span>())<span class="question-mark">?</span>;
+
+			<span class="kw">match</span> <span class="ident">root</span> {
+				<span class="prelude-val">None</span> =&gt; (),
+				<span class="prelude-val">Some</span>(<span class="ident">v</span>) =&gt; <span class="ident">bonded_pool</span>.<span class="ident">roles</span>.<span class="ident">root</span> <span class="op">=</span> <span class="ident">v</span>,
+			};
+			<span class="kw">match</span> <span class="ident">nominator</span> {
+				<span class="prelude-val">None</span> =&gt; (),
+				<span class="prelude-val">Some</span>(<span class="ident">v</span>) =&gt; <span class="ident">bonded_pool</span>.<span class="ident">roles</span>.<span class="ident">nominator</span> <span class="op">=</span> <span class="ident">v</span>,
+			};
+			<span class="kw">match</span> <span class="ident">state_toggler</span> {
+				<span class="prelude-val">None</span> =&gt; (),
+				<span class="prelude-val">Some</span>(<span class="ident">v</span>) =&gt; <span class="ident">bonded_pool</span>.<span class="ident">roles</span>.<span class="ident">state_toggler</span> <span class="op">=</span> <span class="ident">v</span>,
+			};
+
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::RolesUpdated</span> {
+				<span class="ident">root</span>: <span class="ident">bonded_pool</span>.<span class="ident">roles</span>.<span class="ident">root</span>.<span class="ident">clone</span>(),
+				<span class="ident">nominator</span>: <span class="ident">bonded_pool</span>.<span class="ident">roles</span>.<span class="ident">nominator</span>.<span class="ident">clone</span>(),
+				<span class="ident">state_toggler</span>: <span class="ident">bonded_pool</span>.<span class="ident">roles</span>.<span class="ident">state_toggler</span>.<span class="ident">clone</span>(),
+			});
+
+			<span class="ident">bonded_pool</span>.<span class="ident">put</span>();
 			<span class="prelude-val">Ok</span>(())
 		}
 	}

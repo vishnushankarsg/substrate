@@ -100,13 +100,6 @@
 <span id="95">95</span>
 <span id="96">96</span>
 <span id="97">97</span>
-<span id="98">98</span>
-<span id="99">99</span>
-<span id="100">100</span>
-<span id="101">101</span>
-<span id="102">102</span>
-<span id="103">103</span>
-<span id="104">104</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -125,91 +118,84 @@
 <span class="comment">// You should have received a copy of the GNU General Public License</span>
 <span class="comment">// along with this program. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 
-<span class="doccomment">//! Substrate state API.</span>
-
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::state::error::FutureResult</span>;
-<span class="kw">use</span> <span class="ident">jsonrpc_derive::rpc</span>;
-<span class="kw">use</span> <span class="ident">sp_core::storage</span>::{<span class="ident">PrefixedStorageKey</span>, <span class="ident">StorageData</span>, <span class="ident">StorageKey</span>};
-
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::gen_client::Client</span> <span class="kw">as</span> <span class="ident">ChildStateClient</span>;
+<span class="doccomment">//! Substrate child state API</span>
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::state::ReadProof</span>;
+<span class="kw">use</span> <span class="ident">jsonrpsee</span>::{<span class="ident">core::RpcResult</span>, <span class="ident">proc_macros::rpc</span>};
+<span class="kw">use</span> <span class="ident">sp_core::storage</span>::{<span class="ident">PrefixedStorageKey</span>, <span class="ident">StorageData</span>, <span class="ident">StorageKey</span>};
 
 <span class="doccomment">/// Substrate child state API</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Note that all `PrefixedStorageKey` are deserialized</span>
 <span class="doccomment">/// from json and not guaranteed valid.</span>
-<span class="attribute">#[<span class="ident">rpc</span>]</span>
+<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">client</span>, <span class="ident">server</span>)]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ChildStateApi</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span> {
-	<span class="doccomment">/// RPC Metadata</span>
-	<span class="kw">type</span> <span class="ident">Metadata</span>;
-
-	<span class="doccomment">/// DEPRECATED: Please use `childstate_getKeysPaged` with proper paging support.</span>
 	<span class="doccomment">/// Returns the keys with prefix from a child storage, leave empty to get all the keys</span>
-	<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;childstate_getKeys&quot;</span>)]</span>
-	<span class="kw">fn</span> <span class="ident">storage_keys</span>(
+	<span class="attribute">#[<span class="ident">method</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;childstate_getKeys&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">deprecated</span>(<span class="ident">since</span> <span class="op">=</span> <span class="string">&quot;2.0.0&quot;</span>, <span class="ident">note</span> <span class="op">=</span> <span class="string">&quot;Please use `getKeysPaged` with proper paging support&quot;</span>)]</span>
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">storage_keys</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">child_storage_key</span>: <span class="ident">PrefixedStorageKey</span>,
 		<span class="ident">prefix</span>: <span class="ident">StorageKey</span>,
 		<span class="ident">hash</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>,
-	) -&gt; <span class="ident">FutureResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StorageKey</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StorageKey</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Returns the keys with prefix from a child storage with pagination support.</span>
 	<span class="doccomment">/// Up to `count` keys will be returned.</span>
 	<span class="doccomment">/// If `start_key` is passed, return next keys in storage in lexicographic order.</span>
-	<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;childstate_getKeysPaged&quot;</span>, <span class="ident">alias</span>(<span class="string">&quot;childstate_getKeysPagedAt&quot;</span>))]</span>
-	<span class="kw">fn</span> <span class="ident">storage_keys_paged</span>(
+	<span class="attribute">#[<span class="ident">method</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;childstate_getKeysPaged&quot;</span>, <span class="ident">aliases</span> <span class="op">=</span> [<span class="string">&quot;childstate_getKeysPagedAt&quot;</span>]</span>)]
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">storage_keys_paged</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">child_storage_key</span>: <span class="ident">PrefixedStorageKey</span>,
 		<span class="ident">prefix</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StorageKey</span><span class="op">&gt;</span>,
 		<span class="ident">count</span>: <span class="ident">u32</span>,
 		<span class="ident">start_key</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StorageKey</span><span class="op">&gt;</span>,
 		<span class="ident">hash</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>,
-	) -&gt; <span class="ident">FutureResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StorageKey</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StorageKey</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Returns a child storage entry at a specific block&#39;s state.</span>
-	<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;childstate_getStorage&quot;</span>)]</span>
-	<span class="kw">fn</span> <span class="ident">storage</span>(
+	<span class="attribute">#[<span class="ident">method</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;childstate_getStorage&quot;</span>)]</span>
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">storage</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">child_storage_key</span>: <span class="ident">PrefixedStorageKey</span>,
 		<span class="ident">key</span>: <span class="ident">StorageKey</span>,
 		<span class="ident">hash</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>,
-	) -&gt; <span class="ident">FutureResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StorageData</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StorageData</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Returns child storage entries for multiple keys at a specific block&#39;s state.</span>
-	<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;childstate_getStorageEntries&quot;</span>)]</span>
-	<span class="kw">fn</span> <span class="ident">storage_entries</span>(
+	<span class="attribute">#[<span class="ident">method</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;childstate_getStorageEntries&quot;</span>)]</span>
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">storage_entries</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">child_storage_key</span>: <span class="ident">PrefixedStorageKey</span>,
 		<span class="ident">keys</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StorageKey</span><span class="op">&gt;</span>,
 		<span class="ident">hash</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>,
-	) -&gt; <span class="ident">FutureResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StorageData</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StorageData</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Returns the hash of a child storage entry at a block&#39;s state.</span>
-	<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;childstate_getStorageHash&quot;</span>)]</span>
-	<span class="kw">fn</span> <span class="ident">storage_hash</span>(
+	<span class="attribute">#[<span class="ident">method</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;childstate_getStorageHash&quot;</span>)]</span>
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">storage_hash</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">child_storage_key</span>: <span class="ident">PrefixedStorageKey</span>,
 		<span class="ident">key</span>: <span class="ident">StorageKey</span>,
 		<span class="ident">hash</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>,
-	) -&gt; <span class="ident">FutureResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Returns the size of a child storage entry at a block&#39;s state.</span>
-	<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;childstate_getStorageSize&quot;</span>)]</span>
-	<span class="kw">fn</span> <span class="ident">storage_size</span>(
+	<span class="attribute">#[<span class="ident">method</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;childstate_getStorageSize&quot;</span>)]</span>
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">storage_size</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">child_storage_key</span>: <span class="ident">PrefixedStorageKey</span>,
 		<span class="ident">key</span>: <span class="ident">StorageKey</span>,
 		<span class="ident">hash</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>,
-	) -&gt; <span class="ident">FutureResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Returns proof of storage for child key entries at a specific block&#39;s state.</span>
-	<span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;state_getChildReadProof&quot;</span>)]</span>
-	<span class="kw">fn</span> <span class="ident">read_child_proof</span>(
+	<span class="attribute">#[<span class="ident">method</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;state_getChildReadProof&quot;</span>)]</span>
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">read_child_proof</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">child_storage_key</span>: <span class="ident">PrefixedStorageKey</span>,
 		<span class="ident">keys</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StorageKey</span><span class="op">&gt;</span>,
 		<span class="ident">hash</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>,
-	) -&gt; <span class="ident">FutureResult</span><span class="op">&lt;</span><span class="ident">ReadProof</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+	) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">ReadProof</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="sc_rpc_api" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (e745b4ddb 2022-04-07)" ></div>
