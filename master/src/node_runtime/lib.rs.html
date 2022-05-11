@@ -2042,6 +2042,25 @@
 <span id="2037">2037</span>
 <span id="2038">2038</span>
 <span id="2039">2039</span>
+<span id="2040">2040</span>
+<span id="2041">2041</span>
+<span id="2042">2042</span>
+<span id="2043">2043</span>
+<span id="2044">2044</span>
+<span id="2045">2045</span>
+<span id="2046">2046</span>
+<span id="2047">2047</span>
+<span id="2048">2048</span>
+<span id="2049">2049</span>
+<span id="2050">2050</span>
+<span id="2051">2051</span>
+<span id="2052">2052</span>
+<span id="2053">2053</span>
+<span id="2054">2054</span>
+<span id="2055">2055</span>
+<span id="2056">2056</span>
+<span id="2057">2057</span>
+<span id="2058">2058</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -2067,7 +2086,9 @@
 <span class="attribute">#![<span class="ident">recursion_limit</span> <span class="op">=</span> <span class="string">&quot;256&quot;</span>]</span>
 
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">MaxEncodedLen</span>};
-<span class="kw">use</span> <span class="ident">frame_election_provider_support</span>::{<span class="ident">onchain</span>, <span class="ident">ExtendedBalance</span>, <span class="ident">SequentialPhragmen</span>, <span class="ident">VoteWeight</span>};
+<span class="kw">use</span> <span class="ident">frame_election_provider_support</span>::{
+	<span class="ident">onchain</span>, <span class="ident">ElectionDataProvider</span>, <span class="ident">ExtendedBalance</span>, <span class="ident">SequentialPhragmen</span>, <span class="ident">VoteWeight</span>,
+};
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">construct_runtime</span>,
 	<span class="ident">pallet_prelude::Get</span>,
@@ -2704,6 +2725,25 @@
 	<span class="kw">type</span> <span class="ident">TargetsBound</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">2_000</span><span class="op">&gt;</span>;
 }
 
+<span class="kw">impl</span> <span class="ident">pallet_election_provider_multi_phase::MinerConfig</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
+	<span class="kw">type</span> <span class="ident">AccountId</span> <span class="op">=</span> <span class="ident">AccountId</span>;
+	<span class="kw">type</span> <span class="ident">MaxLength</span> <span class="op">=</span> <span class="ident">MinerMaxLength</span>;
+	<span class="kw">type</span> <span class="ident">MaxWeight</span> <span class="op">=</span> <span class="ident">MinerMaxWeight</span>;
+	<span class="kw">type</span> <span class="ident">Solution</span> <span class="op">=</span> <span class="ident">NposSolution16</span>;
+	<span class="kw">type</span> <span class="ident">MaxVotesPerVoter</span> <span class="op">=</span>
+	<span class="op">&lt;</span><span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">pallet_election_provider_multi_phase::Config</span><span class="op">&gt;</span><span class="ident">::DataProvider</span> <span class="kw">as</span> <span class="ident">ElectionDataProvider</span><span class="op">&gt;</span><span class="ident">::MaxVotesPerVoter</span>;
+
+	<span class="comment">// The unsigned submissions have to respect the weight of the submit_unsigned call, thus their</span>
+	<span class="comment">// weight estimate function is wired to this call&#39;s weight.</span>
+	<span class="kw">fn</span> <span class="ident">solution_weight</span>(<span class="ident">v</span>: <span class="ident">u32</span>, <span class="ident">t</span>: <span class="ident">u32</span>, <span class="ident">a</span>: <span class="ident">u32</span>, <span class="ident">d</span>: <span class="ident">u32</span>) -&gt; <span class="ident">Weight</span> {
+		<span class="op">&lt;</span>
+			<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">pallet_election_provider_multi_phase::Config</span><span class="op">&gt;</span><span class="ident">::WeightInfo</span>
+			<span class="kw">as</span>
+			<span class="ident">pallet_election_provider_multi_phase::WeightInfo</span>
+		<span class="op">&gt;</span><span class="ident">::submit_unsigned</span>(<span class="ident">v</span>, <span class="ident">t</span>, <span class="ident">a</span>, <span class="ident">d</span>)
+	}
+}
+
 <span class="kw">impl</span> <span class="ident">pallet_election_provider_multi_phase::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
 	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
 	<span class="kw">type</span> <span class="ident">Currency</span> <span class="op">=</span> <span class="ident">Balances</span>;
@@ -2713,9 +2753,8 @@
 	<span class="kw">type</span> <span class="ident">BetterUnsignedThreshold</span> <span class="op">=</span> <span class="ident">BetterUnsignedThreshold</span>;
 	<span class="kw">type</span> <span class="ident">BetterSignedThreshold</span> <span class="op">=</span> ();
 	<span class="kw">type</span> <span class="ident">OffchainRepeat</span> <span class="op">=</span> <span class="ident">OffchainRepeat</span>;
-	<span class="kw">type</span> <span class="ident">MinerMaxWeight</span> <span class="op">=</span> <span class="ident">MinerMaxWeight</span>;
-	<span class="kw">type</span> <span class="ident">MinerMaxLength</span> <span class="op">=</span> <span class="ident">MinerMaxLength</span>;
 	<span class="kw">type</span> <span class="ident">MinerTxPriority</span> <span class="op">=</span> <span class="ident">MultiPhaseUnsignedPriority</span>;
+	<span class="kw">type</span> <span class="ident">MinerConfig</span> <span class="op">=</span> <span class="self">Self</span>;
 	<span class="kw">type</span> <span class="ident">SignedMaxSubmissions</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">10</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">SignedRewardBase</span> <span class="op">=</span> <span class="ident">SignedRewardBase</span>;
 	<span class="kw">type</span> <span class="ident">SignedDepositBase</span> <span class="op">=</span> <span class="ident">SignedDepositBase</span>;
@@ -2726,7 +2765,6 @@
 	<span class="kw">type</span> <span class="ident">SlashHandler</span> <span class="op">=</span> (); <span class="comment">// burn slashes</span>
 	<span class="kw">type</span> <span class="ident">RewardHandler</span> <span class="op">=</span> (); <span class="comment">// nothing to do upon rewards</span>
 	<span class="kw">type</span> <span class="ident">DataProvider</span> <span class="op">=</span> <span class="ident">Staking</span>;
-	<span class="kw">type</span> <span class="ident">Solution</span> <span class="op">=</span> <span class="ident">NposSolution16</span>;
 	<span class="kw">type</span> <span class="ident">Fallback</span> <span class="op">=</span> <span class="ident">onchain::BoundedExecution</span><span class="op">&lt;</span><span class="ident">OnChainSeqPhragmen</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">GovernanceFallback</span> <span class="op">=</span> <span class="ident">onchain::BoundedExecution</span><span class="op">&lt;</span><span class="ident">OnChainSeqPhragmen</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">Solver</span> <span class="op">=</span> <span class="ident">SequentialPhragmen</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">SolutionAccuracyOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">OffchainRandomBalancing</span><span class="op">&gt;</span>;
@@ -4061,7 +4099,7 @@
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">perbill_as_onchain_accuracy</span>() {
 		<span class="kw">type</span> <span class="ident">OnChainAccuracy</span> <span class="op">=</span>
-			<span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Runtime</span> <span class="kw">as</span> <span class="ident">pallet_election_provider_multi_phase::Config</span><span class="op">&gt;</span><span class="ident">::Solution</span> <span class="kw">as</span> <span class="ident">NposSolution</span><span class="op">&gt;</span><span class="ident">::Accuracy</span>;
+			<span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Runtime</span> <span class="kw">as</span> <span class="ident">pallet_election_provider_multi_phase::MinerConfig</span><span class="op">&gt;</span><span class="ident">::Solution</span> <span class="kw">as</span> <span class="ident">NposSolution</span><span class="op">&gt;</span><span class="ident">::Accuracy</span>;
 		<span class="kw">let</span> <span class="ident">maximum_chain_accuracy</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">UpperOf</span><span class="op">&lt;</span><span class="ident">OnChainAccuracy</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">MaxNominations::get</span>())
 			.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="op">&lt;</span><span class="ident">UpperOf</span><span class="op">&lt;</span><span class="ident">OnChainAccuracy</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="ident">OnChainAccuracy::one</span>().<span class="ident">deconstruct</span>()))
 			.<span class="ident">collect</span>();

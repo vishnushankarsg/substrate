@@ -1076,6 +1076,8 @@
 <span id="1071">1071</span>
 <span id="1072">1072</span>
 <span id="1073">1073</span>
+<span id="1074">1074</span>
+<span id="1075">1075</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -1096,9 +1098,9 @@
 <span class="doccomment">//! The signed phase implementation.</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-	<span class="ident">Config</span>, <span class="ident">ElectionCompute</span>, <span class="ident">Pallet</span>, <span class="ident">QueuedSolution</span>, <span class="ident">RawSolution</span>, <span class="ident">ReadySolution</span>,
-	<span class="ident">SignedSubmissionIndices</span>, <span class="ident">SignedSubmissionNextIndex</span>, <span class="ident">SignedSubmissionsMap</span>, <span class="ident">SolutionOf</span>,
-	<span class="ident">SolutionOrSnapshotSize</span>, <span class="ident">Weight</span>, <span class="ident">WeightInfo</span>,
+	<span class="ident">unsigned::MinerConfig</span>, <span class="ident">Config</span>, <span class="ident">ElectionCompute</span>, <span class="ident">Pallet</span>, <span class="ident">QueuedSolution</span>, <span class="ident">RawSolution</span>,
+	<span class="ident">ReadySolution</span>, <span class="ident">SignedSubmissionIndices</span>, <span class="ident">SignedSubmissionNextIndex</span>, <span class="ident">SignedSubmissionsMap</span>,
+	<span class="ident">SolutionOf</span>, <span class="ident">SolutionOrSnapshotSize</span>, <span class="ident">Weight</span>, <span class="ident">WeightInfo</span>,
 };
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">HasCompact</span>};
 <span class="kw">use</span> <span class="ident">frame_election_provider_support::NposSolution</span>;
@@ -1171,8 +1173,11 @@
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">NegativeImbalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::Currency</span> <span class="kw">as</span> <span class="ident">Currency</span><span class="op">&lt;</span>
 	<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span>,
 <span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::NegativeImbalance</span>;
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">SignedSubmissionOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span>
-	<span class="ident">SignedSubmission</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">SolutionOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">SignedSubmissionOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">SignedSubmission</span><span class="op">&lt;</span>
+	<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span>,
+	<span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+	<span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident"><span class="kw">crate</span>::Config</span><span class="op">&gt;</span><span class="ident">::MinerConfig</span> <span class="kw">as</span> <span class="ident">MinerConfig</span><span class="op">&gt;</span><span class="ident">::Solution</span>,
+<span class="op">&gt;</span>;
 
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">SubmissionIndicesOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span>
 	<span class="ident">BoundedBTreeMap</span><span class="op">&lt;</span><span class="ident">ElectionScore</span>, <span class="ident">u32</span>, <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::SignedMaxSubmissions</span><span class="op">&gt;</span>;
@@ -1560,12 +1565,12 @@
 		<span class="ident">T::SlashHandler::on_unbalanced</span>(<span class="ident">negative_imbalance</span>);
 	}
 
-	<span class="doccomment">/// The feasibility weight of the given raw solution.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">feasibility_weight_of</span>(
-		<span class="ident">raw_solution</span>: <span class="kw-2">&amp;</span><span class="ident">RawSolution</span><span class="op">&lt;</span><span class="ident">SolutionOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="doccomment">/// The weight of the given raw solution.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">solution_weight_of</span>(
+		<span class="ident">raw_solution</span>: <span class="kw-2">&amp;</span><span class="ident">RawSolution</span><span class="op">&lt;</span><span class="ident">SolutionOf</span><span class="op">&lt;</span><span class="ident">T::MinerConfig</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 		<span class="ident">size</span>: <span class="ident">SolutionOrSnapshotSize</span>,
 	) -&gt; <span class="ident">Weight</span> {
-		<span class="ident">T::WeightInfo::feasibility_check</span>(
+		<span class="ident">T::MinerConfig::solution_weight</span>(
 			<span class="ident">size</span>.<span class="ident">voters</span>,
 			<span class="ident">size</span>.<span class="ident">targets</span>,
 			<span class="ident">raw_solution</span>.<span class="ident">solution</span>.<span class="ident">voter_count</span>() <span class="kw">as</span> <span class="ident">u32</span>,
@@ -1581,12 +1586,12 @@
 	<span class="doccomment">/// 2. a per-byte deposit, for renting the state usage.</span>
 	<span class="doccomment">/// 3. a per-weight deposit, for the potential weight usage in an upcoming on_initialize</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">deposit_for</span>(
-		<span class="ident">raw_solution</span>: <span class="kw-2">&amp;</span><span class="ident">RawSolution</span><span class="op">&lt;</span><span class="ident">SolutionOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+		<span class="ident">raw_solution</span>: <span class="kw-2">&amp;</span><span class="ident">RawSolution</span><span class="op">&lt;</span><span class="ident">SolutionOf</span><span class="op">&lt;</span><span class="ident">T::MinerConfig</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 		<span class="ident">size</span>: <span class="ident">SolutionOrSnapshotSize</span>,
 	) -&gt; <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">encoded_len</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="ident">raw_solution</span>.<span class="ident">encoded_size</span>().<span class="ident">saturated_into</span>();
 		<span class="kw">let</span> <span class="ident">encoded_len</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">encoded_len</span>.<span class="ident">into</span>();
-		<span class="kw">let</span> <span class="ident">feasibility_weight</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::feasibility_weight_of</span>(<span class="ident">raw_solution</span>, <span class="ident">size</span>);
+		<span class="kw">let</span> <span class="ident">feasibility_weight</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::solution_weight_of</span>(<span class="ident">raw_solution</span>, <span class="ident">size</span>);
 
 		<span class="kw">let</span> <span class="ident">len_deposit</span> <span class="op">=</span> <span class="ident">T::SignedDepositByte::get</span>().<span class="ident">saturating_mul</span>(<span class="ident">encoded_len</span>);
 		<span class="kw">let</span> <span class="ident">weight_deposit</span> <span class="op">=</span>
@@ -1603,8 +1608,8 @@
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 	<span class="kw">use</span> <span class="kw">crate</span>::{
 		<span class="ident">mock</span>::{
-			<span class="ident">balances</span>, <span class="ident">raw_solution</span>, <span class="ident">roll_to</span>, <span class="ident">Balances</span>, <span class="ident">ExtBuilder</span>, <span class="ident">MultiPhase</span>, <span class="ident">Origin</span>, <span class="ident">Runtime</span>,
-			<span class="ident">SignedMaxRefunds</span>, <span class="ident">SignedMaxSubmissions</span>, <span class="ident">SignedMaxWeight</span>,
+			<span class="ident">balances</span>, <span class="ident">raw_solution</span>, <span class="ident">roll_to</span>, <span class="ident">Balances</span>, <span class="ident">ExtBuilder</span>, <span class="ident">MockedWeightInfo</span>, <span class="ident">MultiPhase</span>,
+			<span class="ident">Origin</span>, <span class="ident">Runtime</span>, <span class="ident">SignedMaxRefunds</span>, <span class="ident">SignedMaxSubmissions</span>, <span class="ident">SignedMaxWeight</span>,
 		},
 		<span class="ident">Error</span>, <span class="ident">Perbill</span>, <span class="ident">Phase</span>,
 	};
@@ -2033,14 +2038,13 @@
 	<span class="kw">fn</span> <span class="ident">cannot_consume_too_much_future_weight</span>() {
 		<span class="ident">ExtBuilder::default</span>()
 			.<span class="ident">signed_weight</span>(<span class="number">40</span>)
-			.<span class="ident">mock_weight_info</span>(<span class="bool-val">true</span>)
+			.<span class="ident">mock_weight_info</span>(<span class="ident">MockedWeightInfo::Basic</span>)
 			.<span class="ident">build_and_execute</span>(<span class="op">|</span><span class="op">|</span> {
 				<span class="ident">roll_to</span>(<span class="number">15</span>);
 				<span class="macro">assert!</span>(<span class="ident">MultiPhase::current_phase</span>().<span class="ident">is_signed</span>());
 
-				<span class="kw">let</span> (<span class="ident">raw</span>, <span class="ident">witness</span>) <span class="op">=</span>
-					<span class="ident">MultiPhase::mine_solution</span>::<span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Runtime</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::Solver</span><span class="op">&gt;</span>().<span class="ident">unwrap</span>();
-				<span class="kw">let</span> <span class="ident">solution_weight</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Runtime</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::WeightInfo::feasibility_check</span>(
+				<span class="kw">let</span> (<span class="ident">raw</span>, <span class="ident">witness</span>) <span class="op">=</span> <span class="ident">MultiPhase::mine_solution</span>().<span class="ident">unwrap</span>();
+				<span class="kw">let</span> <span class="ident">solution_weight</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Runtime</span> <span class="kw">as</span> <span class="ident">MinerConfig</span><span class="op">&gt;</span><span class="ident">::solution_weight</span>(
 					<span class="ident">witness</span>.<span class="ident">voters</span>,
 					<span class="ident">witness</span>.<span class="ident">targets</span>,
 					<span class="ident">raw</span>.<span class="ident">solution</span>.<span class="ident">voter_count</span>() <span class="kw">as</span> <span class="ident">u32</span>,
