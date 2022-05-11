@@ -215,6 +215,7 @@
 <span id="210">210</span>
 <span id="211">211</span>
 <span id="212">212</span>
+<span id="213">213</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -320,6 +321,7 @@
 		.<span class="ident">max_request_body_size</span>(<span class="ident">max_payload_in</span> <span class="kw">as</span> <span class="ident">u32</span>)
 		.<span class="ident">max_response_body_size</span>(<span class="ident">max_payload_out</span> <span class="kw">as</span> <span class="ident">u32</span>)
 		.<span class="ident">set_access_control</span>(<span class="ident">acl</span>.<span class="ident">build</span>())
+		.<span class="ident">health_api</span>(<span class="string">&quot;/health&quot;</span>, <span class="string">&quot;system_health&quot;</span>)
 		.<span class="ident">custom_tokio_runtime</span>(<span class="ident">rt</span>);
 
 	<span class="kw">let</span> <span class="ident">rpc_api</span> <span class="op">=</span> <span class="ident">build_rpc_api</span>(<span class="ident">rpc_api</span>);
