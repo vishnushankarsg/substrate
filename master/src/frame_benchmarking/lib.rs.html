@@ -1872,6 +1872,12 @@
 <span id="1867">1867</span>
 <span id="1868">1868</span>
 <span id="1869">1869</span>
+<span id="1870">1870</span>
+<span id="1871">1871</span>
+<span id="1872">1872</span>
+<span id="1873">1873</span>
+<span id="1874">1874</span>
+<span id="1875">1875</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -2895,6 +2901,12 @@
 						<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::whitelisted_caller</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>()
 					);
 				<span class="ident">whitelist</span>.<span class="ident">push</span>(<span class="ident">whitelisted_caller_key</span>.<span class="ident">into</span>());
+				<span class="comment">// Whitelist the transactional layer.</span>
+				<span class="kw">let</span> <span class="ident">transactional_layer_key</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::TrackedStorageKey::new</span>(
+					<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::frame_support::storage::transactional::TRANSACTION_LEVEL_KEY</span>.<span class="ident">into</span>()
+				);
+				<span class="ident">whitelist</span>.<span class="ident">push</span>(<span class="ident">transactional_layer_key</span>);
+
 				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::benchmarking::set_whitelist</span>(<span class="ident">whitelist</span>);
 
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">results</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::Vec</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::BenchmarkResult</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::Vec::new</span>();
