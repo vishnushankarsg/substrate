@@ -7,7 +7,7 @@
     <h1 class="fqn"><span class="in-band">Macro <a href="index.html">rustix</a>::<wbr><a class="macro" href="#">zstr</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/rustix/zstr.rs.html#23-51">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><div class="docblock item-decl"><div class="example-wrap"><pre class="rust macro"><code><span class="macro">macro_rules!</span> <span class="ident">zstr</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">str</span>:<span class="ident">literal</span>) =&gt; { ... };
 }</code></pre></div>
-</div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>A macro for <a href="ffi/struct.ZStr.html"><code>ZStr</code></a> literals.</p>
+</div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>A macro for <a href="ffi/type.ZStr.html"><code>ZStr</code></a> literals.</p>
 <p>This can make passing string literals to rustix APIs more efficient, since
 most underlying system calls with string arguments expect NUL-terminated
 strings, and passing strings to rustix as <code>ZStr</code>s means that rustix doesn’t
@@ -17,5 +17,5 @@ need to copy them into a separate buffer to NUL-terminate them.</p>
 <span class="kw">use</span> <span class="ident">rustix::zstr</span>;
 
 <span class="kw">let</span> <span class="ident">metadata</span> <span class="op">=</span> <span class="ident">statat</span>(<span class="kw-2">&amp;</span><span class="ident">cwd</span>(), <span class="macro">zstr!</span>(<span class="string">&quot;test.txt&quot;</span>), <span class="ident">AtFlags::empty</span>())<span class="question-mark">?</span>;</code></pre></div>
-</div></details></section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="rustix" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (e745b4ddb 2022-04-07)" ></div>
+</div></details></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="rustix" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (6dd68402c 2022-05-11)" ></div>
 </body></html>

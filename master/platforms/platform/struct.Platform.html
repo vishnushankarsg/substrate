@@ -27,7 +27,126 @@ this value will be <code>None</code>.</p>
 <li><code>Tier::Two</code>: guaranteed to build</li>
 <li><code>Tier::Three</code>: unofficially supported with no guarantees</li>
 </ul>
-</div><h2 id="implementations" class="small-section-header">Implementations<a href="#implementations" class="anchor"></a></h2><div id="implementations-list"><details class="rustdoc-toggle implementors-toggle" open><summary><section id="impl" class="impl has-srclink"><span class="rightside"><a class="srclink" href="../../src/platforms/platform.rs.html#50-190">source</a></span><a href="#impl" class="anchor"></a><h3 class="code-header in-band">impl <a class="struct" href="struct.Platform.html" title="struct platforms::platform::Platform">Platform</a></h3></section></summary><div class="impl-items"><details class="rustdoc-toggle" open><summary><section id="associatedconstant.ALL" class="associatedconstant has-srclink"><span class="rightside"><a class="srclink" href="../../src/platforms/platform.rs.html#52-171">source</a></span><a href="#associatedconstant.ALL" class="anchor"></a><h4 class="code-header">pub const <a href="#associatedconstant.ALL" class="constant">ALL</a>: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">&amp;'static [</a><a class="struct" href="struct.Platform.html" title="struct platforms::platform::Platform">Platform</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">]</a></h4></section></summary><div class="docblock"><p>All valid Rust platforms usable from the mainline compiler</p>
+</div><h2 id="implementations" class="small-section-header">Implementations<a href="#implementations" class="anchor"></a></h2><div id="implementations-list"><details class="rustdoc-toggle implementors-toggle" open><summary><section id="impl" class="impl has-srclink"><span class="rightside"><a class="srclink" href="../../src/platforms/platform.rs.html#50-190">source</a></span><a href="#impl" class="anchor"></a><h3 class="code-header in-band">impl <a class="struct" href="struct.Platform.html" title="struct platforms::platform::Platform">Platform</a></h3></section></summary><div class="impl-items"><details class="rustdoc-toggle" open><summary><section id="associatedconstant.ALL" class="associatedconstant has-srclink"><span class="rightside"><a class="srclink" href="../../src/platforms/platform.rs.html#52-171">source</a></span><a href="#associatedconstant.ALL" class="anchor"></a><h4 class="code-header">pub const <a href="#associatedconstant.ALL" class="constant">ALL</a>: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">&amp;'static [</a><a class="struct" href="struct.Platform.html" title="struct platforms::platform::Platform">Platform</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">]</a> = &[
+        // Tier 1
+        AARCH64_UNKNOWN_LINUX_GNU,
+        I686_PC_WINDOWS_GNU,
+        I686_PC_WINDOWS_MSVC,
+        I686_UNKNOWN_LINUX_GNU,
+        X86_64_APPLE_DARWIN,
+        X86_64_PC_WINDOWS_GNU,
+        X86_64_PC_WINDOWS_MSVC,
+        X86_64_UNKNOWN_LINUX_GNU,
+        // Tier 2
+        AARCH64_APPLE_DARWIN,
+        AARCH64_APPLE_IOS,
+        AARCH64_PC_WINDOWS_MSVC,
+        AARCH64_LINUX_ANDROID,
+        AARCH64_FUCHSIA,
+        AARCH64_UNKNOWN_LINUX_MUSL,
+        AARCH64_UNKNOWN_NONE,
+        AARCH64_UNKNOWN_NONE_SOFTFLOAT,
+        ARM_LINUX_ANDROIDEABI,
+        ARM_UNKNOWN_LINUX_GNUEABI,
+        ARM_UNKNOWN_LINUX_GNUEABIHF,
+        ARM_UNKNOWN_LINUX_MUSLEABI,
+        ARM_UNKNOWN_LINUX_MUSLEABIHF,
+        ARMV5TE_UNKNOWN_LINUX_GNUEABI,
+        ARMV5TE_UNKNOWN_LINUX_MUSLEABI,
+        ARMV7_LINUX_ANDROIDEABI,
+        ARMV7_UNKNOWN_LINUX_GNUEABI,
+        ARMV7_UNKNOWN_LINUX_GNUEABIHF,
+        ARMV7_UNKNOWN_LINUX_MUSLEABI,
+        ARMV7_UNKNOWN_LINUX_MUSLEABIHF,
+        ARMEBV7R_NONE_EABI,
+        ARMEBV7R_NONE_EABIHF,
+        ASMJS_UNKNOWN_EMSCRIPTEN,
+        I586_PC_WINDOWS_MSVC,
+        I586_UNKNOWN_LINUX_GNU,
+        I586_UNKNOWN_LINUX_MUSL,
+        I686_LINUX_ANDROID,
+        I686_UNKNOWN_FREEBSD,
+        I686_UNKNOWN_LINUX_MUSL,
+        MIPS_UNKNOWN_LINUX_GNU,
+        MIPS_UNKNOWN_LINUX_MUSL,
+        MIPS64_UNKNOWN_LINUX_GNUABI64,
+        MIPS64_UNKNOWN_LINUX_MUSLABI64,
+        MIPS64EL_UNKNOWN_LINUX_GNUABI64,
+        MIPS64EL_UNKNOWN_LINUX_MUSLABI64,
+        MIPSEL_UNKNOWN_LINUX_GNU,
+        MIPSEL_UNKNOWN_LINUX_MUSL,
+        NVPTX64_NVIDIA_CUDA,
+        POWERPC_UNKNOWN_LINUX_GNU,
+        POWERPC64_UNKNOWN_LINUX_GNU,
+        POWERPC64LE_UNKNOWN_LINUX_GNU,
+        S390X_UNKNOWN_LINUX_GNU,
+        SPARC64_UNKNOWN_LINUX_GNU,
+        SPARC64_SUN_SOLARIS,
+        THUMBV6M_NONE_EABI,
+        THUMBV7EM_NONE_EABI,
+        THUMBV7EM_NONE_EABIHF,
+        THUMBV7M_NONE_EABI,
+        THUMBV7NEON_LINUX_ANDROIDEABI,
+        THUMBV7NEON_UNKNOWN_LINUX_GNUEABIHF,
+        WASM_UNKNOWN_UNKNOWN,
+        WASM_UNKNOWN_EMSCRIPTEN,
+        WASM_WASI,
+        X86_64_APPLE_IOS,
+        X86_64_FORTANIX_UNKNOWN_SGX,
+        X86_64_LINUX_ANDROID,
+        X86_64_PC_SOLARIS,
+        X86_64_UNKNOWN_FREEBSD,
+        X86_64_FUCHSIA,
+        X86_64_UNKNOWN_ILLUMOS,
+        X86_64_UNKNOWN_LINUX_GNUX32,
+        X86_64_UNKNOWN_LINUX_MUSL,
+        X86_64_UNKNOWN_NETBSD,
+        X86_64_UNKNOWN_REDOX,
+        // Tier 2.5
+        POWERPC_UNKNOWN_LINUX_GNUSPE,
+        SPARC_UNKNOWN_LINUX_GNU,
+        // Tier 3
+        AARCH64_APPLE_IOS_MACABI,
+        AARCH64_APPLE_IOS_SIM,
+        AARCH64_APPLE_TVOS,
+        AARCH64_UNKNOWN_FREEBSD,
+        AARCH64_UNKNOWN_HERMIT,
+        AARCH64_UNKNOWN_LINUX_GNU_ILP32,
+        AARCH64_UNKNOWN_NETBSD,
+        AARCH64_UNKNOWN_OPENBSD,
+        AARCH64_UNKNOWN_REDOX,
+        AARCH64_UWP_WINDOWS_MSVC,
+        AARCH64_WRS_VXWORKS,
+        AARCH64_BE_UNKNOWN_LINUX_GNU_ILP32,
+        AARCH64_BE_UNKNOWN_LINUX_GNU,
+        ARMV4T_UNKNOWN_LINUX_GNUEABI,
+        ARMV5T_UNKNOWN_LINUX_UCLIBCEABI,
+        ARMV6_UNKNOWN_FREEBSD,
+        ARMV6_UNKNOWN_NETBSD_EABIHF,
+        ARMV7_APPLE_IOS,
+        ARMV7_UNKNOWN_FREEBSD,
+        ARMV7_UNKNOWN_NETBSD_EABIHF,
+        ARMV7_WRS_VXWORKS_EABIHF,
+        ARMV7A_NONE_EABIHF,
+        ARMV7S_APPLE_IOS,
+        I386_APPLE_IOS,
+        I686_APPLE_DARWIN,
+        I686_UNKNOWN_HAIKU,
+        I686_UNKNOWN_NETBSD,
+        I686_UNKNOWN_OPENBSD,
+        MIPS_UNKNOWN_LINUX_UCLIBC,
+        MIPSEL_UNKNOWN_LINUX_UCLIBC,
+        MSP430_NONE_ELF,
+        POWERPC_UNKNOWN_LINUX_MUSL,
+        POWERPC64_UNKNOWN_LINUX_MUSL,
+        POWERPC64LE_UNKNOWN_LINUX_MUSL,
+        S390X_UNKNOWN_LINUX_MUSL,
+        SPARC64_UNKNOWN_NETBSD,
+        X86_64_SUN_SOLARIS,
+        X86_64_UNKNOWN_DRAGONFLY,
+        X86_64_UNKNOWN_HAIKU,
+        X86_64_UNKNOWN_OPENBSD,
+    ]</h4></section></summary><div class="docblock"><p>All valid Rust platforms usable from the mainline compiler</p>
 </div></details><details class="rustdoc-toggle method-toggle" open><summary><section id="method.find" class="method has-srclink"><span class="rightside"><a class="srclink" href="../../src/platforms/platform.rs.html#174-178">source</a></span><a href="#method.find" class="anchor"></a><h4 class="code-header">pub fn <a href="#method.find" class="fnname">find</a>(target_triple: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;&amp;'static <a class="struct" href="struct.Platform.html" title="struct platforms::platform::Platform">Platform</a>&gt;</h4></section></summary><div class="docblock"><p>Find a Rust platform by its “target triple”, e.g. <code>i686-apple-darwin</code></p>
 </div></details><details class="rustdoc-toggle method-toggle" open><summary><section id="method.guess_current" class="method has-srclink"><span class="rightside"><a class="srclink" href="../../src/platforms/platform.rs.html#181-189">source</a></span><a href="#method.guess_current" class="anchor"></a><h4 class="code-header">pub fn <a href="#method.guess_current" class="fnname">guess_current</a>() -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;&amp;'static <a class="struct" href="struct.Platform.html" title="struct platforms::platform::Platform">Platform</a>&gt;</h4></section></summary><div class="docblock"><p>Attempt to guess the current <code>Platform</code>. May give inaccurate results.</p>
 </div></details></div></details></div><h2 id="trait-implementations" class="small-section-header">Trait Implementations<a href="#trait-implementations" class="anchor"></a></h2><div id="trait-implementations-list"><details class="rustdoc-toggle implementors-toggle" open><summary><section id="impl-Clone" class="impl has-srclink"><span class="rightside"><a class="srclink" href="../../src/platforms/platform.rs.html#22">source</a></span><a href="#impl-Clone" class="anchor"></a><h3 class="code-header in-band">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="struct" href="struct.Platform.html" title="struct platforms::platform::Platform">Platform</a></h3></section></summary><div class="impl-items"><details class="rustdoc-toggle method-toggle" open><summary><section id="method.clone" class="method trait-impl has-srclink"><span class="rightside"><a class="srclink" href="../../src/platforms/platform.rs.html#22">source</a></span><a href="#method.clone" class="anchor"></a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone" class="fnname">clone</a>(&amp;self) -&gt; <a class="struct" href="struct.Platform.html" title="struct platforms::platform::Platform">Platform</a></h4></section></summary><div class='docblock'><p>Returns a copy of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></p>
@@ -57,13 +176,13 @@ operator. <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.h
 </div></details></div></details><details class="rustdoc-toggle implementors-toggle"><summary><section id="impl-Into%3CU%3E" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#541-552">source</a></span><a href="#impl-Into%3CU%3E" class="anchor"></a><h3 class="code-header in-band">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;U&gt; for T <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt;,&nbsp;</span></h3></section></summary><div class="impl-items"><details class="rustdoc-toggle method-toggle" open><summary><section id="method.into" class="method trait-impl has-srclink"><span class="rightside"><span class="since" title="const unstable">const: <a href="https://github.com/rust-lang/rust/issues/88674" title="Tracking issue for const_convert">unstable</a></span> · <a class="srclink" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#549">source</a></span><a href="#method.into" class="anchor"></a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html#tymethod.into" class="fnname">into</a>(self) -&gt; U</h4></section></summary><div class="docblock"><p>Calls <code>U::from(self)</code>.</p>
 <p>That is, this conversion is whatever the implementation of
 <code><a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="From">From</a>&lt;T&gt; for U</code> chooses to do.</p>
-</div></details></div></details><details class="rustdoc-toggle implementors-toggle"><summary><section id="impl-ToOwned" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/alloc/borrow.rs.html#84-96">source</a></span><a href="#impl-ToOwned" class="anchor"></a><h3 class="code-header in-band">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html" title="trait alloc::borrow::ToOwned">ToOwned</a> for T <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,&nbsp;</span></h3></section></summary><div class="impl-items"><details class="rustdoc-toggle" open><summary><section id="associatedtype.Owned" class="type trait-impl has-srclink"><a href="#associatedtype.Owned" class="anchor"></a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#associatedtype.Owned" class="associatedtype">Owned</a> = T</h4></section></summary><div class='docblock'><p>The resulting type after obtaining ownership.</p>
+</div></details></div></details><details class="rustdoc-toggle implementors-toggle"><summary><section id="impl-ToOwned" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/alloc/borrow.rs.html#84-96">source</a></span><a href="#impl-ToOwned" class="anchor"></a><h3 class="code-header in-band">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html" title="trait alloc::borrow::ToOwned">ToOwned</a> for T <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,&nbsp;</span></h3></section></summary><div class="impl-items"><details class="rustdoc-toggle" open><summary><section id="associatedtype.Owned" class="associatedtype trait-impl has-srclink"><a href="#associatedtype.Owned" class="anchor"></a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#associatedtype.Owned" class="associatedtype">Owned</a> = T</h4></section></summary><div class='docblock'><p>The resulting type after obtaining ownership.</p>
 </div></details><details class="rustdoc-toggle method-toggle" open><summary><section id="method.to_owned" class="method trait-impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/alloc/borrow.rs.html#89">source</a></span><a href="#method.to_owned" class="anchor"></a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#tymethod.to_owned" class="fnname">to_owned</a>(&amp;self) -&gt; T</h4></section></summary><div class='docblock'><p>Creates owned data from borrowed data, usually by cloning. <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#tymethod.to_owned">Read more</a></p>
 </div></details><details class="rustdoc-toggle method-toggle" open><summary><section id="method.clone_into" class="method trait-impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/alloc/borrow.rs.html#93">source</a></span><a href="#method.clone_into" class="anchor"></a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#method.clone_into" class="fnname">clone_into</a>(&amp;self, target: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>T)</h4></section></summary><span class="item-info"><div class="stab unstable"><span class="emoji">🔬</span> This is a nightly-only experimental API. (<code>toowned_clone_into</code>)</div></span><div class='docblock'><p>Uses borrowed data to replace owned data, usually by cloning. <a href="https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#method.clone_into">Read more</a></p>
-</div></details></div></details><details class="rustdoc-toggle implementors-toggle"><summary><section id="impl-ToString" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/alloc/string.rs.html#2395-2409">source</a></span><a href="#impl-ToString" class="anchor"></a><h3 class="code-header in-band">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/alloc/string/trait.ToString.html" title="trait alloc::string::ToString">ToString</a> for T <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html" title="trait core::fmt::Display">Display</a> + ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,&nbsp;</span></h3></section></summary><div class="impl-items"><details class="rustdoc-toggle method-toggle" open><summary><section id="method.to_string" class="method trait-impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/alloc/string.rs.html#2401">source</a></span><a href="#method.to_string" class="anchor"></a><h4 class="code-header">default fn <a href="https://doc.rust-lang.org/nightly/alloc/string/trait.ToString.html#tymethod.to_string" class="fnname">to_string</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a></h4></section></summary><div class='docblock'><p>Converts the given value to a <code>String</code>. <a href="https://doc.rust-lang.org/nightly/alloc/string/trait.ToString.html#tymethod.to_string">Read more</a></p>
-</div></details></div></details><details class="rustdoc-toggle implementors-toggle"><summary><section id="impl-TryFrom%3CU%3E" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#598-607">source</a></span><a href="#impl-TryFrom%3CU%3E" class="anchor"></a><h3 class="code-header in-band">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;U&gt; for T <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;T&gt;,&nbsp;</span></h3></section></summary><div class="impl-items"><details class="rustdoc-toggle" open><summary><section id="associatedtype.Error-1" class="type trait-impl has-srclink"><a href="#associatedtype.Error-1" class="anchor"></a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" class="associatedtype">Error</a> = <a class="enum" href="https://doc.rust-lang.org/nightly/core/convert/enum.Infallible.html" title="enum core::convert::Infallible">Infallible</a></h4></section></summary><div class='docblock'><p>The type returned in the event of a conversion error.</p>
+</div></details></div></details><details class="rustdoc-toggle implementors-toggle"><summary><section id="impl-ToString" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/alloc/string.rs.html#2470-2484">source</a></span><a href="#impl-ToString" class="anchor"></a><h3 class="code-header in-band">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/alloc/string/trait.ToString.html" title="trait alloc::string::ToString">ToString</a> for T <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html" title="trait core::fmt::Display">Display</a> + ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,&nbsp;</span></h3></section></summary><div class="impl-items"><details class="rustdoc-toggle method-toggle" open><summary><section id="method.to_string" class="method trait-impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/alloc/string.rs.html#2476">source</a></span><a href="#method.to_string" class="anchor"></a><h4 class="code-header">default fn <a href="https://doc.rust-lang.org/nightly/alloc/string/trait.ToString.html#tymethod.to_string" class="fnname">to_string</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a></h4></section></summary><div class='docblock'><p>Converts the given value to a <code>String</code>. <a href="https://doc.rust-lang.org/nightly/alloc/string/trait.ToString.html#tymethod.to_string">Read more</a></p>
+</div></details></div></details><details class="rustdoc-toggle implementors-toggle"><summary><section id="impl-TryFrom%3CU%3E" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#598-607">source</a></span><a href="#impl-TryFrom%3CU%3E" class="anchor"></a><h3 class="code-header in-band">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;U&gt; for T <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;T&gt;,&nbsp;</span></h3></section></summary><div class="impl-items"><details class="rustdoc-toggle" open><summary><section id="associatedtype.Error-1" class="associatedtype trait-impl has-srclink"><a href="#associatedtype.Error-1" class="anchor"></a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" class="associatedtype">Error</a> = <a class="enum" href="https://doc.rust-lang.org/nightly/core/convert/enum.Infallible.html" title="enum core::convert::Infallible">Infallible</a></h4></section></summary><div class='docblock'><p>The type returned in the event of a conversion error.</p>
 </div></details><details class="rustdoc-toggle method-toggle" open><summary><section id="method.try_from" class="method trait-impl has-srclink"><span class="rightside"><span class="since" title="const unstable">const: <a href="https://github.com/rust-lang/rust/issues/88674" title="Tracking issue for const_convert">unstable</a></span> · <a class="srclink" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#604">source</a></span><a href="#method.try_from" class="anchor"></a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#tymethod.try_from" class="fnname">try_from</a>(value: U) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;T, &lt;T as <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;U&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a>&gt;</h4></section></summary><div class='docblock'><p>Performs the conversion.</p>
-</div></details></div></details><details class="rustdoc-toggle implementors-toggle"><summary><section id="impl-TryInto%3CU%3E" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#583-592">source</a></span><a href="#impl-TryInto%3CU%3E" class="anchor"></a><h3 class="code-header in-band">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html" title="trait core::convert::TryInto">TryInto</a>&lt;U&gt; for T <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;,&nbsp;</span></h3></section></summary><div class="impl-items"><details class="rustdoc-toggle" open><summary><section id="associatedtype.Error" class="type trait-impl has-srclink"><a href="#associatedtype.Error" class="anchor"></a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html#associatedtype.Error" class="associatedtype">Error</a> = &lt;U as <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a></h4></section></summary><div class='docblock'><p>The type returned in the event of a conversion error.</p>
+</div></details></div></details><details class="rustdoc-toggle implementors-toggle"><summary><section id="impl-TryInto%3CU%3E" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#583-592">source</a></span><a href="#impl-TryInto%3CU%3E" class="anchor"></a><h3 class="code-header in-band">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html" title="trait core::convert::TryInto">TryInto</a>&lt;U&gt; for T <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;,&nbsp;</span></h3></section></summary><div class="impl-items"><details class="rustdoc-toggle" open><summary><section id="associatedtype.Error" class="associatedtype trait-impl has-srclink"><a href="#associatedtype.Error" class="anchor"></a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html#associatedtype.Error" class="associatedtype">Error</a> = &lt;U as <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a></h4></section></summary><div class='docblock'><p>The type returned in the event of a conversion error.</p>
 </div></details><details class="rustdoc-toggle method-toggle" open><summary><section id="method.try_into" class="method trait-impl has-srclink"><span class="rightside"><span class="since" title="const unstable">const: <a href="https://github.com/rust-lang/rust/issues/88674" title="Tracking issue for const_convert">unstable</a></span> · <a class="srclink" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#589">source</a></span><a href="#method.try_into" class="anchor"></a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html#tymethod.try_into" class="fnname">try_into</a>(self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;U, &lt;U as <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a>&gt;</h4></section></summary><div class='docblock'><p>Performs the conversion.</p>
-</div></details></div></details></div></section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="platforms" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (e745b4ddb 2022-04-07)" ></div>
+</div></details></div></details></div></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="platforms" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (6dd68402c 2022-05-11)" ></div>
 </body></html>

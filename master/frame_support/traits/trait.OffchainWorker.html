@@ -14,7 +14,7 @@ of those long-running computations back on chain.</p>
 but cannot preform any alterations. More specifically alterations are
 not forbidden, but they are not persisted in any way after the worker
 has finished.</p>
-</div></details><h2 id="provided-methods" class="small-section-header">Provided methods<a href="#provided-methods" class="anchor"></a></h2><div class="methods"><details class="rustdoc-toggle" open><summary><div id="method.offchain_worker" class="method has-srclink"><div class="rightside"><a class="srclink" href="../../src/frame_support/traits/misc.rs.html#699">source</a></div><h4 class="code-header">fn <a href="#method.offchain_worker" class="fnname">offchain_worker</a>(_n: BlockNumber)</h4></div></summary><div class="docblock"><p>This function is being called after every block import (when fully synced).</p>
+</div></details><h2 id="provided-methods" class="small-section-header">Provided Methods<a href="#provided-methods" class="anchor"></a></h2><div class="methods"><details class="rustdoc-toggle" open><summary><div id="method.offchain_worker" class="method has-srclink"><div class="rightside"><a class="srclink" href="../../src/frame_support/traits/misc.rs.html#699">source</a></div><h4 class="code-header">fn <a href="#method.offchain_worker" class="fnname">offchain_worker</a>(_n: BlockNumber)</h4></div></summary><div class="docblock"><p>This function is being called after every block import (when fully synced).</p>
 <p>Implement this and use any of the <code>Offchain</code> <code>sp_io</code> set of APIs
 to perform off-chain computations, calls and submit transactions
 with results to trigger any on-chain changes.
@@ -174,5 +174,5 @@ Any state alterations are lost and are not persisted.</p>
 to perform off-chain computations, calls and submit transactions
 with results to trigger any on-chain changes.
 Any state alterations are lost and are not persisted.</p>
-</div></details></div></details><h2 id="implementors" class="small-section-header">Implementors<a href="#implementors" class="anchor"></a></h2><div class="item-list" id="implementors-list"></div><script type="text/javascript" src="../../implementors/frame_support/traits/trait.OffchainWorker.js" async></script></section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="frame_support" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (e745b4ddb 2022-04-07)" ></div>
+</div></details></div></details><h2 id="implementors" class="small-section-header">Implementors<a href="#implementors" class="anchor"></a></h2><div class="item-list" id="implementors-list"></div><script type="text/javascript" src="../../implementors/frame_support/traits/misc/trait.OffchainWorker.js" data-ignore-extern-crates="std" async></script></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="frame_support" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (6dd68402c 2022-05-11)" ></div>
 </body></html>

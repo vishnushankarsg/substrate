@@ -21,7 +21,7 @@ please open a GitHub issue explaining your use case.</p>
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">std::iter</span>;
 
 <span class="comment">// let&#39;s assume we have some value of a type that is not `Clone`</span>
-<span class="comment">// or which don&#39;t want to have in memory just yet because it is expensive:</span>
+<span class="comment">// or which we don&#39;t want to have in memory just yet because it is expensive:</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">struct</span> <span class="ident">Expensive</span>;
 
@@ -49,5 +49,5 @@ please open a GitHub issue explaining your use case.</p>
 
 <span class="comment">// ... and now we&#39;re done</span>
 <span class="macro">assert_eq!</span>(<span class="prelude-val">None</span>, <span class="ident">pow2</span>.<span class="ident">next</span>());</code></pre></div>
-</div></details></section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="wasmtime_environ" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (e745b4ddb 2022-04-07)" ></div>
+</div></details></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="wasmtime_environ" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (6dd68402c 2022-05-11)" ></div>
 </body></html>

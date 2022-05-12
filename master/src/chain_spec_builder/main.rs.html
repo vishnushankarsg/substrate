@@ -456,7 +456,7 @@
 		<span class="ident">Default::default</span>(),
 	);
 
-	<span class="ident">chain_spec</span>.<span class="ident">as_json</span>(<span class="bool-val">false</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">err</span>)
+	<span class="ident">chain_spec</span>.<span class="ident">as_json</span>(<span class="bool-val">false</span>)
 }
 
 <span class="kw">fn</span> <span class="ident">generate_authority_keys_and_store</span>(<span class="ident">seeds</span>: <span class="kw-2">&amp;</span>[<span class="ident">String</span>], <span class="ident">keystore_path</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
@@ -588,5 +588,5 @@
 	<span class="ident">fs::write</span>(<span class="ident">chain_spec_path</span>, <span class="ident">json</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">err</span>.<span class="ident">to_string</span>())
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="chain_spec_builder" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (e745b4ddb 2022-04-07)" ></div>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="chain_spec_builder" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (6dd68402c 2022-05-11)" ></div>
 </body></html>
