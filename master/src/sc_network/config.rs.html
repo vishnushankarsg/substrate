@@ -962,10 +962,10 @@
 	<span class="doccomment">/// Request response configuration for the light client request protocol.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Can be constructed either via</span>
-	<span class="doccomment">/// [`crate::light_client_requests::generate_protocol_config`] allowing outgoing but not</span>
-	<span class="doccomment">/// incoming requests, or constructed via</span>
-	<span class="doccomment">/// [`crate::light_client_requests::handler::LightClientRequestHandler::new`] allowing</span>
-	<span class="doccomment">/// both outgoing and incoming requests.</span>
+	<span class="doccomment">/// [`sc_network_light::light_client_requests::generate_protocol_config`] allowing outgoing but</span>
+	<span class="doccomment">/// not incoming requests, or constructed via</span>
+	<span class="doccomment">/// [`sc_network_light::light_client_requests::handler::LightClientRequestHandler::new`]</span>
+	<span class="doccomment">/// allowing both outgoing and incoming requests.</span>
 	<span class="kw">pub</span> <span class="ident">light_client_request_protocol_config</span>: <span class="ident">RequestResponseConfig</span>,
 
 	<span class="doccomment">/// Request response configuration for the state request protocol.</span>

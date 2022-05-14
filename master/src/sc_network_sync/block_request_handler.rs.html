@@ -418,8 +418,6 @@
 <span id="413">413</span>
 <span id="414">414</span>
 <span id="415">415</span>
-<span id="416">416</span>
-<span id="417">417</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Substrate.</span>
 
@@ -497,9 +495,7 @@
 }
 
 <span class="doccomment">/// Generate the block protocol name from chain specific protocol identifier.</span>
-<span class="comment">// Visibility `pub(crate)` to allow `crate::light_client_requests::sender` to generate block request</span>
-<span class="comment">// protocol name and send block requests.</span>
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">generate_protocol_name</span>(<span class="ident">protocol_id</span>: <span class="kw-2">&amp;</span><span class="ident">ProtocolId</span>) -&gt; <span class="ident">String</span> {
+<span class="kw">fn</span> <span class="ident">generate_protocol_name</span>(<span class="ident">protocol_id</span>: <span class="kw-2">&amp;</span><span class="ident">ProtocolId</span>) -&gt; <span class="ident">String</span> {
 	<span class="macro">format!</span>(<span class="string">&quot;/{}/sync/2&quot;</span>, <span class="ident">protocol_id</span>.<span class="ident">as_ref</span>())
 }
 
