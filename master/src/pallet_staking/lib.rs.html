@@ -919,6 +919,9 @@
 <span id="914">914</span>
 <span id="915">915</span>
 <span id="916">916</span>
+<span id="917">917</span>
+<span id="918">918</span>
+<span id="919">919</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1454,10 +1457,12 @@
 	<span class="doccomment">/// case that either the active bonded or some unlocking chunks become dust after slashing.</span>
 	<span class="doccomment">/// Returns the amount of funds actually slashed.</span>
 	<span class="doccomment">///</span>
+	<span class="doccomment">/// `slash_era` is the era in which the slash (which is being enacted now) actually happened.</span>
+	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Note</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// This calls `Config::OnStakerSlash::on_slash` with information as to how the slash</span>
-	<span class="doccomment">/// was applied.</span>
+	<span class="doccomment">/// This calls `Config::OnStakerSlash::on_slash` with information as to how the slash was</span>
+	<span class="doccomment">/// applied.</span>
 	<span class="kw">fn</span> <span class="ident">slash</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">slash_amount</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
@@ -1536,6 +1541,7 @@
 				<span class="kw">break</span>
 			}
 		}
+
 		<span class="self">self</span>.<span class="ident">unlocking</span>.<span class="ident">retain</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="op">!</span><span class="ident">c</span>.<span class="ident">value</span>.<span class="ident">is_zero</span>());
 		<span class="ident">T::OnStakerSlash::on_slash</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">stash</span>, <span class="self">self</span>.<span class="ident">active</span>, <span class="kw-2">&amp;</span><span class="ident">slashed_unlocking</span>);
 		<span class="ident">pre_slash_total</span>.<span class="ident">saturating_sub</span>(<span class="self">self</span>.<span class="ident">total</span>)

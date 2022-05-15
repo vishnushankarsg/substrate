@@ -1192,9 +1192,9 @@
 				<span class="ident">member_counter</span>: <span class="number">1</span>,
 				<span class="ident">roles</span>: <span class="ident">PoolRoles</span> {
 					<span class="ident">depositor</span>: <span class="ident">depositor</span>.<span class="ident">clone</span>(),
-					<span class="ident">root</span>: <span class="ident">depositor</span>.<span class="ident">clone</span>(),
-					<span class="ident">nominator</span>: <span class="ident">depositor</span>.<span class="ident">clone</span>(),
-					<span class="ident">state_toggler</span>: <span class="ident">depositor</span>.<span class="ident">clone</span>(),
+					<span class="ident">root</span>: <span class="prelude-val">Some</span>(<span class="ident">depositor</span>.<span class="ident">clone</span>()),
+					<span class="ident">nominator</span>: <span class="prelude-val">Some</span>(<span class="ident">depositor</span>.<span class="ident">clone</span>()),
+					<span class="ident">state_toggler</span>: <span class="prelude-val">Some</span>(<span class="ident">depositor</span>.<span class="ident">clone</span>()),
 				},
 			}
 		);
@@ -1233,9 +1233,9 @@
 				<span class="ident">member_counter</span>: <span class="number">1</span>,
 				<span class="ident">roles</span>: <span class="ident">PoolRoles</span> {
 					<span class="ident">depositor</span>: <span class="ident">depositor</span>.<span class="ident">clone</span>(),
-					<span class="ident">root</span>: <span class="ident">depositor</span>.<span class="ident">clone</span>(),
-					<span class="ident">nominator</span>: <span class="ident">depositor</span>.<span class="ident">clone</span>(),
-					<span class="ident">state_toggler</span>: <span class="ident">depositor</span>.<span class="ident">clone</span>(),
+					<span class="ident">root</span>: <span class="prelude-val">Some</span>(<span class="ident">depositor</span>.<span class="ident">clone</span>()),
+					<span class="ident">nominator</span>: <span class="prelude-val">Some</span>(<span class="ident">depositor</span>.<span class="ident">clone</span>()),
+					<span class="ident">state_toggler</span>: <span class="prelude-val">Some</span>(<span class="ident">depositor</span>.<span class="ident">clone</span>()),
 				}
 			}
 		);
@@ -1304,17 +1304,17 @@
 	}:<span class="kw">_</span>(
 		<span class="ident">Origin::Signed</span>(<span class="ident">root</span>.<span class="ident">clone</span>()),
 		<span class="ident">first_id</span>,
-		<span class="prelude-val">Some</span>(<span class="ident">random</span>.<span class="ident">clone</span>()),
-		<span class="prelude-val">Some</span>(<span class="ident">random</span>.<span class="ident">clone</span>()),
-		<span class="prelude-val">Some</span>(<span class="ident">random</span>.<span class="ident">clone</span>())
+		<span class="ident">ConfigOp::Set</span>(<span class="ident">random</span>.<span class="ident">clone</span>()),
+		<span class="ident">ConfigOp::Set</span>(<span class="ident">random</span>.<span class="ident">clone</span>()),
+		<span class="ident">ConfigOp::Set</span>(<span class="ident">random</span>.<span class="ident">clone</span>())
 	) <span class="ident">verify</span> {
 		<span class="macro">assert_eq!</span>(
 			<span class="ident">pallet_nomination_pools::BondedPools</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">first_id</span>).<span class="ident">unwrap</span>().<span class="ident">roles</span>,
 			<span class="ident">pallet_nomination_pools::PoolRoles</span> {
 				<span class="ident">depositor</span>: <span class="ident">root</span>,
-				<span class="ident">nominator</span>: <span class="ident">random</span>.<span class="ident">clone</span>(),
-				<span class="ident">state_toggler</span>: <span class="ident">random</span>.<span class="ident">clone</span>(),
-				<span class="ident">root</span>: <span class="ident">random</span>,
+				<span class="ident">nominator</span>: <span class="prelude-val">Some</span>(<span class="ident">random</span>.<span class="ident">clone</span>()),
+				<span class="ident">state_toggler</span>: <span class="prelude-val">Some</span>(<span class="ident">random</span>.<span class="ident">clone</span>()),
+				<span class="ident">root</span>: <span class="prelude-val">Some</span>(<span class="ident">random</span>),
 			},
 		)
 	}
