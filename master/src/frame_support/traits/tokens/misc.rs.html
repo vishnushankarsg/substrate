@@ -384,16 +384,16 @@
 
 <span class="doccomment">/// Trait to handle asset locking mechanism to ensure interactions with the asset can be implemented</span>
 <span class="doccomment">/// downstream to extend logic of Uniques current functionality.</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Locker</span><span class="op">&lt;</span><span class="ident">ClassId</span>, <span class="ident">InstanceId</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Locker</span><span class="op">&lt;</span><span class="ident">CollectionId</span>, <span class="ident">ItemId</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Check if the asset should be locked and prevent interactions with the asset from executing.</span>
-	<span class="kw">fn</span> <span class="ident">is_locked</span>(<span class="ident">class</span>: <span class="ident">ClassId</span>, <span class="ident">instance</span>: <span class="ident">InstanceId</span>) -&gt; <span class="ident">bool</span>;
+	<span class="kw">fn</span> <span class="ident">is_locked</span>(<span class="ident">collection</span>: <span class="ident">CollectionId</span>, <span class="ident">item</span>: <span class="ident">ItemId</span>) -&gt; <span class="ident">bool</span>;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">ClassId</span>, <span class="ident">InstanceId</span><span class="op">&gt;</span> <span class="ident">Locker</span><span class="op">&lt;</span><span class="ident">ClassId</span>, <span class="ident">InstanceId</span><span class="op">&gt;</span> <span class="kw">for</span> () {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CollectionId</span>, <span class="ident">ItemId</span><span class="op">&gt;</span> <span class="ident">Locker</span><span class="op">&lt;</span><span class="ident">CollectionId</span>, <span class="ident">ItemId</span><span class="op">&gt;</span> <span class="kw">for</span> () {
 	<span class="comment">// Default will be false if not implemented downstream.</span>
 	<span class="comment">// Note: The logic check in this function must be constant time and consistent for benchmarks</span>
 	<span class="comment">// to work.</span>
-	<span class="kw">fn</span> <span class="ident">is_locked</span>(<span class="ident">_class</span>: <span class="ident">ClassId</span>, <span class="ident">_instance</span>: <span class="ident">InstanceId</span>) -&gt; <span class="ident">bool</span> {
+	<span class="kw">fn</span> <span class="ident">is_locked</span>(<span class="ident">_collection</span>: <span class="ident">CollectionId</span>, <span class="ident">_item</span>: <span class="ident">ItemId</span>) -&gt; <span class="ident">bool</span> {
 		<span class="bool-val">false</span>
 	}
 }

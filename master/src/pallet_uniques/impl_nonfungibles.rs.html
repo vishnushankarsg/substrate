@@ -219,59 +219,59 @@
 <span class="kw">use</span> <span class="ident">sp_std::prelude</span>::<span class="kw-2">*</span>;
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">Inspect</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">SystemConfig</span><span class="op">&gt;</span><span class="ident">::AccountId</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span> {
-	<span class="kw">type</span> <span class="ident">InstanceId</span> <span class="op">=</span> <span class="ident">T::InstanceId</span>;
-	<span class="kw">type</span> <span class="ident">ClassId</span> <span class="op">=</span> <span class="ident">T::ClassId</span>;
+	<span class="kw">type</span> <span class="ident">ItemId</span> <span class="op">=</span> <span class="ident">T::ItemId</span>;
+	<span class="kw">type</span> <span class="ident">CollectionId</span> <span class="op">=</span> <span class="ident">T::CollectionId</span>;
 
 	<span class="kw">fn</span> <span class="ident">owner</span>(
-		<span class="ident">class</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::ClassId</span>,
-		<span class="ident">instance</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::InstanceId</span>,
+		<span class="ident">collection</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::CollectionId</span>,
+		<span class="ident">item</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::ItemId</span>,
 	) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">SystemConfig</span><span class="op">&gt;</span><span class="ident">::AccountId</span><span class="op">&gt;</span> {
-		<span class="ident">Asset</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">class</span>, <span class="ident">instance</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">owner</span>)
+		<span class="ident">Item</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">collection</span>, <span class="ident">item</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">owner</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">class_owner</span>(<span class="ident">class</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::ClassId</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">SystemConfig</span><span class="op">&gt;</span><span class="ident">::AccountId</span><span class="op">&gt;</span> {
-		<span class="ident">Class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">class</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">owner</span>)
+	<span class="kw">fn</span> <span class="ident">collection_owner</span>(<span class="ident">collection</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::CollectionId</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">SystemConfig</span><span class="op">&gt;</span><span class="ident">::AccountId</span><span class="op">&gt;</span> {
+		<span class="ident">Collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">collection</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">owner</span>)
 	}
 
-	<span class="doccomment">/// Returns the attribute value of `instance` of `class` corresponding to `key`.</span>
+	<span class="doccomment">/// Returns the attribute value of `item` of `collection` corresponding to `key`.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// When `key` is empty, we return the instance metadata value.</span>
+	<span class="doccomment">/// When `key` is empty, we return the item metadata value.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// By default this is `None`; no attributes are defined.</span>
 	<span class="kw">fn</span> <span class="ident">attribute</span>(
-		<span class="ident">class</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::ClassId</span>,
-		<span class="ident">instance</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::InstanceId</span>,
+		<span class="ident">collection</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::CollectionId</span>,
+		<span class="ident">item</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::ItemId</span>,
 		<span class="ident">key</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
 	) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="ident">key</span>.<span class="ident">is_empty</span>() {
-			<span class="comment">// We make the empty key map to the instance metadata value.</span>
-			<span class="ident">InstanceMetadataOf</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">class</span>, <span class="ident">instance</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">m</span><span class="op">|</span> <span class="ident">m</span>.<span class="ident">data</span>.<span class="ident">into</span>())
+			<span class="comment">// We make the empty key map to the item metadata value.</span>
+			<span class="ident">ItemMetadataOf</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">collection</span>, <span class="ident">item</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">m</span><span class="op">|</span> <span class="ident">m</span>.<span class="ident">data</span>.<span class="ident">into</span>())
 		} <span class="kw">else</span> {
 			<span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="ident">BoundedSlice</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::try_from</span>(<span class="ident">key</span>).<span class="ident">ok</span>()<span class="question-mark">?</span>;
-			<span class="ident">Attribute</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>((<span class="ident">class</span>, <span class="prelude-val">Some</span>(<span class="ident">instance</span>), <span class="ident">key</span>)).<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="number">0</span>.<span class="ident">into</span>())
+			<span class="ident">Attribute</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>((<span class="ident">collection</span>, <span class="prelude-val">Some</span>(<span class="ident">item</span>), <span class="ident">key</span>)).<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="number">0</span>.<span class="ident">into</span>())
 		}
 	}
 
-	<span class="doccomment">/// Returns the attribute value of `instance` of `class` corresponding to `key`.</span>
+	<span class="doccomment">/// Returns the attribute value of `item` of `collection` corresponding to `key`.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// When `key` is empty, we return the instance metadata value.</span>
+	<span class="doccomment">/// When `key` is empty, we return the item metadata value.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// By default this is `None`; no attributes are defined.</span>
-	<span class="kw">fn</span> <span class="ident">class_attribute</span>(<span class="ident">class</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::ClassId</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">collection_attribute</span>(<span class="ident">collection</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::CollectionId</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="ident">key</span>.<span class="ident">is_empty</span>() {
-			<span class="comment">// We make the empty key map to the instance metadata value.</span>
-			<span class="ident">ClassMetadataOf</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">class</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">m</span><span class="op">|</span> <span class="ident">m</span>.<span class="ident">data</span>.<span class="ident">into</span>())
+			<span class="comment">// We make the empty key map to the item metadata value.</span>
+			<span class="ident">CollectionMetadataOf</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">collection</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">m</span><span class="op">|</span> <span class="ident">m</span>.<span class="ident">data</span>.<span class="ident">into</span>())
 		} <span class="kw">else</span> {
 			<span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="ident">BoundedSlice</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::try_from</span>(<span class="ident">key</span>).<span class="ident">ok</span>()<span class="question-mark">?</span>;
-			<span class="ident">Attribute</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>((<span class="ident">class</span>, <span class="prelude-ty">Option</span>::<span class="op">&lt;</span><span class="ident">T::InstanceId</span><span class="op">&gt;</span><span class="ident">::None</span>, <span class="ident">key</span>)).<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="number">0</span>.<span class="ident">into</span>())
+			<span class="ident">Attribute</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>((<span class="ident">collection</span>, <span class="prelude-ty">Option</span>::<span class="op">&lt;</span><span class="ident">T::ItemId</span><span class="op">&gt;</span><span class="ident">::None</span>, <span class="ident">key</span>)).<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="number">0</span>.<span class="ident">into</span>())
 		}
 	}
 
-	<span class="doccomment">/// Returns `true` if the asset `instance` of `class` may be transferred.</span>
+	<span class="doccomment">/// Returns `true` if the `item` of `collection` may be transferred.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Default implementation is that all assets are transferable.</span>
-	<span class="kw">fn</span> <span class="ident">can_transfer</span>(<span class="ident">class</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::ClassId</span>, <span class="ident">instance</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::InstanceId</span>) -&gt; <span class="ident">bool</span> {
-		<span class="kw">match</span> (<span class="ident">Class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">class</span>), <span class="ident">Asset</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">class</span>, <span class="ident">instance</span>)) {
+	<span class="doccomment">/// Default implementation is that all items are transferable.</span>
+	<span class="kw">fn</span> <span class="ident">can_transfer</span>(<span class="ident">collection</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::CollectionId</span>, <span class="ident">item</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::ItemId</span>) -&gt; <span class="ident">bool</span> {
+		<span class="kw">match</span> (<span class="ident">Collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">collection</span>), <span class="ident">Item</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">collection</span>, <span class="ident">item</span>)) {
 			(<span class="prelude-val">Some</span>(<span class="ident">cd</span>), <span class="prelude-val">Some</span>(<span class="ident">id</span>)) <span class="kw">if</span> <span class="op">!</span><span class="ident">cd</span>.<span class="ident">is_frozen</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">id</span>.<span class="ident">is_frozen</span> =&gt; <span class="bool-val">true</span>,
 			<span class="kw">_</span> =&gt; <span class="bool-val">false</span>,
 		}
@@ -279,19 +279,19 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">Create</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">SystemConfig</span><span class="op">&gt;</span><span class="ident">::AccountId</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span> {
-	<span class="doccomment">/// Create a `class` of nonfungible assets to be owned by `who` and managed by `admin`.</span>
-	<span class="kw">fn</span> <span class="ident">create_class</span>(
-		<span class="ident">class</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::ClassId</span>,
+	<span class="doccomment">/// Create a `collection` of nonfungible items to be owned by `who` and managed by `admin`.</span>
+	<span class="kw">fn</span> <span class="ident">create_collection</span>(
+		<span class="ident">collection</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::CollectionId</span>,
 		<span class="ident">who</span>: <span class="kw-2">&amp;</span><span class="ident">T::AccountId</span>,
 		<span class="ident">admin</span>: <span class="kw-2">&amp;</span><span class="ident">T::AccountId</span>,
 	) -&gt; <span class="ident">DispatchResult</span> {
-		<span class="ident"><span class="self">Self</span>::do_create_class</span>(
-			<span class="kw-2">*</span><span class="ident">class</span>,
+		<span class="ident"><span class="self">Self</span>::do_create_collection</span>(
+			<span class="kw-2">*</span><span class="ident">collection</span>,
 			<span class="ident">who</span>.<span class="ident">clone</span>(),
 			<span class="ident">admin</span>.<span class="ident">clone</span>(),
-			<span class="ident">T::ClassDeposit::get</span>(),
+			<span class="ident">T::CollectionDeposit::get</span>(),
 			<span class="bool-val">false</span>,
-			<span class="ident">Event::Created</span> { <span class="ident">class</span>: <span class="kw-2">*</span><span class="ident">class</span>, <span class="ident">creator</span>: <span class="ident">who</span>.<span class="ident">clone</span>(), <span class="ident">owner</span>: <span class="ident">admin</span>.<span class="ident">clone</span>() },
+			<span class="ident">Event::Created</span> { <span class="ident">collection</span>: <span class="kw-2">*</span><span class="ident">collection</span>, <span class="ident">creator</span>: <span class="ident">who</span>.<span class="ident">clone</span>(), <span class="ident">owner</span>: <span class="ident">admin</span>.<span class="ident">clone</span>() },
 		)
 	}
 }
@@ -299,34 +299,34 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">Destroy</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">SystemConfig</span><span class="op">&gt;</span><span class="ident">::AccountId</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span> {
 	<span class="kw">type</span> <span class="ident">DestroyWitness</span> <span class="op">=</span> <span class="ident">DestroyWitness</span>;
 
-	<span class="kw">fn</span> <span class="ident">get_destroy_witness</span>(<span class="ident">class</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::ClassId</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">DestroyWitness</span><span class="op">&gt;</span> {
-		<span class="ident">Class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">class</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">destroy_witness</span>())
+	<span class="kw">fn</span> <span class="ident">get_destroy_witness</span>(<span class="ident">collection</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::CollectionId</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">DestroyWitness</span><span class="op">&gt;</span> {
+		<span class="ident">Collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">collection</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">destroy_witness</span>())
 	}
 
 	<span class="kw">fn</span> <span class="ident">destroy</span>(
-		<span class="ident">class</span>: <span class="ident"><span class="self">Self</span>::ClassId</span>,
+		<span class="ident">collection</span>: <span class="ident"><span class="self">Self</span>::CollectionId</span>,
 		<span class="ident">witness</span>: <span class="ident"><span class="self">Self</span>::DestroyWitness</span>,
 		<span class="ident">maybe_check_owner</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::DestroyWitness</span>, <span class="ident">DispatchError</span><span class="op">&gt;</span> {
-		<span class="ident"><span class="self">Self</span>::do_destroy_class</span>(<span class="ident">class</span>, <span class="ident">witness</span>, <span class="ident">maybe_check_owner</span>)
+		<span class="ident"><span class="self">Self</span>::do_destroy_collection</span>(<span class="ident">collection</span>, <span class="ident">witness</span>, <span class="ident">maybe_check_owner</span>)
 	}
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">Mutate</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">SystemConfig</span><span class="op">&gt;</span><span class="ident">::AccountId</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">mint_into</span>(
-		<span class="ident">class</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::ClassId</span>,
-		<span class="ident">instance</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::InstanceId</span>,
+		<span class="ident">collection</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::CollectionId</span>,
+		<span class="ident">item</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::ItemId</span>,
 		<span class="ident">who</span>: <span class="kw-2">&amp;</span><span class="ident">T::AccountId</span>,
 	) -&gt; <span class="ident">DispatchResult</span> {
-		<span class="ident"><span class="self">Self</span>::do_mint</span>(<span class="kw-2">*</span><span class="ident">class</span>, <span class="kw-2">*</span><span class="ident">instance</span>, <span class="ident">who</span>.<span class="ident">clone</span>(), <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Ok</span>(()))
+		<span class="ident"><span class="self">Self</span>::do_mint</span>(<span class="kw-2">*</span><span class="ident">collection</span>, <span class="kw-2">*</span><span class="ident">item</span>, <span class="ident">who</span>.<span class="ident">clone</span>(), <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Ok</span>(()))
 	}
 
 	<span class="kw">fn</span> <span class="ident">burn</span>(
-		<span class="ident">class</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::ClassId</span>,
-		<span class="ident">instance</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::InstanceId</span>,
+		<span class="ident">collection</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::CollectionId</span>,
+		<span class="ident">item</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::ItemId</span>,
 		<span class="ident">maybe_check_owner</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>,
 	) -&gt; <span class="ident">DispatchResult</span> {
-		<span class="ident"><span class="self">Self</span>::do_burn</span>(<span class="kw-2">*</span><span class="ident">class</span>, <span class="kw-2">*</span><span class="ident">instance</span>, <span class="op">|</span><span class="kw">_</span>, <span class="ident">d</span><span class="op">|</span> {
+		<span class="ident"><span class="self">Self</span>::do_burn</span>(<span class="kw-2">*</span><span class="ident">collection</span>, <span class="kw-2">*</span><span class="ident">item</span>, <span class="op">|</span><span class="kw">_</span>, <span class="ident">d</span><span class="op">|</span> {
 			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">check_owner</span>) <span class="op">=</span> <span class="ident">maybe_check_owner</span> {
 				<span class="kw">if</span> <span class="kw-2">&amp;</span><span class="ident">d</span>.<span class="ident">owner</span> <span class="op">!</span><span class="op">=</span> <span class="ident">check_owner</span> {
 					<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::NoPermission</span>.<span class="ident">into</span>())
@@ -339,44 +339,44 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">Transfer</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">transfer</span>(
-		<span class="ident">class</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::ClassId</span>,
-		<span class="ident">instance</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::InstanceId</span>,
+		<span class="ident">collection</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::CollectionId</span>,
+		<span class="ident">item</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::ItemId</span>,
 		<span class="ident">destination</span>: <span class="kw-2">&amp;</span><span class="ident">T::AccountId</span>,
 	) -&gt; <span class="ident">DispatchResult</span> {
-		<span class="ident"><span class="self">Self</span>::do_transfer</span>(<span class="kw-2">*</span><span class="ident">class</span>, <span class="kw-2">*</span><span class="ident">instance</span>, <span class="ident">destination</span>.<span class="ident">clone</span>(), <span class="op">|</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Ok</span>(()))
+		<span class="ident"><span class="self">Self</span>::do_transfer</span>(<span class="kw-2">*</span><span class="ident">collection</span>, <span class="kw-2">*</span><span class="ident">item</span>, <span class="ident">destination</span>.<span class="ident">clone</span>(), <span class="op">|</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Ok</span>(()))
 	}
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">InspectEnumerable</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span> {
-	<span class="doccomment">/// Returns an iterator of the asset classes in existence.</span>
+	<span class="doccomment">/// Returns an iterator of the collections in existence.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// NOTE: iterating this list invokes a storage read per item.</span>
-	<span class="kw">fn</span> <span class="ident">classes</span>() -&gt; <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::ClassId</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-		<span class="ident">Box::new</span>(<span class="ident">ClassMetadataOf</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::iter_keys</span>())
+	<span class="kw">fn</span> <span class="ident">collections</span>() -&gt; <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::CollectionId</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="ident">Box::new</span>(<span class="ident">CollectionMetadataOf</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::iter_keys</span>())
 	}
 
-	<span class="doccomment">/// Returns an iterator of the instances of an asset `class` in existence.</span>
+	<span class="doccomment">/// Returns an iterator of the items of a `collection` in existence.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// NOTE: iterating this list invokes a storage read per item.</span>
-	<span class="kw">fn</span> <span class="ident">instances</span>(<span class="ident">class</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::ClassId</span>) -&gt; <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::InstanceId</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-		<span class="ident">Box::new</span>(<span class="ident">InstanceMetadataOf</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::iter_key_prefix</span>(<span class="ident">class</span>))
+	<span class="kw">fn</span> <span class="ident">items</span>(<span class="ident">collection</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::CollectionId</span>) -&gt; <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::ItemId</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="ident">Box::new</span>(<span class="ident">ItemMetadataOf</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::iter_key_prefix</span>(<span class="ident">collection</span>))
 	}
 
-	<span class="doccomment">/// Returns an iterator of the asset instances of all classes owned by `who`.</span>
+	<span class="doccomment">/// Returns an iterator of the items of all collections owned by `who`.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// NOTE: iterating this list invokes a storage read per item.</span>
-	<span class="kw">fn</span> <span class="ident">owned</span>(<span class="ident">who</span>: <span class="kw-2">&amp;</span><span class="ident">T::AccountId</span>) -&gt; <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="ident"><span class="self">Self</span>::ClassId</span>, <span class="ident"><span class="self">Self</span>::InstanceId</span>)<span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">owned</span>(<span class="ident">who</span>: <span class="kw-2">&amp;</span><span class="ident">T::AccountId</span>) -&gt; <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="ident"><span class="self">Self</span>::CollectionId</span>, <span class="ident"><span class="self">Self</span>::ItemId</span>)<span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="ident">Box::new</span>(<span class="ident">Account</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::iter_key_prefix</span>((<span class="ident">who</span>,)))
 	}
 
-	<span class="doccomment">/// Returns an iterator of the asset instances of `class` owned by `who`.</span>
+	<span class="doccomment">/// Returns an iterator of the items of `collection` owned by `who`.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// NOTE: iterating this list invokes a storage read per item.</span>
-	<span class="kw">fn</span> <span class="ident">owned_in_class</span>(
-		<span class="ident">class</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::ClassId</span>,
+	<span class="kw">fn</span> <span class="ident">owned_in_collection</span>(
+		<span class="ident">collection</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::CollectionId</span>,
 		<span class="ident">who</span>: <span class="kw-2">&amp;</span><span class="ident">T::AccountId</span>,
-	) -&gt; <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::InstanceId</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-		<span class="ident">Box::new</span>(<span class="ident">Account</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::iter_key_prefix</span>((<span class="ident">who</span>, <span class="ident">class</span>)))
+	) -&gt; <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::ItemId</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="ident">Box::new</span>(<span class="ident">Account</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::iter_key_prefix</span>((<span class="ident">who</span>, <span class="ident">collection</span>)))
 	}
 }
 </code></pre></div>

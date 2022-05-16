@@ -422,7 +422,7 @@
 <span class="comment">// See the License for the specific language governing permissions and</span>
 <span class="comment">// limitations under the License.</span>
 
-<span class="doccomment">//! Assets pallet benchmarking.</span>
+<span class="doccomment">//! Uniques pallet benchmarking.</span>
 
 <span class="attribute">#![<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>)]</span>
 
@@ -443,32 +443,32 @@
 
 <span class="kw">const</span> <span class="ident">SEED</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
 
-<span class="kw">fn</span> <span class="ident">create_class</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
-) -&gt; (<span class="ident">T::ClassId</span>, <span class="ident">T::AccountId</span>, <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>) {
+<span class="kw">fn</span> <span class="ident">create_collection</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
+) -&gt; (<span class="ident">T::CollectionId</span>, <span class="ident">T::AccountId</span>, <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>) {
 	<span class="kw">let</span> <span class="ident">caller</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">whitelisted_caller</span>();
 	<span class="kw">let</span> <span class="ident">caller_lookup</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">caller</span>.<span class="ident">clone</span>());
-	<span class="kw">let</span> <span class="ident">class</span> <span class="op">=</span> <span class="ident">T::Helper::class</span>(<span class="number">0</span>);
+	<span class="kw">let</span> <span class="ident">collection</span> <span class="op">=</span> <span class="ident">T::Helper::collection</span>(<span class="number">0</span>);
 	<span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>, <span class="ident">DepositBalanceOf</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::max_value</span>());
 	<span class="macro">assert!</span>(<span class="ident">Uniques</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::force_create</span>(
 		<span class="ident">SystemOrigin::Root</span>.<span class="ident">into</span>(),
-		<span class="ident">class</span>,
+		<span class="ident">collection</span>,
 		<span class="ident">caller_lookup</span>.<span class="ident">clone</span>(),
 		<span class="bool-val">false</span>,
 	)
 	.<span class="ident">is_ok</span>());
-	(<span class="ident">class</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>)
+	(<span class="ident">collection</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">add_class_metadata</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
+<span class="kw">fn</span> <span class="ident">add_collection_metadata</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
 ) -&gt; (<span class="ident">T::AccountId</span>, <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>) {
-	<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">Class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">T::Helper::class</span>(<span class="number">0</span>)).<span class="ident">unwrap</span>().<span class="ident">owner</span>;
+	<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">Collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">T::Helper::collection</span>(<span class="number">0</span>)).<span class="ident">unwrap</span>().<span class="ident">owner</span>;
 	<span class="kw">if</span> <span class="ident">caller</span> <span class="op">!</span><span class="op">=</span> <span class="ident">whitelisted_caller</span>() {
 		<span class="macro">whitelist_account!</span>(<span class="ident">caller</span>);
 	}
 	<span class="kw">let</span> <span class="ident">caller_lookup</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">caller</span>.<span class="ident">clone</span>());
-	<span class="macro">assert!</span>(<span class="ident">Uniques</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::set_class_metadata</span>(
+	<span class="macro">assert!</span>(<span class="ident">Uniques</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::set_collection_metadata</span>(
 		<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()).<span class="ident">into</span>(),
-		<span class="ident">T::Helper::class</span>(<span class="number">0</span>),
+		<span class="ident">T::Helper::collection</span>(<span class="number">0</span>),
 		<span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">T::StringLimit::get</span>() <span class="kw">as</span> <span class="ident">usize</span>].<span class="ident">try_into</span>().<span class="ident">unwrap</span>(),
 		<span class="bool-val">false</span>,
 	)
@@ -476,37 +476,37 @@
 	(<span class="ident">caller</span>, <span class="ident">caller_lookup</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">mint_instance</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
+<span class="kw">fn</span> <span class="ident">mint_item</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
 	<span class="ident">index</span>: <span class="ident">u16</span>,
-) -&gt; (<span class="ident">T::InstanceId</span>, <span class="ident">T::AccountId</span>, <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>) {
-	<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">Class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">T::Helper::class</span>(<span class="number">0</span>)).<span class="ident">unwrap</span>().<span class="ident">admin</span>;
+) -&gt; (<span class="ident">T::ItemId</span>, <span class="ident">T::AccountId</span>, <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>) {
+	<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">Collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">T::Helper::collection</span>(<span class="number">0</span>)).<span class="ident">unwrap</span>().<span class="ident">admin</span>;
 	<span class="kw">if</span> <span class="ident">caller</span> <span class="op">!</span><span class="op">=</span> <span class="ident">whitelisted_caller</span>() {
 		<span class="macro">whitelist_account!</span>(<span class="ident">caller</span>);
 	}
 	<span class="kw">let</span> <span class="ident">caller_lookup</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">caller</span>.<span class="ident">clone</span>());
-	<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">T::Helper::instance</span>(<span class="ident">index</span>);
+	<span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="ident">T::Helper::item</span>(<span class="ident">index</span>);
 	<span class="macro">assert!</span>(<span class="ident">Uniques</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::mint</span>(
 		<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()).<span class="ident">into</span>(),
-		<span class="ident">T::Helper::class</span>(<span class="number">0</span>),
-		<span class="ident">instance</span>,
+		<span class="ident">T::Helper::collection</span>(<span class="number">0</span>),
+		<span class="ident">item</span>,
 		<span class="ident">caller_lookup</span>.<span class="ident">clone</span>(),
 	)
 	.<span class="ident">is_ok</span>());
-	(<span class="ident">instance</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>)
+	(<span class="ident">item</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">add_instance_metadata</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
-	<span class="ident">instance</span>: <span class="ident">T::InstanceId</span>,
+<span class="kw">fn</span> <span class="ident">add_item_metadata</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
+	<span class="ident">item</span>: <span class="ident">T::ItemId</span>,
 ) -&gt; (<span class="ident">T::AccountId</span>, <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>) {
-	<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">Class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">T::Helper::class</span>(<span class="number">0</span>)).<span class="ident">unwrap</span>().<span class="ident">owner</span>;
+	<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">Collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">T::Helper::collection</span>(<span class="number">0</span>)).<span class="ident">unwrap</span>().<span class="ident">owner</span>;
 	<span class="kw">if</span> <span class="ident">caller</span> <span class="op">!</span><span class="op">=</span> <span class="ident">whitelisted_caller</span>() {
 		<span class="macro">whitelist_account!</span>(<span class="ident">caller</span>);
 	}
 	<span class="kw">let</span> <span class="ident">caller_lookup</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">caller</span>.<span class="ident">clone</span>());
 	<span class="macro">assert!</span>(<span class="ident">Uniques</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::set_metadata</span>(
 		<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()).<span class="ident">into</span>(),
-		<span class="ident">T::Helper::class</span>(<span class="number">0</span>),
-		<span class="ident">instance</span>,
+		<span class="ident">T::Helper::collection</span>(<span class="number">0</span>),
+		<span class="ident">item</span>,
 		<span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">T::StringLimit::get</span>() <span class="kw">as</span> <span class="ident">usize</span>].<span class="ident">try_into</span>().<span class="ident">unwrap</span>(),
 		<span class="bool-val">false</span>,
 	)
@@ -514,10 +514,10 @@
 	(<span class="ident">caller</span>, <span class="ident">caller_lookup</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">add_instance_attribute</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
-	<span class="ident">instance</span>: <span class="ident">T::InstanceId</span>,
+<span class="kw">fn</span> <span class="ident">add_item_attribute</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
+	<span class="ident">item</span>: <span class="ident">T::ItemId</span>,
 ) -&gt; (<span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u8</span>, <span class="ident">T::KeyLimit</span><span class="op">&gt;</span>, <span class="ident">T::AccountId</span>, <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>) {
-	<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">Class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">T::Helper::class</span>(<span class="number">0</span>)).<span class="ident">unwrap</span>().<span class="ident">owner</span>;
+	<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">Collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">T::Helper::collection</span>(<span class="number">0</span>)).<span class="ident">unwrap</span>().<span class="ident">owner</span>;
 	<span class="kw">if</span> <span class="ident">caller</span> <span class="op">!</span><span class="op">=</span> <span class="ident">whitelisted_caller</span>() {
 		<span class="macro">whitelist_account!</span>(<span class="ident">caller</span>);
 	}
@@ -525,8 +525,8 @@
 	<span class="kw">let</span> <span class="ident">key</span>: <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">T::KeyLimit::get</span>() <span class="kw">as</span> <span class="ident">usize</span>].<span class="ident">try_into</span>().<span class="ident">unwrap</span>();
 	<span class="macro">assert!</span>(<span class="ident">Uniques</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::set_attribute</span>(
 		<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()).<span class="ident">into</span>(),
-		<span class="ident">T::Helper::class</span>(<span class="number">0</span>),
-		<span class="prelude-val">Some</span>(<span class="ident">instance</span>),
+		<span class="ident">T::Helper::collection</span>(<span class="number">0</span>),
+		<span class="prelude-val">Some</span>(<span class="ident">item</span>),
 		<span class="ident">key</span>.<span class="ident">clone</span>(),
 		<span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">T::ValueLimit::get</span>() <span class="kw">as</span> <span class="ident">usize</span>].<span class="ident">try_into</span>().<span class="ident">unwrap</span>(),
 	)
@@ -544,24 +544,24 @@
 
 <span class="macro">benchmarks_instance_pallet!</span> {
 	<span class="ident">create</span> {
-		<span class="kw">let</span> <span class="ident">class</span> <span class="op">=</span> <span class="ident">T::Helper::class</span>(<span class="number">0</span>);
-		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">T::CreateOrigin::successful_origin</span>(<span class="kw-2">&amp;</span><span class="ident">class</span>);
-		<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">T::CreateOrigin::ensure_origin</span>(<span class="ident">origin</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="ident">class</span>).<span class="ident">unwrap</span>();
+		<span class="kw">let</span> <span class="ident">collection</span> <span class="op">=</span> <span class="ident">T::Helper::collection</span>(<span class="number">0</span>);
+		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">T::CreateOrigin::successful_origin</span>(<span class="kw-2">&amp;</span><span class="ident">collection</span>);
+		<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">T::CreateOrigin::ensure_origin</span>(<span class="ident">origin</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="ident">collection</span>).<span class="ident">unwrap</span>();
 		<span class="macro">whitelist_account!</span>(<span class="ident">caller</span>);
 		<span class="kw">let</span> <span class="ident">admin</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">caller</span>.<span class="ident">clone</span>());
 		<span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>, <span class="ident">DepositBalanceOf</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::max_value</span>());
-		<span class="kw">let</span> <span class="ident">call</span> <span class="op">=</span> <span class="ident">Call</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::create</span> { <span class="ident">class</span>, <span class="ident">admin</span> };
+		<span class="kw">let</span> <span class="ident">call</span> <span class="op">=</span> <span class="ident">Call</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::create</span> { <span class="ident">collection</span>, <span class="ident">admin</span> };
 	}: { <span class="ident">call</span>.<span class="ident">dispatch_bypass_filter</span>(<span class="ident">origin</span>)<span class="question-mark">?</span> }
 	<span class="ident">verify</span> {
-		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::Created</span> { <span class="ident">class</span>: <span class="ident">T::Helper::class</span>(<span class="number">0</span>), <span class="ident">creator</span>: <span class="ident">caller</span>.<span class="ident">clone</span>(), <span class="ident">owner</span>: <span class="ident">caller</span> }.<span class="ident">into</span>());
+		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::Created</span> { <span class="ident">collection</span>: <span class="ident">T::Helper::collection</span>(<span class="number">0</span>), <span class="ident">creator</span>: <span class="ident">caller</span>.<span class="ident">clone</span>(), <span class="ident">owner</span>: <span class="ident">caller</span> }.<span class="ident">into</span>());
 	}
 
 	<span class="ident">force_create</span> {
 		<span class="kw">let</span> <span class="ident">caller</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">whitelisted_caller</span>();
 		<span class="kw">let</span> <span class="ident">caller_lookup</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Root</span>, <span class="ident">T::Helper::class</span>(<span class="number">0</span>), <span class="ident">caller_lookup</span>, <span class="bool-val">true</span>)
+	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Root</span>, <span class="ident">T::Helper::collection</span>(<span class="number">0</span>), <span class="ident">caller_lookup</span>, <span class="bool-val">true</span>)
 	<span class="ident">verify</span> {
-		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::ForceCreated</span> { <span class="ident">class</span>: <span class="ident">T::Helper::class</span>(<span class="number">0</span>), <span class="ident">owner</span>: <span class="ident">caller</span> }.<span class="ident">into</span>());
+		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::ForceCreated</span> { <span class="ident">collection</span>: <span class="ident">T::Helper::collection</span>(<span class="number">0</span>), <span class="ident">owner</span>: <span class="ident">caller</span> }.<span class="ident">into</span>());
 	}
 
 	<span class="ident">destroy</span> {
@@ -569,57 +569,57 @@
 		<span class="kw">let</span> <span class="ident">m</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="number">1_000</span>;
 		<span class="kw">let</span> <span class="ident">a</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="number">1_000</span>;
 
-		<span class="kw">let</span> (<span class="ident">class</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>) <span class="op">=</span> <span class="ident">create_class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
-		<span class="ident">add_class_metadata</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> (<span class="ident">collection</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>) <span class="op">=</span> <span class="ident">create_collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">add_collection_metadata</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
 		<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">n</span> {
-			<span class="ident">mint_instance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="ident">u16</span>);
+			<span class="ident">mint_item</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="ident">u16</span>);
 		}
 		<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">m</span> {
-			<span class="ident">add_instance_metadata</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">T::Helper::instance</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="ident">u16</span>));
+			<span class="ident">add_item_metadata</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">T::Helper::item</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="ident">u16</span>));
 		}
 		<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">a</span> {
-			<span class="ident">add_instance_attribute</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">T::Helper::instance</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="ident">u16</span>));
+			<span class="ident">add_item_attribute</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">T::Helper::item</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="ident">u16</span>));
 		}
-		<span class="kw">let</span> <span class="ident">witness</span> <span class="op">=</span> <span class="ident">Class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">class</span>).<span class="ident">unwrap</span>().<span class="ident">destroy_witness</span>();
-	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">class</span>, <span class="ident">witness</span>)
+		<span class="kw">let</span> <span class="ident">witness</span> <span class="op">=</span> <span class="ident">Collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">collection</span>).<span class="ident">unwrap</span>().<span class="ident">destroy_witness</span>();
+	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">collection</span>, <span class="ident">witness</span>)
 	<span class="ident">verify</span> {
-		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::Destroyed</span> { <span class="ident">class</span> }.<span class="ident">into</span>());
+		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::Destroyed</span> { <span class="ident">collection</span> }.<span class="ident">into</span>());
 	}
 
 	<span class="ident">mint</span> {
-		<span class="kw">let</span> (<span class="ident">class</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>) <span class="op">=</span> <span class="ident">create_class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
-		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">T::Helper::instance</span>(<span class="number">0</span>);
-	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="ident">class</span>, <span class="ident">instance</span>, <span class="ident">caller_lookup</span>)
+		<span class="kw">let</span> (<span class="ident">collection</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>) <span class="op">=</span> <span class="ident">create_collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="ident">T::Helper::item</span>(<span class="number">0</span>);
+	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="ident">collection</span>, <span class="ident">item</span>, <span class="ident">caller_lookup</span>)
 	<span class="ident">verify</span> {
-		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::Issued</span> { <span class="ident">class</span>, <span class="ident">instance</span>, <span class="ident">owner</span>: <span class="ident">caller</span> }.<span class="ident">into</span>());
+		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::Issued</span> { <span class="ident">collection</span>, <span class="ident">item</span>, <span class="ident">owner</span>: <span class="ident">caller</span> }.<span class="ident">into</span>());
 	}
 
 	<span class="ident">burn</span> {
-		<span class="kw">let</span> (<span class="ident">class</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>) <span class="op">=</span> <span class="ident">create_class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
-		<span class="kw">let</span> (<span class="ident">instance</span>, ..) <span class="op">=</span> <span class="ident">mint_instance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="number">0</span>);
-	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="ident">class</span>, <span class="ident">instance</span>, <span class="prelude-val">Some</span>(<span class="ident">caller_lookup</span>))
+		<span class="kw">let</span> (<span class="ident">collection</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>) <span class="op">=</span> <span class="ident">create_collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> (<span class="ident">item</span>, ..) <span class="op">=</span> <span class="ident">mint_item</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="number">0</span>);
+	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="ident">collection</span>, <span class="ident">item</span>, <span class="prelude-val">Some</span>(<span class="ident">caller_lookup</span>))
 	<span class="ident">verify</span> {
-		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::Burned</span> { <span class="ident">class</span>, <span class="ident">instance</span>, <span class="ident">owner</span>: <span class="ident">caller</span> }.<span class="ident">into</span>());
+		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::Burned</span> { <span class="ident">collection</span>, <span class="ident">item</span>, <span class="ident">owner</span>: <span class="ident">caller</span> }.<span class="ident">into</span>());
 	}
 
 	<span class="ident">transfer</span> {
-		<span class="kw">let</span> (<span class="ident">class</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>) <span class="op">=</span> <span class="ident">create_class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
-		<span class="kw">let</span> (<span class="ident">instance</span>, ..) <span class="op">=</span> <span class="ident">mint_instance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="number">0</span>);
+		<span class="kw">let</span> (<span class="ident">collection</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>) <span class="op">=</span> <span class="ident">create_collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> (<span class="ident">item</span>, ..) <span class="op">=</span> <span class="ident">mint_item</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="number">0</span>);
 
 		<span class="kw">let</span> <span class="ident">target</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;target&quot;</span>, <span class="number">0</span>, <span class="ident">SEED</span>);
 		<span class="kw">let</span> <span class="ident">target_lookup</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">target</span>.<span class="ident">clone</span>());
-	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="ident">class</span>, <span class="ident">instance</span>, <span class="ident">target_lookup</span>)
+	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="ident">collection</span>, <span class="ident">item</span>, <span class="ident">target_lookup</span>)
 	<span class="ident">verify</span> {
-		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::Transferred</span> { <span class="ident">class</span>, <span class="ident">instance</span>, <span class="ident">from</span>: <span class="ident">caller</span>, <span class="ident">to</span>: <span class="ident">target</span> }.<span class="ident">into</span>());
+		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::Transferred</span> { <span class="ident">collection</span>, <span class="ident">item</span>, <span class="ident">from</span>: <span class="ident">caller</span>, <span class="ident">to</span>: <span class="ident">target</span> }.<span class="ident">into</span>());
 	}
 
 	<span class="ident">redeposit</span> {
 		<span class="kw">let</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="number">5_000</span>;
-		<span class="kw">let</span> (<span class="ident">class</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>) <span class="op">=</span> <span class="ident">create_class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
-		<span class="kw">let</span> <span class="ident">instances</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">i</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">mint_instance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u16</span>).<span class="number">0</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
-		<span class="ident">Uniques</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::force_asset_status</span>(
+		<span class="kw">let</span> (<span class="ident">collection</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>) <span class="op">=</span> <span class="ident">create_collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> <span class="ident">items</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">i</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">mint_item</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u16</span>).<span class="number">0</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+		<span class="ident">Uniques</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::force_item_status</span>(
 			<span class="ident">SystemOrigin::Root</span>.<span class="ident">into</span>(),
-			<span class="ident">class</span>,
+			<span class="ident">collection</span>,
 			<span class="ident">caller_lookup</span>.<span class="ident">clone</span>(),
 			<span class="ident">caller_lookup</span>.<span class="ident">clone</span>(),
 			<span class="ident">caller_lookup</span>.<span class="ident">clone</span>(),
@@ -627,80 +627,80 @@
 			<span class="bool-val">true</span>,
 			<span class="bool-val">false</span>,
 		)<span class="question-mark">?</span>;
-	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="ident">class</span>, <span class="ident">instances</span>.<span class="ident">clone</span>())
+	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="ident">collection</span>, <span class="ident">items</span>.<span class="ident">clone</span>())
 	<span class="ident">verify</span> {
-		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::Redeposited</span> { <span class="ident">class</span>, <span class="ident">successful_instances</span>: <span class="ident">instances</span> }.<span class="ident">into</span>());
+		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::Redeposited</span> { <span class="ident">collection</span>, <span class="ident">successful_items</span>: <span class="ident">items</span> }.<span class="ident">into</span>());
 	}
 
 	<span class="ident">freeze</span> {
-		<span class="kw">let</span> (<span class="ident">class</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>) <span class="op">=</span> <span class="ident">create_class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
-		<span class="kw">let</span> (<span class="ident">instance</span>, ..) <span class="op">=</span> <span class="ident">mint_instance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="number">0</span>);
-	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="ident">T::Helper::class</span>(<span class="number">0</span>), <span class="ident">T::Helper::instance</span>(<span class="number">0</span>))
+		<span class="kw">let</span> (<span class="ident">collection</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>) <span class="op">=</span> <span class="ident">create_collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> (<span class="ident">item</span>, ..) <span class="op">=</span> <span class="ident">mint_item</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="number">0</span>);
+	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="ident">T::Helper::collection</span>(<span class="number">0</span>), <span class="ident">T::Helper::item</span>(<span class="number">0</span>))
 	<span class="ident">verify</span> {
-		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::Frozen</span> { <span class="ident">class</span>: <span class="ident">T::Helper::class</span>(<span class="number">0</span>), <span class="ident">instance</span>: <span class="ident">T::Helper::instance</span>(<span class="number">0</span>) }.<span class="ident">into</span>());
+		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::Frozen</span> { <span class="ident">collection</span>: <span class="ident">T::Helper::collection</span>(<span class="number">0</span>), <span class="ident">item</span>: <span class="ident">T::Helper::item</span>(<span class="number">0</span>) }.<span class="ident">into</span>());
 	}
 
 	<span class="ident">thaw</span> {
-		<span class="kw">let</span> (<span class="ident">class</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>) <span class="op">=</span> <span class="ident">create_class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
-		<span class="kw">let</span> (<span class="ident">instance</span>, ..) <span class="op">=</span> <span class="ident">mint_instance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="number">0</span>);
+		<span class="kw">let</span> (<span class="ident">collection</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>) <span class="op">=</span> <span class="ident">create_collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> (<span class="ident">item</span>, ..) <span class="op">=</span> <span class="ident">mint_item</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="number">0</span>);
 		<span class="ident">Uniques</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::freeze</span>(
 			<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()).<span class="ident">into</span>(),
-			<span class="ident">class</span>,
-			<span class="ident">instance</span>,
+			<span class="ident">collection</span>,
+			<span class="ident">item</span>,
 		)<span class="question-mark">?</span>;
-	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="ident">class</span>, <span class="ident">instance</span>)
+	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="ident">collection</span>, <span class="ident">item</span>)
 	<span class="ident">verify</span> {
-		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::Thawed</span> { <span class="ident">class</span>, <span class="ident">instance</span> }.<span class="ident">into</span>());
+		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::Thawed</span> { <span class="ident">collection</span>, <span class="ident">item</span> }.<span class="ident">into</span>());
 	}
 
-	<span class="ident">freeze_class</span> {
-		<span class="kw">let</span> (<span class="ident">class</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>) <span class="op">=</span> <span class="ident">create_class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
-	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="ident">class</span>)
+	<span class="ident">freeze_collection</span> {
+		<span class="kw">let</span> (<span class="ident">collection</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>) <span class="op">=</span> <span class="ident">create_collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="ident">collection</span>)
 	<span class="ident">verify</span> {
-		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::ClassFrozen</span> { <span class="ident">class</span> }.<span class="ident">into</span>());
+		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::CollectionFrozen</span> { <span class="ident">collection</span> }.<span class="ident">into</span>());
 	}
 
-	<span class="ident">thaw_class</span> {
-		<span class="kw">let</span> (<span class="ident">class</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>) <span class="op">=</span> <span class="ident">create_class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+	<span class="ident">thaw_collection</span> {
+		<span class="kw">let</span> (<span class="ident">collection</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>) <span class="op">=</span> <span class="ident">create_collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()).<span class="ident">into</span>();
-		<span class="ident">Uniques</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::freeze_class</span>(<span class="ident">origin</span>, <span class="ident">class</span>)<span class="question-mark">?</span>;
-	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="ident">class</span>)
+		<span class="ident">Uniques</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::freeze_collection</span>(<span class="ident">origin</span>, <span class="ident">collection</span>)<span class="question-mark">?</span>;
+	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="ident">collection</span>)
 	<span class="ident">verify</span> {
-		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::ClassThawed</span> { <span class="ident">class</span> }.<span class="ident">into</span>());
+		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::CollectionThawed</span> { <span class="ident">collection</span> }.<span class="ident">into</span>());
 	}
 
 	<span class="ident">transfer_ownership</span> {
-		<span class="kw">let</span> (<span class="ident">class</span>, <span class="ident">caller</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> (<span class="ident">collection</span>, <span class="ident">caller</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
 		<span class="kw">let</span> <span class="ident">target</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;target&quot;</span>, <span class="number">0</span>, <span class="ident">SEED</span>);
 		<span class="kw">let</span> <span class="ident">target_lookup</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">target</span>.<span class="ident">clone</span>());
 		<span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">target</span>, <span class="ident">T::Currency::minimum_balance</span>());
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">SystemOrigin::Signed</span>(<span class="ident">target</span>.<span class="ident">clone</span>()).<span class="ident">into</span>();
-		<span class="ident">Uniques</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::set_accept_ownership</span>(<span class="ident">origin</span>, <span class="prelude-val">Some</span>(<span class="ident">class</span>))<span class="question-mark">?</span>;
-	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">class</span>, <span class="ident">target_lookup</span>)
+		<span class="ident">Uniques</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::set_accept_ownership</span>(<span class="ident">origin</span>, <span class="prelude-val">Some</span>(<span class="ident">collection</span>))<span class="question-mark">?</span>;
+	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">collection</span>, <span class="ident">target_lookup</span>)
 	<span class="ident">verify</span> {
-		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::OwnerChanged</span> { <span class="ident">class</span>, <span class="ident">new_owner</span>: <span class="ident">target</span> }.<span class="ident">into</span>());
+		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::OwnerChanged</span> { <span class="ident">collection</span>, <span class="ident">new_owner</span>: <span class="ident">target</span> }.<span class="ident">into</span>());
 	}
 
 	<span class="ident">set_team</span> {
-		<span class="kw">let</span> (<span class="ident">class</span>, <span class="ident">caller</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> (<span class="ident">collection</span>, <span class="ident">caller</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
 		<span class="kw">let</span> <span class="ident">target0</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">account</span>(<span class="string">&quot;target&quot;</span>, <span class="number">0</span>, <span class="ident">SEED</span>));
 		<span class="kw">let</span> <span class="ident">target1</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">account</span>(<span class="string">&quot;target&quot;</span>, <span class="number">1</span>, <span class="ident">SEED</span>));
 		<span class="kw">let</span> <span class="ident">target2</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">account</span>(<span class="string">&quot;target&quot;</span>, <span class="number">2</span>, <span class="ident">SEED</span>));
-	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">class</span>, <span class="ident">target0</span>, <span class="ident">target1</span>, <span class="ident">target2</span>)
+	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">collection</span>, <span class="ident">target0</span>, <span class="ident">target1</span>, <span class="ident">target2</span>)
 	<span class="ident">verify</span> {
 		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::TeamChanged</span>{
-			<span class="ident">class</span>,
+			<span class="ident">collection</span>,
 			<span class="ident">issuer</span>: <span class="ident">account</span>(<span class="string">&quot;target&quot;</span>, <span class="number">0</span>, <span class="ident">SEED</span>),
 			<span class="ident">admin</span>: <span class="ident">account</span>(<span class="string">&quot;target&quot;</span>, <span class="number">1</span>, <span class="ident">SEED</span>),
 			<span class="ident">freezer</span>: <span class="ident">account</span>(<span class="string">&quot;target&quot;</span>, <span class="number">2</span>, <span class="ident">SEED</span>),
 		}.<span class="ident">into</span>());
 	}
 
-	<span class="ident">force_asset_status</span> {
-		<span class="kw">let</span> (<span class="ident">class</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>) <span class="op">=</span> <span class="ident">create_class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+	<span class="ident">force_item_status</span> {
+		<span class="kw">let</span> (<span class="ident">collection</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>) <span class="op">=</span> <span class="ident">create_collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">T::ForceOrigin::successful_origin</span>();
-		<span class="kw">let</span> <span class="ident">call</span> <span class="op">=</span> <span class="ident">Call</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::force_asset_status</span> {
-			<span class="ident">class</span>,
+		<span class="kw">let</span> <span class="ident">call</span> <span class="op">=</span> <span class="ident">Call</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::force_item_status</span> {
+			<span class="ident">collection</span>,
 			<span class="ident">owner</span>: <span class="ident">caller_lookup</span>.<span class="ident">clone</span>(),
 			<span class="ident">issuer</span>: <span class="ident">caller_lookup</span>.<span class="ident">clone</span>(),
 			<span class="ident">admin</span>: <span class="ident">caller_lookup</span>.<span class="ident">clone</span>(),
@@ -710,98 +710,98 @@
 		};
 	}: { <span class="ident">call</span>.<span class="ident">dispatch_bypass_filter</span>(<span class="ident">origin</span>)<span class="question-mark">?</span> }
 	<span class="ident">verify</span> {
-		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::AssetStatusChanged</span> { <span class="ident">class</span> }.<span class="ident">into</span>());
+		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::ItemStatusChanged</span> { <span class="ident">collection</span> }.<span class="ident">into</span>());
 	}
 
 	<span class="ident">set_attribute</span> {
 		<span class="kw">let</span> <span class="ident">key</span>: <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0u8</span>; <span class="ident">T::KeyLimit::get</span>() <span class="kw">as</span> <span class="ident">usize</span>].<span class="ident">try_into</span>().<span class="ident">unwrap</span>();
 		<span class="kw">let</span> <span class="ident">value</span>: <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0u8</span>; <span class="ident">T::ValueLimit::get</span>() <span class="kw">as</span> <span class="ident">usize</span>].<span class="ident">try_into</span>().<span class="ident">unwrap</span>();
 
-		<span class="kw">let</span> (<span class="ident">class</span>, <span class="ident">caller</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
-		<span class="kw">let</span> (<span class="ident">instance</span>, ..) <span class="op">=</span> <span class="ident">mint_instance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="number">0</span>);
-		<span class="ident">add_instance_metadata</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">instance</span>);
-	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">class</span>, <span class="prelude-val">Some</span>(<span class="ident">instance</span>), <span class="ident">key</span>.<span class="ident">clone</span>(), <span class="ident">value</span>.<span class="ident">clone</span>())
+		<span class="kw">let</span> (<span class="ident">collection</span>, <span class="ident">caller</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> (<span class="ident">item</span>, ..) <span class="op">=</span> <span class="ident">mint_item</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="number">0</span>);
+		<span class="ident">add_item_metadata</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">item</span>);
+	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">collection</span>, <span class="prelude-val">Some</span>(<span class="ident">item</span>), <span class="ident">key</span>.<span class="ident">clone</span>(), <span class="ident">value</span>.<span class="ident">clone</span>())
 	<span class="ident">verify</span> {
-		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::AttributeSet</span> { <span class="ident">class</span>, <span class="ident">maybe_instance</span>: <span class="prelude-val">Some</span>(<span class="ident">instance</span>), <span class="ident">key</span>, <span class="ident">value</span> }.<span class="ident">into</span>());
+		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::AttributeSet</span> { <span class="ident">collection</span>, <span class="ident">maybe_item</span>: <span class="prelude-val">Some</span>(<span class="ident">item</span>), <span class="ident">key</span>, <span class="ident">value</span> }.<span class="ident">into</span>());
 	}
 
 	<span class="ident">clear_attribute</span> {
-		<span class="kw">let</span> (<span class="ident">class</span>, <span class="ident">caller</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
-		<span class="kw">let</span> (<span class="ident">instance</span>, ..) <span class="op">=</span> <span class="ident">mint_instance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="number">0</span>);
-		<span class="ident">add_instance_metadata</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">instance</span>);
-		<span class="kw">let</span> (<span class="ident">key</span>, ..) <span class="op">=</span> <span class="ident">add_instance_attribute</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">instance</span>);
-	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">class</span>, <span class="prelude-val">Some</span>(<span class="ident">instance</span>), <span class="ident">key</span>.<span class="ident">clone</span>())
+		<span class="kw">let</span> (<span class="ident">collection</span>, <span class="ident">caller</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> (<span class="ident">item</span>, ..) <span class="op">=</span> <span class="ident">mint_item</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="number">0</span>);
+		<span class="ident">add_item_metadata</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">item</span>);
+		<span class="kw">let</span> (<span class="ident">key</span>, ..) <span class="op">=</span> <span class="ident">add_item_attribute</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">item</span>);
+	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">collection</span>, <span class="prelude-val">Some</span>(<span class="ident">item</span>), <span class="ident">key</span>.<span class="ident">clone</span>())
 	<span class="ident">verify</span> {
-		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::AttributeCleared</span> { <span class="ident">class</span>, <span class="ident">maybe_instance</span>: <span class="prelude-val">Some</span>(<span class="ident">instance</span>), <span class="ident">key</span> }.<span class="ident">into</span>());
+		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::AttributeCleared</span> { <span class="ident">collection</span>, <span class="ident">maybe_item</span>: <span class="prelude-val">Some</span>(<span class="ident">item</span>), <span class="ident">key</span> }.<span class="ident">into</span>());
 	}
 
 	<span class="ident">set_metadata</span> {
 		<span class="kw">let</span> <span class="ident">data</span>: <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0u8</span>; <span class="ident">T::StringLimit::get</span>() <span class="kw">as</span> <span class="ident">usize</span>].<span class="ident">try_into</span>().<span class="ident">unwrap</span>();
 
-		<span class="kw">let</span> (<span class="ident">class</span>, <span class="ident">caller</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
-		<span class="kw">let</span> (<span class="ident">instance</span>, ..) <span class="op">=</span> <span class="ident">mint_instance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="number">0</span>);
-	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">class</span>, <span class="ident">instance</span>, <span class="ident">data</span>.<span class="ident">clone</span>(), <span class="bool-val">false</span>)
+		<span class="kw">let</span> (<span class="ident">collection</span>, <span class="ident">caller</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> (<span class="ident">item</span>, ..) <span class="op">=</span> <span class="ident">mint_item</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="number">0</span>);
+	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">collection</span>, <span class="ident">item</span>, <span class="ident">data</span>.<span class="ident">clone</span>(), <span class="bool-val">false</span>)
 	<span class="ident">verify</span> {
-		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::MetadataSet</span> { <span class="ident">class</span>, <span class="ident">instance</span>, <span class="ident">data</span>, <span class="ident">is_frozen</span>: <span class="bool-val">false</span> }.<span class="ident">into</span>());
+		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::MetadataSet</span> { <span class="ident">collection</span>, <span class="ident">item</span>, <span class="ident">data</span>, <span class="ident">is_frozen</span>: <span class="bool-val">false</span> }.<span class="ident">into</span>());
 	}
 
 	<span class="ident">clear_metadata</span> {
-		<span class="kw">let</span> (<span class="ident">class</span>, <span class="ident">caller</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
-		<span class="kw">let</span> (<span class="ident">instance</span>, ..) <span class="op">=</span> <span class="ident">mint_instance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="number">0</span>);
-		<span class="ident">add_instance_metadata</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">instance</span>);
-	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">class</span>, <span class="ident">instance</span>)
+		<span class="kw">let</span> (<span class="ident">collection</span>, <span class="ident">caller</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> (<span class="ident">item</span>, ..) <span class="op">=</span> <span class="ident">mint_item</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="number">0</span>);
+		<span class="ident">add_item_metadata</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">item</span>);
+	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">collection</span>, <span class="ident">item</span>)
 	<span class="ident">verify</span> {
-		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::MetadataCleared</span> { <span class="ident">class</span>, <span class="ident">instance</span> }.<span class="ident">into</span>());
+		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::MetadataCleared</span> { <span class="ident">collection</span>, <span class="ident">item</span> }.<span class="ident">into</span>());
 	}
 
-	<span class="ident">set_class_metadata</span> {
+	<span class="ident">set_collection_metadata</span> {
 		<span class="kw">let</span> <span class="ident">data</span>: <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0u8</span>; <span class="ident">T::StringLimit::get</span>() <span class="kw">as</span> <span class="ident">usize</span>].<span class="ident">try_into</span>().<span class="ident">unwrap</span>();
 
-		<span class="kw">let</span> (<span class="ident">class</span>, <span class="ident">caller</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
-	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">class</span>, <span class="ident">data</span>.<span class="ident">clone</span>(), <span class="bool-val">false</span>)
+		<span class="kw">let</span> (<span class="ident">collection</span>, <span class="ident">caller</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">collection</span>, <span class="ident">data</span>.<span class="ident">clone</span>(), <span class="bool-val">false</span>)
 	<span class="ident">verify</span> {
-		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::ClassMetadataSet</span> { <span class="ident">class</span>, <span class="ident">data</span>, <span class="ident">is_frozen</span>: <span class="bool-val">false</span> }.<span class="ident">into</span>());
+		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::CollectionMetadataSet</span> { <span class="ident">collection</span>, <span class="ident">data</span>, <span class="ident">is_frozen</span>: <span class="bool-val">false</span> }.<span class="ident">into</span>());
 	}
 
-	<span class="ident">clear_class_metadata</span> {
-		<span class="kw">let</span> (<span class="ident">class</span>, <span class="ident">caller</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
-		<span class="ident">add_class_metadata</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
-	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">class</span>)
+	<span class="ident">clear_collection_metadata</span> {
+		<span class="kw">let</span> (<span class="ident">collection</span>, <span class="ident">caller</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">add_collection_metadata</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">collection</span>)
 	<span class="ident">verify</span> {
-		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::ClassMetadataCleared</span> { <span class="ident">class</span> }.<span class="ident">into</span>());
+		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::CollectionMetadataCleared</span> { <span class="ident">collection</span> }.<span class="ident">into</span>());
 	}
 
 	<span class="ident">approve_transfer</span> {
-		<span class="kw">let</span> (<span class="ident">class</span>, <span class="ident">caller</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
-		<span class="kw">let</span> (<span class="ident">instance</span>, ..) <span class="op">=</span> <span class="ident">mint_instance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="number">0</span>);
+		<span class="kw">let</span> (<span class="ident">collection</span>, <span class="ident">caller</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> (<span class="ident">item</span>, ..) <span class="op">=</span> <span class="ident">mint_item</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="number">0</span>);
 		<span class="kw">let</span> <span class="ident">delegate</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;delegate&quot;</span>, <span class="number">0</span>, <span class="ident">SEED</span>);
 		<span class="kw">let</span> <span class="ident">delegate_lookup</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">delegate</span>.<span class="ident">clone</span>());
-	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="ident">class</span>, <span class="ident">instance</span>, <span class="ident">delegate_lookup</span>)
+	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="ident">collection</span>, <span class="ident">item</span>, <span class="ident">delegate_lookup</span>)
 	<span class="ident">verify</span> {
-		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::ApprovedTransfer</span> { <span class="ident">class</span>, <span class="ident">instance</span>, <span class="ident">owner</span>: <span class="ident">caller</span>, <span class="ident">delegate</span> }.<span class="ident">into</span>());
+		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::ApprovedTransfer</span> { <span class="ident">collection</span>, <span class="ident">item</span>, <span class="ident">owner</span>: <span class="ident">caller</span>, <span class="ident">delegate</span> }.<span class="ident">into</span>());
 	}
 
 	<span class="ident">cancel_approval</span> {
-		<span class="kw">let</span> (<span class="ident">class</span>, <span class="ident">caller</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_class</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
-		<span class="kw">let</span> (<span class="ident">instance</span>, ..) <span class="op">=</span> <span class="ident">mint_instance</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="number">0</span>);
+		<span class="kw">let</span> (<span class="ident">collection</span>, <span class="ident">caller</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">create_collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> (<span class="ident">item</span>, ..) <span class="op">=</span> <span class="ident">mint_item</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="number">0</span>);
 		<span class="kw">let</span> <span class="ident">delegate</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;delegate&quot;</span>, <span class="number">0</span>, <span class="ident">SEED</span>);
 		<span class="kw">let</span> <span class="ident">delegate_lookup</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">delegate</span>.<span class="ident">clone</span>());
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()).<span class="ident">into</span>();
-		<span class="ident">Uniques</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::approve_transfer</span>(<span class="ident">origin</span>, <span class="ident">class</span>, <span class="ident">instance</span>, <span class="ident">delegate_lookup</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
-	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="ident">class</span>, <span class="ident">instance</span>, <span class="prelude-val">Some</span>(<span class="ident">delegate_lookup</span>))
+		<span class="ident">Uniques</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::approve_transfer</span>(<span class="ident">origin</span>, <span class="ident">collection</span>, <span class="ident">item</span>, <span class="ident">delegate_lookup</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
+	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="ident">collection</span>, <span class="ident">item</span>, <span class="prelude-val">Some</span>(<span class="ident">delegate_lookup</span>))
 	<span class="ident">verify</span> {
-		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::ApprovalCancelled</span> { <span class="ident">class</span>, <span class="ident">instance</span>, <span class="ident">owner</span>: <span class="ident">caller</span>, <span class="ident">delegate</span> }.<span class="ident">into</span>());
+		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::ApprovalCancelled</span> { <span class="ident">collection</span>, <span class="ident">item</span>, <span class="ident">owner</span>: <span class="ident">caller</span>, <span class="ident">delegate</span> }.<span class="ident">into</span>());
 	}
 
 	<span class="ident">set_accept_ownership</span> {
 		<span class="kw">let</span> <span class="ident">caller</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">whitelisted_caller</span>();
 		<span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>, <span class="ident">DepositBalanceOf</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::max_value</span>());
-		<span class="kw">let</span> <span class="ident">class</span> <span class="op">=</span> <span class="ident">T::Helper::class</span>(<span class="number">0</span>);
-	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="prelude-val">Some</span>(<span class="ident">class</span>))
+		<span class="kw">let</span> <span class="ident">collection</span> <span class="op">=</span> <span class="ident">T::Helper::collection</span>(<span class="number">0</span>);
+	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="prelude-val">Some</span>(<span class="ident">collection</span>))
 	<span class="ident">verify</span> {
 		<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">Event::OwnershipAcceptanceChanged</span> {
 			<span class="ident">who</span>: <span class="ident">caller</span>,
-			<span class="ident">maybe_class</span>: <span class="prelude-val">Some</span>(<span class="ident">class</span>),
+			<span class="ident">maybe_collection</span>: <span class="prelude-val">Some</span>(<span class="ident">collection</span>),
 		}.<span class="ident">into</span>());
 	}
 
