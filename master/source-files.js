@@ -465,7 +465,6 @@ sourcesIndex["prometheus"] = {"name":"","dirs":[{"name":"encoder","files":["mod.
 sourcesIndex["prometheus_client"] = {"name":"","dirs":[{"name":"encoding","files":["text.rs"]},{"name":"metrics","files":["counter.rs","exemplar.rs","family.rs","gauge.rs","histogram.rs","info.rs"]}],"files":["encoding.rs","lib.rs","metrics.rs","registry.rs"]};
 sourcesIndex["prometheus_client_derive_text_encode"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["prost"] = {"name":"","files":["encoding.rs","error.rs","lib.rs","message.rs","types.rs"]};
-sourcesIndex["prost_derive"] = {"name":"","dirs":[{"name":"field","files":["group.rs","map.rs","message.rs","mod.rs","oneof.rs","scalar.rs"]}],"files":["lib.rs"]};
 sourcesIndex["psm"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["ptr_meta"] = {"name":"","files":["impls.rs","lib.rs"]};
 sourcesIndex["ptr_meta_derive"] = {"name":"","files":["lib.rs"]};
