@@ -230,6 +230,16 @@
 <span id="225">225</span>
 <span id="226">226</span>
 <span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2022 Parity Technologies (UK) Ltd.</span>
@@ -295,8 +305,16 @@
 	<span class="kw">pub</span> <span class="ident">tolerance</span>: <span class="ident">f64</span>,
 
 	<span class="doccomment">/// Time limit for the verification benchmark.</span>
-	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;2.0&quot;</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;SECONDS&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;5.0&quot;</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;SECONDS&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">verify_duration</span>: <span class="ident">f32</span>,
+
+	<span class="doccomment">/// Time limit for the hash function benchmark.</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;5.0&quot;</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;SECONDS&quot;</span>)]</span>
+	<span class="kw">pub</span> <span class="ident">hash_duration</span>: <span class="ident">f32</span>,
+
+	<span class="doccomment">/// Time limit for the memory benchmark.</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;5.0&quot;</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;SECONDS&quot;</span>)]</span>
+	<span class="kw">pub</span> <span class="ident">memory_duration</span>: <span class="ident">f32</span>,
 
 	<span class="doccomment">/// Time limit for each disk benchmark.</span>
 	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;5.0&quot;</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;SECONDS&quot;</span>)]</span>
@@ -366,11 +384,13 @@
 	<span class="kw">fn</span> <span class="ident">measure</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">metric</span>: <span class="kw-2">&amp;</span><span class="ident">Metric</span>, <span class="ident">dir</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Throughput</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">verify_limit</span> <span class="op">=</span> <span class="ident">ExecutionLimit::from_secs_f32</span>(<span class="self">self</span>.<span class="ident">verify_duration</span>);
 		<span class="kw">let</span> <span class="ident">disk_limit</span> <span class="op">=</span> <span class="ident">ExecutionLimit::from_secs_f32</span>(<span class="self">self</span>.<span class="ident">disk_duration</span>);
+		<span class="kw">let</span> <span class="ident">hash_limit</span> <span class="op">=</span> <span class="ident">ExecutionLimit::from_secs_f32</span>(<span class="self">self</span>.<span class="ident">hash_duration</span>);
+		<span class="kw">let</span> <span class="ident">memory_limit</span> <span class="op">=</span> <span class="ident">ExecutionLimit::from_secs_f32</span>(<span class="self">self</span>.<span class="ident">memory_duration</span>);
 
 		<span class="kw">let</span> <span class="ident">score</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">metric</span> {
-			<span class="ident">Metric::Blake2256</span> =&gt; <span class="ident">Throughput::MiBs</span>(<span class="ident">benchmark_cpu</span>() <span class="kw">as</span> <span class="ident">f64</span>),
+			<span class="ident">Metric::Blake2256</span> =&gt; <span class="ident">Throughput::MiBs</span>(<span class="ident">benchmark_cpu</span>(<span class="ident">hash_limit</span>) <span class="kw">as</span> <span class="ident">f64</span>),
 			<span class="ident">Metric::Sr25519Verify</span> =&gt; <span class="ident">Throughput::MiBs</span>(<span class="ident">benchmark_sr25519_verify</span>(<span class="ident">verify_limit</span>)),
-			<span class="ident">Metric::MemCopy</span> =&gt; <span class="ident">Throughput::MiBs</span>(<span class="ident">benchmark_memory</span>() <span class="kw">as</span> <span class="ident">f64</span>),
+			<span class="ident">Metric::MemCopy</span> =&gt; <span class="ident">Throughput::MiBs</span>(<span class="ident">benchmark_memory</span>(<span class="ident">memory_limit</span>) <span class="kw">as</span> <span class="ident">f64</span>),
 			<span class="ident">Metric::DiskSeqWrite</span> =&gt;
 				<span class="ident">Throughput::MiBs</span>(<span class="ident">benchmark_disk_sequential_writes</span>(<span class="ident">disk_limit</span>, <span class="ident">dir</span>)<span class="question-mark">?</span> <span class="kw">as</span> <span class="ident">f64</span>),
 			<span class="ident">Metric::DiskRndWrite</span> =&gt;
