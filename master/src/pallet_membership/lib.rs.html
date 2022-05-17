@@ -805,8 +805,6 @@
 <span id="800">800</span>
 <span id="801">801</span>
 <span id="802">802</span>
-<span id="803">803</span>
-<span id="804">804</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -832,9 +830,7 @@
 <span class="comment">// Ensure we&#39;re `no_std` when compiling for Wasm.</span>
 <span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>), <span class="ident">no_std</span>)]</span>
 
-<span class="kw">use</span> <span class="ident">frame_support::traits</span>::{
-	<span class="ident">ChangeMembers</span>, <span class="ident">Contains</span>, <span class="ident">Get</span>, <span class="ident">InitializeMembers</span>, <span class="ident">SortedMembers</span>, <span class="ident">StorageVersion</span>,
-};
+<span class="kw">use</span> <span class="ident">frame_support::traits</span>::{<span class="ident">ChangeMembers</span>, <span class="ident">Contains</span>, <span class="ident">Get</span>, <span class="ident">InitializeMembers</span>, <span class="ident">SortedMembers</span>};
 <span class="kw">use</span> <span class="ident">sp_std::prelude</span>::<span class="kw-2">*</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">migrations</span>;
@@ -1316,7 +1312,7 @@
 
 	<span class="kw">use</span> <span class="ident">frame_support</span>::{
 		<span class="ident">assert_noop</span>, <span class="ident">assert_ok</span>, <span class="ident">ord_parameter_types</span>, <span class="ident">parameter_types</span>,
-		<span class="ident">traits</span>::{<span class="ident">ConstU32</span>, <span class="ident">ConstU64</span>, <span class="ident">GenesisBuild</span>},
+		<span class="ident">traits</span>::{<span class="ident">ConstU32</span>, <span class="ident">ConstU64</span>, <span class="ident">GenesisBuild</span>, <span class="ident">StorageVersion</span>},
 	};
 	<span class="kw">use</span> <span class="ident">frame_system::EnsureSignedBy</span>;
 

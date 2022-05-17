@@ -2349,6 +2349,21 @@
 <span id="2344">2344</span>
 <span id="2345">2345</span>
 <span id="2346">2346</span>
+<span id="2347">2347</span>
+<span id="2348">2348</span>
+<span id="2349">2349</span>
+<span id="2350">2350</span>
+<span id="2351">2351</span>
+<span id="2352">2352</span>
+<span id="2353">2353</span>
+<span id="2354">2354</span>
+<span id="2355">2355</span>
+<span id="2356">2356</span>
+<span id="2357">2357</span>
+<span id="2358">2358</span>
+<span id="2359">2359</span>
+<span id="2360">2360</span>
+<span id="2361">2361</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -3091,16 +3106,22 @@
 			<span class="comment">// We checked for zero above</span>
 			.<span class="ident">div</span>(<span class="ident">bonded_balance</span>);
 
+		<span class="kw">let</span> <span class="ident">min_points_to_balance</span> <span class="op">=</span> <span class="ident">T::MinPointsToBalance::get</span>();
+
 		<span class="comment">// Pool points can inflate relative to balance, but only if the pool is slashed.</span>
 		<span class="comment">// If we cap the ratio of points:balance so one cannot join a pool that has been slashed</span>
-		<span class="comment">// 90%,</span>
-		<span class="macro">ensure!</span>(<span class="ident">points_to_balance_ratio_floor</span> <span class="op">&lt;</span> <span class="number">10u32</span>.<span class="ident">into</span>(), <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::OverflowRisk</span>);
-		<span class="comment">// while restricting the balance to 1/10th of max total issuance,</span>
-		<span class="kw">let</span> <span class="ident">next_bonded_balance</span> <span class="op">=</span> <span class="ident">bonded_balance</span>.<span class="ident">saturating_add</span>(<span class="ident">new_funds</span>);
+		<span class="comment">// by `min_points_to_balance`%, if not zero.</span>
 		<span class="macro">ensure!</span>(
-			<span class="ident">next_bonded_balance</span> <span class="op">&lt;</span> <span class="ident">BalanceOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::max_value</span>().<span class="ident">div</span>(<span class="number">10u32</span>.<span class="ident">into</span>()),
+			<span class="ident">points_to_balance_ratio_floor</span> <span class="op">&lt;</span> <span class="ident">min_points_to_balance</span>.<span class="ident">into</span>(),
 			<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::OverflowRisk</span>
 		);
+		<span class="comment">// while restricting the balance to `min_points_to_balance` of max total issuance,</span>
+		<span class="kw">let</span> <span class="ident">next_bonded_balance</span> <span class="op">=</span> <span class="ident">bonded_balance</span>.<span class="ident">saturating_add</span>(<span class="ident">new_funds</span>);
+		<span class="macro">ensure!</span>(
+			<span class="ident">next_bonded_balance</span> <span class="op">&lt;</span> <span class="ident">BalanceOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::max_value</span>().<span class="ident">div</span>(<span class="ident">min_points_to_balance</span>.<span class="ident">into</span>()),
+			<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::OverflowRisk</span>
+		);
+
 		<span class="comment">// then we can be decently confident the bonding pool points will not overflow</span>
 		<span class="comment">// `BalanceOf&lt;T&gt;`. Note that these are just heuristics.</span>
 
@@ -3452,6 +3473,14 @@
 		<span class="doccomment">/// The nomination pool&#39;s pallet id.</span>
 		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
 		<span class="kw">type</span> <span class="ident">PalletId</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">frame_support::PalletId</span><span class="op">&gt;</span>;
+
+		<span class="doccomment">/// The minimum pool points-to-balance ratio that must be maintained for it to be `open`.</span>
+		<span class="doccomment">/// This is important in the event slashing takes place and the pool&#39;s points-to-balance</span>
+		<span class="doccomment">/// ratio becomes disproportional.</span>
+		<span class="doccomment">/// For a value of 10, the threshold would be a pool points-to-balance ratio of 10:1.</span>
+		<span class="doccomment">/// Such a scenario would also be the equivalent of the pool being 90% slashed.</span>
+		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
+		<span class="kw">type</span> <span class="ident">MinPointsToBalance</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>;
 
 		<span class="doccomment">/// Infallible method for converting `Currency::Balance` to `U256`.</span>
 		<span class="kw">type</span> <span class="ident">BalanceToU256</span>: <span class="ident">Convert</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">U256</span><span class="op">&gt;</span>;
@@ -4195,7 +4224,7 @@
 			<span class="prelude-val">Ok</span>(())
 		}
 
-		<span class="doccomment">/// Update configurations for the nomination pools. The origin must for this call must be</span>
+		<span class="doccomment">/// Update configurations for the nomination pools. The origin for this call must be</span>
 		<span class="doccomment">/// Root.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// # Arguments</span>
@@ -4231,7 +4260,6 @@
 			<span class="macro">config_op_exp!</span>(<span class="ident">MaxPools</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">max_pools</span>);
 			<span class="macro">config_op_exp!</span>(<span class="ident">MaxPoolMembers</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">max_members</span>);
 			<span class="macro">config_op_exp!</span>(<span class="ident">MaxPoolMembersPerPool</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">max_members_per_pool</span>);
-
 			<span class="prelude-val">Ok</span>(())
 		}
 
@@ -4292,11 +4320,14 @@
 	<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">Hooks</span><span class="op">&lt;</span><span class="ident">BlockNumberFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 		<span class="kw">fn</span> <span class="ident">integrity_test</span>() {
 			<span class="macro">assert!</span>(
+				<span class="ident">T::MinPointsToBalance::get</span>() <span class="op">&gt;</span> <span class="number">0</span>,
+				<span class="string">&quot;Minimum points to balance ratio must be greater than 0&quot;</span>
+			);
+			<span class="macro">assert!</span>(
 				<span class="ident">sp_std::mem::size_of</span>::<span class="op">&lt;</span><span class="ident">RewardPoints</span><span class="op">&gt;</span>() <span class="op">&gt;</span><span class="op">=</span>
 					<span class="number">2</span> <span class="op">*</span> <span class="ident">sp_std::mem::size_of</span>::<span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
 				<span class="string">&quot;bit-length of the reward points must be at least twice as much as balance&quot;</span>
 			);
-
 			<span class="macro">assert!</span>(
 				<span class="ident">T::StakingInterface::bonding_duration</span>() <span class="op">&lt;</span> <span class="ident">TotalUnbondingPools</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(),
 				<span class="string">&quot;There must be more unbonding pools then the bonding duration /
@@ -4655,7 +4686,6 @@
 				<span class="ident">sum_unbonding_balance</span>
 			);
 		}
-
 		<span class="prelude-val">Ok</span>(())
 	}
 

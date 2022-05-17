@@ -669,7 +669,6 @@
 <span id="664">664</span>
 <span id="665">665</span>
 <span id="666">666</span>
-<span id="667">667</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -715,10 +714,11 @@
 	<span class="ident">dispatch::DispatchResultWithPostInfo</span>,
 	<span class="ident">pallet_prelude::Get</span>,
 	<span class="ident">storage</span>,
-	<span class="ident">traits</span>::{<span class="ident">KeyOwnerProofSystem</span>, <span class="ident">OneSessionHandler</span>, <span class="ident">StorageVersion</span>},
+	<span class="ident">traits</span>::{<span class="ident">KeyOwnerProofSystem</span>, <span class="ident">OneSessionHandler</span>},
 	<span class="ident">weights</span>::{<span class="ident">Pays</span>, <span class="ident">Weight</span>},
 	<span class="ident">WeakBoundedVec</span>,
 };
+<span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{<span class="ident">generic::DigestItem</span>, <span class="ident">traits::Zero</span>, <span class="ident">DispatchResult</span>, <span class="ident">KeyTypeId</span>};
 <span class="kw">use</span> <span class="ident">sp_session</span>::{<span class="ident">GetSessionNumber</span>, <span class="ident">GetValidatorCount</span>};
 <span class="kw">use</span> <span class="ident">sp_staking::SessionIndex</span>;
@@ -741,16 +741,14 @@
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">pallet</span>::<span class="kw-2">*</span>;
 
-<span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
-
-<span class="doccomment">/// The current storage version.</span>
-<span class="kw">const</span> <span class="ident">STORAGE_VERSION</span>: <span class="ident">StorageVersion</span> <span class="op">=</span> <span class="ident">StorageVersion::new</span>(<span class="number">4</span>);
-
 <span class="attribute">#[<span class="ident">frame_support::pallet</span>]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">pallet</span> {
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 	<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">dispatch::DispatchResult</span>, <span class="ident">pallet_prelude</span>::<span class="kw-2">*</span>};
 	<span class="kw">use</span> <span class="ident">frame_system::pallet_prelude</span>::<span class="kw-2">*</span>;
+
+	<span class="doccomment">/// The current storage version.</span>
+	<span class="kw">const</span> <span class="ident">STORAGE_VERSION</span>: <span class="ident">StorageVersion</span> <span class="op">=</span> <span class="ident">StorageVersion::new</span>(<span class="number">4</span>);
 
 	<span class="attribute">#[<span class="ident">pallet::pallet</span>]</span>
 	<span class="attribute">#[<span class="ident">pallet::generate_store</span>(<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">trait</span> <span class="ident">Store</span>)]</span>
