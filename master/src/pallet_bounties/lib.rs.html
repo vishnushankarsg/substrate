@@ -1708,14 +1708,14 @@
 	<span class="doccomment">/// This actually does computation. If you need to keep using it, then make sure you cache the</span>
 	<span class="doccomment">/// value and only call this once.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">account_id</span>() -&gt; <span class="ident">T::AccountId</span> {
-		<span class="ident">T::PalletId::get</span>().<span class="ident">into_account</span>()
+		<span class="ident">T::PalletId::get</span>().<span class="ident">into_account_truncating</span>()
 	}
 
 	<span class="doccomment">/// The account ID of a bounty account</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bounty_account_id</span>(<span class="ident">id</span>: <span class="ident">BountyIndex</span>) -&gt; <span class="ident">T::AccountId</span> {
 		<span class="comment">// only use two byte prefix to support 16 byte account id (used by test)</span>
 		<span class="comment">// &quot;modl&quot; ++ &quot;py/trsry&quot; ++ &quot;bt&quot; is 14 bytes, and two bytes remaining for bounty index</span>
-		<span class="ident">T::PalletId::get</span>().<span class="ident">into_sub_account</span>((<span class="string">&quot;bt&quot;</span>, <span class="ident">id</span>))
+		<span class="ident">T::PalletId::get</span>().<span class="ident">into_sub_account_truncating</span>((<span class="string">&quot;bt&quot;</span>, <span class="ident">id</span>))
 	}
 
 	<span class="kw">fn</span> <span class="ident">create_bounty</span>(

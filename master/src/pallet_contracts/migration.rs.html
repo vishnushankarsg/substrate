@@ -270,12 +270,6 @@
 <span id="265">265</span>
 <span id="266">266</span>
 <span id="267">267</span>
-<span id="268">268</span>
-<span id="269">269</span>
-<span id="270">270</span>
-<span id="271">271</span>
-<span id="272">272</span>
-<span id="273">273</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -296,11 +290,8 @@
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">BalanceOf</span>, <span class="ident">CodeHash</span>, <span class="ident">Config</span>, <span class="ident">Pallet</span>, <span class="ident">TrieId</span>, <span class="ident">Weight</span>};
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
-	<span class="ident">codec</span>, <span class="ident">generate_storage_alias</span>,
-	<span class="ident">pallet_prelude</span>::<span class="kw-2">*</span>,
-	<span class="ident">storage::migration</span>,
-	<span class="ident">traits</span>::{<span class="ident">Get</span>, <span class="ident">PalletInfoAccess</span>},
-	<span class="ident">Identity</span>, <span class="ident">Twox64Concat</span>,
+	<span class="ident">codec</span>, <span class="ident">pallet_prelude</span>::<span class="kw-2">*</span>, <span class="ident">storage::migration</span>, <span class="ident">storage_alias</span>, <span class="ident">traits::Get</span>, <span class="ident">Identity</span>,
+	<span class="ident">Twox64Concat</span>,
 };
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">marker::PhantomData</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>};
 
@@ -395,15 +386,16 @@
 		<span class="ident">trie_id</span>: <span class="ident">TrieId</span>,
 	}
 
-	<span class="macro">generate_storage_alias!</span>(
-		<span class="ident">Contracts</span>,
-		<span class="ident">ContractInfoOf</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> =&gt; <span class="ident">Map</span><span class="op">&lt;</span>(<span class="ident">Twox64Concat</span>, <span class="ident">T::AccountId</span>), <span class="ident">ContractInfo</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>
-	);
+	<span class="attribute">#[<span class="ident">storage_alias</span>]</span>
+	<span class="kw">type</span> <span class="ident">ContractInfoOf</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageMap</span><span class="op">&lt;</span>
+		<span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+		<span class="ident">Twox64Concat</span>,
+		<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span>,
+		<span class="ident">ContractInfo</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+	<span class="op">&gt;</span>;
 
-	<span class="macro">generate_storage_alias!</span>(
-		<span class="ident">Contracts</span>,
-		<span class="ident">DeletionQueue</span> =&gt; <span class="ident">Value</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">DeletedContract</span><span class="op">&gt;</span><span class="op">&gt;</span>
-	);
+	<span class="attribute">#[<span class="ident">storage_alias</span>]</span>
+	<span class="kw">type</span> <span class="ident">DeletionQueue</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageValue</span><span class="op">&lt;</span><span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">DeletedContract</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">migrate</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>() -&gt; <span class="ident">Weight</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="number">0</span>;
@@ -420,7 +412,7 @@
 			}
 		});
 
-		<span class="ident">DeletionQueue::translate</span>(<span class="op">|</span><span class="ident">old</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">OldDeletedContract</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">|</span> {
+		<span class="ident">DeletionQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::translate</span>(<span class="op">|</span><span class="ident">old</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">OldDeletedContract</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">|</span> {
 			<span class="ident">weight</span> <span class="op">=</span> <span class="ident">weight</span>.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads_writes</span>(<span class="number">1</span>, <span class="number">1</span>));
 			<span class="ident">old</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">old</span><span class="op">|</span> <span class="ident">old</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">o</span><span class="op">|</span> <span class="ident">DeletedContract</span> { <span class="ident">trie_id</span>: <span class="ident">o</span>.<span class="ident">trie_id</span> }).<span class="ident">collect</span>())
 		})
@@ -480,20 +472,19 @@
 
 	<span class="kw">type</span> <span class="ident">ContractInfo</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">RawContractInfo</span><span class="op">&lt;</span><span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
-	<span class="macro">generate_storage_alias!</span>(
-		<span class="ident">Contracts</span>,
-		<span class="ident">ContractInfoOf</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> =&gt; <span class="ident">Map</span><span class="op">&lt;</span>(<span class="ident">Twox64Concat</span>, <span class="ident">T::AccountId</span>), <span class="ident">ContractInfo</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>
-	);
+	<span class="attribute">#[<span class="ident">storage_alias</span>]</span>
+	<span class="kw">type</span> <span class="ident">ContractInfoOf</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageMap</span><span class="op">&lt;</span>
+		<span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+		<span class="ident">Twox64Concat</span>,
+		<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span>,
+		<span class="ident">ContractInfo</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+	<span class="op">&gt;</span>;
 
-	<span class="macro">generate_storage_alias!</span>(
-		<span class="ident">Contracts</span>,
-		<span class="ident">CodeStorage</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> =&gt; <span class="ident">Map</span><span class="op">&lt;</span>(<span class="ident">Identity</span>, <span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>), <span class="ident">PrefabWasmModule</span><span class="op">&gt;</span>
-	);
+	<span class="attribute">#[<span class="ident">storage_alias</span>]</span>
+	<span class="kw">type</span> <span class="ident">CodeStorage</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageMap</span><span class="op">&lt;</span><span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">Identity</span>, <span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">PrefabWasmModule</span><span class="op">&gt;</span>;
 
-	<span class="macro">generate_storage_alias!</span>(
-		<span class="ident">Contracts</span>,
-		<span class="ident">OwnerInfoOf</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> =&gt; <span class="ident">Map</span><span class="op">&lt;</span>(<span class="ident">Identity</span>, <span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>), <span class="ident">OwnerInfo</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>
-	);
+	<span class="attribute">#[<span class="ident">storage_alias</span>]</span>
+	<span class="kw">type</span> <span class="ident">OwnerInfoOf</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageMap</span><span class="op">&lt;</span><span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">Identity</span>, <span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">OwnerInfo</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">migrate</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>() -&gt; <span class="ident">Weight</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="number">0</span>;
@@ -537,15 +528,12 @@
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">migrate</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="macro">generate_storage_alias!</span>(
-			<span class="ident">Contracts</span>,
-			<span class="ident">AccountCounter</span> =&gt; <span class="ident">Value</span><span class="op">&lt;</span><span class="ident">u64</span>, <span class="ident">ValueQuery</span><span class="op">&gt;</span>
-		);
-		<span class="macro">generate_storage_alias!</span>(
-			<span class="ident">Contracts</span>,
-			<span class="ident">Nonce</span> =&gt; <span class="ident">Value</span><span class="op">&lt;</span><span class="ident">u64</span>, <span class="ident">ValueQuery</span><span class="op">&gt;</span>
-		);
-		<span class="ident">Nonce::set</span>(<span class="ident">AccountCounter::take</span>());
+		<span class="attribute">#[<span class="ident">storage_alias</span>]</span>
+		<span class="kw">type</span> <span class="ident">AccountCounter</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageValue</span><span class="op">&lt;</span><span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">u64</span>, <span class="ident">ValueQuery</span><span class="op">&gt;</span>;
+		<span class="attribute">#[<span class="ident">storage_alias</span>]</span>
+		<span class="kw">type</span> <span class="ident">Nonce</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageValue</span><span class="op">&lt;</span><span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">u64</span>, <span class="ident">ValueQuery</span><span class="op">&gt;</span>;
+
+		<span class="ident">Nonce</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::set</span>(<span class="ident">AccountCounter</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::take</span>());
 		<span class="ident">T::DbWeight::get</span>().<span class="ident">reads_writes</span>(<span class="number">1</span>, <span class="number">2</span>)
 	}
 }

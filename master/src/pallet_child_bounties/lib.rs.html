@@ -1698,7 +1698,7 @@
 		<span class="comment">// This function is taken from the parent (bounties) pallet, but the</span>
 		<span class="comment">// prefix is changed to have different AccountId when the index of</span>
 		<span class="comment">// parent and child is same.</span>
-		<span class="ident">T::PalletId::get</span>().<span class="ident">into_sub_account</span>((<span class="string">&quot;cb&quot;</span>, <span class="ident">id</span>))
+		<span class="ident">T::PalletId::get</span>().<span class="ident">into_sub_account_truncating</span>((<span class="string">&quot;cb&quot;</span>, <span class="ident">id</span>))
 	}
 
 	<span class="kw">fn</span> <span class="ident">create_child_bounty</span>(

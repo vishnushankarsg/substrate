@@ -166,7 +166,7 @@
 			<span class="string">&quot;Cannot convert argument to palletid: argument should be 8-character string&quot;</span>
 		})<span class="question-mark">?</span>;
 
-		<span class="kw">let</span> <span class="ident">account_id</span>: <span class="ident">R::AccountId</span> <span class="op">=</span> <span class="ident">PalletId</span>(<span class="ident">id_fixed_array</span>).<span class="ident">into_account</span>();
+		<span class="kw">let</span> <span class="ident">account_id</span>: <span class="ident">R::AccountId</span> <span class="op">=</span> <span class="ident">PalletId</span>(<span class="ident">id_fixed_array</span>).<span class="ident">into_account_truncating</span>();
 
 		<span class="macro">with_crypto_scheme!</span>(
 			<span class="self">self</span>.<span class="ident">crypto_scheme</span>.<span class="ident">scheme</span>,

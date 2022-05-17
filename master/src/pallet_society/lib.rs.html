@@ -3554,7 +3554,7 @@
 	<span class="doccomment">/// This actually does computation. If you need to keep using it, then make sure you cache the</span>
 	<span class="doccomment">/// value and only call this once.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">account_id</span>() -&gt; <span class="ident">T::AccountId</span> {
-		<span class="ident">T::PalletId::get</span>().<span class="ident">into_account</span>()
+		<span class="ident">T::PalletId::get</span>().<span class="ident">into_account_truncating</span>()
 	}
 
 	<span class="doccomment">/// The account ID of the payouts pot. This is where payouts are made from.</span>
@@ -3562,7 +3562,7 @@
 	<span class="doccomment">/// This actually does computation. If you need to keep using it, then make sure you cache the</span>
 	<span class="doccomment">/// value and only call this once.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">payouts</span>() -&gt; <span class="ident">T::AccountId</span> {
-		<span class="ident">T::PalletId::get</span>().<span class="ident">into_sub_account</span>(<span class="string">b&quot;payouts&quot;</span>)
+		<span class="ident">T::PalletId::get</span>().<span class="ident">into_sub_account_truncating</span>(<span class="string">b&quot;payouts&quot;</span>)
 	}
 
 	<span class="doccomment">/// Return the duration of the lock, in blocks, with the given number of members.</span>

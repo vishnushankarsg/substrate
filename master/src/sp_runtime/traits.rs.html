@@ -1733,6 +1733,69 @@
 <span id="1728">1728</span>
 <span id="1729">1729</span>
 <span id="1730">1730</span>
+<span id="1731">1731</span>
+<span id="1732">1732</span>
+<span id="1733">1733</span>
+<span id="1734">1734</span>
+<span id="1735">1735</span>
+<span id="1736">1736</span>
+<span id="1737">1737</span>
+<span id="1738">1738</span>
+<span id="1739">1739</span>
+<span id="1740">1740</span>
+<span id="1741">1741</span>
+<span id="1742">1742</span>
+<span id="1743">1743</span>
+<span id="1744">1744</span>
+<span id="1745">1745</span>
+<span id="1746">1746</span>
+<span id="1747">1747</span>
+<span id="1748">1748</span>
+<span id="1749">1749</span>
+<span id="1750">1750</span>
+<span id="1751">1751</span>
+<span id="1752">1752</span>
+<span id="1753">1753</span>
+<span id="1754">1754</span>
+<span id="1755">1755</span>
+<span id="1756">1756</span>
+<span id="1757">1757</span>
+<span id="1758">1758</span>
+<span id="1759">1759</span>
+<span id="1760">1760</span>
+<span id="1761">1761</span>
+<span id="1762">1762</span>
+<span id="1763">1763</span>
+<span id="1764">1764</span>
+<span id="1765">1765</span>
+<span id="1766">1766</span>
+<span id="1767">1767</span>
+<span id="1768">1768</span>
+<span id="1769">1769</span>
+<span id="1770">1770</span>
+<span id="1771">1771</span>
+<span id="1772">1772</span>
+<span id="1773">1773</span>
+<span id="1774">1774</span>
+<span id="1775">1775</span>
+<span id="1776">1776</span>
+<span id="1777">1777</span>
+<span id="1778">1778</span>
+<span id="1779">1779</span>
+<span id="1780">1780</span>
+<span id="1781">1781</span>
+<span id="1782">1782</span>
+<span id="1783">1783</span>
+<span id="1784">1784</span>
+<span id="1785">1785</span>
+<span id="1786">1786</span>
+<span id="1787">1787</span>
+<span id="1788">1788</span>
+<span id="1789">1789</span>
+<span id="1790">1790</span>
+<span id="1791">1791</span>
+<span id="1792">1792</span>
+<span id="1793">1793</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -2978,9 +3041,16 @@
 
 <span class="doccomment">/// This type can be converted into and possibly from an AccountId (which itself is generic).</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">AccountIdConversion</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>: <span class="ident">Sized</span> {
-	<span class="doccomment">/// Convert into an account ID. This is infallible.</span>
-	<span class="kw">fn</span> <span class="ident">into_account</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">AccountId</span> {
-		<span class="self">self</span>.<span class="ident">into_sub_account</span>(<span class="kw-2">&amp;</span>())
+	<span class="doccomment">/// Convert into an account ID. This is infallible, and may truncate bytes to provide a result.</span>
+	<span class="doccomment">/// This may lead to duplicate accounts if the size of `AccountId` is less than the seed.</span>
+	<span class="kw">fn</span> <span class="ident">into_account_truncating</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">AccountId</span> {
+		<span class="self">self</span>.<span class="ident">into_sub_account_truncating</span>(<span class="kw-2">&amp;</span>())
+	}
+
+	<span class="doccomment">/// Convert into an account ID, checking that all bytes of the seed are being used in the final</span>
+	<span class="doccomment">/// `AccountId` generated. If any bytes are dropped, this returns `None`.</span>
+	<span class="kw">fn</span> <span class="ident">try_into_account</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="ident">try_into_sub_account</span>(<span class="kw-2">&amp;</span>())
 	}
 
 	<span class="doccomment">/// Try to convert an account ID into this type. Might not succeed.</span>
@@ -2988,8 +3058,8 @@
 		<span class="ident"><span class="self">Self</span>::try_from_sub_account</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>(<span class="ident">a</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="number">0</span>)
 	}
 
-	<span class="doccomment">/// Convert this value amalgamated with the a secondary &quot;sub&quot; value into an account ID. This is</span>
-	<span class="doccomment">/// infallible.</span>
+	<span class="doccomment">/// Convert this value amalgamated with the a secondary &quot;sub&quot; value into an account ID,</span>
+	<span class="doccomment">/// truncating any unused bytes. This is infallible.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// NOTE: The account IDs from this and from `into_account` are *not* guaranteed to be distinct</span>
 	<span class="doccomment">/// for any given value of `self`, nor are different invocations to this with different types</span>
@@ -2997,19 +3067,45 @@
 	<span class="doccomment">/// - `self.into_sub_account(0u32)`</span>
 	<span class="doccomment">/// - `self.into_sub_account(vec![0u8; 0])`</span>
 	<span class="doccomment">/// - `self.into_account()`</span>
-	<span class="kw">fn</span> <span class="ident">into_sub_account</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">Encode</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sub</span>: <span class="ident">S</span>) -&gt; <span class="ident">AccountId</span>;
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Also, if the seed provided to this function is greater than the number of bytes which fit</span>
+	<span class="doccomment">/// into this `AccountId` type, then it will lead to truncation of the seed, and potentially</span>
+	<span class="doccomment">/// non-unique accounts.</span>
+	<span class="kw">fn</span> <span class="ident">into_sub_account_truncating</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">Encode</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sub</span>: <span class="ident">S</span>) -&gt; <span class="ident">AccountId</span>;
+
+	<span class="doccomment">/// Same as `into_sub_account_truncating`, but ensuring that all bytes of the account&#39;s seed are</span>
+	<span class="doccomment">/// used when generating an account. This can help guarantee that different accounts are unique,</span>
+	<span class="doccomment">/// besides types which encode the same as noted above.</span>
+	<span class="kw">fn</span> <span class="ident">try_into_sub_account</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">Encode</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sub</span>: <span class="ident">S</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Try to convert an account ID into this type. Might not succeed.</span>
 	<span class="kw">fn</span> <span class="ident">try_from_sub_account</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">Decode</span><span class="op">&gt;</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">AccountId</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="self">Self</span>, <span class="ident">S</span>)<span class="op">&gt;</span>;
 }
 
-<span class="doccomment">/// Format is TYPE_ID ++ encode(parachain ID) ++ 00.... where 00... is indefinite trailing zeroes to</span>
+<span class="doccomment">/// Format is TYPE_ID ++ encode(sub-seed) ++ 00.... where 00... is indefinite trailing zeroes to</span>
 <span class="doccomment">/// fill AccountId.</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Encode</span> <span class="op">+</span> <span class="ident">Decode</span>, <span class="ident">Id</span>: <span class="ident">Encode</span> <span class="op">+</span> <span class="ident">Decode</span> <span class="op">+</span> <span class="ident">TypeId</span><span class="op">&gt;</span> <span class="ident">AccountIdConversion</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Id</span> {
-	<span class="kw">fn</span> <span class="ident">into_sub_account</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">Encode</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sub</span>: <span class="ident">S</span>) -&gt; <span class="ident">T</span> {
+	<span class="comment">// Take the `sub` seed, and put as much of it as possible into the generated account, but</span>
+	<span class="comment">// allowing truncation of the seed if it would not fit into the account id in full. This can</span>
+	<span class="comment">// lead to two different `sub` seeds with the same account generated.</span>
+	<span class="kw">fn</span> <span class="ident">into_sub_account_truncating</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">Encode</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sub</span>: <span class="ident">S</span>) -&gt; <span class="ident">T</span> {
 		(<span class="ident">Id::TYPE_ID</span>, <span class="self">self</span>, <span class="ident">sub</span>)
 			.<span class="ident">using_encoded</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="ident">T::decode</span>(<span class="kw-2">&amp;mut</span> <span class="ident">TrailingZeroInput</span>(<span class="ident">b</span>)))
-			.<span class="ident">expect</span>(<span class="string">&quot;`AccountId` type is never greater than 32 bytes; qed&quot;</span>)
+			.<span class="ident">expect</span>(<span class="string">&quot;All byte sequences are valid `AccountIds`; qed&quot;</span>)
+	}
+
+	<span class="comment">// Same as `into_sub_account_truncating`, but returns `None` if any bytes would be truncated.</span>
+	<span class="kw">fn</span> <span class="ident">try_into_sub_account</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">Encode</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sub</span>: <span class="ident">S</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">encoded_seed</span> <span class="op">=</span> (<span class="ident">Id::TYPE_ID</span>, <span class="self">self</span>, <span class="ident">sub</span>).<span class="ident">encode</span>();
+		<span class="kw">let</span> <span class="ident">account</span> <span class="op">=</span> <span class="ident">T::decode</span>(<span class="kw-2">&amp;mut</span> <span class="ident">TrailingZeroInput</span>(<span class="kw-2">&amp;</span><span class="ident">encoded_seed</span>))
+			.<span class="ident">expect</span>(<span class="string">&quot;All byte sequences are valid `AccountIds`; qed&quot;</span>);
+		<span class="comment">// If the `account` generated has less bytes than the `encoded_seed`, then we know that</span>
+		<span class="comment">// bytes were truncated, and we return `None`.</span>
+		<span class="kw">if</span> <span class="ident">encoded_seed</span>.<span class="ident">len</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">account</span>.<span class="ident">encoded_size</span>() {
+			<span class="prelude-val">Some</span>(<span class="ident">account</span>)
+		} <span class="kw">else</span> {
+			<span class="prelude-val">None</span>
+		}
 	}
 
 	<span class="kw">fn</span> <span class="ident">try_from_sub_account</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">Decode</span><span class="op">&gt;</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">T</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="self">Self</span>, <span class="ident">S</span>)<span class="op">&gt;</span> {
@@ -3388,6 +3484,13 @@
 	}
 
 	<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Default</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>
+	<span class="kw">struct</span> <span class="ident">U128Value</span>(<span class="ident">u128</span>);
+	<span class="kw">impl</span> <span class="ident"><span class="kw">super</span>::TypeId</span> <span class="kw">for</span> <span class="ident">U128Value</span> {
+		<span class="kw">const</span> <span class="ident">TYPE_ID</span>: [<span class="ident">u8</span>; <span class="number">4</span>] <span class="op">=</span> [<span class="number">0x0d</span>, <span class="number">0xf0</span>, <span class="number">0x0d</span>, <span class="number">0xf0</span>];
+	}
+	<span class="comment">// f00df00d</span>
+
+	<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Default</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>
 	<span class="kw">struct</span> <span class="ident">U32Value</span>(<span class="ident">u32</span>);
 	<span class="kw">impl</span> <span class="ident"><span class="kw">super</span>::TypeId</span> <span class="kw">for</span> <span class="ident">U32Value</span> {
 		<span class="kw">const</span> <span class="ident">TYPE_ID</span>: [<span class="ident">u8</span>; <span class="number">4</span>] <span class="op">=</span> [<span class="number">0x0d</span>, <span class="number">0xf0</span>, <span class="number">0xfe</span>, <span class="number">0xca</span>];
@@ -3404,9 +3507,19 @@
 	<span class="kw">type</span> <span class="ident">AccountId</span> <span class="op">=</span> <span class="ident">u64</span>;
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
-	<span class="kw">fn</span> <span class="ident">into_account_should_work</span>() {
-		<span class="kw">let</span> <span class="ident">r</span>: <span class="ident">AccountId</span> <span class="op">=</span> <span class="ident">U32Value::into_account</span>(<span class="kw-2">&amp;</span><span class="ident">U32Value</span>(<span class="number">0xdeadbeef</span>));
+	<span class="kw">fn</span> <span class="ident">into_account_truncating_should_work</span>() {
+		<span class="kw">let</span> <span class="ident">r</span>: <span class="ident">AccountId</span> <span class="op">=</span> <span class="ident">U32Value::into_account_truncating</span>(<span class="kw-2">&amp;</span><span class="ident">U32Value</span>(<span class="number">0xdeadbeef</span>));
 		<span class="macro">assert_eq!</span>(<span class="ident">r</span>, <span class="number">0x_deadbeef_cafef00d</span>);
+	}
+
+	<span class="attribute">#[<span class="ident">test</span>]</span>
+	<span class="kw">fn</span> <span class="ident">try_into_account_should_work</span>() {
+		<span class="kw">let</span> <span class="ident">r</span>: <span class="ident">AccountId</span> <span class="op">=</span> <span class="ident">U32Value::try_into_account</span>(<span class="kw-2">&amp;</span><span class="ident">U32Value</span>(<span class="number">0xdeadbeef</span>)).<span class="ident">unwrap</span>();
+		<span class="macro">assert_eq!</span>(<span class="ident">r</span>, <span class="number">0x_deadbeef_cafef00d</span>);
+
+		<span class="comment">// u128 is bigger than u64 would fit</span>
+		<span class="kw">let</span> <span class="ident">maybe</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">U128Value::try_into_account</span>(<span class="kw-2">&amp;</span><span class="ident">U128Value</span>(<span class="ident">u128::MAX</span>));
+		<span class="macro">assert!</span>(<span class="ident">maybe</span>.<span class="ident">is_none</span>());
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
@@ -3416,9 +3529,22 @@
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
-	<span class="kw">fn</span> <span class="ident">into_account_with_fill_should_work</span>() {
-		<span class="kw">let</span> <span class="ident">r</span>: <span class="ident">AccountId</span> <span class="op">=</span> <span class="ident">U16Value::into_account</span>(<span class="kw-2">&amp;</span><span class="ident">U16Value</span>(<span class="number">0xc0da</span>));
+	<span class="kw">fn</span> <span class="ident">into_account_truncating_with_fill_should_work</span>() {
+		<span class="kw">let</span> <span class="ident">r</span>: <span class="ident">AccountId</span> <span class="op">=</span> <span class="ident">U16Value::into_account_truncating</span>(<span class="kw-2">&amp;</span><span class="ident">U16Value</span>(<span class="number">0xc0da</span>));
 		<span class="macro">assert_eq!</span>(<span class="ident">r</span>, <span class="number">0x_0000_c0da_f00dcafe</span>);
+	}
+
+	<span class="attribute">#[<span class="ident">test</span>]</span>
+	<span class="kw">fn</span> <span class="ident">try_into_sub_account_should_work</span>() {
+		<span class="kw">let</span> <span class="ident">r</span>: <span class="ident">AccountId</span> <span class="op">=</span> <span class="ident">U16Value::try_into_account</span>(<span class="kw-2">&amp;</span><span class="ident">U16Value</span>(<span class="number">0xc0da</span>)).<span class="ident">unwrap</span>();
+		<span class="macro">assert_eq!</span>(<span class="ident">r</span>, <span class="number">0x_0000_c0da_f00dcafe</span>);
+
+		<span class="kw">let</span> <span class="ident">maybe</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">U16Value::try_into_sub_account</span>(
+			<span class="kw-2">&amp;</span><span class="ident">U16Value</span>(<span class="number">0xc0da</span>),
+			<span class="string">&quot;a really large amount of additional encoded information which will certainly overflow the account id type ;)&quot;</span>
+		);
+
+		<span class="macro">assert!</span>(<span class="ident">maybe</span>.<span class="ident">is_none</span>())
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>

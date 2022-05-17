@@ -1004,6 +1004,9 @@
 <span id="999">999</span>
 <span id="1000">1000</span>
 <span id="1001">1001</span>
+<span id="1002">1002</span>
+<span id="1003">1003</span>
+<span id="1004">1004</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1678,12 +1681,15 @@
 	<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">bounded_vec</span>, <span class="ident">traits::ConstU32</span>, <span class="ident">Twox128</span>};
 	<span class="kw">use</span> <span class="ident">sp_io::TestExternalities</span>;
 
-	<span class="macro">crate::generate_storage_alias!</span> { <span class="ident">Prefix</span>, <span class="ident">Foo</span> =&gt; <span class="ident">Value</span><span class="op">&lt;</span><span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> }
-	<span class="macro">crate::generate_storage_alias!</span> { <span class="ident">Prefix</span>, <span class="ident">FooMap</span> =&gt; <span class="ident">Map</span><span class="op">&lt;</span>(<span class="ident">Twox128</span>, <span class="ident">u32</span>), <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> }
-	<span class="macro">crate::generate_storage_alias!</span> {
-		<span class="ident">Prefix</span>,
-		<span class="ident">FooDoubleMap</span> =&gt; <span class="ident">DoubleMap</span><span class="op">&lt;</span>(<span class="ident">Twox128</span>, <span class="ident">u32</span>), (<span class="ident">Twox128</span>, <span class="ident">u32</span>), <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>
-	}
+	<span class="attribute">#[<span class="ident"><span class="kw">crate</span>::storage_alias</span>]</span>
+	<span class="kw">type</span> <span class="ident">Foo</span> <span class="op">=</span> <span class="ident">StorageValue</span><span class="op">&lt;</span><span class="ident">Prefix</span>, <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+
+	<span class="attribute">#[<span class="ident"><span class="kw">crate</span>::storage_alias</span>]</span>
+	<span class="kw">type</span> <span class="ident">FooMap</span> <span class="op">=</span> <span class="ident">StorageMap</span><span class="op">&lt;</span><span class="ident">Prefix</span>, <span class="ident">Twox128</span>, <span class="ident">u32</span>, <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+
+	<span class="attribute">#[<span class="ident"><span class="kw">crate</span>::storage_alias</span>]</span>
+	<span class="kw">type</span> <span class="ident">FooDoubleMap</span> <span class="op">=</span>
+		<span class="ident">StorageDoubleMap</span><span class="op">&lt;</span><span class="ident">Prefix</span>, <span class="ident">Twox128</span>, <span class="ident">u32</span>, <span class="ident">Twox128</span>, <span class="ident">u32</span>, <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">slide_works</span>() {

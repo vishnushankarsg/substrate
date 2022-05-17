@@ -100,9 +100,6 @@
 <span id="95">95</span>
 <span id="96">96</span>
 <span id="97">97</span>
-<span id="98">98</span>
-<span id="99">99</span>
-<span id="100">100</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -121,9 +118,7 @@
 <span class="comment">// limitations under the License.</span>
 
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Config</span>, <span class="ident">OffenceDetails</span>, <span class="ident">Perbill</span>, <span class="ident">SessionIndex</span>};
-<span class="kw">use</span> <span class="ident">frame_support</span>::{
-	<span class="ident">generate_storage_alias</span>, <span class="ident">pallet_prelude::ValueQuery</span>, <span class="ident">traits::Get</span>, <span class="ident">weights::Weight</span>,
-};
+<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">pallet_prelude::ValueQuery</span>, <span class="ident">storage_alias</span>, <span class="ident">traits::Get</span>, <span class="ident">weights::Weight</span>};
 <span class="kw">use</span> <span class="ident">sp_staking::offence</span>::{<span class="ident">DisableStrategy</span>, <span class="ident">OnOffenceHandler</span>};
 <span class="kw">use</span> <span class="ident">sp_std::vec::Vec</span>;
 
@@ -136,10 +131,9 @@
 
 <span class="comment">// Deferred reports that have been rejected by the offence handler and need to be submitted</span>
 <span class="comment">// at a later time.</span>
-<span class="macro">generate_storage_alias!</span>(
-	<span class="ident">Offences</span>,
-	<span class="ident">DeferredOffences</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> =&gt; <span class="ident">Value</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">DeferredOffenceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">ValueQuery</span><span class="op">&gt;</span>
-);
+<span class="attribute">#[<span class="ident">storage_alias</span>]</span>
+<span class="kw">type</span> <span class="ident">DeferredOffences</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span>
+	<span class="ident">StorageValue</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">DeferredOffenceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">ValueQuery</span><span class="op">&gt;</span>;
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remove_deferred_storage</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>() -&gt; <span class="ident">Weight</span> {
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weight</span> <span class="op">=</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">reads_writes</span>(<span class="number">1</span>, <span class="number">1</span>);

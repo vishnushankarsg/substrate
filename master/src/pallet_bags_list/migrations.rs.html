@@ -52,6 +52,7 @@
 <span id="47">47</span>
 <span id="48">48</span>
 <span id="49">49</span>
+<span id="50">50</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -84,11 +85,12 @@
 	<span class="kw">fn</span> <span class="ident">pre_upgrade</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
 		<span class="kw">use</span> <span class="ident">frame_support::ensure</span>;
 		<span class="comment">// The old explicit storage item.</span>
-		<span class="macro">frame_support::generate_storage_alias!</span>(<span class="ident">BagsList</span>, <span class="ident">CounterForListNodes</span> =&gt; <span class="ident">Value</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>);
+		<span class="attribute">#[<span class="ident">frame_support::storage_alias</span>]</span>
+		<span class="kw">type</span> <span class="ident">CounterForListNodes</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident"><span class="kw">crate</span>::Config</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageValue</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">u32</span><span class="op">&gt;</span>;
 
 		<span class="comment">// ensure that a value exists in the counter struct.</span>
 		<span class="macro">ensure!</span>(
-			<span class="ident"><span class="kw">crate</span>::ListNodes</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::count</span>() <span class="op">==</span> <span class="ident">CounterForListNodes::get</span>().<span class="ident">unwrap</span>(),
+			<span class="ident"><span class="kw">crate</span>::ListNodes</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::count</span>() <span class="op">==</span> <span class="ident">CounterForListNodes</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>().<span class="ident">unwrap</span>(),
 			<span class="string">&quot;wrong list node counter&quot;</span>
 		);
 

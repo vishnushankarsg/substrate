@@ -455,6 +455,7 @@
 <span id="450">450</span>
 <span id="451">451</span>
 <span id="452">452</span>
+<span id="453">453</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -841,7 +842,8 @@
 	<span class="kw">fn</span> <span class="ident">map_iter_from</span>() {
 		<span class="ident">sp_io::TestExternalities::default</span>().<span class="ident">execute_with</span>(<span class="op">|</span><span class="op">|</span> {
 			<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::hash::Identity</span>;
-			<span class="macro">crate::generate_storage_alias!</span>(<span class="ident">MyModule</span>, <span class="ident">MyMap</span> =&gt; <span class="ident">Map</span><span class="op">&lt;</span>(<span class="ident">Identity</span>, <span class="ident">u64</span>), <span class="ident">u64</span><span class="op">&gt;</span>);
+			<span class="attribute">#[<span class="ident"><span class="kw">crate</span>::storage_alias</span>]</span>
+			<span class="kw">type</span> <span class="ident">MyMap</span> <span class="op">=</span> <span class="ident">StorageMap</span><span class="op">&lt;</span><span class="ident">MyModule</span>, <span class="ident">Identity</span>, <span class="ident">u64</span>, <span class="ident">u64</span><span class="op">&gt;</span>;
 
 			<span class="ident">MyMap::insert</span>(<span class="number">1</span>, <span class="number">10</span>);
 			<span class="ident">MyMap::insert</span>(<span class="number">2</span>, <span class="number">20</span>);

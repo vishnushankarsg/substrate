@@ -4384,14 +4384,14 @@
 
 	<span class="doccomment">/// Create the main, bonded account of a pool with the given id.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create_bonded_account</span>(<span class="ident">id</span>: <span class="ident">PoolId</span>) -&gt; <span class="ident">T::AccountId</span> {
-		<span class="ident">T::PalletId::get</span>().<span class="ident">into_sub_account</span>((<span class="ident">AccountType::Bonded</span>, <span class="ident">id</span>))
+		<span class="ident">T::PalletId::get</span>().<span class="ident">into_sub_account_truncating</span>((<span class="ident">AccountType::Bonded</span>, <span class="ident">id</span>))
 	}
 
 	<span class="doccomment">/// Create the reward account of a pool with the given id.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create_reward_account</span>(<span class="ident">id</span>: <span class="ident">PoolId</span>) -&gt; <span class="ident">T::AccountId</span> {
 		<span class="comment">// NOTE: in order to have a distinction in the test account id type (u128), we put</span>
 		<span class="comment">// account_type first so it does not get truncated out.</span>
-		<span class="ident">T::PalletId::get</span>().<span class="ident">into_sub_account</span>((<span class="ident">AccountType::Reward</span>, <span class="ident">id</span>))
+		<span class="ident">T::PalletId::get</span>().<span class="ident">into_sub_account_truncating</span>((<span class="ident">AccountType::Reward</span>, <span class="ident">id</span>))
 	}
 
 	<span class="doccomment">/// Get the member with their associated bonded and reward pool.</span>

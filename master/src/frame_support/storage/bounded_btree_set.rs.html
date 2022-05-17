@@ -517,6 +517,9 @@
 <span id="512">512</span>
 <span id="513">513</span>
 <span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -841,12 +844,15 @@
 	<span class="kw">use</span> <span class="ident">frame_support::traits::ConstU32</span>;
 	<span class="kw">use</span> <span class="ident">sp_io::TestExternalities</span>;
 
-	<span class="macro">crate::generate_storage_alias!</span> { <span class="ident">Prefix</span>, <span class="ident">Foo</span> =&gt; <span class="ident">Value</span><span class="op">&lt;</span><span class="ident">BoundedBTreeSet</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> }
-	<span class="macro">crate::generate_storage_alias!</span> { <span class="ident">Prefix</span>, <span class="ident">FooMap</span> =&gt; <span class="ident">Map</span><span class="op">&lt;</span>(<span class="ident">Twox128</span>, <span class="ident">u32</span>), <span class="ident">BoundedBTreeSet</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> }
-	<span class="macro">crate::generate_storage_alias!</span> {
-		<span class="ident">Prefix</span>,
-		<span class="ident">FooDoubleMap</span> =&gt; <span class="ident">DoubleMap</span><span class="op">&lt;</span>(<span class="ident">Twox128</span>, <span class="ident">u32</span>), (<span class="ident">Twox128</span>, <span class="ident">u32</span>), <span class="ident">BoundedBTreeSet</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>
-	}
+	<span class="attribute">#[<span class="ident"><span class="kw">crate</span>::storage_alias</span>]</span>
+	<span class="kw">type</span> <span class="ident">Foo</span> <span class="op">=</span> <span class="ident">StorageValue</span><span class="op">&lt;</span><span class="ident">Prefix</span>, <span class="ident">BoundedBTreeSet</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+
+	<span class="attribute">#[<span class="ident"><span class="kw">crate</span>::storage_alias</span>]</span>
+	<span class="kw">type</span> <span class="ident">FooMap</span> <span class="op">=</span> <span class="ident">StorageMap</span><span class="op">&lt;</span><span class="ident">Prefix</span>, <span class="ident">Twox128</span>, <span class="ident">u32</span>, <span class="ident">BoundedBTreeSet</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+
+	<span class="attribute">#[<span class="ident"><span class="kw">crate</span>::storage_alias</span>]</span>
+	<span class="kw">type</span> <span class="ident">FooDoubleMap</span> <span class="op">=</span>
+		<span class="ident">StorageDoubleMap</span><span class="op">&lt;</span><span class="ident">Prefix</span>, <span class="ident">Twox128</span>, <span class="ident">u32</span>, <span class="ident">Twox128</span>, <span class="ident">u32</span>, <span class="ident">BoundedBTreeSet</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">set_from_keys</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">keys</span>: <span class="kw-2">&amp;</span>[<span class="ident">T</span>]) -&gt; <span class="ident">BTreeSet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
 	<span class="kw">where</span>
