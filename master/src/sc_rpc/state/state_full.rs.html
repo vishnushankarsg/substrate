@@ -643,10 +643,6 @@
 <span id="638">638</span>
 <span id="639">639</span>
 <span id="640">640</span>
-<span id="641">641</span>
-<span id="642">642</span>
-<span id="643">643</span>
-<span id="644">644</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -1053,11 +1049,9 @@
 			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">sink</span>) <span class="op">=</span> <span class="ident">pending</span>.<span class="ident">accept</span>() {
 				<span class="ident">sink</span>.<span class="ident">pipe_from_stream</span>(<span class="ident">stream</span>).<span class="kw">await</span>;
 			}
-		}
-		.<span class="ident">boxed</span>();
+		};
 
-		<span class="self">self</span>.<span class="ident">executor</span>
-			.<span class="ident">spawn</span>(<span class="string">&quot;substrate-rpc-subscription&quot;</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;rpc&quot;</span>), <span class="ident">fut</span>.<span class="ident">map</span>(<span class="ident">drop</span>).<span class="ident">boxed</span>());
+		<span class="self">self</span>.<span class="ident">executor</span>.<span class="ident">spawn</span>(<span class="string">&quot;substrate-rpc-subscription&quot;</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;rpc&quot;</span>), <span class="ident">fut</span>.<span class="ident">boxed</span>());
 	}
 
 	<span class="kw">fn</span> <span class="ident">subscribe_storage</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">pending</span>: <span class="ident">PendingSubscription</span>, <span class="ident">keys</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StorageKey</span><span class="op">&gt;</span><span class="op">&gt;</span>) {
@@ -1100,11 +1094,9 @@
 			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">sink</span>) <span class="op">=</span> <span class="ident">pending</span>.<span class="ident">accept</span>() {
 				<span class="ident">sink</span>.<span class="ident">pipe_from_stream</span>(<span class="ident">stream</span>).<span class="kw">await</span>;
 			}
-		}
-		.<span class="ident">boxed</span>();
+		};
 
-		<span class="self">self</span>.<span class="ident">executor</span>
-			.<span class="ident">spawn</span>(<span class="string">&quot;substrate-rpc-subscription&quot;</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;rpc&quot;</span>), <span class="ident">fut</span>.<span class="ident">map</span>(<span class="ident">drop</span>).<span class="ident">boxed</span>());
+		<span class="self">self</span>.<span class="ident">executor</span>.<span class="ident">spawn</span>(<span class="string">&quot;substrate-rpc-subscription&quot;</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;rpc&quot;</span>), <span class="ident">fut</span>.<span class="ident">boxed</span>());
 	}
 
 	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">trace_block</span>(
