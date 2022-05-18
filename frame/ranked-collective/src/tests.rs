@@ -288,8 +288,9 @@ fn cleanup_works() {
 				.into_iter()
 				.collect(),
 		);
+		assert_eq!(Voting::<Test>::iter_prefix(3).count(), 3);
 		assert_ok!(Club::cleanup_poll(Origin::signed(4), 3, 10));
-		// NOTE: This will fail until #10016 is merged.
-//		assert_noop!(Club::cleanup_poll(Origin::signed(4), 3, 10), Error::<Test>::NoneRemaining);
+		assert_eq!(Voting::<Test>::iter_prefix(3).count(), 0);
+		assert_noop!(Club::cleanup_poll(Origin::signed(4), 3, 10), Error::<Test>::NoneRemaining);
 	});
 }

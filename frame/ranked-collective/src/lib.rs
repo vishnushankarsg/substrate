@@ -396,15 +396,13 @@ pub mod pallet {
 			ensure!(T::Polls::as_ongoing(poll_index).is_none(), Error::<T, I>::Ongoing);
 
 			use sp_io::KillStorageResult::*;
-			let count = match Voting::<T, I>::remove_prefix(poll_index, Some(max)) {
-//				AllRemoved(0) => Err(Error::<T, I>::NoneRemaining)?,
-				AllRemoved(0) => return Ok(Pays::Yes.into()),
-				AllRemoved(n) | SomeRemaining(n) => n,
-			};
-			Ok(PostDispatchInfo {
-				actual_weight: Some(T::WeightInfo::cleanup_poll(count)),
-				pays_fee: Pays::No,
-			})
+			match Voting::<T, I>::remove_prefix(poll_index, Some(max)) {
+				AllRemoved(0) => Err(Error::<T, I>::NoneRemaining.into()),
+				AllRemoved(count) | SomeRemaining(count) => Ok(PostDispatchInfo {
+					actual_weight: Some(T::WeightInfo::cleanup_poll(count)),
+					pays_fee: Pays::No,
+				}),
+			}
 		}
 	}
 
