@@ -230,6 +230,10 @@
 <span id="225">225</span>
 <span id="226">226</span>
 <span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -395,7 +399,8 @@
 <span class="kw">where</span>
 	<span class="ident">T::AccountId</span>: <span class="ident">UncheckedFrom</span><span class="op">&lt;</span><span class="ident">T::Hash</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AsRef</span><span class="op">&lt;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span>,
 {
-	<span class="kw">let</span> <span class="ident">charged</span> <span class="op">=</span> <span class="ident">gas_meter</span>.<span class="ident">charge</span>(<span class="ident">CodeToken::Load</span>(<span class="ident">schedule</span>.<span class="ident">limits</span>.<span class="ident">code_len</span>))<span class="question-mark">?</span>;
+	<span class="kw">let</span> <span class="ident">max_code_len</span> <span class="op">=</span> <span class="ident">T::MaxCodeLen::get</span>();
+	<span class="kw">let</span> <span class="ident">charged</span> <span class="op">=</span> <span class="ident">gas_meter</span>.<span class="ident">charge</span>(<span class="ident">CodeToken::Load</span>(<span class="ident">max_code_len</span>))<span class="question-mark">?</span>;
 
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">prefab_module</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">CodeStorage</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">code_hash</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::CodeNotFound</span>)<span class="question-mark">?</span>;
 	<span class="ident">gas_meter</span>.<span class="ident">adjust_gas</span>(<span class="ident">charged</span>, <span class="ident">CodeToken::Load</span>(<span class="ident">prefab_module</span>.<span class="ident">code</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>));
@@ -404,7 +409,7 @@
 	<span class="kw">if</span> <span class="ident">prefab_module</span>.<span class="ident">instruction_weights_version</span> <span class="op">&lt;</span> <span class="ident">schedule</span>.<span class="ident">instruction_weights</span>.<span class="ident">version</span> {
 		<span class="comment">// The instruction weights have changed.</span>
 		<span class="comment">// We need to re-instrument the code with the new instruction weights.</span>
-		<span class="kw">let</span> <span class="ident">charged</span> <span class="op">=</span> <span class="ident">gas_meter</span>.<span class="ident">charge</span>(<span class="ident">CodeToken::Reinstrument</span>(<span class="ident">schedule</span>.<span class="ident">limits</span>.<span class="ident">code_len</span>))<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">charged</span> <span class="op">=</span> <span class="ident">gas_meter</span>.<span class="ident">charge</span>(<span class="ident">CodeToken::Reinstrument</span>(<span class="ident">max_code_len</span>))<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">code_size</span> <span class="op">=</span> <span class="ident">reinstrument</span>(<span class="kw-2">&amp;mut</span> <span class="ident">prefab_module</span>, <span class="ident">schedule</span>)<span class="question-mark">?</span>;
 		<span class="ident">gas_meter</span>.<span class="ident">adjust_gas</span>(<span class="ident">charged</span>, <span class="ident">CodeToken::Reinstrument</span>(<span class="ident">code_size</span>));
 	}
@@ -422,7 +427,10 @@
 	<span class="kw">let</span> <span class="ident">original_code</span> <span class="op">=</span>
 		<span class="op">&lt;</span><span class="ident">PristineCode</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">prefab_module</span>.<span class="ident">code_hash</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::CodeNotFound</span>)<span class="question-mark">?</span>;
 	<span class="kw">let</span> <span class="ident">original_code_len</span> <span class="op">=</span> <span class="ident">original_code</span>.<span class="ident">len</span>();
-	<span class="ident">prefab_module</span>.<span class="ident">code</span> <span class="op">=</span> <span class="ident">prepare::reinstrument_contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">original_code</span>, <span class="ident">schedule</span>)<span class="question-mark">?</span>;
+	<span class="ident">prefab_module</span>.<span class="ident">code</span> <span class="op">=</span> <span class="ident">prepare::reinstrument_contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">original_code</span>, <span class="ident">schedule</span>)
+		.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="op">&lt;</span><span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::CodeRejected</span>)<span class="question-mark">?</span>
+		.<span class="ident">try_into</span>()
+		.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="op">&lt;</span><span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::CodeTooLarge</span>)<span class="question-mark">?</span>;
 	<span class="ident">prefab_module</span>.<span class="ident">instruction_weights_version</span> <span class="op">=</span> <span class="ident">schedule</span>.<span class="ident">instruction_weights</span>.<span class="ident">version</span>;
 	<span class="op">&lt;</span><span class="ident">CodeStorage</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="ident">prefab_module</span>.<span class="ident">code_hash</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">prefab_module</span>);
 	<span class="prelude-val">Ok</span>(<span class="ident">original_code_len</span> <span class="kw">as</span> <span class="ident">u32</span>)

@@ -2063,6 +2063,8 @@
 <span id="2058">2058</span>
 <span id="2059">2059</span>
 <span id="2060">2060</span>
+<span id="2061">2061</span>
+<span id="2062">2062</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -3183,6 +3185,8 @@
 	<span class="kw">type</span> <span class="ident">Schedule</span> <span class="op">=</span> <span class="ident">Schedule</span>;
 	<span class="kw">type</span> <span class="ident">AddressGenerator</span> <span class="op">=</span> <span class="ident">pallet_contracts::DefaultAddressGenerator</span>;
 	<span class="kw">type</span> <span class="ident">ContractAccessWeight</span> <span class="op">=</span> <span class="ident">pallet_contracts::DefaultContractAccessWeight</span><span class="op">&lt;</span><span class="ident">RuntimeBlockWeights</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">MaxCodeLen</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span>{ <span class="number">128</span> <span class="op">*</span> <span class="number">1024</span> }<span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">RelaxedMaxCodeLen</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span>{ <span class="number">256</span> <span class="op">*</span> <span class="number">1024</span> }<span class="op">&gt;</span>;
 }
 
 <span class="kw">impl</span> <span class="ident">pallet_sudo::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {

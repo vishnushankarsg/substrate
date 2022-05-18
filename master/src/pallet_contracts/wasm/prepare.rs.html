@@ -1096,6 +1096,9 @@
 <span id="1091">1091</span>
 <span id="1092">1092</span>
 <span id="1093">1093</span>
+<span id="1094">1094</span>
+<span id="1095">1095</span>
+<span id="1096">1096</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -1121,10 +1124,10 @@
 	<span class="ident">chain_extension::ChainExtension</span>,
 	<span class="ident">storage::meter::Diff</span>,
 	<span class="ident">wasm</span>::{<span class="ident">env_def::ImportSatisfyCheck</span>, <span class="ident">OwnerInfo</span>, <span class="ident">PrefabWasmModule</span>},
-	<span class="ident">AccountIdOf</span>, <span class="ident">Config</span>, <span class="ident">Schedule</span>,
+	<span class="ident">AccountIdOf</span>, <span class="ident">CodeVec</span>, <span class="ident">Config</span>, <span class="ident">Error</span>, <span class="ident">Schedule</span>,
 };
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Encode</span>, <span class="ident">MaxEncodedLen</span>};
-<span class="kw">use</span> <span class="ident">sp_runtime::traits::Hash</span>;
+<span class="kw">use</span> <span class="ident">sp_runtime</span>::{<span class="ident">traits::Hash</span>, <span class="ident">DispatchError</span>};
 <span class="kw">use</span> <span class="ident">sp_std::prelude</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">wasm_instrument::parity_wasm::elements</span>::{
 	<span class="self">self</span>, <span class="ident">External</span>, <span class="ident">Internal</span>, <span class="ident">MemoryType</span>, <span class="ident">Type</span>, <span class="ident">ValueType</span>,
@@ -1499,19 +1502,19 @@
 }
 
 <span class="kw">fn</span> <span class="ident">do_preparation</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">ImportSatisfyCheck</span>, <span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(
-	<span class="ident">original_code</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+	<span class="ident">original_code</span>: <span class="ident">CodeVec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 	<span class="ident">schedule</span>: <span class="kw-2">&amp;</span><span class="ident">Schedule</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 	<span class="ident">owner</span>: <span class="ident">AccountIdOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">PrefabWasmModule</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
-	<span class="kw">let</span> (<span class="ident">code</span>, (<span class="ident">initial</span>, <span class="ident">maximum</span>)) <span class="op">=</span>
-		<span class="ident">check_and_instrument</span>::<span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">original_code</span>.<span class="ident">as_ref</span>(), <span class="ident">schedule</span>)<span class="question-mark">?</span>;
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">PrefabWasmModule</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, (<span class="ident">DispatchError</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>)<span class="op">&gt;</span> {
+	<span class="kw">let</span> (<span class="ident">code</span>, (<span class="ident">initial</span>, <span class="ident">maximum</span>)) <span class="op">=</span> <span class="ident">check_and_instrument</span>::<span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">original_code</span>.<span class="ident">as_ref</span>(), <span class="ident">schedule</span>)
+		.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">msg</span><span class="op">|</span> (<span class="op">&lt;</span><span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::CodeRejected</span>.<span class="ident">into</span>(), <span class="ident">msg</span>))<span class="question-mark">?</span>;
 	<span class="kw">let</span> <span class="ident">original_code_len</span> <span class="op">=</span> <span class="ident">original_code</span>.<span class="ident">len</span>();
 
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">PrefabWasmModule</span> {
 		<span class="ident">instruction_weights_version</span>: <span class="ident">schedule</span>.<span class="ident">instruction_weights</span>.<span class="ident">version</span>,
 		<span class="ident">initial</span>,
 		<span class="ident">maximum</span>,
-		<span class="ident">code</span>,
+		<span class="ident">code</span>: <span class="ident">code</span>.<span class="ident">try_into</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> (<span class="op">&lt;</span><span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::CodeTooLarge</span>.<span class="ident">into</span>(), <span class="string">&quot;&quot;</span>))<span class="question-mark">?</span>,
 		<span class="ident">code_hash</span>: <span class="ident">T::Hashing::hash</span>(<span class="kw-2">&amp;</span><span class="ident">original_code</span>),
 		<span class="ident">original_code</span>: <span class="prelude-val">Some</span>(<span class="ident">original_code</span>),
 		<span class="ident">owner_info</span>: <span class="prelude-val">None</span>,
@@ -1544,10 +1547,10 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// The preprocessing includes injecting code for gas metering and metering the height of stack.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">prepare_contract</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(
-	<span class="ident">original_code</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+	<span class="ident">original_code</span>: <span class="ident">CodeVec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 	<span class="ident">schedule</span>: <span class="kw-2">&amp;</span><span class="ident">Schedule</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 	<span class="ident">owner</span>: <span class="ident">AccountIdOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">PrefabWasmModule</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">PrefabWasmModule</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, (<span class="ident">DispatchError</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>)<span class="op">&gt;</span> {
 	<span class="ident">do_preparation</span>::<span class="op">&lt;</span><span class="ident"><span class="kw">super</span>::runtime::Env</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">original_code</span>, <span class="ident">schedule</span>, <span class="ident">owner</span>)
 }
 
@@ -1557,10 +1560,10 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Use this when an existing contract should be re-instrumented with a newer schedule version.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reinstrument_contract</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(
-	<span class="ident">original_code</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+	<span class="ident">original_code</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
 	<span class="ident">schedule</span>: <span class="kw-2">&amp;</span><span class="ident">Schedule</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
-	<span class="prelude-val">Ok</span>(<span class="ident">check_and_instrument</span>::<span class="op">&lt;</span><span class="ident"><span class="kw">super</span>::runtime::Env</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">original_code</span>, <span class="ident">schedule</span>)<span class="question-mark">?</span>.<span class="number">0</span>)
+	<span class="prelude-val">Ok</span>(<span class="ident">check_and_instrument</span>::<span class="op">&lt;</span><span class="ident"><span class="kw">super</span>::runtime::Env</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">original_code</span>, <span class="ident">schedule</span>)<span class="question-mark">?</span>.<span class="number">0</span>)
 }
 
 <span class="doccomment">/// Alternate (possibly unsafe) preparation functions used only for benchmarking.</span>
@@ -1591,9 +1594,12 @@
 			<span class="ident">instruction_weights_version</span>: <span class="ident">schedule</span>.<span class="ident">instruction_weights</span>.<span class="ident">version</span>,
 			<span class="ident">initial</span>: <span class="ident">memory_limits</span>.<span class="number">0</span>,
 			<span class="ident">maximum</span>: <span class="ident">memory_limits</span>.<span class="number">1</span>,
-			<span class="ident">code</span>: <span class="ident">contract_module</span>.<span class="ident">into_wasm_code</span>()<span class="question-mark">?</span>,
 			<span class="ident">code_hash</span>: <span class="ident">T::Hashing::hash</span>(<span class="kw-2">&amp;</span><span class="ident">original_code</span>),
-			<span class="ident">original_code</span>: <span class="prelude-val">Some</span>(<span class="ident">original_code</span>),
+			<span class="ident">original_code</span>: <span class="prelude-val">Some</span>(<span class="ident">original_code</span>.<span class="ident">try_into</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;Original code too large&quot;</span>)<span class="question-mark">?</span>),
+			<span class="ident">code</span>: <span class="ident">contract_module</span>
+				.<span class="ident">into_wasm_code</span>()<span class="question-mark">?</span>
+				.<span class="ident">try_into</span>()
+				.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;Instrumented code too large&quot;</span>)<span class="question-mark">?</span>,
 			<span class="ident">owner_info</span>: <span class="prelude-val">Some</span>(<span class="ident">OwnerInfo</span> {
 				<span class="ident">owner</span>,
 				<span class="comment">// this is a helper function for benchmarking which skips deposit collection</span>
@@ -1644,7 +1650,7 @@
 		(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">wat</span>:<span class="ident">expr</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expected</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; {
 			<span class="attribute">#[<span class="ident">test</span>]</span>
 			<span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>() {
-				<span class="kw">let</span> <span class="ident">wasm</span> <span class="op">=</span> <span class="ident">wat::parse_str</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">wat</span>).<span class="ident">unwrap</span>();
+				<span class="kw">let</span> <span class="ident">wasm</span> <span class="op">=</span> <span class="ident">wat::parse_str</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">wat</span>).<span class="ident">unwrap</span>().<span class="ident">try_into</span>().<span class="ident">unwrap</span>();
 				<span class="kw">let</span> <span class="ident">schedule</span> <span class="op">=</span> <span class="ident">Schedule</span> {
 					<span class="ident">limits</span>: <span class="ident">Limits</span> {
 						<span class="ident">globals</span>: <span class="number">3</span>,
@@ -1657,7 +1663,7 @@
 					.. <span class="ident">Default::default</span>()
 				};
 				<span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">do_preparation</span>::<span class="op">&lt;</span><span class="ident">env::Test</span>, <span class="ident">Test</span><span class="op">&gt;</span>(<span class="ident">wasm</span>, <span class="kw-2">&amp;</span><span class="ident">schedule</span>, <span class="ident">ALICE</span>);
-				<span class="macro">assert_matches::assert_matches!</span>(<span class="ident">r</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expected</span>)<span class="kw-2">*</span>);
+				<span class="macro">assert_matches::assert_matches!</span>(<span class="ident">r</span>.<span class="ident">map_err</span>(<span class="op">|</span>(<span class="kw">_</span>, <span class="ident">msg</span>)<span class="op">|</span> <span class="ident">msg</span>), $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expected</span>)<span class="kw-2">*</span>);
 			}
 		};
 	}

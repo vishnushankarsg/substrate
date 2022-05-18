@@ -154,7 +154,7 @@
 <span class="kw">use</span> <span class="ident">kvdb_rocksdb</span>::{<span class="ident">Database</span>, <span class="ident">DatabaseConfig</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">io</span>, <span class="ident">path::PathBuf</span>, <span class="ident">sync::Arc</span>};
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">derive_more::Display</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">DatabaseType</span> {
 	<span class="ident">RocksDb</span>,
 	<span class="ident">ParityDb</span>,

@@ -1024,6 +1024,15 @@
 <span id="1019">1019</span>
 <span id="1020">1020</span>
 <span id="1021">1021</span>
+<span id="1022">1022</span>
+<span id="1023">1023</span>
+<span id="1024">1024</span>
+<span id="1025">1025</span>
+<span id="1026">1026</span>
+<span id="1027">1027</span>
+<span id="1028">1028</span>
+<span id="1029">1029</span>
+<span id="1030">1030</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -1140,8 +1149,9 @@
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">dispatch::Dispatchable</span>,
 	<span class="ident">ensure</span>,
-	<span class="ident">traits</span>::{<span class="ident">Contains</span>, <span class="ident">Currency</span>, <span class="ident">Get</span>, <span class="ident">Randomness</span>, <span class="ident">ReservableCurrency</span>, <span class="ident">Time</span>},
+	<span class="ident">traits</span>::{<span class="ident">ConstU32</span>, <span class="ident">Contains</span>, <span class="ident">Currency</span>, <span class="ident">Get</span>, <span class="ident">Randomness</span>, <span class="ident">ReservableCurrency</span>, <span class="ident">Time</span>},
 	<span class="ident">weights</span>::{<span class="ident">DispatchClass</span>, <span class="ident">GetDispatchInfo</span>, <span class="ident">Pays</span>, <span class="ident">PostDispatchInfo</span>, <span class="ident">Weight</span>},
+	<span class="ident">BoundedVec</span>,
 };
 <span class="kw">use</span> <span class="ident">frame_system</span>::{<span class="ident">limits::BlockWeights</span>, <span class="ident">Pallet</span> <span class="kw">as</span> <span class="ident">System</span>};
 <span class="kw">use</span> <span class="ident">pallet_contracts_primitives</span>::{
@@ -1155,9 +1165,11 @@
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">marker::PhantomData</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>};
 
 <span class="kw">type</span> <span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::Hash</span>;
-<span class="kw">type</span> <span class="ident">TrieId</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>;
+<span class="kw">type</span> <span class="ident">TrieId</span> <span class="op">=</span> <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u8</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">128</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 <span class="kw">type</span> <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span>
 	<span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::Currency</span> <span class="kw">as</span> <span class="ident">Currency</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Balance</span>;
+<span class="kw">type</span> <span class="ident">CodeVec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u8</span>, <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::MaxCodeLen</span><span class="op">&gt;</span>;
+<span class="kw">type</span> <span class="ident">RelaxedCodeVec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u8</span>, <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::RelaxedMaxCodeLen</span><span class="op">&gt;</span>;
 
 <span class="doccomment">/// Used as a sentinel value when reading and writing contract memory.</span>
 <span class="doccomment">///</span>
@@ -1250,7 +1262,6 @@
 
 	<span class="attribute">#[<span class="ident">pallet::pallet</span>]</span>
 	<span class="attribute">#[<span class="ident">pallet::storage_version</span>(<span class="ident">STORAGE_VERSION</span>)]</span>
-	<span class="attribute">#[<span class="ident">pallet::without_storage_info</span>]</span>
 	<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>);
 
 	<span class="attribute">#[<span class="ident">pallet::config</span>]</span>
@@ -1382,6 +1393,20 @@
 
 		<span class="doccomment">/// The address generator used to generate the addresses of contracts.</span>
 		<span class="kw">type</span> <span class="ident">AddressGenerator</span>: <span class="ident">AddressGenerator</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
+
+		<span class="doccomment">/// The maximum length of a contract code in bytes. This limit applies to the instrumented</span>
+		<span class="doccomment">/// version of the code. Therefore `instantiate_with_code` can fail even when supplying</span>
+		<span class="doccomment">/// a wasm binary below this maximum size.</span>
+		<span class="kw">type</span> <span class="ident">MaxCodeLen</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>;
+
+		<span class="doccomment">/// The maximum length of a contract code after reinstrumentation.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// When uploading a new contract the size defined by [`Self::MaxCodeLen`] is used for both</span>
+		<span class="doccomment">/// the pristine **and** the instrumented version. When a existing contract needs to be</span>
+		<span class="doccomment">/// reinstrumented after a runtime upgrade we apply this bound. The reason is that if the</span>
+		<span class="doccomment">/// new instrumentation increases the size beyond the limit it would make that contract</span>
+		<span class="doccomment">/// inaccessible until rectified by another runtime upgrade.</span>
+		<span class="kw">type</span> <span class="ident">RelaxedMaxCodeLen</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>;
 	}
 
 	<span class="attribute">#[<span class="ident">pallet::hooks</span>]</span>
@@ -1724,7 +1749,7 @@
 
 	<span class="doccomment">/// A mapping from an original code hash to the original code, untouched by instrumentation.</span>
 	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type</span> <span class="ident">PristineCode</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageMap</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">Identity</span>, <span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type</span> <span class="ident">PristineCode</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageMap</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">Identity</span>, <span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">CodeVec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// A mapping between an original code hash and instrumented wasm code, ready for execution.</span>
 	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
@@ -1772,7 +1797,8 @@
 	<span class="doccomment">/// Child trie deletion is a heavy operation depending on the amount of storage items</span>
 	<span class="doccomment">/// stored in said trie. Therefore this operation is performed lazily in `on_initialize`.</span>
 	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type</span> <span class="ident">DeletionQueue</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageValue</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">DeletedContract</span><span class="op">&gt;</span>, <span class="ident">ValueQuery</span><span class="op">&gt;</span>;
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type</span> <span class="ident">DeletionQueue</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span>
+		<span class="ident">StorageValue</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">DeletedContract</span>, <span class="ident">T::DeletionQueueDepth</span><span class="op">&gt;</span>, <span class="ident">ValueQuery</span><span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// Return type of the private [`Pallet::internal_call`] function.</span>
@@ -1890,8 +1916,8 @@
 		<span class="ident">storage_deposit_limit</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	) -&gt; <span class="ident">CodeUploadResult</span><span class="op">&lt;</span><span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">schedule</span> <span class="op">=</span> <span class="ident">T::Schedule::get</span>();
-		<span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">PrefabWasmModule::from_code</span>(<span class="ident">code</span>, <span class="kw-2">&amp;</span><span class="ident">schedule</span>, <span class="ident">origin</span>)
-			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="op">&lt;</span><span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::CodeRejected</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span>
+			<span class="ident">PrefabWasmModule::from_code</span>(<span class="ident">code</span>, <span class="kw-2">&amp;</span><span class="ident">schedule</span>, <span class="ident">origin</span>).<span class="ident">map_err</span>(<span class="op">|</span>(<span class="ident">err</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="ident">err</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">deposit</span> <span class="op">=</span> <span class="ident">module</span>.<span class="ident">open_deposit</span>();
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">storage_deposit_limit</span>) <span class="op">=</span> <span class="ident">storage_deposit_limit</span> {
 			<span class="macro">ensure!</span>(<span class="ident">storage_deposit_limit</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">deposit</span>, <span class="op">&lt;</span><span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::StorageDepositLimitExhausted</span>);
@@ -1997,19 +2023,11 @@
 			<span class="kw">let</span> <span class="ident">schedule</span> <span class="op">=</span> <span class="ident">T::Schedule::get</span>();
 			<span class="kw">let</span> (<span class="ident">extra_deposit</span>, <span class="ident">executable</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">code</span> {
 				<span class="ident">Code::Upload</span>(<span class="ident">Bytes</span>(<span class="ident">binary</span>)) =&gt; {
-					<span class="macro">ensure!</span>(
-						<span class="ident">binary</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">schedule</span>.<span class="ident">limits</span>.<span class="ident">code_len</span>,
-						<span class="op">&lt;</span><span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::CodeTooLarge</span>
-					);
 					<span class="kw">let</span> <span class="ident">executable</span> <span class="op">=</span> <span class="ident">PrefabWasmModule::from_code</span>(<span class="ident">binary</span>, <span class="kw-2">&amp;</span><span class="ident">schedule</span>, <span class="ident">origin</span>.<span class="ident">clone</span>())
-						.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">msg</span><span class="op">|</span> {
+						.<span class="ident">map_err</span>(<span class="op">|</span>(<span class="ident">err</span>, <span class="ident">msg</span>)<span class="op">|</span> {
 							<span class="ident">debug_message</span>.<span class="ident">as_mut</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">buffer</span><span class="op">|</span> <span class="ident">buffer</span>.<span class="ident">extend</span>(<span class="ident">msg</span>.<span class="ident">as_bytes</span>()));
-							<span class="op">&lt;</span><span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::CodeRejected</span>
+							<span class="ident">err</span>
 						})<span class="question-mark">?</span>;
-					<span class="macro">ensure!</span>(
-						<span class="ident">executable</span>.<span class="ident">code_len</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">schedule</span>.<span class="ident">limits</span>.<span class="ident">code_len</span>,
-						<span class="op">&lt;</span><span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::CodeTooLarge</span>
-					);
 					<span class="comment">// The open deposit will be charged during execution when the</span>
 					<span class="comment">// uploaded module does not already exist. This deposit is not part of the</span>
 					<span class="comment">// storage meter because it is not transfered to the contract but</span>

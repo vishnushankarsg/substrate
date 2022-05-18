@@ -785,12 +785,6 @@
 <span id="780">780</span>
 <span id="781">781</span>
 <span id="782">782</span>
-<span id="783">783</span>
-<span id="784">784</span>
-<span id="785">785</span>
-<span id="786">786</span>
-<span id="787">787</span>
-<span id="788">788</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -826,7 +820,7 @@
 <span class="doccomment">/// How many API calls are executed in a single batch. The reason for increasing the amount</span>
 <span class="doccomment">/// of API calls in batches (per benchmark component increase) is so that the linear regression</span>
 <span class="doccomment">/// has an easier time determining the contribution of that component.</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">API_BENCHMARK_BATCH_SIZE</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">100</span>;
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">API_BENCHMARK_BATCH_SIZE</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">80</span>;
 
 <span class="doccomment">/// How many instructions are executed in a single batch. The reasoning is the same</span>
 <span class="doccomment">/// as for `API_BENCHMARK_BATCH_SIZE`.</span>
@@ -940,11 +934,6 @@
 
 	<span class="doccomment">/// The maximum size of a storage value and event payload in bytes.</span>
 	<span class="kw">pub</span> <span class="ident">payload_len</span>: <span class="ident">u32</span>,
-
-	<span class="doccomment">/// The maximum length of a contract code in bytes. This limit applies to the instrumented</span>
-	<span class="doccomment">/// version of the code. Therefore `instantiate_with_code` can fail even when supplying</span>
-	<span class="doccomment">/// a wasm binary below this maximum size.</span>
-	<span class="kw">pub</span> <span class="ident">code_len</span>: <span class="ident">u32</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Limits</span> {
@@ -1315,7 +1304,6 @@
 			<span class="ident">subject_len</span>: <span class="number">32</span>,
 			<span class="ident">call_depth</span>: <span class="number">32</span>,
 			<span class="ident">payload_len</span>: <span class="number">16</span> <span class="op">*</span> <span class="number">1024</span>,
-			<span class="ident">code_len</span>: <span class="number">128</span> <span class="op">*</span> <span class="number">1024</span>,
 		}
 	}
 }
