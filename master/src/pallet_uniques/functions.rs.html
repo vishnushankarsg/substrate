@@ -199,6 +199,10 @@
 <span id="194">194</span>
 <span id="195">195</span>
 <span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -342,6 +346,10 @@
 					<span class="ident">maybe_collection_details</span>.<span class="ident">as_mut</span>().<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::UnknownCollection</span>)<span class="question-mark">?</span>;
 
 				<span class="ident">with_details</span>(<span class="ident">collection_details</span>)<span class="question-mark">?</span>;
+
+				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">max_supply</span>) <span class="op">=</span> <span class="ident">CollectionMaxSupply</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::try_get</span>(<span class="kw-2">&amp;</span><span class="ident">collection</span>) {
+					<span class="macro">ensure!</span>(<span class="ident">collection_details</span>.<span class="ident">items</span> <span class="op">&lt;</span> <span class="ident">max_supply</span>, <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::MaxSupplyReached</span>);
+				}
 
 				<span class="kw">let</span> <span class="ident">items</span> <span class="op">=</span>
 					<span class="ident">collection_details</span>.<span class="ident">items</span>.<span class="ident">checked_add</span>(<span class="number">1</span>).<span class="ident">ok_or</span>(<span class="ident">ArithmeticError::Overflow</span>)<span class="question-mark">?</span>;
