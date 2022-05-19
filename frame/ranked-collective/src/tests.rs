@@ -221,7 +221,6 @@ fn basic_stuff() {
 	});
 }
 
-
 #[test]
 fn member_lifecycle_works() {
 	new_test_ext().execute_with(|| {
