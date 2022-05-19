@@ -1293,9 +1293,9 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">EraRewardPoints</span><span class="op">&lt;</span><span class="ident">AccountId</span>: <span class="ident">Ord</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Total number of points. Equals the sum of reward points for each validator.</span>
-	<span class="ident">total</span>: <span class="ident">RewardPoint</span>,
+	<span class="kw">pub</span> <span class="ident">total</span>: <span class="ident">RewardPoint</span>,
 	<span class="doccomment">/// The reward points earned by a given validator.</span>
-	<span class="ident">individual</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">RewardPoint</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">individual</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">RewardPoint</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">AccountId</span>: <span class="ident">Ord</span><span class="op">&gt;</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">EraRewardPoints</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span> {
