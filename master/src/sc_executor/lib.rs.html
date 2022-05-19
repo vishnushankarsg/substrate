@@ -97,6 +97,9 @@
 <span id="92">92</span>
 <span id="93">93</span>
 <span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -149,6 +152,9 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">wasmi</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_executor_common</span>::{<span class="ident">error</span>, <span class="ident">sandbox</span>};
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;wasmtime&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_executor_wasmtime::InstantiationStrategy</span> <span class="kw">as</span> <span class="ident">WasmtimeInstantiationStrategy</span>;
 
 <span class="doccomment">/// Extracts the runtime version of a given runtime code.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">RuntimeVersionOf</span> {

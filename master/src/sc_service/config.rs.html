@@ -321,6 +321,8 @@
 <span id="316">316</span>
 <span id="317">317</span>
 <span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -344,6 +346,8 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_client_api::execution_extensions</span>::{<span class="ident">ExecutionStrategies</span>, <span class="ident">ExecutionStrategy</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_client_db</span>::{<span class="ident">Database</span>, <span class="ident">DatabaseSource</span>, <span class="ident">KeepBlocks</span>, <span class="ident">PruningMode</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_executor::WasmExecutionMethod</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;wasmtime&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_executor::WasmtimeInstantiationStrategy</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_network</span>::{
 	<span class="ident">config</span>::{
 		<span class="ident">MultiaddrWithPeerId</span>, <span class="ident">NetworkConfiguration</span>, <span class="ident">NodeKeyConfig</span>, <span class="ident">NonDefaultSetConfig</span>, <span class="ident">Role</span>,

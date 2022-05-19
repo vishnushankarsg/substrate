@@ -695,6 +695,13 @@
 <span id="690">690</span>
 <span id="691">691</span>
 <span id="692">692</span>
+<span id="693">693</span>
+<span id="694">694</span>
+<span id="695">695</span>
+<span id="696">696</span>
+<span id="697">697</span>
+<span id="698">698</span>
+<span id="699">699</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -743,7 +750,7 @@
 };
 <span class="kw">use</span> <span class="ident">sc_client_db::PruningMode</span>;
 <span class="kw">use</span> <span class="ident">sc_consensus</span>::{<span class="ident">BlockImport</span>, <span class="ident">BlockImportParams</span>, <span class="ident">ForkChoiceStrategy</span>, <span class="ident">ImportResult</span>, <span class="ident">ImportedAux</span>};
-<span class="kw">use</span> <span class="ident">sc_executor</span>::{<span class="ident">NativeElseWasmExecutor</span>, <span class="ident">WasmExecutionMethod</span>};
+<span class="kw">use</span> <span class="ident">sc_executor</span>::{<span class="ident">NativeElseWasmExecutor</span>, <span class="ident">WasmExecutionMethod</span>, <span class="ident">WasmtimeInstantiationStrategy</span>};
 <span class="kw">use</span> <span class="ident">sp_api::ProvideRuntimeApi</span>;
 <span class="kw">use</span> <span class="ident">sp_block_builder::BlockBuilder</span>;
 <span class="kw">use</span> <span class="ident">sp_consensus::BlockOrigin</span>;
@@ -1095,7 +1102,14 @@
 		<span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">sc_service::new_db_backend</span>(<span class="ident">db_config</span>).<span class="ident">expect</span>(<span class="string">&quot;Should not fail&quot;</span>);
 		<span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">sc_service::new_client</span>(
 			<span class="ident">backend</span>.<span class="ident">clone</span>(),
-			<span class="ident">NativeElseWasmExecutor::new</span>(<span class="ident">WasmExecutionMethod::Compiled</span>, <span class="prelude-val">None</span>, <span class="number">8</span>, <span class="number">2</span>),
+			<span class="ident">NativeElseWasmExecutor::new</span>(
+				<span class="ident">WasmExecutionMethod::Compiled</span> {
+					<span class="ident">instantiation_strategy</span>: <span class="ident">WasmtimeInstantiationStrategy::PoolingCopyOnWrite</span>,
+				},
+				<span class="prelude-val">None</span>,
+				<span class="number">8</span>,
+				<span class="number">2</span>,
+			),
 			<span class="kw-2">&amp;</span><span class="ident">keyring</span>.<span class="ident">generate_genesis</span>(),
 			<span class="prelude-val">None</span>,
 			<span class="prelude-val">None</span>,

@@ -153,6 +153,20 @@
 <span id="148">148</span>
 <span id="149">149</span>
 <span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -173,7 +187,10 @@
 <span class="kw">mod</span> <span class="ident">command</span>;
 <span class="kw">mod</span> <span class="ident">writer</span>;
 
-<span class="kw">use</span> <span class="ident">sc_cli</span>::{<span class="ident">ExecutionStrategy</span>, <span class="ident">WasmExecutionMethod</span>, <span class="ident">DEFAULT_WASM_EXECUTION_METHOD</span>};
+<span class="kw">use</span> <span class="ident">sc_cli</span>::{
+	<span class="ident">ExecutionStrategy</span>, <span class="ident">WasmExecutionMethod</span>, <span class="ident">WasmtimeInstantiationStrategy</span>,
+	<span class="ident">DEFAULT_WASMTIME_INSTANTIATION_STRATEGY</span>, <span class="ident">DEFAULT_WASM_EXECUTION_METHOD</span>,
+};
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">path::PathBuf</span>};
 
 <span class="comment">// Add a more relaxed parsing for pallet names by allowing pallet directory names with `-` to be</span>
@@ -285,6 +302,17 @@
 		<span class="ident">default_value</span> <span class="op">=</span> <span class="ident">DEFAULT_WASM_EXECUTION_METHOD</span>,
 	)]</span>
 	<span class="kw">pub</span> <span class="ident">wasm_method</span>: <span class="ident">WasmExecutionMethod</span>,
+
+	<span class="doccomment">/// The WASM instantiation method to use.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Only has an effect when `wasm-execution` is set to `compiled`.</span>
+	<span class="attribute">#[<span class="ident">clap</span>(
+		<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;wasm-instantiation-strategy&quot;</span>,
+		<span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;STRATEGY&quot;</span>,
+		<span class="ident">default_value_t</span> <span class="op">=</span> <span class="ident">DEFAULT_WASMTIME_INSTANTIATION_STRATEGY</span>,
+		<span class="ident">arg_enum</span>,
+	)]</span>
+	<span class="kw">pub</span> <span class="ident">wasmtime_instantiation_strategy</span>: <span class="ident">WasmtimeInstantiationStrategy</span>,
 
 	<span class="doccomment">/// Limit the memory the database cache can use.</span>
 	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;db-cache&quot;</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;MiB&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;1024&quot;</span>)]</span>

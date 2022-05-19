@@ -568,6 +568,13 @@
 <span id="563">563</span>
 <span id="564">564</span>
 <span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -616,7 +623,10 @@
 	<span class="ident">Interpreted</span>,
 	<span class="doccomment">/// Uses the Wasmtime compiled runtime.</span>
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;wasmtime&quot;</span>)]</span>
-	<span class="ident">Compiled</span>,
+	<span class="ident">Compiled</span> {
+		<span class="doccomment">/// The instantiation strategy to use.</span>
+		<span class="ident">instantiation_strategy</span>: <span class="ident">sc_executor_wasmtime::InstantiationStrategy</span>,
+	},
 }
 
 <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">WasmExecutionMethod</span> {
@@ -641,6 +651,9 @@
 	<span class="ident">module</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">WasmModule</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Runtime version according to `Core_version` if any.</span>
 	<span class="ident">version</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RuntimeVersion</span><span class="op">&gt;</span>,
+
+	<span class="comment">// TODO: Remove this once the legacy instance reuse instantiation strategy</span>
+	<span class="comment">//       for `wasmtime` is gone, as this only makes sense with that particular strategy.</span>
 	<span class="doccomment">/// Cached instance pool.</span>
 	<span class="ident">instances</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">WasmInstance</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
@@ -880,22 +893,23 @@
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">runtime</span><span class="op">|</span> -&gt; <span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">WasmModule</span><span class="op">&gt;</span> { <span class="ident">Arc::new</span>(<span class="ident">runtime</span>) })
 		},
 		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;wasmtime&quot;</span>)]</span>
-		<span class="ident">WasmExecutionMethod::Compiled</span> =&gt; <span class="ident">sc_executor_wasmtime::create_runtime</span>::<span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span>(
-			<span class="ident">blob</span>,
-			<span class="ident">sc_executor_wasmtime::Config</span> {
-				<span class="ident">max_memory_size</span>: <span class="prelude-val">None</span>,
-				<span class="ident">allow_missing_func_imports</span>,
-				<span class="ident">cache_path</span>: <span class="ident">cache_path</span>.<span class="ident">map</span>(<span class="ident">ToOwned::to_owned</span>),
-				<span class="ident">semantics</span>: <span class="ident">sc_executor_wasmtime::Semantics</span> {
-					<span class="ident">extra_heap_pages</span>: <span class="ident">heap_pages</span>,
-					<span class="ident">fast_instance_reuse</span>: <span class="bool-val">true</span>,
-					<span class="ident">deterministic_stack_limit</span>: <span class="prelude-val">None</span>,
-					<span class="ident">canonicalize_nans</span>: <span class="bool-val">false</span>,
-					<span class="ident">parallel_compilation</span>: <span class="bool-val">true</span>,
+		<span class="ident">WasmExecutionMethod::Compiled</span> { <span class="ident">instantiation_strategy</span> } =&gt;
+			<span class="ident">sc_executor_wasmtime::create_runtime</span>::<span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span>(
+				<span class="ident">blob</span>,
+				<span class="ident">sc_executor_wasmtime::Config</span> {
+					<span class="ident">allow_missing_func_imports</span>,
+					<span class="ident">cache_path</span>: <span class="ident">cache_path</span>.<span class="ident">map</span>(<span class="ident">ToOwned::to_owned</span>),
+					<span class="ident">semantics</span>: <span class="ident">sc_executor_wasmtime::Semantics</span> {
+						<span class="ident">extra_heap_pages</span>: <span class="ident">heap_pages</span>,
+						<span class="ident">instantiation_strategy</span>,
+						<span class="ident">deterministic_stack_limit</span>: <span class="prelude-val">None</span>,
+						<span class="ident">canonicalize_nans</span>: <span class="bool-val">false</span>,
+						<span class="ident">parallel_compilation</span>: <span class="bool-val">true</span>,
+						<span class="ident">max_memory_size</span>: <span class="prelude-val">None</span>,
+					},
 				},
-			},
-		)
-		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">runtime</span><span class="op">|</span> -&gt; <span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">WasmModule</span><span class="op">&gt;</span> { <span class="ident">Arc::new</span>(<span class="ident">runtime</span>) }),
+			)
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">runtime</span><span class="op">|</span> -&gt; <span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">WasmModule</span><span class="op">&gt;</span> { <span class="ident">Arc::new</span>(<span class="ident">runtime</span>) }),
 	}
 }
 
