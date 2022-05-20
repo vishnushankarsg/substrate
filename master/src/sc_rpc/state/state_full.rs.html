@@ -638,11 +638,6 @@
 <span id="633">633</span>
 <span id="634">634</span>
 <span id="635">635</span>
-<span id="636">636</span>
-<span id="637">637</span>
-<span id="638">638</span>
-<span id="639">639</span>
-<span id="640">640</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -673,10 +668,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::SubscriptionTaskExecutor</span>;
 
 <span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">future</span>, <span class="ident">stream</span>, <span class="ident">FutureExt</span>, <span class="ident">StreamExt</span>};
-<span class="kw">use</span> <span class="ident">jsonrpsee</span>::{
-	<span class="ident">core</span>::{<span class="ident">async_trait</span>, <span class="ident">Error</span> <span class="kw">as</span> <span class="ident">JsonRpseeError</span>},
-	<span class="ident">PendingSubscription</span>,
-};
+<span class="kw">use</span> <span class="ident">jsonrpsee</span>::{<span class="ident">core::Error</span> <span class="kw">as</span> <span class="ident">JsonRpseeError</span>, <span class="ident">PendingSubscription</span>};
 <span class="kw">use</span> <span class="ident">sc_client_api</span>::{
 	<span class="ident">Backend</span>, <span class="ident">BlockBackend</span>, <span class="ident">BlockchainEvents</span>, <span class="ident">CallExecutor</span>, <span class="ident">ExecutorProvider</span>, <span class="ident">ProofProvider</span>,
 	<span class="ident">StorageProvider</span>,
@@ -815,7 +807,6 @@
 	}
 }
 
-<span class="attribute">#[<span class="ident">async_trait</span>]</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">BE</span>, <span class="ident">Block</span>, <span class="ident">Client</span><span class="op">&gt;</span> <span class="ident">StateBackend</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Client</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">FullState</span><span class="op">&lt;</span><span class="ident">BE</span>, <span class="ident">Block</span>, <span class="ident">Client</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">Block</span>: <span class="ident">BlockT</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
@@ -835,7 +826,7 @@
 		<span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="ident">Client::Api</span>: <span class="ident">Metadata</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
 {
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">call</span>(
+	<span class="kw">fn</span> <span class="ident">call</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>,
 		<span class="ident">method</span>: <span class="ident">String</span>,
@@ -857,7 +848,7 @@
 			.<span class="ident">map_err</span>(<span class="ident">client_err</span>)
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">storage_keys</span>(
+	<span class="kw">fn</span> <span class="ident">storage_keys</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>,
 		<span class="ident">prefix</span>: <span class="ident">StorageKey</span>,
@@ -867,7 +858,7 @@
 			.<span class="ident">map_err</span>(<span class="ident">client_err</span>)
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">storage_pairs</span>(
+	<span class="kw">fn</span> <span class="ident">storage_pairs</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>,
 		<span class="ident">prefix</span>: <span class="ident">StorageKey</span>,
@@ -877,7 +868,7 @@
 			.<span class="ident">map_err</span>(<span class="ident">client_err</span>)
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">storage_keys_paged</span>(
+	<span class="kw">fn</span> <span class="ident">storage_keys_paged</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>,
 		<span class="ident">prefix</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StorageKey</span><span class="op">&gt;</span>,
@@ -896,7 +887,7 @@
 			.<span class="ident">map_err</span>(<span class="ident">client_err</span>)
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">storage</span>(
+	<span class="kw">fn</span> <span class="ident">storage</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>,
 		<span class="ident">key</span>: <span class="ident">StorageKey</span>,
@@ -906,7 +897,7 @@
 			.<span class="ident">map_err</span>(<span class="ident">client_err</span>)
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">storage_size</span>(
+	<span class="kw">fn</span> <span class="ident">storage_size</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>,
 		<span class="ident">key</span>: <span class="ident">StorageKey</span>,
@@ -935,7 +926,7 @@
 			.<span class="ident">map_err</span>(<span class="ident">client_err</span>)
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">storage_hash</span>(
+	<span class="kw">fn</span> <span class="ident">storage_hash</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>,
 		<span class="ident">key</span>: <span class="ident">StorageKey</span>,
@@ -945,7 +936,7 @@
 			.<span class="ident">map_err</span>(<span class="ident">client_err</span>)
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">metadata</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">Bytes</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">metadata</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">Bytes</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">block_or_best</span>(<span class="ident">block</span>).<span class="ident">map_err</span>(<span class="ident">client_err</span>).<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">block</span><span class="op">|</span> {
 			<span class="self">self</span>.<span class="ident">client</span>
 				.<span class="ident">runtime_api</span>()
@@ -955,7 +946,7 @@
 		})
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">runtime_version</span>(
+	<span class="kw">fn</span> <span class="ident">runtime_version</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>,
 	) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">RuntimeVersion</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
@@ -966,7 +957,7 @@
 		})
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">query_storage</span>(
+	<span class="kw">fn</span> <span class="ident">query_storage</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">from</span>: <span class="ident">Block::Hash</span>,
 		<span class="ident">to</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>,
@@ -982,16 +973,16 @@
 		<span class="ident">call_fn</span>()
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">query_storage_at</span>(
+	<span class="kw">fn</span> <span class="ident">query_storage_at</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">keys</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StorageKey</span><span class="op">&gt;</span>,
 		<span class="ident">at</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>,
 	) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StorageChangeSet</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">at</span> <span class="op">=</span> <span class="ident">at</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">info</span>().<span class="ident">best_hash</span>);
-		<span class="self">self</span>.<span class="ident">query_storage</span>(<span class="ident">at</span>, <span class="prelude-val">Some</span>(<span class="ident">at</span>), <span class="ident">keys</span>).<span class="kw">await</span>
+		<span class="self">self</span>.<span class="ident">query_storage</span>(<span class="ident">at</span>, <span class="prelude-val">Some</span>(<span class="ident">at</span>), <span class="ident">keys</span>)
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">read_proof</span>(
+	<span class="kw">fn</span> <span class="ident">read_proof</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>,
 		<span class="ident">keys</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StorageKey</span><span class="op">&gt;</span>,
@@ -1099,7 +1090,7 @@
 		<span class="self">self</span>.<span class="ident">executor</span>.<span class="ident">spawn</span>(<span class="string">&quot;substrate-rpc-subscription&quot;</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;rpc&quot;</span>), <span class="ident">fut</span>.<span class="ident">boxed</span>());
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">trace_block</span>(
+	<span class="kw">fn</span> <span class="ident">trace_block</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">block</span>: <span class="ident">Block::Hash</span>,
 		<span class="ident">targets</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
@@ -1119,7 +1110,6 @@
 	}
 }
 
-<span class="attribute">#[<span class="ident">async_trait</span>]</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">BE</span>, <span class="ident">Block</span>, <span class="ident">Client</span><span class="op">&gt;</span> <span class="ident">ChildStateBackend</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Client</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">FullState</span><span class="op">&lt;</span><span class="ident">BE</span>, <span class="ident">Block</span>, <span class="ident">Client</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">Block</span>: <span class="ident">BlockT</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
@@ -1138,7 +1128,7 @@
 		<span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="ident">Client::Api</span>: <span class="ident">Metadata</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
 {
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">read_child_proof</span>(
+	<span class="kw">fn</span> <span class="ident">read_child_proof</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>,
 		<span class="ident">storage_key</span>: <span class="ident">PrefixedStorageKey</span>,
@@ -1163,7 +1153,7 @@
 			.<span class="ident">map_err</span>(<span class="ident">client_err</span>)
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">storage_keys</span>(
+	<span class="kw">fn</span> <span class="ident">storage_keys</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>,
 		<span class="ident">storage_key</span>: <span class="ident">PrefixedStorageKey</span>,
@@ -1181,7 +1171,7 @@
 			.<span class="ident">map_err</span>(<span class="ident">client_err</span>)
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">storage_keys_paged</span>(
+	<span class="kw">fn</span> <span class="ident">storage_keys_paged</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>,
 		<span class="ident">storage_key</span>: <span class="ident">PrefixedStorageKey</span>,
@@ -1207,7 +1197,7 @@
 			.<span class="ident">map_err</span>(<span class="ident">client_err</span>)
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">storage</span>(
+	<span class="kw">fn</span> <span class="ident">storage</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>,
 		<span class="ident">storage_key</span>: <span class="ident">PrefixedStorageKey</span>,
@@ -1225,7 +1215,7 @@
 			.<span class="ident">map_err</span>(<span class="ident">client_err</span>)
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">storage_entries</span>(
+	<span class="kw">fn</span> <span class="ident">storage_entries</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>,
 		<span class="ident">storage_key</span>: <span class="ident">PrefixedStorageKey</span>,
@@ -1240,18 +1230,18 @@
 		};
 		<span class="kw">let</span> <span class="ident">block</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">block_or_best</span>(<span class="ident">block</span>).<span class="ident">map_err</span>(<span class="ident">client_err</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">clone</span>();
-		<span class="ident">future::try_join_all</span>(<span class="ident">keys</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">key</span><span class="op">|</span> {
-			<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">client</span>
-				.<span class="ident">clone</span>()
-				.<span class="ident">child_storage</span>(<span class="kw-2">&amp;</span><span class="ident">BlockId::Hash</span>(<span class="ident">block</span>), <span class="kw-2">&amp;</span><span class="ident">child_info</span>, <span class="kw-2">&amp;</span><span class="ident">key</span>)
-				.<span class="ident">map_err</span>(<span class="ident">client_err</span>);
 
-			<span class="kw">async</span> <span class="kw">move</span> { <span class="ident">res</span> }
-		}))
-		.<span class="kw">await</span>
+		<span class="ident">keys</span>.<span class="ident">into_iter</span>()
+			.<span class="ident">map</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">key</span><span class="op">|</span> {
+				<span class="ident">client</span>
+					.<span class="ident">clone</span>()
+					.<span class="ident">child_storage</span>(<span class="kw-2">&amp;</span><span class="ident">BlockId::Hash</span>(<span class="ident">block</span>), <span class="kw-2">&amp;</span><span class="ident">child_info</span>, <span class="kw-2">&amp;</span><span class="ident">key</span>)
+					.<span class="ident">map_err</span>(<span class="ident">client_err</span>)
+			})
+			.<span class="ident">collect</span>()
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">storage_hash</span>(
+	<span class="kw">fn</span> <span class="ident">storage_hash</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>,
 		<span class="ident">storage_key</span>: <span class="ident">PrefixedStorageKey</span>,
