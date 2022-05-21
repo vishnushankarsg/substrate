@@ -245,7 +245,7 @@
 <span class="doccomment">//! ```</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! If the [`LightSyncStateExtension`] is not added as an extension to the chain spec,</span>
-<span class="doccomment">//! the [`SyncStateRpc`] will fail at instantiation.</span>
+<span class="doccomment">//! the [`SyncState`] will fail at instantiation.</span>
 
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">unused_crate_dependencies</span>)]</span>
 
@@ -333,21 +333,21 @@
 
 <span class="doccomment">/// An api for sync state RPC calls.</span>
 <span class="attribute">#[<span class="ident">rpc</span>(<span class="ident">client</span>, <span class="ident">server</span>)]</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">SyncStateRpcApi</span> {
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">SyncStateApi</span> {
 	<span class="doccomment">/// Returns the JSON serialized chainspec running the node, with a sync state.</span>
 	<span class="attribute">#[<span class="ident">method</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;sync_state_genSyncSpec&quot;</span>)]</span>
 	<span class="kw">fn</span> <span class="ident">system_gen_sync_spec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">raw</span>: <span class="ident">bool</span>) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span><span class="ident">serde_json::Value</span><span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// An api for sync state RPC calls.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SyncStateRpc</span><span class="op">&lt;</span><span class="ident">Block</span>: <span class="ident">BlockT</span>, <span class="ident">Client</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SyncState</span><span class="op">&lt;</span><span class="ident">Block</span>: <span class="ident">BlockT</span>, <span class="ident">Client</span><span class="op">&gt;</span> {
 	<span class="ident">chain_spec</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">sc_chain_spec::ChainSpec</span><span class="op">&gt;</span>,
 	<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>,
 	<span class="ident">shared_authority_set</span>: <span class="ident">SharedAuthoritySet</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
 	<span class="ident">shared_epoch_changes</span>: <span class="ident">SharedEpochChanges</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Client</span><span class="op">&gt;</span> <span class="ident">SyncStateRpc</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Client</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Client</span><span class="op">&gt;</span> <span class="ident">SyncState</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Client</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">Block</span>: <span class="ident">BlockT</span>,
 	<span class="ident">Client</span>: <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">sc_client_api::AuxStore</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
@@ -388,7 +388,7 @@
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Backend</span><span class="op">&gt;</span> <span class="ident">SyncStateRpcApiServer</span> <span class="kw">for</span> <span class="ident">SyncStateRpc</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Backend</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Backend</span><span class="op">&gt;</span> <span class="ident">SyncStateApiServer</span> <span class="kw">for</span> <span class="ident">SyncState</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Backend</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">Block</span>: <span class="ident">BlockT</span>,
 	<span class="ident">Backend</span>: <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">sc_client_api::AuxStore</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,

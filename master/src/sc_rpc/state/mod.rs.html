@@ -659,7 +659,7 @@
 	<span class="ident">executor</span>: <span class="ident">SubscriptionTaskExecutor</span>,
 	<span class="ident">deny_unsafe</span>: <span class="ident">DenyUnsafe</span>,
 	<span class="ident">rpc_max_payload</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-) -&gt; (<span class="ident">StateApi</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Client</span><span class="op">&gt;</span>, <span class="ident">ChildState</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Client</span><span class="op">&gt;</span>)
+) -&gt; (<span class="ident">State</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Client</span><span class="op">&gt;</span>, <span class="ident">ChildState</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Client</span><span class="op">&gt;</span>)
 <span class="kw">where</span>
 	<span class="ident">Block</span>: <span class="ident">BlockT</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="ident">Block::Hash</span>: <span class="ident">Unpin</span>,
@@ -684,17 +684,17 @@
 		<span class="ident">rpc_max_payload</span>,
 	));
 	<span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">Box::new</span>(<span class="ident"><span class="self">self</span>::state_full::FullState::new</span>(<span class="ident">client</span>, <span class="ident">executor</span>, <span class="ident">rpc_max_payload</span>));
-	(<span class="ident">StateApi</span> { <span class="ident">backend</span>, <span class="ident">deny_unsafe</span> }, <span class="ident">ChildState</span> { <span class="ident">backend</span>: <span class="ident">child_backend</span> })
+	(<span class="ident">State</span> { <span class="ident">backend</span>, <span class="ident">deny_unsafe</span> }, <span class="ident">ChildState</span> { <span class="ident">backend</span>: <span class="ident">child_backend</span> })
 }
 
 <span class="doccomment">/// State API with subscriptions support.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StateApi</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Client</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">State</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Client</span><span class="op">&gt;</span> {
 	<span class="ident">backend</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">StateBackend</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Client</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Whether to deny unsafe calls</span>
 	<span class="ident">deny_unsafe</span>: <span class="ident">DenyUnsafe</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Client</span><span class="op">&gt;</span> <span class="ident">StateApiServer</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">StateApi</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Client</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Client</span><span class="op">&gt;</span> <span class="ident">StateApiServer</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">State</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Client</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">Block</span>: <span class="ident">BlockT</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="ident">Client</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,

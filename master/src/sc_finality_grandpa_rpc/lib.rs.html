@@ -523,7 +523,7 @@
 }
 
 <span class="doccomment">/// Provides RPC methods for interacting with GRANDPA.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GrandpaRpc</span><span class="op">&lt;</span><span class="ident">AuthoritySet</span>, <span class="ident">VoterState</span>, <span class="ident">Block</span>: <span class="ident">BlockT</span>, <span class="ident">ProofProvider</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Grandpa</span><span class="op">&lt;</span><span class="ident">AuthoritySet</span>, <span class="ident">VoterState</span>, <span class="ident">Block</span>: <span class="ident">BlockT</span>, <span class="ident">ProofProvider</span><span class="op">&gt;</span> {
 	<span class="ident">executor</span>: <span class="ident">SubscriptionTaskExecutor</span>,
 	<span class="ident">authority_set</span>: <span class="ident">AuthoritySet</span>,
 	<span class="ident">voter_state</span>: <span class="ident">VoterState</span>,
@@ -531,9 +531,9 @@
 	<span class="ident">finality_proof_provider</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ProofProvider</span><span class="op">&gt;</span>,
 }
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">AuthoritySet</span>, <span class="ident">VoterState</span>, <span class="ident">Block</span>: <span class="ident">BlockT</span>, <span class="ident">ProofProvider</span><span class="op">&gt;</span>
-	<span class="ident">GrandpaRpc</span><span class="op">&lt;</span><span class="ident">AuthoritySet</span>, <span class="ident">VoterState</span>, <span class="ident">Block</span>, <span class="ident">ProofProvider</span><span class="op">&gt;</span>
+	<span class="ident">Grandpa</span><span class="op">&lt;</span><span class="ident">AuthoritySet</span>, <span class="ident">VoterState</span>, <span class="ident">Block</span>, <span class="ident">ProofProvider</span><span class="op">&gt;</span>
 {
-	<span class="doccomment">/// Prepare a new [`GrandpaRpc`]</span>
+	<span class="doccomment">/// Prepare a new [`Grandpa`] Rpc handler.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
 		<span class="ident">executor</span>: <span class="ident">SubscriptionTaskExecutor</span>,
 		<span class="ident">authority_set</span>: <span class="ident">AuthoritySet</span>,
@@ -548,7 +548,7 @@
 <span class="attribute">#[<span class="ident">async_trait</span>]</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">AuthoritySet</span>, <span class="ident">VoterState</span>, <span class="ident">Block</span>, <span class="ident">ProofProvider</span><span class="op">&gt;</span>
 	<span class="ident">GrandpaApiServer</span><span class="op">&lt;</span><span class="ident">JustificationNotification</span>, <span class="ident">Block::Hash</span>, <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>
-	<span class="kw">for</span> <span class="ident">GrandpaRpc</span><span class="op">&lt;</span><span class="ident">AuthoritySet</span>, <span class="ident">VoterState</span>, <span class="ident">Block</span>, <span class="ident">ProofProvider</span><span class="op">&gt;</span>
+	<span class="kw">for</span> <span class="ident">Grandpa</span><span class="op">&lt;</span><span class="ident">AuthoritySet</span>, <span class="ident">VoterState</span>, <span class="ident">Block</span>, <span class="ident">ProofProvider</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">VoterState</span>: <span class="ident">ReportVoterState</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="ident">AuthoritySet</span>: <span class="ident">ReportAuthoritySet</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
@@ -700,7 +700,7 @@
 	<span class="kw">fn</span> <span class="ident">setup_io_handler</span><span class="op">&lt;</span><span class="ident">VoterState</span><span class="op">&gt;</span>(
 		<span class="ident">voter_state</span>: <span class="ident">VoterState</span>,
 	) -&gt; (
-		<span class="ident">RpcModule</span><span class="op">&lt;</span><span class="ident">GrandpaRpc</span><span class="op">&lt;</span><span class="ident">TestAuthoritySet</span>, <span class="ident">VoterState</span>, <span class="ident">Block</span>, <span class="ident">TestFinalityProofProvider</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+		<span class="ident">RpcModule</span><span class="op">&lt;</span><span class="ident">Grandpa</span><span class="op">&lt;</span><span class="ident">TestAuthoritySet</span>, <span class="ident">VoterState</span>, <span class="ident">Block</span>, <span class="ident">TestFinalityProofProvider</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 		<span class="ident">GrandpaJustificationSender</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
 	)
 	<span class="kw">where</span>
@@ -713,7 +713,7 @@
 		<span class="ident">voter_state</span>: <span class="ident">VoterState</span>,
 		<span class="ident">finality_proof</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FinalityProof</span><span class="op">&lt;</span><span class="ident">Header</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	) -&gt; (
-		<span class="ident">RpcModule</span><span class="op">&lt;</span><span class="ident">GrandpaRpc</span><span class="op">&lt;</span><span class="ident">TestAuthoritySet</span>, <span class="ident">VoterState</span>, <span class="ident">Block</span>, <span class="ident">TestFinalityProofProvider</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+		<span class="ident">RpcModule</span><span class="op">&lt;</span><span class="ident">Grandpa</span><span class="op">&lt;</span><span class="ident">TestAuthoritySet</span>, <span class="ident">VoterState</span>, <span class="ident">Block</span>, <span class="ident">TestFinalityProofProvider</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 		<span class="ident">GrandpaJustificationSender</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
 	)
 	<span class="kw">where</span>
@@ -723,7 +723,7 @@
 		<span class="kw">let</span> <span class="ident">finality_proof_provider</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">TestFinalityProofProvider</span> { <span class="ident">finality_proof</span> });
 		<span class="kw">let</span> <span class="ident">executor</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">TaskExecutor::default</span>());
 
-		<span class="kw">let</span> <span class="ident">rpc</span> <span class="op">=</span> <span class="ident">GrandpaRpc::new</span>(
+		<span class="kw">let</span> <span class="ident">rpc</span> <span class="op">=</span> <span class="ident">Grandpa::new</span>(
 			<span class="ident">executor</span>,
 			<span class="ident">TestAuthoritySet</span>,
 			<span class="ident">voter_state</span>,

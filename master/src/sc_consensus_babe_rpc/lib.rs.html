@@ -333,7 +333,7 @@
 }
 
 <span class="doccomment">/// Provides RPC methods for interacting with Babe.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BabeRpc</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span>, <span class="ident">C</span>, <span class="ident">SC</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Babe</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span>, <span class="ident">C</span>, <span class="ident">SC</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// shared reference to the client.</span>
 	<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// shared reference to EpochChanges</span>
@@ -348,8 +348,8 @@
 	<span class="ident">deny_unsafe</span>: <span class="ident">DenyUnsafe</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span>, <span class="ident">C</span>, <span class="ident">SC</span><span class="op">&gt;</span> <span class="ident">BabeRpc</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">C</span>, <span class="ident">SC</span><span class="op">&gt;</span> {
-	<span class="doccomment">/// Creates a new instance of the BabeRpc handler.</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span>, <span class="ident">C</span>, <span class="ident">SC</span><span class="op">&gt;</span> <span class="ident">Babe</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">C</span>, <span class="ident">SC</span><span class="op">&gt;</span> {
+	<span class="doccomment">/// Creates a new instance of the Babe Rpc handler.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
 		<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>,
 		<span class="ident">shared_epoch_changes</span>: <span class="ident">SharedEpochChanges</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Epoch</span><span class="op">&gt;</span>,
@@ -363,7 +363,7 @@
 }
 
 <span class="attribute">#[<span class="ident">async_trait</span>]</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span>, <span class="ident">C</span>, <span class="ident">SC</span><span class="op">&gt;</span> <span class="ident">BabeApiServer</span> <span class="kw">for</span> <span class="ident">BabeRpc</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">C</span>, <span class="ident">SC</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span>, <span class="ident">C</span>, <span class="ident">SC</span><span class="op">&gt;</span> <span class="ident">BabeApiServer</span> <span class="kw">for</span> <span class="ident">Babe</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">C</span>, <span class="ident">SC</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">B</span>: <span class="ident">BlockT</span>,
 	<span class="ident">C</span>: <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>
@@ -523,7 +523,7 @@
 
 	<span class="kw">fn</span> <span class="ident">test_babe_rpc_module</span>(
 		<span class="ident">deny_unsafe</span>: <span class="ident">DenyUnsafe</span>,
-	) -&gt; <span class="ident">BabeRpc</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">TestClient</span>, <span class="ident">sc_consensus::LongestChain</span><span class="op">&lt;</span><span class="ident">Backend</span>, <span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	) -&gt; <span class="ident">Babe</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">TestClient</span>, <span class="ident">sc_consensus::LongestChain</span><span class="op">&lt;</span><span class="ident">Backend</span>, <span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">TestClientBuilder::new</span>();
 		<span class="kw">let</span> (<span class="ident">client</span>, <span class="ident">longest_chain</span>) <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">build_with_longest_chain</span>();
 		<span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">client</span>);
@@ -534,7 +534,7 @@
 		<span class="kw">let</span> <span class="ident">epoch_changes</span> <span class="op">=</span> <span class="ident">link</span>.<span class="ident">epoch_changes</span>().<span class="ident">clone</span>();
 		<span class="kw">let</span> <span class="ident">keystore</span> <span class="op">=</span> <span class="ident">create_temp_keystore</span>::<span class="op">&lt;</span><span class="ident">AuthorityPair</span><span class="op">&gt;</span>(<span class="ident">Sr25519Keyring::Alice</span>).<span class="number">0</span>;
 
-		<span class="ident">BabeRpc::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="ident">epoch_changes</span>, <span class="ident">keystore</span>, <span class="ident">config</span>, <span class="ident">longest_chain</span>, <span class="ident">deny_unsafe</span>)
+		<span class="ident">Babe::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="ident">epoch_changes</span>, <span class="ident">keystore</span>, <span class="ident">config</span>, <span class="ident">longest_chain</span>, <span class="ident">deny_unsafe</span>)
 	}
 
 	<span class="attribute">#[<span class="ident">tokio::test</span>]</span>

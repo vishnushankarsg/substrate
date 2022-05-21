@@ -292,21 +292,21 @@
 }
 
 <span class="doccomment">/// An implementation of state migration specific RPC methods.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MigrationRpc</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span>, <span class="ident">BA</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StateMigration</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span>, <span class="ident">BA</span><span class="op">&gt;</span> {
 	<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>,
 	<span class="ident">backend</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">BA</span><span class="op">&gt;</span>,
 	<span class="ident">deny_unsafe</span>: <span class="ident">DenyUnsafe</span>,
 	<span class="ident">_marker</span>: <span class="ident">std::marker::PhantomData</span><span class="op">&lt;</span>(<span class="ident">B</span>, <span class="ident">BA</span>)<span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span>, <span class="ident">BA</span><span class="op">&gt;</span> <span class="ident">MigrationRpc</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span>, <span class="ident">BA</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span>, <span class="ident">BA</span><span class="op">&gt;</span> <span class="ident">StateMigration</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span>, <span class="ident">BA</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Create new state migration rpc for the given reference to the client.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>, <span class="ident">backend</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">BA</span><span class="op">&gt;</span>, <span class="ident">deny_unsafe</span>: <span class="ident">DenyUnsafe</span>) -&gt; <span class="self">Self</span> {
-		<span class="ident">MigrationRpc</span> { <span class="ident">client</span>, <span class="ident">backend</span>, <span class="ident">deny_unsafe</span>, <span class="ident">_marker</span>: <span class="ident">Default::default</span>() }
+		<span class="ident">StateMigration</span> { <span class="ident">client</span>, <span class="ident">backend</span>, <span class="ident">deny_unsafe</span>, <span class="ident">_marker</span>: <span class="ident">Default::default</span>() }
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span>, <span class="ident">BA</span><span class="op">&gt;</span> <span class="ident">StateMigrationApiServer</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">B</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">MigrationRpc</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span>, <span class="ident">BA</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span>, <span class="ident">BA</span><span class="op">&gt;</span> <span class="ident">StateMigrationApiServer</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">B</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">StateMigration</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span>, <span class="ident">BA</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">B</span>: <span class="ident">BlockT</span>,
 	<span class="ident">C</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">sc_client_api::HeaderBackend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
