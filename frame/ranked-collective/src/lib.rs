@@ -494,13 +494,11 @@ pub mod pallet {
 
 			use sp_io::KillStorageResult::*;
 			match Voting::<T, I>::remove_prefix(poll_index, Some(max)) {
-//				AllRemoved(0) => Err(Error::<T, I>::NoneRemaining.into()),
-				AllRemoved(count) | SomeRemaining(count) => {
-					Ok(PostDispatchInfo {
-						actual_weight: Some(T::WeightInfo::cleanup_poll(count)),
-						pays_fee: if count == 0 { Pays::Yes } else { Pays::No },
-					})
-				},
+				//				AllRemoved(0) => Err(Error::<T, I>::NoneRemaining.into()),
+				AllRemoved(count) | SomeRemaining(count) => Ok(PostDispatchInfo {
+					actual_weight: Some(T::WeightInfo::cleanup_poll(count)),
+					pays_fee: if count == 0 { Pays::Yes } else { Pays::No },
+				}),
 			}
 		}
 	}
