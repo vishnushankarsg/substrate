@@ -465,7 +465,7 @@
 		<span class="kw">let</span> <span class="ident">port</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">port</span>.<span class="ident">unwrap_or</span>(<span class="ident">default_listen_port</span>);
 
 		<span class="kw">let</span> <span class="ident">listen_addresses</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">listen_addr</span>.<span class="ident">is_empty</span>() {
-			<span class="kw">if</span> <span class="ident">is_validator</span> {
+			<span class="kw">if</span> <span class="ident">is_validator</span> <span class="op">|</span><span class="op">|</span> <span class="ident">is_dev</span> {
 				<span class="macro">vec!</span>[
 					<span class="ident">Multiaddr::empty</span>()
 						.<span class="ident">with</span>(<span class="ident">Protocol::Ip6</span>([<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>].<span class="ident">into</span>()))
